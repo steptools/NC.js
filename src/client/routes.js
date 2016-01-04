@@ -18,8 +18,9 @@ module.exports = Backbone.Router.extend({
         'browse':                       '_browse',
         'login':                        '_login',
         'register':                     '_register',
+        'stepnc':                       '_stepnc',
         ':modelID':                     '_model',
-        '*path':                        '_default'
+        '*path':                        '_default',
     },
     initialize: function(options) {
         this.app = options.app;
@@ -91,6 +92,23 @@ module.exports = Backbone.Router.extend({
                 });
             });
         }
+    },
+
+    _stepnc: function(){
+        var self = this;
+        ReactDOM.render(<CADView
+            manager={this.app.cadManager}
+            viewContainerId='primary-view'
+            root3DObject={this.app._root3DObject}
+        />, document.getElementById('primary-view'), function () {
+            // Dispatch setModel to the CADManager
+            self.app.cadManager.dispatchEvent({
+                type: 'setModel',
+                path: 'cutter',
+                baseURL: self.app.services.api_endpoint + self.app.services.version,
+                modelType: undefined
+            });
+        });
     },
 
     /************** Default Route ************************/
