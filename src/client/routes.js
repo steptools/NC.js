@@ -8,6 +8,8 @@ import BrowserView          from './views/browser';
 import LoginView            from './views/user/login';
 import RegisterView         from './views/user/register';
 import CADView              from './views/cad';
+import HeaderView           from './views/header';
+// import SidebarView           from './views/sidebar';
 var qs                      = require('qs');
 
 /*************************************************************************/
@@ -96,11 +98,16 @@ module.exports = Backbone.Router.extend({
 
     _stepnc: function(){
         var self = this;
-        ReactDOM.render(<CADView
-            manager={this.app.cadManager}
-            viewContainerId='primary-view'
-            root3DObject={this.app._root3DObject}
-        />, document.getElementById('primary-view'), function () {
+        ReactDOM.render(
+                <div>
+                    <HeaderView/>
+                    <CADView
+                    manager={this.app.cadManager}
+                    viewContainerId='primary-view'
+                    root3DObject={this.app._root3DObject}
+                    />
+                </div>
+        , document.getElementById('primary-view'), function () {
             // Dispatch setModel to the CADManager
             self.app.cadManager.dispatchEvent({
                 type: 'setModel',
