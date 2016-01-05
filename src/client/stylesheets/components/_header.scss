@@ -3,4 +3,7 @@ $headerHeight: 200px;
 .header-bar{
     height:$headerHeight;
     width:100%;
+    background-color:white;
+    position:relative;
+    z-index: 10;
 }

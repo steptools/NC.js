@@ -9,6 +9,7 @@ import LoginView            from './views/user/login';
 import RegisterView         from './views/user/register';
 import CADView              from './views/cad';
 import HeaderView           from './views/header';
+import SidebarView           from './views/sidebar';
 // import SidebarView           from './views/sidebar';
 var qs                      = require('qs');
 
@@ -101,6 +102,7 @@ module.exports = Backbone.Router.extend({
         ReactDOM.render(
                 <div style={{height:'100%'}}>
                     <HeaderView/>
+                    <SidebarView/>
                     <div id='cadview-container'>
                         <CADView
                         manager={this.app.cadManager}
