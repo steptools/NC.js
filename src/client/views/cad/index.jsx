@@ -115,9 +115,10 @@ export default class CADViewer extends React.Component {
     componentDidMount() {
         var self = this;
         // RENDERER
-        this.canvasParent = document.getElementById(this.props.viewContainerId);
+        this.canvasParent = document.getElementById('cadjs-container');
+        this.canvas = document.getElementById('cadjs-canvas');
         this.renderer = new THREE.WebGLRenderer({
-            canvas: document.getElementById('cadjs-canvas'),
+            canvas: this.canvas,
             antialias: true,
             alpha: true
         });
@@ -340,7 +341,7 @@ export default class CADViewer extends React.Component {
             controls={this.controls}
             dispatcher={this.props.manager}
         /> : undefined;
-        return <div>
+        return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
             {compass}
             <LoadQueueView dispatcher={this.props.manager} />

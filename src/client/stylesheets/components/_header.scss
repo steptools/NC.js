@@ -1,4 +1,6 @@
+$headerHeight: 200px;
+
 .header-bar{
-    height:200px;
+    height:$headerHeight;
     width:100%;
 }

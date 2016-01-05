@@ -2,23 +2,37 @@ body {
   font: 11px 'Lucida Grande', sans-serif;
   overflow: hidden;
   background-color: #fff;
+  width:100%;
+  height:100%;
 }
 
+@import 'components/all';
+
 .primary-view {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
+    width:100%;
+    height:100%;
+}
+
+#cadjs-container{
+    position:relative;
+    height:100%;
+    width:100%;
 }
 
 .non-initialized {
   background:url(/img/spinner.gif) center center no-repeat;
 }
 
-.cadjs-canvas {
-  width: 100%;
-  height: 100%;
-}
+// #cadjs-canvas {
+//   width: 100%;
+//   height:100%;
+// }
 
-@import 'components/all';
+#cadview-container{
+    height:100%;
+    width:100%;
+    position:absolute;
+    left:0px;
+    top:0px;
+    padding-top:$headerHeight;
+}

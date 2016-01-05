@@ -12,7 +12,3 @@ export default class HeaderView extends React.Component {
                </div>;
     }
 }
-
-HeaderView.propTypes = {
-    dispatcher: React.PropTypes.object.isRequired
-};

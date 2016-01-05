@@ -120,8 +120,12 @@ export default class CADManager extends THREE.EventDispatcher {
     }
 
     hitTest(camera, event) {
+        var target = event.target;
+        var rect = target.getBoundingClientRect();
         return _.reduce(this._models, function(memo, model) {
-            var val = model.select(camera, event.clientX, event.clientY);
+            var val = model.select(camera,
+                    (event.pageX - rect.left) / (rect.right - rect.left) * window.innerWidth,
+                    (event.pageY - rect.top) / (rect.bottom - rect.top) * window.innerHeight);
             return memo || val;
         }, undefined);
     }

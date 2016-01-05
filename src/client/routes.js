@@ -99,13 +99,15 @@ module.exports = Backbone.Router.extend({
     _stepnc: function(){
         var self = this;
         ReactDOM.render(
-                <div>
+                <div style={{height:'100%'}}>
                     <HeaderView/>
-                    <CADView
-                    manager={this.app.cadManager}
-                    viewContainerId='primary-view'
-                    root3DObject={this.app._root3DObject}
-                    />
+                    <div id='cadview-container'>
+                        <CADView
+                        manager={this.app.cadManager}
+                        viewContainerId='primary-view'
+                        root3DObject={this.app._root3DObject}
+                        />
+                    </div>
                 </div>
         , document.getElementById('primary-view'), function () {
             // Dispatch setModel to the CADManager
