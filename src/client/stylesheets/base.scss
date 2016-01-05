@@ -18,6 +18,9 @@ body {
     height:100%;
     width:100%;
 }
+#cadjs-container canvas{
+    border:2px #333 solid;
+}
 
 .non-initialized {
   background:url(/img/spinner.gif) center center no-repeat;
