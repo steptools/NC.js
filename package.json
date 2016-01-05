@@ -32,6 +32,7 @@
     "morgan": "latest",
     "node-sass": "^3.4.2",
     "qs": "^6.0.1",
+    "rc-menu": "^4.9.0",
     "react": "latest",
     "react-dom": "latest",
     "react-ui-tree": "^2.4.1",
