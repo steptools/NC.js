@@ -29,6 +29,7 @@ export default class HeaderView extends React.Component {
         const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
             <MenuItem select='file-menu'>File</MenuItem>
             <MenuItem select='simulate-menu'>Simulate</MenuItem>
+            <MenuItem select='debug-menu'>Debug</MenuItem>
         </Menu> );
         const bottomMenu = ( <div className='bottom-menus'>
           {this.state.openMenu == 'file-menu' ?
@@ -42,6 +43,15 @@ export default class HeaderView extends React.Component {
               <MenuItem><ButtonImage icon='backward'/>Prev</MenuItem>
               <MenuItem><ButtonImage icon='play'/>Play</MenuItem>
               <MenuItem><ButtonImage icon='forward'/>Next</MenuItem>
+          </Menu> : null}
+          {this.state.openMenu == 'debug-menu' ?
+          <Menu mode='horizontal' className='bottom-menu'>
+              <MenuItem><ButtonImage icon='fire'/>Action 1</MenuItem>
+              <MenuItem><ButtonImage icon='fire'/>Action 2</MenuItem>
+              <MenuItem><ButtonImage icon='fire'/>Action 3</MenuItem>
+              <MenuItem><ButtonImage icon='fire'/>Action 4</MenuItem>
+              <MenuItem><ButtonImage icon='fire'/>Action 5</MenuItem>
+              <MenuItem><ButtonImage icon='fire'/>Action 6</MenuItem>
           </Menu> : null}
         </div>);
 
