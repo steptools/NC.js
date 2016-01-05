@@ -1,10 +1,72 @@
 @import "base_style";
 
-.top-menu .rc-menu-item{
+.rc-menu-item:hover{
+  cursor:pointer;
 }
-.bottom-menu .rc-menu-item{
-    height:90px;
-    width:90px;
-    text-align: center;
-    padding-top:20px;
+
+.top-menu{
+  .rc-menu-item:first-child{
+    margin-left:8px;
+  }
+  .rc-menu-item-selected{
+    background-color:rgba(175, 221, 220,.4);
+    border-bottom:2px #2db7f5 solid;
+  }
+}
+.bottom-menu{
+  background-color: #f8f8f8;
+
+  .rc-menu-item:first-child{
+    margin-left:8px;
+  }
+  .rc-menu-item{
+      height:82px;
+      margin-top:4px;
+      margin-bottom: 4px;
+      width:90px;
+      text-align: center;
+      padding-top:12px;
+      border-right:1px solid #ddd;
+      background:none;
+  }
+
+  .rc-menu-item-selected{
+    background:none;
+  }
+
+  .rc-menu-item:hover{
+    margin-bottom:0px;
+    height:86px;
+  }
+
+}
+
+.sidebar-menu{
+  border-bottom:none;
+  .rc-menu-item{
+    width:$sidebarWidth/2;
+    text-align:center;
+    background-color:#eee;
+  }
+  .rc-menu-item:first-child{
+    border-right:2px solid #aaa;
+  }
+  .rc-menu-item-selected{
+    background-color:#ddd;
+  }
+  .rc-menu-item:disabled{
+    opacity:.5;
+  }
+}
+
+.rc-menu-item:disabled{
+  opacity:.25;
+}
+
+.rc-menu-item .button-icon{
+  font-size:32px;
+  opacity:.5;
+  padding-bottom:11px;
+  padding-top:3px;
+  display:block;
 }

@@ -3,23 +3,47 @@ import Menu from 'rc-menu';
 var SubMenu = Menu.SubMenu;
 var MenuItem = Menu.Item;
 
+class ButtonImage extends React.Component{
+  constructor(props){
+    super(props);
+  }
+  render(){
+    var classes = 'button-icon glyphicon glyphicon-' + this.props.icon;
+    return <div className={classes}/>;
+  }
+}
+
 export default class HeaderView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-        };
+        this.state = {'openMenu': 'file-menu'};
+        this.openBottomMenu = this.openBottomMenu.bind(this);
+    }
+
+    openBottomMenu(info){
+      this.setState({ 'openMenu' : info.item.props.select });
+      console.log(this.state);
     }
 
     render() {
-        const topMenu = ( <Menu mode='horizontal' className='top-menu'>
-            <MenuItem>File</MenuItem>
-            <MenuItem>Simulate</MenuItem>
+        const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
+            <MenuItem select='file-menu'>File</MenuItem>
+            <MenuItem select='simulate-menu'>Simulate</MenuItem>
         </Menu> );
-        const bottomMenu = ( <Menu mode='horizontal' className='bottom-menu'>
-            <MenuItem>New</MenuItem>
-            <MenuItem>Save</MenuItem>
-            <MenuItem>Load</MenuItem>
-        </Menu> );
+        const bottomMenu = ( <div className='bottom-menus'>
+          {this.state.openMenu == 'file-menu' ?
+          <Menu mode='horizontal' className='bottom-menu'>
+              <MenuItem><ButtonImage icon='file'/>New</MenuItem>
+              <MenuItem><ButtonImage icon='save'/>Save</MenuItem>
+              <MenuItem><ButtonImage icon='open-file'/>Load</MenuItem>
+          </Menu> : null }
+          {this.state.openMenu == 'simulate-menu' ?
+          <Menu mode='horizontal' className='bottom-menu'>
+              <MenuItem><ButtonImage icon='backward'/>Prev</MenuItem>
+              <MenuItem><ButtonImage icon='play'/>Play</MenuItem>
+              <MenuItem><ButtonImage icon='forward'/>Next</MenuItem>
+          </Menu> : null}
+        </div>);
 
         return <div className="header-bar">
             <div>{topMenu}</div>
