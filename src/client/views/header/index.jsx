@@ -18,11 +18,19 @@ export default class HeaderView extends React.Component {
         super(props);
         this.state = {'openMenu': 'file-menu'};
         this.openBottomMenu = this.openBottomMenu.bind(this);
+        this.debugMenuItemClicked = this.debugMenuItemClicked.bind(this);
     }
 
     openBottomMenu(info){
       this.setState({ 'openMenu' : info.item.props.select });
-      console.log(this.state);
+    }
+
+    debugMenuItemClicked(info){
+      if (info.item.props.select == "db1"){
+        this.props.socket.emit('req:modeltree', "moldy");
+      }else if (info.item.props.select == "db2"){
+        this.props.socket.emit('req:projects');
+      }
     }
 
     render() {
@@ -45,13 +53,13 @@ export default class HeaderView extends React.Component {
               <MenuItem><ButtonImage icon='forward'/>Next</MenuItem>
           </Menu> : null}
           {this.state.openMenu == 'debug-menu' ?
-          <Menu mode='horizontal' className='bottom-menu'>
-              <MenuItem><ButtonImage icon='fire'/>Action 1</MenuItem>
-              <MenuItem><ButtonImage icon='fire'/>Action 2</MenuItem>
-              <MenuItem><ButtonImage icon='fire'/>Action 3</MenuItem>
-              <MenuItem><ButtonImage icon='fire'/>Action 4</MenuItem>
-              <MenuItem><ButtonImage icon='fire'/>Action 5</MenuItem>
-              <MenuItem><ButtonImage icon='fire'/>Action 6</MenuItem>
+          <Menu mode='horizontal' onClick={this.debugMenuItemClicked} className='bottom-menu'>
+              <MenuItem select='db1'><ButtonImage icon='fire'/>Update Tree</MenuItem>
+              <MenuItem select='db2'><ButtonImage icon='fire'/>Get Projects</MenuItem>
+              <MenuItem select='db3'><ButtonImage icon='fire'/>Action 3</MenuItem>
+              <MenuItem select='db4'><ButtonImage icon='fire'/>Action 4</MenuItem>
+              <MenuItem select='db5'><ButtonImage icon='fire'/>Action 5</MenuItem>
+              <MenuItem select='db6'><ButtonImage icon='fire'/>Action 6</MenuItem>
           </Menu> : null}
         </div>);
 

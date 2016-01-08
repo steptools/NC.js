@@ -101,8 +101,14 @@ module.exports = Backbone.Router.extend({
         var self = this;
         ReactDOM.render(
                 <div style={{height:'100%'}}>
-                    <HeaderView/>
-                    <SidebarView/>
+                    <HeaderView
+                      dispatcher={this.app.cadManager}
+                      socket={this.app.socket}
+                      />
+                    <SidebarView
+                      dispatcher={this.app.cadManager}
+                      socket={this.app.socket}
+                      />
                     <div id='cadview-container'>
                         <CADView
                         manager={this.app.cadManager}
@@ -113,12 +119,12 @@ module.exports = Backbone.Router.extend({
                 </div>
         , document.getElementById('primary-view'), function () {
             // Dispatch setModel to the CADManager
-            self.app.cadManager.dispatchEvent({
-                type: 'setModel',
-                path: 'cutter',
-                baseURL: self.app.services.api_endpoint + self.app.services.version,
-                modelType: undefined
-            });
+            // self.app.cadManager.dispatchEvent({
+            //     type: 'setModel',tar
+            //     path: 'cutter',
+            //     baseURL: self.app.services.api_endpoint + self.app.services.version,
+            //     modelType: undefined
+            // });
         });
     },
 

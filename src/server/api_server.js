@@ -97,7 +97,9 @@ APIServer.prototype._setRoutes = function(cb) {
     var self = this;
     require('./api/v1/auth')(this, function() {
         require('./api/v1/storage')(self, function() {
+          require('./api/v1/step')(self, function() {
             if (cb) cb();
+          });
         });
     });
 };
