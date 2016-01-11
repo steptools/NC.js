@@ -25,6 +25,14 @@ export default class SidebarView extends React.Component {
 
         var self = this;
         this.props.socket.on('modeltree', (items)=>{
+          // Node preprocessing
+          var nodeCheck = (node)=>{
+            node.icon = this.getNodeIcon(node);
+            console.log(node);
+            if (!node.children) node.leaf = true;
+            else node.children.forEach(nodeCheck);
+          }
+          nodeCheck(items);
           this.setState({
             'mode': 'tree',
             'tree': items
@@ -33,6 +41,16 @@ export default class SidebarView extends React.Component {
 
         this.modeSelected = this.modeSelected.bind(this);
         this.renderNode = this.renderNode.bind(this);
+    }
+
+    getNodeIcon(node){
+      if (node.type == "workplan"){
+        return <span className='icon-letter'>W</span>;
+      }else if (node.type == "selective"){
+        return <span className='icon-letter'>S</span>;
+      }else{
+        return null;
+      }
     }
 
     modeSelected(info){
@@ -53,6 +71,7 @@ export default class SidebarView extends React.Component {
           onClick={this.onClickNode.bind(this, node)}
           onMouseDown={function(e){e.stopPropagation()}}
       >
+          {node.icon}
           {node.name}
       </span>;
     }
@@ -66,7 +85,7 @@ export default class SidebarView extends React.Component {
                   {modeMenu}
                   {this.state.mode == 'tree' ?
                   <Tree
-                      paddingLeft={20}              // left padding for children nodes in pixels
+                      paddingLeft={32}              // left padding for children nodes in pixels
                       tree={this.state.tree}        // tree object
                       renderNode={this.renderNode}  // renderNode(node) return react element
                   />
