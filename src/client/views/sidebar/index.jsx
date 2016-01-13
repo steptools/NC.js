@@ -1,6 +1,8 @@
 import React from 'react';
 import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
+import LoadProjectView from './loadproject';
+import ReactTooltip from 'react-tooltip';
 var MenuItem = Menu.Item;
 
 export default class SidebarView extends React.Component {
@@ -9,26 +11,21 @@ export default class SidebarView extends React.Component {
         this.state = {
           'mode': 'tree',
           'tree': {
-            "name": "Hello",
-            "children" : [
-              {
-                "name": "world",
-                isLeaf:true
-              },
-              {
-                "name": "World!",
-                isLeaf:true
-              }
-            ]
-          }
+            "name": "No Project Loaded",
+            "isLeaf": true
+          },
+          'altmenu': ''
         };
+
+        this.modeSelected = this.modeSelected.bind(this);
+        this.renderNode = this.renderNode.bind(this);
+        this.openLoadProjectMenu = this.openLoadProjectMenu.bind(this);
 
         var self = this;
         this.props.socket.on('modeltree', (items)=>{
           // Node preprocessing
           var nodeCheck = (node)=>{
             node.icon = this.getNodeIcon(node);
-            console.log(node);
             if (!node.children) node.leaf = true;
             else node.children.forEach(nodeCheck);
           }
@@ -39,8 +36,15 @@ export default class SidebarView extends React.Component {
           });
         });
 
-        this.modeSelected = this.modeSelected.bind(this);
-        this.renderNode = this.renderNode.bind(this);
+        this.props.actionManager.on('open-load-project-menu',  this.openLoadProjectMenu);
+    }
+
+    openLoadProjectMenu(){
+      this.setState({
+        'mode': 'load-project',
+        'altmode': 'load-project',
+        'altmenu': 'Load Project'
+      });
     }
 
     getNodeIcon(node){
@@ -54,8 +58,8 @@ export default class SidebarView extends React.Component {
     }
 
     modeSelected(info){
-      var mode = info.item.props.select;
-      // this.setState({mode: mode})
+      var newMode = info.key;
+      this.setState({mode: newMode});
     }
 
     onClickNode(self, node){
@@ -77,9 +81,9 @@ export default class SidebarView extends React.Component {
     }
 
     render() {
-      const modeMenu = ( <Menu mode='horizontal' onClick={this.modeSelected} className='sidebar-menu'>
-          <MenuItem select='tree'>Object Tree</MenuItem>
-          <MenuItem select='configure' disabled>Configure</MenuItem>
+      const modeMenu = ( <Menu mode='horizontal' selectedKeys={[this.state.mode]} onClick={this.modeSelected} className='sidebar-menu'>
+          <MenuItem key='tree'>Object Tree</MenuItem>
+          <MenuItem key={this.state.altmode}>{this.state.altmenu}</MenuItem>
       </Menu> );
         return <div className="sidebar">
                   {modeMenu}
@@ -89,6 +93,9 @@ export default class SidebarView extends React.Component {
                       tree={this.state.tree}        // tree object
                       renderNode={this.renderNode}  // renderNode(node) return react element
                   />
+                  : null}
+                  {this.state.mode == 'load-project' ?
+                  <LoadProjectView socket={this.props.socket} actionManager={this.actionManager}/>
                   : null}
                   {this.state.mode == 'configure' ?
                   <div className='configure-view'></div>

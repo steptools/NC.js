@@ -7,7 +7,8 @@ require('./stylesheets/base.scss');
 require('bootstrap-webpack');
 var io              = require('socket.io-client'),
     jwtDecode       = require('jwt-decode'),
-    Router          = require('./routes');
+    Router          = require('./routes'),
+    actionManager   = require('./actionmanager');
 import CADManager from './models/cad_manager';
 
 /*************************************************************************/
@@ -47,6 +48,9 @@ class CADApp extends THREE.EventDispatcher {
         }
         // Create data manager
         this.cadManager = new CADManager(this.config, this.socket);
+
+        // Create application-level action manager
+        this.actionManager = actionManager;
 
         // Initialize views
         $body.toggleClass('non-initialized');

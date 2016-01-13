@@ -21,14 +21,15 @@
   }
   .rc-menu-item{
     padding:0;
-      height:82px;
-      margin-top:4px;
-      margin-bottom: 4px;
-      width:90px;
-      text-align: center;
-      padding-top:12px;
-      border-right:1px solid #ddd;
-      background:none;
+    height:82px;
+    margin-top:4px;
+    margin-bottom: 4px;
+    width:90px;
+    text-align: center;
+    padding-top:12px;
+    border-right:1px solid #ddd;
+    background:none;
+    white-space: normal;
   }
 
   .rc-menu-item-selected{
