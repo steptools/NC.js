@@ -17,9 +17,10 @@ export default class SidebarView extends React.Component {
           'altmenu': ''
         };
 
-        this.modeSelected = this.modeSelected.bind(this);
+        this.openObjectTree = this.openObjectTree.bind(this);
         this.renderNode = this.renderNode.bind(this);
         this.openLoadProjectMenu = this.openLoadProjectMenu.bind(this);
+        this.onProjectSelected = this.onProjectSelected.bind(this);
 
         var self = this;
         this.props.socket.on('modeltree', (items)=>{
@@ -36,7 +37,20 @@ export default class SidebarView extends React.Component {
           });
         });
 
+        var disabledView = (name) => {
+          return (() => {
+            this.setState({
+              'mode': "disabled",
+              'altmode': 'disabled',
+              'altmenu': name
+            })
+          }).bind(this);
+        };
+
         this.props.actionManager.on('open-load-project-menu',  this.openLoadProjectMenu);
+        this.props.actionManager.on('open-new-project-menu', disabledView('New Project'));
+        this.props.actionManager.on('open-save-project-menu', disabledView('Save Project'));
+        this.props.actionManager.on('project-selected', this.onProjectSelected);
     }
 
     openLoadProjectMenu(){
@@ -45,6 +59,23 @@ export default class SidebarView extends React.Component {
         'altmode': 'load-project',
         'altmenu': 'Load Project'
       });
+    }
+
+    openObjectTree(){
+      this.setState({
+        mode: 'tree'
+      });
+    }
+
+    onProjectSelected(projectId){
+      this.props.socket.emit('req:modeltree', projectId);
+      this.openObjectTree();
+      this.setState({
+        tree: {
+          name : 'Loading project...',
+          isLeaf:true
+        }
+      })
     }
 
     getNodeIcon(node){
@@ -57,12 +88,7 @@ export default class SidebarView extends React.Component {
       }
     }
 
-    modeSelected(info){
-      var newMode = info.key;
-      this.setState({mode: newMode});
-    }
-
-    onClickNode(self, node){
+    onObjectTreeNodeClick(self, node){
 
     }
 
@@ -72,7 +98,7 @@ export default class SidebarView extends React.Component {
       return <span
           id={node.id}
           className={cName}
-          onClick={this.onClickNode.bind(this, node)}
+          onClick={this.onObjectTreeNodeClick.bind(this, node)}
           onMouseDown={function(e){e.stopPropagation()}}
       >
           {node.icon}
@@ -81,10 +107,19 @@ export default class SidebarView extends React.Component {
     }
 
     render() {
-      const modeMenu = ( <Menu mode='horizontal' selectedKeys={[this.state.mode]} onClick={this.modeSelected} className='sidebar-menu'>
-          <MenuItem key='tree'>Object Tree</MenuItem>
-          <MenuItem key={this.state.altmode}>{this.state.altmenu}</MenuItem>
-      </Menu> );
+      // TODO currently mode menu can only have two layers
+      var nested = this.state.mode != "tree";
+      const modeMenu = (
+        <div className='sidebar-menu-tabs'>
+          <span style={{opacity:nested ?.5:0}} className='glyphicon glyphicon-menu-left back-button'></span>
+          <div style={{opacity:nested?.5:1, left:nested?40:140}} onClick={this.openObjectTree} className='back'>
+            <div>Object Tree</div>
+          </div>
+          <div style={{left:nested?200:400}} className='current'>
+            {this.state.altmenu}
+          </div>
+        </div>
+      );
         return <div className="sidebar">
                   {modeMenu}
                   {this.state.mode == 'tree' ?
@@ -95,10 +130,10 @@ export default class SidebarView extends React.Component {
                   />
                   : null}
                   {this.state.mode == 'load-project' ?
-                  <LoadProjectView socket={this.props.socket} actionManager={this.actionManager}/>
+                  <LoadProjectView socket={this.props.socket} actionManager={this.props.actionManager}/>
                   : null}
-                  {this.state.mode == 'configure' ?
-                  <div className='configure-view'></div>
+                  {this.state.mode == "disabled" ?
+                  <div className='disabled-view'> {this.state.altmenu} is currently disabled.</div>
                   : null}
                </div>;
     }

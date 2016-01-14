@@ -6,4 +6,104 @@ $sidebarWidth: 390;
     background-color:#ddd;
     position:relative;
     z-index: 5;
+
+    .sidebar-menu-tabs{
+
+      position:relative;
+      background-color: #333;
+      height:80px;
+      font-size:20px;
+      color:#ddd;
+      overflow:hidden;
+
+      .back-button{
+        position:absolute;
+        transition: left .5s, opacity .5s;
+        left:10px;
+        top:30px;
+        opacity:.25;
+      }
+
+      .back{
+        opacity:.5;
+        position:absolute;
+        transition: left .5s, opacity .5s;
+        left:40px;
+        top:26px;
+        color:#fff;
+      }
+      .back:hover{
+        cursor:pointer;
+        opacity:1;
+        left:45px;
+      }
+
+      .current{
+        position:absolute;
+        transition: left .5s, opacity .5s;
+        left:200px;
+        top:26px;
+        white-space: nowrap;
+        color:#fff;
+      }
+      .current:hover{
+        cursor:pointer;
+      }
+
+    }
+
+    .disabled-view{
+      padding-top:100px;
+      font-size:18px;
+      text-align: center;
+      color:#888;
+      padding:20px;
+    }
+
+    .load-projects{
+
+      .project:first-child{
+        margin-top:10px;
+      }
+
+      .project{
+
+        background-color: #fff;
+        padding: 14px;
+        font-size:18px;
+        margin:6px;
+        box-shadow: 1px 1px 5px rgba(0,0,0,.25);
+        transition: box-shadow .25s;
+
+          .project-id{
+
+          }
+
+          .glyphicon{
+            opacity:.5;
+            padding-right:10px;
+          }
+
+          .icon-word{
+            float:right;
+            font-size:14px;
+            background-color: #333;
+            color: #fff;
+            padding: 4px;
+            padding-left: 8px;
+            border-radius: 4px;
+            padding-right: 8px;
+            margin-right:4px;
+          }
+      }
+
+      .project:hover{
+        cursor:pointer;
+        box-shadow: 1px 1px 8px rgba(0,0,0,.5);
+      }
+
+
+    }
+
+
 }
