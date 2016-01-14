@@ -795,6 +795,9 @@ self.addEventListener("message", function(e) {
             case "assembly":
                 processAssembly(url, workerID, xhr.responseText);
                 break;
+            case "cloudassembly":
+                processAssembly(url, workerID, xhr.responseText);
+                break;
             default:
                 throw Error("DataLoader.webworker - Invalid request type: " + e.data.type);
                 break;

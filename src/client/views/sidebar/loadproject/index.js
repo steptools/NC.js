@@ -20,6 +20,12 @@ export default class LoadProjectView extends React.Component {
   handleProjectSelected(projectId){
     return (event => {
       this.props.actionManager.emit("project-selected", projectId);
+      this.props.app.cadManager.dispatchEvent({
+          type: 'setModel',
+          path: projectId,
+          baseURL: this.props.app.services.api_endpoint + this.props.app.services.version,
+          modelType: 'cloudassembly'
+      });
     }).bind(this);
   }
 

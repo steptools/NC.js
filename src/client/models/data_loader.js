@@ -176,7 +176,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         var data;
         switch (event.data.type) {
             case "rootLoad":
-                if (req.type === 'assembly') {
+                if (req.type === 'assembly' || req.type == "cloudassembly") {
                     // Handle the assembly
                     this.buildAssemblyJSON(event.data.data, req);
                 } else if (req.type === 'nc') {

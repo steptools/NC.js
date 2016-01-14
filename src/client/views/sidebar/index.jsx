@@ -130,7 +130,7 @@ export default class SidebarView extends React.Component {
                   />
                   : null}
                   {this.state.mode == 'load-project' ?
-                  <LoadProjectView socket={this.props.socket} actionManager={this.props.actionManager}/>
+                  <LoadProjectView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
                   : null}
                   {this.state.mode == "disabled" ?
                   <div className='disabled-view'> {this.state.altmenu} is currently disabled.</div>

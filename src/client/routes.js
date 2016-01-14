@@ -108,6 +108,7 @@ module.exports = Backbone.Router.extend({
                       />
                     <SidebarView
                       cadManager={this.app.cadManager}
+                      app={this.app}
                       actionManager={this.app.actionManager}
                       socket={this.app.socket}
                       />
@@ -121,12 +122,6 @@ module.exports = Backbone.Router.extend({
                 </div>
         , document.getElementById('primary-view'), function () {
             // Dispatch setModel to the CADManager
-            self.app.cadManager.dispatchEvent({
-                type: 'setModel',
-                path: 'cutter',
-                baseURL: self.app.services.api_endpoint + self.app.services.version,
-                modelType: undefined
-            });
         });
     },
 
