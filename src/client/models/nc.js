@@ -5,6 +5,8 @@
 
 
 import Assembly from './assembly';
+import Annotation          from './annotation';
+import DataLoader from './data_loader'
 
 /*************************************************************************/
 
@@ -89,11 +91,23 @@ export default class NC extends THREE.EventDispatcher {
                     //color: 0xffffff,
                     linewidth: 1
                 });
+                model._addedGeometry = [];
                 for (let i = 0; i < lineGeometries.length; i++) {
                     let lines = new THREE.Line(lineGeometries[i], material);
                     lines.visible = true;
                     obj.annotation3D.add(lines);
+                    model._addedGeometry.push(lines);
                 }
+            });
+            model.addEventListener("annotationMakeVisible", (event)=>{
+              _.each(model._addedGeometry, (line)=>{
+                obj.annotation3D.add(line);
+              });
+            });
+            model.addEventListener("annotationMakeNonVisible", (event)=>{
+              _.each(model._addedGeometry, (line)=>{
+                obj.annotation3D.remove(line);
+              });
             });
         }
     }
@@ -209,21 +223,59 @@ export default class NC extends THREE.EventDispatcher {
     applyDelta(delta) {
         let self = this;
         let alter = false;
-        // Handle each geom update in the delta
-        _.each(delta.geom, function(geom) {
-            let obj = self._objects[geom.id];
-            let transform = new THREE.Matrix4();
-            transform.fromArray(geom.xform);
-            //let inverse = obj.transform.getInverse();
-            obj.transform.copy(transform);
-            //console.log(obj.transform);
-            obj.object3D.position.set(geom.xform[12], geom.xform[13], geom.xform[14]);
-            //obj.object3D.applyMatrix(transform);
-            //console.log(obj.object3D.matrix);
-            //obj.object3D.updateMatrix();
-            //console.log('tick');
-            alter = true;
-        });
+        if (!_.every(delta.geom, (geom) => geom.usage == "cutter")){
+          console.log("Toolpath change");
+          // this._loader.annotations = {};
+          var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath');
+          // console.log(toolpaths);
+          // _.chain(delta.geom)
+          //  .filter((geom) => geom.usage == 'toolpath')
+          var annotations =_.values(this._loader._annotations);
+          _.each(annotations, (annotation) => {
+            annotation.removeFromScene();
+          });
+           _.each(toolpaths, (geomData) => {
+             let name = geomData.polyline.split('.')[0];
+             if (!this._loader._annotations[name]){
+               let annotation = new Annotation(geomData.id, this, this);
+               let transform = DataLoader.parseXform(geomData.xform, true);
+               this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
+               // Push the annotation for later completion
+               this._loader._annotations[name] = annotation;
+               this._loader.addRequest({
+                   path: name,
+                   baseURL: "/v1/nc/moldy",
+                   type: "annotation"
+               });
+             }else{
+               this._loader._annotations[name].addToScene();
+             }
+           });
+           this._loader.runLoadQueue();
+           alter = true;
+            //  let lineGeometries = event.annotation.getGeometry();
+        }else{
+          // Handle each geom update in the delta
+          _.each(delta.geom, function(geom) {
+            if (!window.geom || window.geom.length < 100){
+              window.geom = window.geom || [];
+              window.geom.push(geom);
+            }
+              let obj = self._objects[geom.id];
+              let transform = new THREE.Matrix4();
+              if (!geom.xform) return;
+              transform.fromArray(geom.xform);
+              //let inverse = obj.transform.getInverse();
+              obj.transform.copy(transform);
+              //console.log(obj.transform);
+              obj.object3D.position.set(geom.xform[12], geom.xform[13], geom.xform[14]);
+              //obj.object3D.applyMatrix(transform);
+              //console.log(obj.object3D.matrix);
+              //obj.object3D.updateMatrix();
+              //console.log('tick');
+              alter = true;
+          });
+        }
         return alter;
     }
 

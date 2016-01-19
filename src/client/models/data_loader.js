@@ -114,6 +114,7 @@ export default class DataLoader extends THREE.EventDispatcher {
 
     load(req, callback) {
         req.base = req.baseURL + '/' + req.type + '/' + req.path;
+        console.log(req.baseURL);
         this.addRequest(req, function(err, model) {
             callback(err, model);
         });
@@ -291,6 +292,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 // Push the annotation for later completion
                 let name = geomData.polyline.split('.')[0];
                 self._annotations[name] = annotation;
+                // console.log("ASDASD", req.base);
                 self.addRequest({
                     path: name,
                     baseURL: req.base,

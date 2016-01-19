@@ -65,6 +65,13 @@ export default class Annotation extends THREE.EventDispatcher {
         this.dispatchEvent({ type: "annotationEndLoad", annotation: this });
     }
 
+    addToScene(){
+      this.dispatchEvent({ type: "annotationMakeVisible", annotation: this });
+    }
+    removeFromScene(){
+      this.dispatchEvent({ type: "annotationMakeNonVisible", annotation: this });
+    }
+
     getGeometry() {
         return this._lines;
     }

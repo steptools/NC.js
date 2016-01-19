@@ -164,6 +164,10 @@ export default class CADManager extends THREE.EventDispatcher {
 
     onDelta(delta) {
         let self = this;
+        if (!window.deltas || window.deltas.length < 1000){
+          window.deltas = window.deltas || [];
+          window.deltas.push(delta);
+        }
         let keys = _.keys(this._models);
         _.each(keys, function(key) {
             let model = self._models[key];

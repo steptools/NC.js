@@ -85,7 +85,7 @@ APIServer.prototype._setSocket = function() {
 
     // Wait on the redis pubSub and relay to clients
     redisPubSubClient.on('message',  function (channel, message) {
-        console.log('nc:delta: ' + message);
+        //console.log('nc:delta: ' + message);
         var msg = JSON.parse(message);
         self.ioServer.emit('nc:delta', msg);
     });
