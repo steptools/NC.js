@@ -4,7 +4,7 @@
 "use strict";
 
 
-var _           = require('lodash');
+let _           = require('lodash');
 import DataLoader  from './data_loader';
 
 /*************************************************************************/
@@ -29,10 +29,11 @@ export default class CADManager extends THREE.EventDispatcher {
 
     // Load a new assembly request
     load(req) {
-        var self = this;
+        let self = this;
+        // Default the model type to assembly
         req.type = req.modelType ? req.modelType : 'assembly';
         delete req.modelType;
-        // Initialize the assembly
+        // Load the model
         this._loader.load(req, function(err, model) {
             if (err) {
                 console.log('CADManager.load error: ' + err);
@@ -52,25 +53,25 @@ export default class CADManager extends THREE.EventDispatcher {
         // TODO: Do we need to implement this?
         // Reset all models to be centered on the origin
         //if (this._product) {
-        //    var bbox = this._product.getBoundingBox();
+        //    let bbox = this._product.getBoundingBox();
         //    if (!bbox.empty()) {
-        //        var x = (bbox.max.x + bbox.min.x) / -2.0;
-        //        var y = (bbox.max.y + bbox.min.y) / -2.0;
-        //        var z = (bbox.max.z + bbox.min.z) / -2.0;
+        //        let x = (bbox.max.x + bbox.min.x) / -2.0;
+        //        let y = (bbox.max.y + bbox.min.y) / -2.0;
+        //        let z = (bbox.max.z + bbox.min.z) / -2.0;
         //        this._product.applyMatrix(new THREE.Matrix4().makeTranslation(x, y, z));
         //    }
         //}
     }
 
     bindEvents() {
-        var self = this;
+        let self = this;
         // Set up handling of load events - pass them from the data-loader on
-        var loaderEventHandler = function(event) {
+        let loaderEventHandler = function(event) {
             self.dispatchEvent(event);
         };
 
-        var modelsEventHandler = function(event) {
-            var keys = _.keys(this._models);
+        let modelsEventHandler = function(event) {
+            let keys = _.keys(this._models);
             _.each(keys, function(key) {
                 self._models[key].dispatchEvent(event);
             });
@@ -80,11 +81,12 @@ export default class CADManager extends THREE.EventDispatcher {
         this._loader.addEventListener("loadComplete",   loaderEventHandler);
         this._loader.addEventListener("parseComplete",  loaderEventHandler);
         this._loader.addEventListener("shellLoad",      loaderEventHandler);
+        this._loader.addEventListener("annotationLoad", loaderEventHandler);
         this._loader.addEventListener("workerFinish",   loaderEventHandler);
         this._loader.addEventListener("loadProgress",   loaderEventHandler);
         // Listen for someone asking for stuff
-        this.addEventListener("clear:selected",         modelsEventHandler);
-        this.addEventListener("clear:highlights",       modelsEventHandler);
+        this.addEventListener("model",                  modelsEventHandler);
+        this.addEventListener("selected",               modelsEventHandler);
 
         // Setup socket callbacks
         this.onDelta = this.onDelta.bind(this);
@@ -93,25 +95,55 @@ export default class CADManager extends THREE.EventDispatcher {
         }
     }
 
-    clearSelected() {
-        this.dispatchEvent({ type: 'clear:selected' });
+    clear() {
+        console.log('Clear everything');
+        this.dispatchEvent({
+            type:   'model',
+            action: 'reset'
+        });
     }
 
-    clearHighlights() {
-        this.dispatchEvent({ type: 'clear:highlights' });
+    clearSelected(preselected) {
+        // Toggle selected state of all selected objects
+        let selected = preselected ? preselected : this.getSelected();
+        _.each(selected, function(selection) {
+            selection.toggleSelection();
+        });
     }
 
-    toggleOpacity() {}
+    toggleOpacity(preselected) {
+        let selected = preselected ? preselected : this.getSelected();
+        _.each(selected, function(selection) {
+            selection.toggleOpacity();
+        });
+    }
 
-    toggleVisibility() {}
+    toggleVisibility(preselected) {
+        let selected = preselected ? preselected : this.getSelected();
+        _.each(selected, function(selection) {
+            selection.toggleVisibility();
+        });
+    }
 
-    explode(step) {}
+    explode(step) {
+        let selected = this.getSelected();
+        _.each(selected, function(selection) {
+            selection.explode(step);
+        });
+    }
 
-    getSelected() { return []; }
+    getSelected() {
+        let self = this;
+        let keys = _.keys(this._models);
+        let selected = _.map(keys, function(key) {
+            return self._models[key].getSelected()
+        });
+        return _.flatten(selected);
+    }
 
     getTree() {
         // TODO: Needs to handle multiple models at once
-        var keys = _.keys(this._models);
+        let keys = _.keys(this._models);
         return keys.length > 0 ? this._models[keys[0]].getTree(keys[0]) : {};
     }
 
@@ -131,10 +163,10 @@ export default class CADManager extends THREE.EventDispatcher {
     }
 
     onDelta(delta) {
-        var self = this;
-        var keys = _.keys(this._models);
+        let self = this;
+        let keys = _.keys(this._models);
         _.each(keys, function(key) {
-            var model = self._models[key];
+            let model = self._models[key];
             if (model.project === delta.project) {
                 if (model.applyDelta(delta)) {
                     // Only redraw if there were changes

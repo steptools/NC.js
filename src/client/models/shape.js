@@ -11,20 +11,12 @@ import Assembly from './assembly';
 export default class Shape extends THREE.EventDispatcher {
     constructor(id, assembly, parent, transform, unit) {
         super();
-        var ret = assembly.makeChild(id, this);
+        let ret = assembly.makeChild(id, this);
         this._id = id;
         this._assembly = assembly;
         this._parent = parent;
         this._unit = unit;
         this._instances = [];
-        this.state = {
-            selected: false,
-            highlighted: false,
-            visible: true,
-            opacity: 1.0,
-            explodeDistance: 0
-        };
-        this.processModelEvent = this.processModelEvent.bind(this);
         if (!ret) {
             // If we are here, this is the first one
             this._instanceID = 0;
@@ -45,22 +37,17 @@ export default class Shape extends THREE.EventDispatcher {
             this.instance(ret, assembly, parent, transform);
             ret = this;
         }
-        this.modelWillMount();
+        // Setup the object state
+        this.state = {
+            selected:       false,
+            highlighted:    false,
+            visible:        true,
+            opacity:        1.0,
+            explodeDistance: 0,
+            collapsed:      this._instanceID === 0
+        };
+        // Ready to go
         return ret;
-    }
-
-    modelWillMount() {
-        // Handle broadcast events
-        var self = this;
-        this._assembly.addEventListener('opacity', function() {
-            if (self.state.selected) self.toggleTransparency()
-        });
-        this._assembly.addEventListener('visibility', function() {
-            if (self.state.selected) self.toggleVisibility();
-        });
-        this._assembly.addEventListener('explode', function(event) {
-            if (self.state.selected) self.explode(event.step);
-        });
     }
 
     instance(source, assembly, parent, transform) {
@@ -79,11 +66,11 @@ export default class Shape extends THREE.EventDispatcher {
         this._annotations = source._annotations;
         // Need to clone all child shapes
         this._children = [];
-        var self = this;
-        for (var i = 0; i < source._children.length; i++) {
+        let self = this;
+        for (let i = 0; i < source._children.length; i++) {
             // Clone the child shape
-            var shapeID = source._children[i]._id;
-            var shape = new Shape(shapeID, this._assembly, this, source._children[i]._transform, this._unit);
+            let shapeID = source._children[i]._id;
+            let shape = new Shape(shapeID, this._assembly, this, source._children[i]._transform, this._unit);
             // Bubble the shapeLoaded event
             shape.addEventListener("shapeLoaded", function (event) {
                 self.dispatchEvent({type: "shapeLoaded", shell: event.shell});
@@ -97,7 +84,7 @@ export default class Shape extends THREE.EventDispatcher {
     }
 
     addChild(childShape) {
-        var self = this;
+        let self = this;
         this._children.push(childShape);
         // Bubble the shapeLoaded event
         childShape.addEventListener("shapeLoaded", function (event) {
@@ -110,19 +97,19 @@ export default class Shape extends THREE.EventDispatcher {
     }
 
     addAnnotation(annotation) {
-        var self = this;
+        let self = this;
         this._annotations.push(annotation);
         annotation.addEventListener("annotationEndLoad", function (event) {
-            var anno = event.annotation;
+            let anno = event.annotation;
             self.addAnnotationGeometry(anno.getGeometry());
         });
     }
 
     addShell(shell) {
-        var self = this;
+        let self = this;
         this._shells.push(shell);
         shell.addEventListener("shellEndLoad", function (event) {
-            var shell = event.shell;
+            let shell = event.shell;
             self.addShellGeometry(shell.getGeometry());
         });
     }
@@ -130,14 +117,14 @@ export default class Shape extends THREE.EventDispatcher {
     setProduct(product) {
         this._product = product;
         // Set the product for all instances
-        for (var i = 0; i < this._instances.length; i++) {
+        for (let i = 0; i < this._instances.length; i++) {
             this._instances[i].setProduct(product);
         }
     }
 
     addShellGeometry(geometry) {
-        var material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
-        var mesh = new THREE.SkinnedMesh(geometry, material, false);
+        let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
+        let mesh = new THREE.SkinnedMesh(geometry, material, false);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         mesh.userData = this;
@@ -146,12 +133,12 @@ export default class Shape extends THREE.EventDispatcher {
     }
 
     addAnnotationGeometry(lineGeometries) {
-        var material = new THREE.LineBasicMaterial({
+        let material = new THREE.LineBasicMaterial({
             color: 0xffffff,
             linewidth: 1
         });
-        for (var i = 0; i < lineGeometries.length; i++) {
-            var lines = new THREE.Line(lineGeometries[i], material);
+        for (let i = 0; i < lineGeometries.length; i++) {
+            let lines = new THREE.Line(lineGeometries[i], material);
             lines.visible = false;
             this._annotation3D.add(lines);
         }
@@ -174,33 +161,12 @@ export default class Shape extends THREE.EventDispatcher {
         return this._id + "_" + this._instanceID;
     }
 
-    getSize() {
-        if (!this._size) {
-            this._size = 0;
-            var i;
-            for (i = 0; i < this._shells.length; i++) {
-                this._size += this._shells[i].size;
-            }
-            for (i = 0; i < this._children.length; i++) {
-                this._size += this._children[i].getSize();
-            }
-        }
-        return this._size;
-    }
-
-    getLabel() {
-        if (this._product) {
-            return this._product.getProductName();
-        }
-        return "";
-    }
-
     getNamedParent(includeSelf) {
         if (includeSelf === undefined) includeSelf = true;
         if (includeSelf && this._product) {
             return this;
         } else {
-            var obj = this._parent;
+            let obj = this._parent;
             while (!obj.product && obj.parent) {
                 console.log(obj.getID());
                 obj = obj.parent;
@@ -211,8 +177,8 @@ export default class Shape extends THREE.EventDispatcher {
 
     getTree(root) {
         // Check if only geometry-aligned Shapes get added to tree
-        var children = [], tmpChild;
-        for (var i = 0; i < this._children.length; i++) {
+        let children = [], tmpChild;
+        for (let i = 0; i < this._children.length; i++) {
             tmpChild = this._children[i].getTree(root);
             if (tmpChild) {
                 children.push(tmpChild);
@@ -222,176 +188,153 @@ export default class Shape extends THREE.EventDispatcher {
         if (!this._product || this.boundingBox.empty()) {
             return undefined;
         } else {
-            var id = this.getID();
+            let id = this.getID();
             this.name = "Shape " + id;
             if (this._product) {
                 this.name = this._product.getProductName();
             }
             // Don't show children if this is an instance
             return {
-                id          : root + ':' + id,
-                text        : this.name,
-                collapsed   : this._instanceID === 0,
+                id:             root + ':' + id,
+                text:           this.name,
+                collapsed:      this.state.collapsed,
+                obj:            this,
                 state: {
-                    disabled: false,
-                    selected: this.state.selected
+                    selected:       this.state.selected,
+                    highlighted:    this.state.highlighted,
+                    visible:        this.state.visible,
+                    opacity:        this.state.opacity,
+                    explodeDistance:this.state.explodeDistance
                 },
-                children: children
+                children:       children
             };
         }
     }
 
     getBoundingBox(transform) {
         if (!this.boundingBox) {
-            var i;
+            let i;
             this.boundingBox = new THREE.Box3();
             for (i = 0; i < this._shells.length; i++) {
-                var shellBounds = this._shells[i].getBoundingBox(true);
+                let shellBounds = this._shells[i].getBoundingBox(true);
                 if (!shellBounds.empty()) this.boundingBox.union(shellBounds);
             }
             for (i = 0; i < this._children.length; i++) {
-                var childBounds = this._children[i].getBoundingBox(true);
+                let childBounds = this._children[i].getBoundingBox(true);
                 if (!childBounds.empty()) {
                     this.boundingBox.union(childBounds);
                 }
             }
         }
-        var bounds = this.boundingBox.clone();
+        let bounds = this.boundingBox.clone();
         if (transform && !bounds.empty()) {
             bounds.applyMatrix4(this._transform);
         }
         return bounds;
     }
 
-    processModelEvent(event) {
-        var [type, method] = event.type.split(':');
-        if (method === "selected" && this.state.selected) {
-            this.unselect();
-        // Clear highlight via event
-        } else if (method === "highlights" && this.state.highlighted) {
+    // Good
+    toggleVisibility() {
+        if (this.state.visible) {
+            this._object3D.traverse(function (object) {
+                object.visible = false;
+            });
+        } else {
+            this._object3D.traverse(function (object) {
+                object.visible = true;
+            });
+        }
+        this.state.visible = ! this.state.visible;
+        return this.state.visible;
+    }
+
+    // Good
+    toggleOpacity() {
+        let self = this;
+        function setOpacity(opacity) {
+            self.state.opacity = opacity;
+            self._object3D.traverse(function (object) {
+                if (object.material && object.material.uniforms.opacity) {
+                    object.material.transparent = opacity < 1;
+                    object.material.depthWrite = opacity === 1;
+                    object.material.uniforms['opacity'].value = opacity;
+                }
+            });
+        }
+
+        if (this.state.opacity === 0.5) {
+            setOpacity(1);
+        } else {
+            setOpacity(0.5);
+        }
+    }
+
+    // Good
+    toggleHighlight(colorHex) {
+        if (this.state.highlighted) {
             this._object3D.traverse(function (object) {
                 if (object.material && object.material.uniforms.tint) {
                     object.material.uniforms.tint.value.setW(0);
                 }
             });
-            this._assembly.removeEventListener("clear:highlights", this.processModelEvent);
-        }
-    }
-
-    toggleVisibility() {
-        if (this._object3D.visible) {
-            this.hide();
         } else {
-            this.show();
-        }
-        return this._object3D.visible;
-    }
-
-    isTransparent() {
-        // returns true if object or any children are transparent
-        var transparent = false,
-            testObject = function (object) {
-                if (!transparent && object.material && object.material.uniforms.opacity) {
-                    transparent = object.material.uniforms.opacity.value < 1;
+            this._object3D.traverse(function (object) {
+                if (object.material && object.material.uniforms.tint) {
+                    let color = new THREE.Color(colorHex);
+                    object.material.uniforms.tint.value.set(color.r, color.g, color.b, 0.3);
                 }
-            };
-        testObject(this._object3D);
-        if (!transparent) {
-            this._object3D.traverse(testObject);
+            });
         }
-        return transparent;
+        this.state.highlighted = !this.state.highlighted;
     }
 
-    toggleTransparency() {
-        if (this.isTransparent()) {
-            this.setOpacity(1);
-        } else {
-            this.setOpacity(0.5);
-        }
-    }
-
-    hide() {
-        this._object3D.traverse(function (object) {
-            object.visible = false;
+    // Good
+    getSelected() {
+        let selected = this.state.selected ? [this] : [];
+        // Process child shapes
+        let children = this._children.map(function(child) {
+            return child.getSelected();
         });
-        this.hideAnnotations();
+        return _.flatten(selected.concat(children));
     }
 
-    show() {
-        this._object3D.traverse(function (object) {
-            object.visible = true;
-        });
-        this.showAnnotations();
-    }
-
-    highlight(colorHex) {
-        var self = this;
-        this._object3D.traverse(function (object) {
-            if (object.material && object.material.uniforms.tint) {
-                self.state.highlighted = true;
-                var color = new THREE.Color(colorHex);
-                object.material.uniforms.tint.value.set(color.r, color.g, color.b, 0.3);
-            }
-        });
-        // Start listening for a clear message
-        this._assembly.addEventListener("clear:highlights", this.processModelEvent);
-    }
-
-    showAnnotations() {
-        this._annotation3D.traverse(function (object) {
-            object.visible = true;
-        });
-    }
-
-    hideAnnotations() {
-        this._annotation3D.traverse(function (object) {
-            object.visible = false;
-        });
-    }
-
-    setOpacity(opacity) {
-        this._object3D.traverse(function (object) {
-            if (object.material && object.material.uniforms.opacity) {
-                object.material.transparent = opacity < 1;
-                object.material.depthWrite = opacity === 1;
-                object.material.uniforms['opacity'].value = opacity;
-            }
-        });
-    }
-
+    // Good
     toggleSelection() {
         // On deselection
         if(this.state.selected) {
-            this.unselect();
+            // Hide the bounding box
+            this._overlay3D.remove(this.bbox);
+            // Hide annotations
+            this._annotation3D.traverse(function (object) {
+                object.visible = false;
+            });
         // On selection
         } else {
-            var bounds = this.getBoundingBox(false);
+            let bounds = this.getBoundingBox(false);
             if (!this.bbox && !bounds.empty()) {
                 this.bbox = Assembly.buildBoundingBox(bounds);
             }
             if (this.bbox) {
-                // Start listening for assembly clear events
-                this._assembly.addEventListener("clear:selected", this.processModelEvent);
                 // Add the BBox to our overlay object
                 this._overlay3D.add(this.bbox);
-                this.showAnnotations();
-                // Flip state
-                this.state.selected = true;
+                // Show annotations
+                this._annotation3D.traverse(function (object) {
+                    object.visible = true;
+                });
             }
         }
+        this.state.selected = !this.state.selected;
     }
 
-    unselect() {
-        this.state.selected = false;
-        // Stop listening for assembly clear events
-        this._assembly.removeEventListener("clear:selected", this.processModelEvent);
-        this._overlay3D.remove(this.bbox);
-        this.hideAnnotations();
+    // Good
+    toggleCollapsed() {
+        this.state.collapsed = !this.state.collapsed;
     }
 
+    // Find the geometric center of this shape
     getCentroid(world) {
         if (world === undefined) world = true;
-        var bbox = this.getBoundingBox(false);
+        let bbox = this.getBoundingBox(false);
         if (world) {
             bbox.min.applyMatrix4(this._object3D.matrixWorld);
             bbox.max.applyMatrix4(this._object3D.matrixWorld);
@@ -399,55 +342,42 @@ export default class Shape extends THREE.EventDispatcher {
         return bbox.center();
     }
 
-    explode(distance, timeS) {
-        var i, child;
+    // Good
+    explode(distance) {
+        let i, child;
         // Do we need to determine explosion direction
-        if (!this._explodeDistance) {
+        if (this.state.explodeDistance === 0) {
             this._explodeStates = {};
-            this._explodeDistance = 0;
-            timeS = timeS ? timeS : 1.0;
-            this._explodeStepSize = distance / 60.0 * timeS;
-            this._explodeStepRemain = 60.0 * timeS;
-            var explosionCenter = this.getCentroid(true);
+            let explosionCenter = this.getCentroid(true);
             for (i = 0; i < this._children.length; i++) {
                 child = this._children[i];
                 // Convert the objectCenter
-                var localExplosionCenter = explosionCenter.clone();
+                let localExplosionCenter = explosionCenter.clone();
                 child.getObject3D().worldToLocal(localExplosionCenter);
                 // Get the child's centroid in local frame
-                var childCenter = child.getCentroid(false);
-                var childDirection = new THREE.Vector3().copy(childCenter);
+                let childCenter = child.getCentroid(false);
+                let childDirection = new THREE.Vector3().copy(childCenter);
                 // Calculate explosion direction vector in local frame and save it
-                childDirection.sub(localExplosionCenter).normalize();
-                this._explodeStates[child.getID()] = childDirection;
+                childDirection.sub(localExplosionCenter);
+                let normChildDirection;
+                // Don't explode things that are centrally located
+                if (childDirection.length() < 5.0) {
+                    normChildDirection = new THREE.Vector3();
+                } else {
+                    normChildDirection = childDirection.clone().normalize();
+                }
+                this._explodeStates[child.getID()] = normChildDirection;
 //                this._object3D.add( new THREE.ArrowHelper(childDirection, childCenter, 1000.0, 0xff0000, 20, 10) );
             }
         }
         // Make sure explosion distance does not go negative
-        if (this._explodeDistance + distance < 0) {
-            distance = -this._explodeDistance;
-        }
+        distance = Math.max(distance, -this.state.explodeDistance);
         // Now, do the explosion
-        this._explodeDistance += distance;
-//    console.log("Exploded Distance: " + this._explodeDistance);
+        this.state.explodeDistance += distance;
         for (i = 0; i < this._children.length; i++) {
             child = this._children[i];
-            var explosionDirection = this._explodeStates[child.getID()];
+            let explosionDirection = this._explodeStates[child.getID()];
             child.translateOnAxis(explosionDirection, distance);
-        }
-        // Clean up after myself
-        if (this._explodeDistance === 0) {
-            this.resetExplode();
-        }
-    }
-
-    resetExplode() {
-        if (this._explodeDistance) {
-            // Explode by the negative distance
-            this.explode(-this._explodeDistance);
-            this._explodeDistance = undefined;
-            this._explodeStates = undefined;
-            this._exploseStep = undefined;
         }
     }
 

@@ -55,30 +55,23 @@
 
  */
 
-var DEBUG = true;
+var DEBUG = false;
 
 var assert = !DEBUG
-    ? function () {
-}
+    ? function () {}
     : function (val, str) {
-    if (str === void 0) {
-        str = "failed!";
-    }
-    if (!val) {
-        throw("assert: " + str);
-    }
-};
-
-var global = this;
+        if (str === void 0) {
+            str = "failed!";
+        }
+        if (!val) {
+            throw("assert: " + str);
+        }
+    };
 
 var TYSON = (function () {
 
-    var Core = function Core (stdlib, imports, heap) {
-
-        "use asm";
-
+    var Core = function Core (imports, heap) {
         // BEGIN SNIP
-
         var pos = 0;
         var bytesU8 = new Uint8Array(heap);
         var bytesD32 = new Float32Array(heap);
@@ -586,7 +579,7 @@ var TYSON = (function () {
             }
 
         };
-        var core = Core(global, imports, buffer);
+        var core = Core(imports, buffer);
 
         function decode () {
             core.decode();
@@ -656,8 +649,6 @@ function unindexValues(data, buffers) {
         buffers.position[i] = data.values[data.pointsIndex[i]];
         buffers.normals[i] = data.values[data.normalsIndex[i]];
     }
-    //delete data.pointsIndex;
-    //delete data.normalsIndex;
 }
 
 function uncompressColors(data, colorsBuffer) {
@@ -671,7 +662,6 @@ function uncompressColors(data, colorsBuffer) {
             colorsBuffer[index++] = block.data[2];
         }
     }
-    //delete data.colorsData;
 }
 
 function processShellJSON(url, workerID, dataJSON, signalFinish) {
@@ -770,8 +760,21 @@ self.addEventListener("message", function(e) {
                 processAnnotation(url, workerID, xhr.responseText);
                 break;
             case "shell":
-                // Parse the JSON file
-                var dataJSON = JSON.parse(xhr.responseText);
+                // Try to parse the JSON file
+                let dataJSON;
+                try {
+                     dataJSON = JSON.parse(xhr.responseText);
+                } catch(ex) {
+                    console.log(ex);
+                    console.log(xhr.responseText);
+                    dataJSON = {
+                        precision:      2,
+                        pointsIndex:    [],
+                        normalsIndex:   [],
+                        colorsData:     [],
+                        values:         []
+                    };
+                }
                 self.postMessage({
                     type: "parseComplete",
                     file: parts[parts.length - 1]

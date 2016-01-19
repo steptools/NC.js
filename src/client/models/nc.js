@@ -4,6 +4,8 @@
 "use strict";
 
 
+import Assembly from './assembly';
+
 /*************************************************************************/
 
 export default class NC extends THREE.EventDispatcher {
@@ -19,20 +21,38 @@ export default class NC extends THREE.EventDispatcher {
         this._object3D = new THREE.Object3D();
         this._overlay3D = new THREE.Object3D();
         this._annotation3D = new THREE.Object3D();
+        this.state = {
+            selected:       false,
+            highlighted:    false,
+            visible:        true,
+            opacity:        1.0,
+            explodeDistance: 0,
+            collapsed:      false
+        }
     }
 
-    addModel(model, type, id, transform, bbox) {
-        var asisOpacity = 0.15;
-        console.log('Add Model(' + type + '): ' + id);
-        var self = this;
+    addModel(model, usage, type, id, transform, bbox) {
+        let asisOpacity = 0.15;
+        console.log('Add Model(' + usage + '): ' + id);
+        let self = this;
         // Setup 3D object holder
-        var obj = {
+        let obj = {
             model: model,
+            usage: usage,
             type: type,
             id: id,
             object3D: new THREE.Object3D(),
             transform: (new THREE.Matrix4()).copy(transform),
-            bbox: bbox
+            bbox: bbox,
+            getID: function() { return this.id; },
+            getNamedParent: function() { return this },
+            getBoundingBox: function() { return this },
+            toggleHighlight: function() { },
+            toggleVisibility: function() { },
+            toggleOpacity: function() { },
+            toggleSelection: function() { },
+            toggleCollapsed: function() { },
+            explode: function() { }
         };
         obj.object3D.applyMatrix(obj.transform);
         obj.overlay3D = obj.object3D.clone();
@@ -42,16 +62,16 @@ export default class NC extends THREE.EventDispatcher {
         this._object3D.add(obj.object3D);
         this._overlay3D.add(obj.overlay3D);
         this._annotation3D.add(obj.annotation3D);
-        if (type === 'tobe' || type == 'asis' || type === 'cutter') {
-            model.addEventListener("shellEndLoad", function (event) {
-                var material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
-                var mesh = new THREE.SkinnedMesh(event.shell.getGeometry(), material, false);
+        if (type === 'shell') {
+            model.addEventListener('shellEndLoad', function (event) {
+                let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
+                let mesh = new THREE.SkinnedMesh(event.shell.getGeometry(), material, false);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
-                mesh.userData = self;
+                mesh.userData = obj;
                 obj.object3D.add(mesh);
                 // Dim the asis
-                if (type === 'asis' && asisOpacity !== 1.0) {
+                if (usage === 'asis' && asisOpacity !== 1.0) {
                     obj.object3D.traverse(function (object) {
                         if (object.material && object.material.uniforms.opacity) {
                             object.material.transparent = true;
@@ -61,15 +81,16 @@ export default class NC extends THREE.EventDispatcher {
                     });
                 }
             });
-        } else if (type === 'toolpath') {
-            model.addEventListener("annotationEndLoad", function(event) {
-                var lineGeometries = event.annotation.getGeometry();
-                var material = new THREE.LineBasicMaterial({
-                    color: 0xffffff,
+        } else if (type === 'polyline') {
+            model.addEventListener('annotationEndLoad', function(event) {
+                let lineGeometries = event.annotation.getGeometry();
+                let material = new THREE.LineBasicMaterial({
+                    vertexColors: THREE.VertexColors,
+                    //color: 0xffffff,
                     linewidth: 1
                 });
-                for (var i = 0; i < lineGeometries.length; i++) {
-                    var lines = new THREE.Line(lineGeometries[i], material);
+                for (let i = 0; i < lineGeometries.length; i++) {
+                    let lines = new THREE.Line(lineGeometries[i], material);
                     lines.visible = true;
                     obj.annotation3D.add(lines);
                 }
@@ -82,7 +103,7 @@ export default class NC extends THREE.EventDispatcher {
         //if (!id) {
         //    throw new Error("null id");
         //}
-        //var ret = this._objects[id];
+        //let ret = this._objects[id];
         //if (ret) {
         //    return ret;
         //}
@@ -103,13 +124,13 @@ export default class NC extends THREE.EventDispatcher {
     };
 
     getBoundingBox() {
-        var self = this;
+        let self = this;
         if (!this.boundingBox) {
             this.boundingBox = new THREE.Box3();
-            var keys = _.keys(this._objects);
+            let keys = _.keys(this._objects);
             _.each(keys, function(key) {
-                var object = self._objects[key];
-                if (object.type !== 'toolpath') {
+                let object = self._objects[key];
+                if (object.type !== 'polyline') {
                     self.boundingBox.union(object.bbox);
                 }
             });
@@ -118,20 +139,24 @@ export default class NC extends THREE.EventDispatcher {
     }
 
     getTree(root) {
-        var node = {
-            id          : root,
-            text        : this.project,
-            collapsed   : false,
-            state       : {
-                disabled  : false,
-                selected  : false
+        let node = {
+            id:                 root,
+            text:               this.project,
+            collapsed:          this.state.collapsed,
+            obj:                this,
+            state: {
+                selected:       this.state.selected,
+                highlighted:    this.state.highlighted,
+                visible:        this.state.visible,
+                opacity:        this.state.opacity,
+                explodeDistance:this.state.explodeDistance
             },
             children    : []
         };
         // Gen tree for all children
-        var keys = _.keys(this._objects);
+        let keys = _.keys(this._objects);
         _.each(keys, function(key) {
-            var tmpNode = {
+            let tmpNode = {
                 id          : key,
                 text        : key,
                 collapsed   : false,
@@ -153,31 +178,21 @@ export default class NC extends THREE.EventDispatcher {
         this.dispatchEvent({ type: "_hideBounding" });
     }
 
-    getNamedParent(includeSelf) {
-        return undefined;
-        if (includeSelf === undefined) includeSelf = true;
-        if (includeSelf && this._product) {
-            return this;
-        } else {
-            //var obj = this._parent;
-            //while (!obj.product && obj.parent) {
-            //    obj = obj.parent;
-            //}
-            //return obj;
-        }
+    getNamedParent() {
+        return this;
     }
 
     select(camera, mouseX, mouseY) {
-        var mouse = new THREE.Vector2();
+        let mouse = new THREE.Vector2();
         mouse.x = (mouseX / window.innerWidth) * 2 - 1;
         mouse.y = -(mouseY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(mouse, camera);
-        var intersections = this.raycaster.intersectObjects(this._object3D.children, true);
+        let intersections = this.raycaster.intersectObjects(this._object3D.children, true);
         // Did we hit anything?
-        var object = undefined;
+        let object = undefined;
         if (intersections.length > 0) {
-            var hit = undefined;
-            for (var i = 0; i < intersections.length; i++) {
+            let hit = undefined;
+            for (let i = 0; i < intersections.length; i++) {
                 if (intersections[i].object.visible) {
                     if (!hit || intersections[i].distance < hit.distance) {
                         hit = intersections[i];
@@ -188,18 +203,18 @@ export default class NC extends THREE.EventDispatcher {
                 object = hit.object.userData;
             }
         }
-        return undefined;
+        return object;
     }
 
     applyDelta(delta) {
-        var self = this;
-        var alter = false;
+        let self = this;
+        let alter = false;
         // Handle each geom update in the delta
         _.each(delta.geom, function(geom) {
-            var obj = self._objects[geom.id];
-            var transform = new THREE.Matrix4();
+            let obj = self._objects[geom.id];
+            let transform = new THREE.Matrix4();
             transform.fromArray(geom.xform);
-            //var inverse = obj.transform.getInverse();
+            //let inverse = obj.transform.getInverse();
             obj.transform.copy(transform);
             //console.log(obj.transform);
             obj.object3D.position.set(geom.xform[12], geom.xform[13], geom.xform[14]);
@@ -211,4 +226,32 @@ export default class NC extends THREE.EventDispatcher {
         });
         return alter;
     }
+
+    getSelected() { return this; }
+    getID() { return this.id; }
+    toggleHighlight() { }
+    toggleVisibility() { }
+    toggleOpacity() { }
+
+    toggleSelection() {
+        // On deselection
+        if(this.state.selected) {
+            // Hide the bounding box
+            this._overlay3D.remove(this.bbox);
+            // On selection
+        } else {
+            let bounds = this.getBoundingBox(false);
+            if (!this.bbox && !bounds.empty()) {
+                this.bbox = Assembly.buildBoundingBox(bounds);
+            }
+            if (this.bbox) {
+                // Add the BBox to our overlay object
+                this._overlay3D.add(this.bbox);
+            }
+        }
+        this.state.selected = !this.state.selected;
+    }
+
+    toggleCollapsed() { }
+    explode() { }
 }

@@ -21,25 +21,34 @@ export default class ModelTreeView extends React.Component {
         this.setState({ tree: nextProps.tree });
     }
 
-    onClickNode(node, event) {
-        this.props.dispatcher.dispatchEvent({
-            type: 'select',
-            id: node.id,
-            meta: event.metaKey
-        });
+    onMouseEnter(node) {
+        if (this.props.onNodeEnter) this.props.onNodeEnter(node);
+    }
+
+    onMouseLeave(node) {
+        if (this.props.onNodeLeave) this.props.onNodeLeave(node);
     }
 
     renderNode(node) {
-        //console.log(this);
-        var cName = 'node';
+        let self = this;
+        let cName = 'node';
         cName += (node.state && node.state.selected) ? ' is-active' : '';
+        cName += (node.state && node.state.highlighted) ? ' is-highlighted' : '';
+        cName += (node.state && !node.state.visible) ? ' is-hidden' : '';
+        let exp = undefined;
+        if (node.state && node.state.explodeDistance > 0) {
+            let text = ' (' + node.state.explodeDistance + ')';
+            exp = <span className="exp-distance">{text}</span>;
+        }
         return <span
             id={node.id}
             className={cName}
-            onClick={this.onClickNode.bind(this, node)}
-            onMouseDown={function(e){e.stopPropagation()}}
+            onClick={function(e){ self.props.onClick(node, e); }}
+            onMouseEnter={this.onMouseEnter.bind(this, node)}
+            onMouseLeave={this.onMouseLeave.bind(this, node)}
+            onMouseDown={function(e){ e.stopPropagation(); }}
         >
-            {node.text}
+            {node.text}{exp}
         </span>;
     }
 
@@ -49,14 +58,18 @@ export default class ModelTreeView extends React.Component {
                 <span />
             </div>
             <Tree
-                paddingLeft={20}              // left padding for children nodes in pixels
-                tree={this.state.tree}        // tree object
-                renderNode={this.renderNode}  // renderNode(node) return react element
+                paddingLeft={20}                // left padding for children nodes in pixels
+                tree={this.state.tree}          // tree object
+                onChange={this.props.onChange}  // Pass along change events
+                renderNode={this.renderNode}    // renderNode(node) return react element
             />
         </div>;
     }
 }
 
 ModelTreeView.propTypes = {
-    dispatcher: React.PropTypes.object.isRequired
+    onClick:        React.PropTypes.func.isRequired,
+    onNodeEnter:    React.PropTypes.func,
+    onNodeLeave:    React.PropTypes.func,
+    onChange:       React.PropTypes.func
 };

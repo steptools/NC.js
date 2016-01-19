@@ -12,6 +12,7 @@ import HeaderView           from './views/header';
 import SidebarView           from './views/sidebar';
 // import SidebarView           from './views/sidebar';
 var qs                      = require('qs');
+const queryString =         require('query-string');
 
 /*************************************************************************/
 
@@ -78,8 +79,8 @@ module.exports = Backbone.Router.extend({
             // Redirect to Login if auth required and not done
             this.navigate('login', { trigger: true });
         } else {
-            query = qs.parse(query);
-            var self = this;
+            query = queryString.parse(query);
+            let self = this;
             // Render the root CAD view
             ReactDOM.render(<CADView
                 manager={this.app.cadManager}
