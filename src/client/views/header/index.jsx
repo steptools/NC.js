@@ -98,6 +98,9 @@ export default class HeaderView extends React.Component {
 
     viewMenuItemClicked(info){
       switch (info.key){
+        case "toleranceTree":
+        this.props.actionManager.emit("open-tolerance-tree");
+        break;
       }
     }
 
@@ -124,6 +127,7 @@ export default class HeaderView extends React.Component {
           </Menu> : null}
           {this.state.openMenu == 'view-menu' ?
           <Menu mode='horizontal' onClick={this.viewMenuItemClicked} className='bottom-menu'>
+            <MenuItem tooltip='View Tolerance Tree' key='toleranceTree'><ButtonImage icon='tree-deciduous'/>Tolerances</MenuItem>
           </Menu> : null}
           {this.state.openMenu == 'debug-menu' ?
           <Menu mode='horizontal' onClick={this.debugMenuItemClicked} className='bottom-menu'>

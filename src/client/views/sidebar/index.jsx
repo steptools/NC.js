@@ -2,6 +2,7 @@ import React from 'react';
 import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
 import LoadProjectView from './loadproject';
+import ToleranceTreeView from './tolerancetree';
 import ReactTooltip from 'react-tooltip';
 var MenuItem = Menu.Item;
 
@@ -21,6 +22,7 @@ export default class SidebarView extends React.Component {
         this.renderNode = this.renderNode.bind(this);
         this.openLoadProjectMenu = this.openLoadProjectMenu.bind(this);
         this.onProjectSelected = this.onProjectSelected.bind(this);
+        this.openToleranceTree = this.openToleranceTree.bind(this);
 
         var self = this;
         this.props.socket.on('modeltree', (items)=>{
@@ -50,6 +52,7 @@ export default class SidebarView extends React.Component {
         this.props.actionManager.on('open-load-project-menu',  this.openLoadProjectMenu);
         this.props.actionManager.on('open-new-project-menu', disabledView('New Project'));
         this.props.actionManager.on('open-save-project-menu', disabledView('Save Project'));
+        this.props.actionManager.on('open-tolerance-tree', this.openToleranceTree);
         this.props.actionManager.on('project-selected', this.onProjectSelected);
     }
 
@@ -64,6 +67,14 @@ export default class SidebarView extends React.Component {
     openObjectTree(){
       this.setState({
         mode: 'tree'
+      });
+    }
+
+    openToleranceTree(){
+      this.setState({
+        "mode": "tolerance-tree",
+        "altmode": "tolerance-tree",
+        "altmenu": "Tolerance Tree"
       });
     }
 
@@ -131,6 +142,9 @@ export default class SidebarView extends React.Component {
                   : null}
                   {this.state.mode == 'load-project' ?
                   <LoadProjectView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
+                  : null}
+                  {this.state.mode == 'tolerance-tree' ?
+                  <ToleranceTreeView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
                   : null}
                   {this.state.mode == "disabled" ?
                   <div className='disabled-view'> {this.state.altmenu} is currently disabled.</div>
