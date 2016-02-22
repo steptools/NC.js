@@ -7,6 +7,7 @@
 import Assembly from './assembly';
 import Annotation          from './annotation';
 import DataLoader from './data_loader'
+import Shell from './shell'
 
 /*************************************************************************/
 
@@ -50,7 +51,9 @@ export default class NC extends THREE.EventDispatcher {
             getNamedParent: function() { return this },
             getBoundingBox: function() { return this },
             toggleHighlight: function() { },
-            toggleVisibility: function() { },
+            toggleVisibility: function() {this.object3D.visible = !this.object3D.visible; },
+            setInvisible: function() {this.object3D.visible = false; },
+            setVisible: function() {this.object3D.visible = true; },
             toggleOpacity: function() { },
             toggleSelection: function() { },
             toggleCollapsed: function() { },
@@ -223,17 +226,24 @@ export default class NC extends THREE.EventDispatcher {
     applyDelta(delta) {
         let self = this;
         let alter = false;
-        if (!_.every(delta.geom, (geom) => geom.usage == "cutter")){
-          console.log("Toolpath change");
+        //Two types of changes- Keyframe and delta.
+        //Keyframe doesn't have a 'prev' property.
+        if (!delta.prev){
+          //For keyframes, we need to remove current toolpaths/cutters and load new ones.
+          console.log("Keyframe recieved");
           // this._loader.annotations = {};
-          var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath');
-          // console.log(toolpaths);
-          // _.chain(delta.geom)
-          //  .filter((geom) => geom.usage == 'toolpath')
-          var annotations =_.values(this._loader._annotations);
-          _.each(annotations, (annotation) => {
-            annotation.removeFromScene();
+
+          // Delete existing cutters and toolpaths.
+          var oldcutters = _.filter(_.values(self._objects), (geom) => geom.usage =="cutter");
+          _.each(oldcutters,(cutter)=>cutter.setInvisible());
+          var oldannotations =_.values(this._loader._annotations);
+          _.each(oldannotations, (oldannotation) => {
+            oldannotation.removeFromScene();
           });
+
+            //Load new cutters and toolpaths.
+            var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath');
+            var cutters = _.filter(delta.geom, (geom) => geom.usage =='cutter');
            _.each(toolpaths, (geomData) => {
              let name = geomData.polyline.split('.')[0];
              if (!this._loader._annotations[name]){
@@ -251,11 +261,34 @@ export default class NC extends THREE.EventDispatcher {
                this._loader._annotations[name].addToScene();
              }
            });
+
+           _.each(cutters, (geomData)=>{
+               let name = geomData.shell.split('.')[0];
+               if(self._objects[geomData.id]) {
+                   self._objects[geomData.id].setVisible();
+               }
+               else {
+                   let color = DataLoader.parseColor("7d7d7d");
+                   let transform = DataLoader.parseXform(geomData.xform,true);
+                   let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
+                   let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);
+                   this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
+                   this._loader._shells[geomData.shell]=shell;
+                   this._loader.addRequest({
+                       path: name,
+                       baseURL: "/v1/nc/moldy",
+                       type: "shell"
+                   })
+                   //this.addModel(geomData,geomData.usage,'cutter',)
+               }
+           });
            this._loader.runLoadQueue();
            alter = true;
             //  let lineGeometries = event.annotation.getGeometry();
-        }else{
+        }
+        else{
           // Handle each geom update in the delta
+          // This is usually just a tool movement.
           _.each(delta.geom, function(geom) {
             if (!window.geom || window.geom.length < 100){
               window.geom = window.geom || [];
