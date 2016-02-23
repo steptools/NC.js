@@ -86,8 +86,15 @@ APIServer.prototype._setSocket = function() {
     // Wait on the redis pubSub and relay to clients
     redisPubSubClient.on('message',  function (channel, message) {
         //console.log('nc:delta: ' + message);
-        var msg = JSON.parse(message);
+        var msg = JSON.parse(message);		
         self.ioServer.emit('nc:delta', msg);
+		if(!msg.prev) { //Message is a state update, we have to cache it locally.
+		//This should check the project, 
+		//but JOE NAMES EVERY PROJECT THE SAME THING.
+		//For now, assume only serving moldy.
+		//TODO FIXME 
+			app.MostCurrentState = msg;
+		}
     });
 };
 

@@ -25,9 +25,16 @@ var _fetch = function(req, res) {
         filename = req.params.annoId + '.json';
         app.logger.debug('NC Annotation: ' + filename);
     } else if (req.params.ncId) {
-        dirPath = path.join(rootDir, req.params.ncId);
         filename = 'state.json';
         app.logger.debug('NC: ' + filename);
+		if(app.MostCurrentState)
+		{
+			app.logger.debug('NC: newer state in memory');
+			res.status(200).send(app.MostCurrentState);
+			return;
+		}
+		dirPath = path.join(rootDir, req.params.ncId);
+
     }
     res.status(200).sendFile(filename, { root: dirPath });
 };
