@@ -228,22 +228,23 @@ export default class NC extends THREE.EventDispatcher {
         let alter = false;
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
-        if (!delta.prev){
-          //For keyframes, we need to remove current toolpaths/cutters and load new ones.
+        if (!delta.hasOwnProperty('prev')){
+          //For keyframes, we need to remove current toolpaths, cutters,
+          // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
           console.log("Keyframe recieved");
           // this._loader.annotations = {};
 
-          // Delete existing cutters and toolpaths.
-          var oldcutters = _.filter(_.values(self._objects), (geom) => geom.usage =="cutter");
-          _.each(oldcutters,(cutter)=>cutter.setInvisible());
+          // Delete existing Stuff.
+          var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"));
+          _.each(oldgeom,(geom)=>geom.setInvisible());
           var oldannotations =_.values(this._loader._annotations);
           _.each(oldannotations, (oldannotation) => {
             oldannotation.removeFromScene();
           });
 
-            //Load new cutters and toolpaths.
+            //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath');
-            var cutters = _.filter(delta.geom, (geom) => geom.usage =='cutter');
+            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || geom.usage =="tobe" || geom.usage =="asis"));
            _.each(toolpaths, (geomData) => {
              let name = geomData.polyline.split('.')[0];
              if (!this._loader._annotations[name]){
@@ -262,8 +263,9 @@ export default class NC extends THREE.EventDispatcher {
              }
            });
 
-           _.each(cutters, (geomData)=>{
+           _.each(geoms, (geomData)=>{
                let name = geomData.shell.split('.')[0];
+               if(geomData.usage =="asis") return;
                if(self._objects[geomData.id]) {
                    self._objects[geomData.id].setVisible();
                }
