@@ -10,8 +10,9 @@ import DataLoader  from './data_loader';
 /*************************************************************************/
 
 export default class CADManager extends THREE.EventDispatcher {
-    constructor(config, socket) {
+    constructor(config, socket,app) {
         super();
+        this.app = app;
         this.config = config;
         this.socket = socket;
         this._models = {};
@@ -22,7 +23,7 @@ export default class CADManager extends THREE.EventDispatcher {
         this._loader = new DataLoader({
             autorun: false,
             workerPath: "/js/webworker.js"
-        });
+        },app);
         // Start listening for events
         this.bindEvents();
     }

@@ -14,6 +14,7 @@ import Shell from './shell'
 export default class NC extends THREE.EventDispatcher {
     constructor(project, workingstep, timeIn, loader) {
         super();
+        this.app = loader._app;
         this.project = project;
         this._workingstep = workingstep;
         this._timeIn = timeIn;
@@ -286,6 +287,7 @@ export default class NC extends THREE.EventDispatcher {
            });
            this._loader.runLoadQueue();
            alter = true;
+          this.app.actionManager.emit('change-workingstep',delta.workingstep);
             //  let lineGeometries = event.annotation.getGeometry();
         }
         else{

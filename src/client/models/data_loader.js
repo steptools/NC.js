@@ -14,8 +14,9 @@ import Annotation          from './annotation';
 /********************************* Helper Functions ********************************/
 
 export default class DataLoader extends THREE.EventDispatcher {
-    constructor(config) {
+    constructor(config,app) {
         super();
+        this._app = app;
         this._queue = [];       // The queue of requests to load
         this._loading = [];     // List of active loading jobs
         this._maxWorkers = config.maxWorkers ? config.maxWorkers : 4;
@@ -302,6 +303,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 console.log('No idea what we found: ' + geomData);
             }
         });
+        self._app.actionManager.emit('change-workingstep',doc.workingstep);
         req.callback(undefined, nc);
     }
 
