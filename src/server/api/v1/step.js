@@ -41,5 +41,5 @@ module.exports = function(app, cb){
       console.log("Disconnected")
     });
   });
-  cb();
+  if(cb) cb();
 };
