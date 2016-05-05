@@ -272,6 +272,9 @@ export default class NC extends THREE.EventDispatcher {
                }
                else {
                    let color = DataLoader.parseColor("7d7d7d");
+                   if(geomData.usage =="cutter"){
+                       color = DataLoader.parseColor("FF530D");
+                   }
                    let transform = DataLoader.parseXform(geomData.xform,true);
                    let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
                    let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);

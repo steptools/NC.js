@@ -204,6 +204,17 @@ export default class DataLoader extends THREE.EventDispatcher {
                     console.log('DataLoader.ShellLoad: invalid shell ID' + event.data.id);
                 } else {
                     data = event.data.data;
+                    for(var i =0;i<data.colors.length;i++)
+                    {
+                        if (data.colors[i] < 0) {
+                            if (i% 3 === 0)
+                                data.colors[i] = shell._color.r;
+                            else if (i % 3 === 1)
+                                data.colors[i] = shell._color.g;
+                            else if (i % 3 === 2)
+                                data.colors[i] = shell._color.b;
+                        }
+                    }
                     // Remove the reference to the shell
                     delete this._shells[event.data.id+".json"];
                     shell.addGeometry(data.position, data.normals, data.colors);
@@ -276,6 +287,10 @@ export default class DataLoader extends THREE.EventDispatcher {
             let transform = DataLoader.parseXform(geomData.xform, true);
             // Is this a shell
             if (_.has(geomData, 'shell')) {
+                if(geomData.usage === "cutter")
+                {
+                    color = DataLoader.parseColor("FF530D");
+                }
                 let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
                 let shell = new Shell(geomData.id, nc, nc, geomData.size, color, boundingBox);
                 nc.addModel(shell, geomData.usage, 'shell', geomData.id, transform, boundingBox);
