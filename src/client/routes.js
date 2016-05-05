@@ -23,7 +23,7 @@ module.exports = Backbone.Router.extend({
         'browse':                       '_browse',
         'login':                        '_login',
         'register':                     '_register',
-        'stepnc':                       '_stepnc',
+        'stepnc/:projectid':            '_stepnc',
         ':modelID':                     '_model',
         '*path':                        '_default',
     },
@@ -99,7 +99,7 @@ module.exports = Backbone.Router.extend({
         }
     },
 
-    _stepnc: function(){
+    _stepnc: function(pid){
         var self = this;
         ReactDOM.render(
                 <div style={{height:'100%'}}>
@@ -119,6 +119,12 @@ module.exports = Backbone.Router.extend({
         , document.getElementById('primary-view'), function () {
             // Dispatch setModel to the CADManager
         });
+	this.app.cadManager.dispatchEvent({
+          type: 'setModel',
+          path: pid,
+          baseURL: this.app.services.api_endpoint + this.app.services.version,
+          modelType: 'nc'
+      })
     },
 
     /************** Default Route ************************/
