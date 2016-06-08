@@ -236,7 +236,7 @@ export default class NC extends THREE.EventDispatcher {
           // this._loader.annotations = {};
 
           // Delete existing Stuff.
-          var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"));
+          var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"));
           _.each(oldgeom,(geom)=>geom.setInvisible());
           var oldannotations =_.values(this._loader._annotations);
           _.each(oldannotations, (oldannotation) => {
@@ -245,7 +245,7 @@ export default class NC extends THREE.EventDispatcher {
 
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath');
-            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || geom.usage =="tobe" || geom.usage =="asis"));
+            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || geom.usage =="tobe" || geom.usage =="asis"||geom.usage=='machine'));
            _.each(toolpaths, (geomData) => {
              let name = geomData.polyline.split('.')[0];
              if (!this._loader._annotations[name]){
@@ -302,7 +302,7 @@ export default class NC extends THREE.EventDispatcher {
               window.geom.push(geom);
             }
               let obj = self._objects[geom.id];
-			  if(obj.usage==='cutter') {
+			  if(obj.usage==='cutter' || obj.usage==='machine') {
 				let transform = new THREE.Matrix4();
 				if (!geom.xform) return;
 				transform.fromArray(geom.xform);
