@@ -101,24 +101,56 @@ module.exports = Backbone.Router.extend({
 
     _stepnc: function(pid){
         var self = this;
-        ReactDOM.render(
-                <div style={{height:'100%'}}>
-                    <div id='cadview-container'>
-                        <CADView
-                        manager={this.app.cadManager}
-                        viewContainerId='primary-view'
-                        root3DObject={this.app._root3DObject}
-                        />
-                    </div>
-                    <FooterView 
-		      cadManager={this.app.cadManager}
-		      actionManager={this.app.actionManager}
-		      socket={this.app.socket}
-                      />
-                </div>
-        , document.getElementById('primary-view'), function () {
-            // Dispatch setModel to the CADManager
-        });
+        if($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())
+        {
+            //desktop probably
+	    ReactDOM.render(
+		    <div style={{height:'100%'}}>
+			<HeaderView
+			  cadManager={this.app.cadManager}
+			  actionManager={this.app.actionManager}
+			  socket={this.app.socket}
+			  />
+			<SidebarView
+			  cadManager={this.app.cadManager}
+			  app={this.app}
+			  actionManager={this.app.actionManager}
+			  socket={this.app.socket}
+			  />
+			<div id='cadview-container'>
+			    <CADView
+			    manager={this.app.cadManager}
+			    viewContainerId='primary-view'
+			    root3DObject={this.app._root3DObject}
+			    />
+			</div>
+		    </div>
+	    , document.getElementById('primary-view'), function () {
+		// Dispatch setModel to the CADManager
+	    });
+        }
+        else
+        {
+            //mobile probably
+	    ReactDOM.render(
+		    <div style={{height:'100%'}}>
+			<div id='cadview-container'>
+			    <CADView
+			    manager={this.app.cadManager}
+			    viewContainerId='primary-view'
+			    root3DObject={this.app._root3DObject}
+			    />
+			</div>
+			<FooterView 
+			  cadManager={this.app.cadManager}
+			  actionManager={this.app.actionManager}
+			  socket={this.app.socket}
+			  />
+		    </div>
+	    , document.getElementById('primary-view'), function () {
+		// Dispatch setModel to the CADManager
+	    });
+	}
 	this.app.cadManager.dispatchEvent({
           type: 'setModel',
           path: pid,
