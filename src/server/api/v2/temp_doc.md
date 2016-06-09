@@ -4,17 +4,19 @@
 The endpoint structure of these files
 + projects
 	- projectID
-		* deltastate
-		* geometrym
-			+ shell_id<ID>.json
-		* keystate
+		* geometry
+			+ {type}
+				+ {eid}
+		* state
+			+ deltastate
+			* keystate
 		* tools
-			+ toolID
+			+ {toolID}
 		* toolpaths
-			+ toolpathID
+			+ {tpID}
 		* workplans
-			+ workplanID
-				- workingsteps
-					* workingstepID
-		
-		
+			+ {wpID}
+		* workingsteps
+			+ {wsID}
+
+In order to expand these endpoints, the typical notation is property/id/.
