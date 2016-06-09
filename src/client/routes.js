@@ -11,6 +11,7 @@ import CADView              from './views/cad';
 import HeaderView           from './views/header';
 import SidebarView           from './views/sidebar';
 import FooterView	    from './views/footer';
+import ContainerView	    from './views/container';
 // import SidebarView           from './views/sidebar';
 var qs                      = require('qs');
 const queryString =         require('query-string');
@@ -101,56 +102,15 @@ module.exports = Backbone.Router.extend({
 
     _stepnc: function(pid){
         var self = this;
-        if($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())
-        {
-            //desktop probably
 	    ReactDOM.render(
 		    <div style={{height:'100%'}}>
-			<HeaderView
-			  cadManager={this.app.cadManager}
-			  actionManager={this.app.actionManager}
-			  socket={this.app.socket}
-			  />
-			<SidebarView
-			  cadManager={this.app.cadManager}
+			<ContainerView 
 			  app={this.app}
-			  actionManager={this.app.actionManager}
-			  socket={this.app.socket}
-			  />
-			<div id='cadview-container'>
-			    <CADView
-			    manager={this.app.cadManager}
-			    viewContainerId='primary-view'
-			    root3DObject={this.app._root3DObject}
-			    />
-			</div>
-		    </div>
-	    , document.getElementById('primary-view'), function () {
-		// Dispatch setModel to the CADManager
-	    });
-        }
-        else
-        {
-            //mobile probably
-	    ReactDOM.render(
-		    <div style={{height:'100%'}}>
-			<div id='cadview-container'>
-			    <CADView
-			    manager={this.app.cadManager}
-			    viewContainerId='primary-view'
-			    root3DObject={this.app._root3DObject}
-			    />
-			</div>
-			<FooterView 
-			  cadManager={this.app.cadManager}
-			  actionManager={this.app.actionManager}
-			  socket={this.app.socket}
 			  />
 		    </div>
 	    , document.getElementById('primary-view'), function () {
 		// Dispatch setModel to the CADManager
 	    });
-	}
 	this.app.cadManager.dispatchEvent({
           type: 'setModel',
           path: pid,
