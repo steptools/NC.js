@@ -19,12 +19,11 @@ function _getws(A, B){
 		let ncId = A;
 		let wsId = B;
 		find.OpenProject(ncId);
-		let wp = find.GetMainWorkplan();
 		var rtn = {
 			"id": wsId, 
-			"name": find.GetWorkplanName(), 
-			"type": "workplan",
-			"children": _exeFromId(wp)
+			"name": find.GetWorkplanName(wsId), 
+			"type": "workingstep",
+			"children": _exeFromId(wsId)
 		};
 		//res.send(rtn);
 	//}
