@@ -1,5 +1,6 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
+
 var machineStates = {};
 var loopStates = {};
 
@@ -85,6 +86,10 @@ var _loopInit = function(req, res) {
         break;
     }
   }
+}
+
+var _test = function(req, res) {
+  res.status(200).send("I'm here!");
 }
 
 module.exports = function(app, cb) {
