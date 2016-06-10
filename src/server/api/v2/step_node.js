@@ -21,17 +21,10 @@ function _exeFromId(id){
 	return ws;
 }
 
-function _getws(req,res){
-	if(req.params.ncId && req.params.wsId){
-		let ncId = req.params.ncId;
-		let wsId = req.params.wsId;
+function _getws(ncId, wsId){
 		find.OpenProject(ncId);
-		res.send(_exeFromId(wsId));
-	}
+		let rtn = _exeFromId(wsId);
+		return rtn;
 }
 
 console.log(_getws("model.stpnc", 94989));
-
-module.exports = function(app, cb){
-	//app.router.get('/v2/nc/:ncId/plan/:wsId',_getws);
-}
