@@ -1,7 +1,6 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 
-<<<<<<< HEAD
 function _getnext(pid,res) {
   var machinestate = new StepNC.machineState(pid);
   machinestate.nextWS();
