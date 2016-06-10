@@ -48,6 +48,7 @@ var _loop = function(pid, key) {
 }
 
 var _loopInit = function(req, res) {
+  res.status(200).send("I'm here!");
   if (req.params.ncId && req.params.loopstate) {
     if (typeof(machineStates[ncId]) === 'undefined') {
       machineStates[ncId] = new StepNC.machineState(ncId);
