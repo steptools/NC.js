@@ -2,7 +2,7 @@
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 var find = new StepNC.Finder();
 
-function exeFromId(id){
+function exeFromId(id) {
 	let ws = {
 		"id": id,
 		"name": find.GetExecutableName(id)
@@ -19,8 +19,8 @@ function exeFromId(id){
 	return ws;
 }
 
-function _getExeFromId(req,res){
-	if(req.params.ncId && req.params.wsId){
+function _getExeFromId(req, res) {
+	if (req.params.ncId && req.params.wsId){
 		let ncId = req.params.ncId;
 		let wsId = req.params.wsId;
 		var id_new = parseInt(wsId);
@@ -29,8 +29,8 @@ function _getExeFromId(req,res){
 	}
 } 
 
-function _getMwp(req,res){
-	if(req.params.ncId){
+function _getMwp(req, res) {
+	if (req.params.ncId) {
 		let ncId = req.params.ncId;
 		find.OpenProject(ncId);
 		var mwpId = find.GetMainWorkplan();
@@ -38,7 +38,7 @@ function _getMwp(req,res){
 	}
 }
 
-module.exports = function(app){
+module.exports = function(app) {
 	//FIXME: Route currently only works for a model that is in StepNCViewers root directory
 	//ncId will have to be used to find the path in the future
 
