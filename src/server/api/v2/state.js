@@ -3,11 +3,6 @@ var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 var machineStates = {};
 var loopStates = {};
 
-function _getnext(pid,res) {
-  var machinestate = new StepNC.machineState(pid);
-  machinestate.nextWS();
-}
-
 function _getdelta(pid,key,res) {
   var machinestate = new StepNC.machineState(pid);
   if(!key){
@@ -56,7 +51,7 @@ var _loop = function(pid, key) {
     }
     else if (rc == 1) {   // SWITCH
       app.logger.debug("Switching...");
-      _getnext(pid, function() {
+      _getnext(pid, function() { 
         _looper(pid, true);
       });
     }
