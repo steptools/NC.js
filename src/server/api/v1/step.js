@@ -50,9 +50,50 @@ module.exports = function(app, cb){
       });
     }
 
+    function reqToleranceTree(){
+      // FIXME currently returning static JSON
+      socket.emit("tolerancetree",{
+        name: "Tolerances",
+        children:
+          [{
+            name: "Workpiece 1",
+            children: [{
+              name: "Tolerance 1",
+              isLeaf:true
+            },{
+              name: "Tolerance 2",
+              isLeaf:true
+            },{
+              name: "Tolerance 3",
+              isLeaf:true
+            },{
+              name: "Tolerance 4",
+              isLeaf:true
+            },{
+              name: "Tolerance 5",
+              isLeaf:true
+            }]
+          }, {
+            name: "Workpiece 2",
+            children: [{
+              name: "Tolerance 6",
+              isLeaf:true
+            }, {
+              name: "Tolerance 7",
+              isLeaf:true
+            }, {
+              name: "Tolerance 8",
+              isLeaf:true
+            }]
+          }
+        ]
+      });
+    }
+
 
     socket.on('req:projects', reqProjects);
     socket.on('req:modeltree', reqModeltree);
+    socket.on('req:tolerancetree', reqToleranceTree);
 
     socket.on('disconnect', function(){
       console.log("Disconnected")
