@@ -1,8 +1,12 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 
+var update = (val) => {
+  app.ioServer.emit("nc:state", val);
+}
+
 // true at _loopstates[ncid] if the loop is playing
-var _loopstates = {};
+var loopstates = {};
 
 var _loop = function(pid, key) {
   if (_loopstates[pid] === true) {
@@ -11,9 +15,7 @@ var _loop = function(pid, key) {
   }
 }
 
-var _update = (val) => {
-  app.ioServer.emit("nc:state", val);
-}
+
 
 // loopstate = state, start, or stop
 var _loopInit = function(ncId, loopstate) {
