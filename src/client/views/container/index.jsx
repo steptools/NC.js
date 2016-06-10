@@ -20,7 +20,7 @@ export default class ContainerView extends React.Component {
     }
 
     handleResize() {
-        this.forceUpdate();
+        this.setState({ key: Math.random() });
     }
     
     render() {   
