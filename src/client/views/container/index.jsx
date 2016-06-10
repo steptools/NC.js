@@ -15,60 +15,49 @@ import ReactTooltip from 'react-tooltip';
 export default class ContainerView extends React.Component {
     constructor(props){
         super(props);
+
+        this.state={
+            update: false
+        };
+
         this.handleResize   = this.handleResize.bind(this);
         window.addEventListener("resize", this.handleResize);
     }
 
     handleResize() {
-        this.setState({ key: Math.random() });
+        this.setState({ update: !this.state.update });
     }
     
     render() {   
-        if($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())
-	    {
-		//desktop probably
-		return(
-			<div style={{height:'100%'}}>
-			    <HeaderView
-			      cadManager={this.props.app.cadManager}
-			      actionManager={this.props.app.actionManager}
-			      socket={this.props.app.socket}
-			      />
-			    <SidebarView
-			      cadManager={this.props.app.cadManager}
-			      app={this.props.app}
-			      actionManager={this.props.app.actionManager}
-			      socket={this.props.app.socket}
-			      />
-			    <div id='cadview-container'>
-				<CADView
-			    manager={this.props.app.cadManager}
-				viewContainerId='primary-view'
-				root3DObject={this.props.app._root3DObject}
-				/>
-			    </div>
-			</div>
-		);
-	    }
-	    else
-	    {
-		//mobile probably
-		return(
-			<div style={{height:'100%'}}>
-			    <div id='cadview-container'>
-				<CADView
-				manager={this.props.app.cadManager}
-				viewContainerId='primary-view'
-				root3DObject={this.props.app._root3DObject}
-				/>
-			    </div>
-			    <FooterView 
-				cadManager={this.props.app.cadManager}
-				actionManager={this.props.app.actionManager}
-				socket={this.props.app.socket}
-			      />
-			</div>
-		);
-	    }
+        var HV=($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())? <HeaderView
+	    cadManager={this.props.app.cadManager}
+	    actionManager={this.props.app.actionManager}
+	    socket={this.props.app.socket}
+	    />:undefined;
+	var SV=($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())? <SidebarView
+	    cadManager={this.props.app.cadManager}
+	    app={this.props.app}
+	    actionManager={this.props.app.actionManager}
+	    socket={this.props.app.socket}
+	    />:undefined;
+	var FV=($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())? undefined:<FooterView 
+	    cadManager={this.props.app.cadManager}
+	    actionManager={this.props.app.actionManager}
+	    socket={this.props.app.socket}
+	     />;
+	return(
+	    <div style={{height:'100%'}}>
+		{HV}
+		{SV}
+		<div id='cadview-container'>
+		    <CADView
+			manager={this.props.app.cadManager}
+			viewContainerId='primary-view'
+			root3DObject={this.props.app._root3DObject}
+			/>
+		</div>
+		{FV}
+	    </div>
+	);
     }
 }
