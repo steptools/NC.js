@@ -38,7 +38,7 @@ function _getMwp(req, res) {
 	}
 }
 
-module.exports = function(app) {
+module.exports = function(app, cb) {
 	//FIXME: Route currently only works for a model that is in StepNCViewers root directory
 	//ncId will have to be used to find the path in the future
 
@@ -50,4 +50,5 @@ module.exports = function(app) {
 	//ncId
 	app.router.get('/v2/nc/projects/:ncId/workplan',_getMwp);
 	//app.router.get('/v2/nc/projects',_getprojs);
+	if (cb) cb();
 }
