@@ -319,7 +319,7 @@ export default class NC extends THREE.EventDispatcher {
         return alter;
     }
 
-    getSelected() { return this; }
+    getSelected() { return [this]; }
     getID() { return this.id; }
     toggleHighlight() { }
     toggleVisibility() { }

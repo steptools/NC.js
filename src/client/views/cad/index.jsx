@@ -52,12 +52,19 @@ export default class CADViewer extends React.Component {
         this.overlayScene.add(      model.getOverlay3D());
         // calculate the scene's radius for draw distance calculations
         this.updateSceneBoundingBox(model.getBoundingBox());
+<<<<<<< HEAD
         if(model.type==='nc'){
             //this.camera.position.set(-6.997719433230415, 7.055664289079229, 10.589898666998387);
             //this.camera.up.set(0.31370902211057955, -0.32595607647788327, 0.891817966657745);
+=======
+        // Go to preset view for NC models
+        if(model.type === 'nc') {
+            this.camera.position.set(-6.997719433230415, 7.055664289079229, 10.589898666998387);
+            this.camera.up.set(0.31370902211057955, -0.32595607647788327, 0.891817966657745);
+>>>>>>> dafee84e3e043a0efbe1b5d5f9a0b6eab7ed172e
         }
         // center the view
-        this.zoomToFit(model);
+        this.zoomToFit([model]);
         // Update the model tree
         let tree = this.props.manager.getTree();
         this.setState({ modelTree:tree });
@@ -73,6 +80,12 @@ export default class CADViewer extends React.Component {
 
     onKeypress(event) {
         switch(event.keyCode || event.charCode || event.which) {
+            // Go to special viewing postion on 'a'
+            case 97:
+                //console.log(this.camera);
+                this.camera.position.set(-6.997719433230415, 7.055664289079229, 10.589898666998387);
+                this.camera.up.set(0.31370902211057955, -0.32595607647788327, 0.891817966657745);
+                break;
             // Explode on 'x' key pressed
             case 120:
                 this.props.manager.explode(10);
@@ -144,8 +157,6 @@ export default class CADViewer extends React.Component {
         this.camera.position.y = -5000;
         this.camera.position.z = 0;
         this.camera.lookAt(this.geometryScene.position);
-        console.log(this.camera.position);
-        console.log(this.camera.up);
 
         // VIEW CONTROLS
         this.controls =  new ViewerControls({
@@ -202,15 +213,9 @@ export default class CADViewer extends React.Component {
         this.drawScene();
     }
 
-    zoomToFit(object) {
-        //let boundingBox, object3d, size = _.size(objects);
-        //if (size === 0) return;
-        //else if (size === 1) {
-        //    object3d = objects.getObject3D();
-        //    boundingBox = objects.getBoundingBox();
-        //} else if (size > 1) {
-        //
-        //}
+    zoomToFit(objects) {
+        if (!objects || objects.length === 0) return;
+        let object = objects[0];
         let object3d = object.getObject3D(),
             boundingBox = object.getBoundingBox(),
             radius = boundingBox.size().length() * 0.5,

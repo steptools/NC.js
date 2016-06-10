@@ -1,7 +1,10 @@
-cad.js
+StepNCViewer
 ======
 
-Web-based CAD file viewer
+Web-based feature-rich browser for StepNC Data
+
+No data samples are provided at this time, so this is unlikely to work for you.  
+You probably want to try [Cad.JS](https://github.com/ghemingway/cad.js) instead.
 
 Setting up a development environment
 ====================================
@@ -11,7 +14,7 @@ Setting up a development environment
 Get the code
 ------------
 
-    git clone https://github.com/ghemingway/cad.js
+    git clone https://github.com/steptools/StepNCViewer
     cd cad.js
 
 Make a place to put cad data
@@ -57,8 +60,4 @@ Snazzy Demos
 
 *From an older version*
 
-http://ghemingway.github.io/cad.js/?resource_url=/cad.js/data/cutter/index.json
-
-http://ghemingway.github.io/cad.js/?resource_url=/cad.js/data/rear/index.json
-
-http://ghemingway.github.io/cad.js/?resource_url=/cad.js/data/rccar/index.json
+[Live Demo](www.steptools.com/demos/mtc)

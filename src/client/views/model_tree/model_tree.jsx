@@ -30,7 +30,6 @@ export default class ModelTreeView extends React.Component {
     }
 
     renderNode(node) {
-        let self = this;
         let cName = 'node';
         cName += (node.state && node.state.selected) ? ' is-active' : '';
         cName += (node.state && node.state.highlighted) ? ' is-highlighted' : '';
@@ -43,7 +42,7 @@ export default class ModelTreeView extends React.Component {
         return <span
             id={node.id}
             className={cName}
-            onClick={function(e){ self.props.onClick(node, e); }}
+            onClick={function(e){ this.props.onClick(node, e); }}
             onMouseEnter={this.onMouseEnter.bind(this, node)}
             onMouseLeave={this.onMouseLeave.bind(this, node)}
             onMouseDown={function(e){ e.stopPropagation(); }}
