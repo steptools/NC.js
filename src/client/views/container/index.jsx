@@ -15,6 +15,12 @@ import ReactTooltip from 'react-tooltip';
 export default class ContainerView extends React.Component {
     constructor(props){
         super(props);
+        this.handleResize   = this.handleResize.bind(this);
+        window.addEventListener("resize", this.handleResize);
+    }
+
+    handleResize() {
+        this.forceUpdate();
     }
     
     render() {   
