@@ -30,8 +30,6 @@ function _getws(req,res){
 	}
 }
 
-console.log(_getws("model.stpnc", 94989));
-
 module.exports = function(app, cb){
-	//app.router.get('/v2/nc/:ncId/plan/:wsId',_getws);
+	app.router.get('/v2/nc/:ncId/plan/:wsId',_getws);
 }
