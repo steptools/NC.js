@@ -4,6 +4,7 @@
 + Use lower case as much as possible when naming variables. Use CamelCase when necessary. Be sure to capitalize the 'I' in 'Id'.
 + Global variables should begin with an underscore (except finder, apt, machineState, etc).
 + Use CamelCase for functions. Functions called by `app.router.get()` should begin with an underscore.
++ Don't squish functions and statements too much, follow what's already written.
 
 ### Endpoint Structure
 The endpoint structure of these files
