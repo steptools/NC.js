@@ -48,6 +48,5 @@ module.exports = function(app, cb) {
 	//This route gets the main workplan for the project that is specified by 
 	//ncId
 	app.router.get('/v2/nc/projects/:ncId/workplan',_getMwp);
-
 	if (cb) cb();
 };
