@@ -71,7 +71,7 @@ export default class NC extends THREE.EventDispatcher {
         if (type === 'shell') {
             model.addEventListener('shellEndLoad', function (event) {
                 let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
-                let mesh = new THREE.SkinnedMesh(event.shell.getGeometry(), material, false);
+                let mesh = new THREE.Mesh(event.shell.getGeometry(), material, false);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 mesh.userData = obj;
