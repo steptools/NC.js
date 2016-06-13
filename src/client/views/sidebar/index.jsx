@@ -133,6 +133,8 @@ export default class SidebarView extends React.Component {
     }
 
     render() {
+        if(this.props.guiMode == 1)
+            return null;
       // TODO currently mode menu can only have two layers
       var nested = this.state.mode != "tree";
       const modeMenu = (

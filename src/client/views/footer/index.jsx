@@ -106,7 +106,9 @@ export default class FooterView extends React.Component {
 	    xhr.send(null);
     }
     render() {
-	    var ppbtntxt = this.state.ppbutton;
+        if(this.props.guiMode == 0)
+            return null;
+        var ppbtntxt = this.state.ppbutton;
 		return <div className="Footer-bar">
 			<div className="op-text">{this.state.wstext}</div>
 			<ButtonImage onBtnClick={this.btnClicked} icon={ppbtntxt}/>
