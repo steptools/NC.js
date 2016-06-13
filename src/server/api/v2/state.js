@@ -17,7 +17,7 @@ var _getDelta = function(pid, key, cb) {
   else {
     response = machineStates[pid].GetDeltaJSON();
   }
-  app.logger.debug("got " + response);
+  //app.logger.debug("got " + response);
   cb(response);
 };
 
@@ -25,14 +25,14 @@ var _getNext = function(pid, cb) {
   let rc = -1;
   rc = machineStates[pid].nextWS();
   if (rc === 0) {
-    app.logger.debug("Switched!");
+    //app.logger.debug("Switched!");
     cb();
   }
 };
 
 var _loop = function(pid, key) {
   if (loopStates[pid] === true) {
-    app.logger.debug("Loop step " + pid);
+    //app.logger.debug("Loop step " + pid);
     let rc = machineStates[pid].AdvanceState();
     if (rc === 0) {  // OK
       _getDelta(pid, key, function(b) {
@@ -41,7 +41,7 @@ var _loop = function(pid, key) {
       });
     }
     else if (rc == 1) {   // SWITCH
-      app.logger.debug("Switching...");
+      //app.logger.debug("Switching...");
       _getNext(pid, function() {
         _loop(pid, true);
       });
@@ -50,9 +50,7 @@ var _loop = function(pid, key) {
 };
 
 var _loopInit = function(req, res) {
-  console.log("In function");
   if (req.params.ncId && req.params.loopstate) {
-    console.log("I'm here");
     let ncId = req.params.ncId;
     let loopstate = req.params.loopstate;
     if (typeof(machineStates[ncId]) === 'undefined') {
@@ -73,7 +71,7 @@ var _loopInit = function(req, res) {
           res.status(200).send("Already running");
           return;
         }
-        app.logger.debug("Looping " + ncId);
+        //app.logger.debug("Looping " + ncId);
         loopStates[ncId] = true;
         res.status(200).send("OK");
         update("play");
@@ -92,15 +90,8 @@ var _loopInit = function(req, res) {
   }
 };
 
-var _test = function(req, res) {
-  console.log("Inside _test");
-  var rtn = { "response": "Responding to _test" };
-  res.status(200).send(rtn);
-};
-
-module.exports = function(app, cb) {
-  console.log("Init state");
-  app.router.get('v2/nc/projects/:ncId/loop/test', _test);
-  app.router.get('v2/nc/projects/:ncId/loop/:loopstate', _loopInit);
+module.exports = function(globalApp, cb) {
+  app = globalApp;
+  app.router.get('/v2/nc/:ncId/loop/:loopstate', _loopInit);
   if (cb) cb();
 };
