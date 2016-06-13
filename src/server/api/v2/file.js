@@ -9,7 +9,7 @@ var jsoncontent = JSON.parse(content);
 var machineStates = {};
 
 module.exports.getMachineState = function (ncId) {
-	var ncPath = module.exports.getPath(ncId)
+    var ncPath = getPath(ncId);
 	if (typeof(machineStates[ncId]) === 'undefined') {
 		machineStates[ncId] = new StepNC.machineState(ncPath);
 		
@@ -17,7 +17,7 @@ module.exports.getMachineState = function (ncId) {
 	return machineStates[ncId];
 }
 
-module.exports.getPath = function (ncId){
+module.exports.getPath = function getPath(ncId){
 	let lowncId = ncId.toLowerCase();
 	if(jsoncontent[lowncId])
 		return jsoncontent[lowncId];
