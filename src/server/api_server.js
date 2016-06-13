@@ -16,6 +16,7 @@ var http                = require('http'),
     CoreServer          = require('./core_server'),
     util                = require('util');
 
+
 /************************* Support Site *********************************/
 
 var COOKIE_SECRET = 'imhotep';
@@ -121,7 +122,7 @@ APIServer.prototype._setRoutes = function(cb) {
  */
 APIServer.prototype._setSite = function() {
     var self = this;
-    var endpoint = this.config.host ? this.config.protocol + '://' + this.config.host + ':' + this.config.port : '';
+    var endpoint = this.config.host ? this.config.protocol + '://' + this.config.host + ':' + app.port : '';
     var services = {
         api_endpoint: endpoint,
         socket: "",
@@ -148,8 +149,8 @@ APIServer.prototype._setSite = function() {
  */
 APIServer.prototype.run = function() {
     var self = this;
-    this.server.listen(this.config.port, function () {
-        self.logger.info('CAD.js API Server listening on: ' + self.config.port);
+    this.server.listen(app.port, function () {
+        self.logger.info('CAD.js API Server listening on: ' + app.port);
     });
 };
 
