@@ -36,6 +36,7 @@ In order to expand these endpoints, the typical notation is property/id/.
 Must setup a data folder in the root directory that contains a pathmap.json file with example structure:
 {
 	"<ncId>": "<path>"
+	"boxy": "C:/git/StepNCViewer/data/boxy/model.stpnc"
 }
 ncId should be replaced with the ncId of the project e.g. "boxy" and should always be all lower case letters
 path should be replaced with the path to the .stpnc file within the data directory e.g "C:/Users/Nick/Documents/STEP Tools/StepNCViewer/data/boxy/model.stpnc"
