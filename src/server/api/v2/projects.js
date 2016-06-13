@@ -1,4 +1,5 @@
 var file = require("./file");
+var fs = require("fs");
 
 function _getProjects(req, res){
 	console.log("\n *START* \n");
