@@ -17,7 +17,7 @@ export default class ContainerView extends React.Component {
         super(props);
 
         this.state={
-            update: false
+	    guiMode: 0//0 is desktop, 1 is mobile
         };
 
         this.handleResize   = this.handleResize.bind(this);
@@ -25,30 +25,28 @@ export default class ContainerView extends React.Component {
     }
 
     handleResize() {
-        this.setState({ update: !this.state.update });
+        if($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())
+            this.setState({ guiMode: 0 });
+        else
+            this.setState({ guiMode: 1 });
     }
     
     render() {   
-        var HV=($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())? <HeaderView
-	    cadManager={this.props.app.cadManager}
-	    actionManager={this.props.app.actionManager}
-	    socket={this.props.app.socket}
-	    />:undefined;
-	var SV=($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())? <SidebarView
-	    cadManager={this.props.app.cadManager}
-	    app={this.props.app}
-	    actionManager={this.props.app.actionManager}
-	    socket={this.props.app.socket}
-	    />:undefined;
-	var FV=($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())? undefined:<FooterView 
-	    cadManager={this.props.app.cadManager}
-	    actionManager={this.props.app.actionManager}
-	    socket={this.props.app.socket}
-	     />;
 	return(
 	    <div style={{height:'100%'}}>
-		{HV}
-		{SV}
+		<HeaderView
+		    cadManager={this.props.app.cadManager}
+		    actionManager={this.props.app.actionManager}
+		    socket={this.props.app.socket}
+		    guiMode={this.state.guiMode}
+		    />
+		<SidebarView
+		    cadManager={this.props.app.cadManager}
+		    app={this.props.app}
+		    actionManager={this.props.app.actionManager}
+		    socket={this.props.app.socket}
+		    guiMode={this.state.guiMode}
+		    />
 		<div id='cadview-container'>
 		    <CADView
 			manager={this.props.app.cadManager}
@@ -56,7 +54,12 @@ export default class ContainerView extends React.Component {
 			root3DObject={this.props.app._root3DObject}
 			/>
 		</div>
-		{FV}
+		<FooterView 
+		    cadManager={this.props.app.cadManager}
+		    actionManager={this.props.app.actionManager}
+		    socket={this.props.app.socket}
+		    guiMode={this.state.guiMode}
+		    />
 	    </div>
 	);
     }

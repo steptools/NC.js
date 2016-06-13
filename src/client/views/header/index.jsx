@@ -105,6 +105,8 @@ export default class HeaderView extends React.Component {
     }
 
     render() {
+        if(this.props.guiMode == 1)
+            return null;
         const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
             <MenuItem key='file-menu'>File</MenuItem>
             <MenuItem key='simulate-menu'>Simulate</MenuItem>
