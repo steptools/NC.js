@@ -14,12 +14,11 @@ var _getGeometry = function(req , res){
       machineStates[ncId] = new StepNC.machineState(ncId);
     }
   }
-
-  if(req.params.ncId && req.params.shellId){
+  if(req.params.ncId && req.params.type === "shell"){
     res.send(machineStates[req.params.ncId].GetGeometryJSON(req.params.shellId , "MESH"));
 
   }
-  else if(req.params.ncId && req.params.annoId){
+  else if(req.params.ncId && req.params.type === "annotation"){
     res.send(machineStates[req.params.ncId].GetGeometryJSON(req.params.annoId , "POLYLINE"));
 
   }
@@ -33,8 +32,7 @@ var _getGeometry = function(req , res){
 module.exports = function(globalApp, cb) {
   app = globalApp;
   app.router.get("/v2/nc/projects/:ncId/geometry", _getGeometry);
-  app.router.get("/v2/nc/projects/:ncId/geometry/:type/:shellId", _getGeometry);
-  app.router.get("/v2/nc/projects/:ncId/geometry/:type/:annoId", _getGeometry);
+  app.router.get("/v2/nc/projects/:ncId/geometry/:uuid/:type", _getGeometry);
   if (cb) cb();
 };
 
