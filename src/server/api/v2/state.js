@@ -25,7 +25,7 @@ var _getNext = function(pid, cb) {
   let rc = -1;
   rc = machineStates[pid].nextWS();
   if (rc === 0) {
-    //app.logger.debug("Switched!");
+    app.logger.debug("Switched!");
     cb();
   }
 };
@@ -35,13 +35,14 @@ var _loop = function(pid, key) {
     //app.logger.debug("Loop step " + pid);
     let rc = machineStates[pid].AdvanceState();
     if (rc === 0) {  // OK
+      app.logger.debug("OK...");
       _getDelta(pid, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         setTimeout(function() { _loop(pid, false); }, 300);
       });
     }
     else if (rc == 1) {   // SWITCH
-      //app.logger.debug("Switching...");
+      app.logger.debug("SWITCH...");
       _getNext(pid, function() {
         _loop(pid, true);
       });
@@ -55,7 +56,7 @@ var _loopInit = function(req, res) {
     let loopstate = req.params.loopstate;
     if (typeof(machineStates[ncId]) === 'undefined') {
       machineStates[ncId] = new StepNC.machineState(ncId);
-      loopStates[ncId] = true;
+      loopStates[ncId] = false;
     }
     switch(loopstate) {
       case "state":
@@ -71,7 +72,7 @@ var _loopInit = function(req, res) {
           res.status(200).send("Already running");
           return;
         }
-        //app.logger.debug("Looping " + ncId);
+        app.logger.debug("Looping " + ncId);
         loopStates[ncId] = true;
         res.status(200).send("OK");
         update("play");
