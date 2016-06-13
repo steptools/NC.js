@@ -1,4 +1,9 @@
 
+### Module structure
++ `file.js` contains code for the file system.
++ `state.js` contains code for looping through the simulation and getting key and delta states.
++ `step.js` contains code for getting information on workingsteps
+
 ### Coding Conventions
 + [Semicolon usage guide](https://www.codecademy.com/blog/78)
 + Use lower case as much as possible when naming variables. Use CamelCase when necessary. Be sure to capitalize the 'I' in 'Id'.
