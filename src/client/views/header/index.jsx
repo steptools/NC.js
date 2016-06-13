@@ -105,11 +105,11 @@ export default class HeaderView extends React.Component {
     }
 
     render() {
+        if(this.props.guiMode == 1)
+            return null;
         const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
             <MenuItem key='file-menu'>File</MenuItem>
             <MenuItem key='simulate-menu'>Simulate</MenuItem>
-            <MenuItem key='view-menu'>View</MenuItem>
-            <MenuItem key='debug-menu'>Debug</MenuItem>
         </Menu> );
         const bottomMenu = ( <div className='bottom-menus'>
           {this.state.openMenu == 'file-menu' ?
@@ -123,20 +123,6 @@ export default class HeaderView extends React.Component {
               <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='backward'/>Prev</MenuItem>
               <MenuItem tooltip='Disabled' key='play'><ButtonImage icon='play'/>Play</MenuItem>
               <MenuItem tooltip='Disabled' key='forward'><ButtonImage icon='forward'/>Next</MenuItem>
-              <MenuItem tooltip='Connect to remote session' delayShow={1000} key='remote-session'><ButtonImage icon='globe'/>Remote</MenuItem>
-          </Menu> : null}
-          {this.state.openMenu == 'view-menu' ?
-          <Menu mode='horizontal' onClick={this.viewMenuItemClicked} className='bottom-menu'>
-            <MenuItem tooltip='View Tolerance Tree' key='toleranceTree'><ButtonImage icon='tree-deciduous'/>Tolerances</MenuItem>
-          </Menu> : null}
-          {this.state.openMenu == 'debug-menu' ?
-          <Menu mode='horizontal' onClick={this.debugMenuItemClicked} className='bottom-menu'>
-              <MenuItem key='db1'><ButtonImage icon='fire'/>Update Tree</MenuItem>
-              <MenuItem key='db2'><ButtonImage icon='fire'/>Get Projects</MenuItem>
-              <MenuItem key='db3'><ButtonImage icon='fire'/>Action 3</MenuItem>
-              <MenuItem key='db4'><ButtonImage icon='fire'/>Action 4</MenuItem>
-              <MenuItem key='db5'><ButtonImage icon='fire'/>Action 5</MenuItem>
-              <MenuItem key='db6'><ButtonImage icon='fire'/>Action 6</MenuItem>
           </Menu> : null}
         </div>);
 

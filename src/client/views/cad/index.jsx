@@ -54,8 +54,8 @@ export default class CADViewer extends React.Component {
         this.updateSceneBoundingBox(model.getBoundingBox());
         // Go to preset view for NC models
         if(model.type === 'nc') {
-            this.camera.position.set(-6.997719433230415, 7.055664289079229, 10.589898666998387);
-            this.camera.up.set(0.31370902211057955, -0.32595607647788327, 0.891817966657745);
+            //this.camera.position.set(-6.997719433230415, 7.055664289079229, 10.589898666998387);
+            //this.camera.up.set(0.31370902211057955, -0.32595607647788327, 0.891817966657745);
         }
         // center the view
         this.zoomToFit([model]);
@@ -361,12 +361,6 @@ export default class CADViewer extends React.Component {
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
             {compass}
             <LoadQueueView dispatcher={this.props.manager} />
-            <ModelTreeView
-                onChange={this.onTreeChange}
-                onClick={this.onTreeClick}
-                onNodeEnter={this.onTreeNodeEnterExit}
-                onNodeLeave={this.onTreeNodeEnterExit}
-                tree={this.state.modelTree} />
         </div>;
     }
 };
