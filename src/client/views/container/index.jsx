@@ -17,7 +17,7 @@ export default class ContainerView extends React.Component {
         super(props);
 
         //0 is desktop, 1 is mobile
-        if($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())
+        if((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800))
             this.state = { guiMode: 0 };
         else
             this.state = { guiMode: 1 };
@@ -27,7 +27,7 @@ export default class ContainerView extends React.Component {
     }
 
     handleResize() {
-        if(window.innerWidth > window.innerHeight*2)
+        if((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800))
             this.setState({ guiMode: 0 });
         else
             this.setState({ guiMode: 1 });
