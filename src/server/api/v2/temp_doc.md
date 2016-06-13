@@ -5,6 +5,7 @@
 + `step.js` contains code for getting information on workingsteps
 
 ### Coding Conventions
++ When in doubt, follow the [Node Style Guide] https://github.com/felixge/node-style-guide
 + [Semicolon usage guide](https://www.codecademy.com/blog/78)
 + Use lower case as much as possible when naming variables. Use CamelCase when necessary. Be sure to capitalize the 'I' in 'Id'.
 + Global variables should begin with an underscore (except finder, apt, machineState, etc).

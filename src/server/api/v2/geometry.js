@@ -5,7 +5,7 @@ var machineStates = {};
 var app;
 
 
-var _getGeometry = function(req , res){
+function _getGeometry(req , res){
   if (req.params.ncId) {
     let ncId = req.params.ncId;
     let ncPath = file.getPath(ncId);
@@ -22,14 +22,13 @@ var _getGeometry = function(req , res){
 
   }
   else if(req.params.ncId){
-     var ret = "";
+     let ret = '';
      ret = machineStates[req.params.ncId].GetGeometryJSON();
      console.log(ret);
      res.status(200).send(ret);
   }
 }
-module.exports = function(globalApp, cb) {
-  app = globalApp;
+module.exports = function(app, cb) {
   app.router.get("/v2/nc/projects/:ncId/geometry", _getGeometry);
   app.router.get("/v2/nc/projects/:ncId/geometry/:uuid/:type", _getGeometry);
   if (cb) cb();

@@ -16,13 +16,13 @@ function CoreServer() {
     var pjson = require('../../package.json');
     opts
         .version(pjson.version)
-        .option('-p, --port [port]', 'Port on which to run the server [8080]', '8080')
+        .option('-p, --port [port]', 'Port on which to run the server [8080]', '')
         .option('-c, --config [file]', 'Configuration File [./config/config.json]', './config/config.json')
         .option('-e, --environment [env]', 'Environment to use [development]', 'development')
         .option('-t, --tool [tool-file]', 'Machine tool file to use [""]', '')
         .parse(process.argv);
     this.config = configurator(opts.config, opts.environment);
-    this.port = opts.port;
+    this.port = opts.port || this.config.port || 8080;
 
     // set up machine tool option
     this.machinetool = opts.tool;
