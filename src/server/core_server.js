@@ -21,6 +21,7 @@ function CoreServer() {
         .option('-e, --environment [env]', 'Environment to use [development]', 'development')
         .parse(process.argv);
     this.config = configurator(opts.config, opts.environment);
+    this.port = opts.port;
     // Establish core
     this.models = {};
     this.controllers = {};
