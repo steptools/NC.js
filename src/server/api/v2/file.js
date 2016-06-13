@@ -1,3 +1,4 @@
+"use strict";
 var fs = require("fs");
 //Query for a json file that maps all projects in the data directory
 //to a particular path in the data folder

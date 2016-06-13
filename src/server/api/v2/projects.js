@@ -1,3 +1,4 @@
+"use strict";
 var file = require("./file");
 var fs = require("fs");
 
