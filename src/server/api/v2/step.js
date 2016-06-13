@@ -6,16 +6,16 @@ function exeFromId(id) {
 	let ws = {
 		"id": id,
 		"name": find.GetExecutableName(id)
-	}
+	};
 	if (find.IsWorkingstep(id)) {
-		ws["type"] = "workingstep";
+		ws.type = "workingstep";
 		return ws;
 	} else if (find.IsSelective(id)) {
-		ws["type"] = "selective";
+		ws.type = "selective";
 	} else if (find.IsWorkplan(id)) {
-		ws["type"] = "workplan";
+		ws.type = "workplan";
 	}
-	ws["children"] = find.GetNestedExecutableAll(id).map(exeFromId);
+	ws.children = find.GetNestedExecutableAll(id).map(exeFromId);
 	return ws;
 }
 
@@ -51,4 +51,4 @@ module.exports = function(app, cb) {
 	app.router.get('/v2/nc/projects/:ncId/workplan',_getMwp);
 	//app.router.get('/v2/nc/projects',_getprojs);
 	if (cb) cb();
-}
+};
