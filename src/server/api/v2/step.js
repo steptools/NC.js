@@ -3,7 +3,7 @@ var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 var find = new StepNC.Finder();
 var file = require('./file');
 
-function exeFromId(id) {
+var exeFromId = function(id) {
 	let ws = {
 		"id": id,
 		"name": find.GetExecutableName(id)
@@ -20,7 +20,7 @@ function exeFromId(id) {
 	return ws;
 }
 
-function _getExeFromId(req, res) {
+var _getExeFromId = function(req, res) {
 	if (req.params.ncId && req.params.wsId){
 		let ncId = req.params.ncId;
 		let wsId = req.params.wsId;
@@ -30,7 +30,7 @@ function _getExeFromId(req, res) {
 	}
 } 
 
-function _getMwp(req, res) {
+var _getMwp = function(req, res) {
 	if (req.params.ncId) {
 		let ncId = req.params.ncId;
 		find.OpenProject(file.getPath(ncId));

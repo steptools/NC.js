@@ -8,6 +8,7 @@ var content = fs.readFileSync("data/pathmap.json");
 var jsoncontent = JSON.parse(content);
 var machineStates = {};
 var getPath;
+
 module.exports.getPath = function getPath(ncId){
 	let lowncId = ncId.toLowerCase();
 	if(jsoncontent[lowncId]){

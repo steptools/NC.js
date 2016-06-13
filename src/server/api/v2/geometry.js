@@ -4,7 +4,7 @@ var file = require('./file');
 var app;
 
 
-function _getGeometry(req , res){
+var _getGeometry = function(req , res){
   if (req.params.ncId) {
     let ncId = req.params.ncId;
     var ms = file.getMachineState(ncId);
