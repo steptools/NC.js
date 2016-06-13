@@ -7,6 +7,16 @@ var fs = require("fs");
 var content = fs.readFileSync("data/pathmap.json");
 var jsoncontent = JSON.parse(content);
 var machineStates = {};
+var getPath;
+module.exports.getPath = function getPath(ncId){
+	let lowncId = ncId.toLowerCase();
+	if(jsoncontent[lowncId])
+		return jsoncontent[lowncId];
+	else
+		console.log("This project doesn't exist");
+	return 1;
+}
+getPath=module.exports.getPath;
 
 module.exports.getMachineState = function (ncId) {
     var ncPath = getPath(ncId);
@@ -17,11 +27,3 @@ module.exports.getMachineState = function (ncId) {
 	return machineStates[ncId];
 }
 
-module.exports.getPath = function getPath(ncId){
-	let lowncId = ncId.toLowerCase();
-	if(jsoncontent[lowncId])
-		return jsoncontent[lowncId];
-	else
-		console.log("This project doesn't exist");
-		return 1;
-}
