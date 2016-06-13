@@ -16,9 +16,11 @@ export default class ContainerView extends React.Component {
     constructor(props){
         super(props);
 
-        this.state={
-	    guiMode: 0//0 is desktop, 1 is mobile
-        };
+        //0 is desktop, 1 is mobile
+        if($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())
+            this.state = { guiMode: 0 };
+        else
+            this.state = { guiMode: 1 };
 
         this.handleResize   = this.handleResize.bind(this);
         window.addEventListener("resize", this.handleResize);
