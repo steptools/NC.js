@@ -3,7 +3,6 @@ var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 var file = require('./file');
 
 var app;
-var machineStates = {};
 var loopStates = {};
 
 var update = (val) => {
@@ -13,19 +12,17 @@ var update = (val) => {
 var _getDelta = function(pid, key, cb) {
   var response = "";
   if (key) {
-    response = machineStates[pid].GetKeystateJSON();
+    response = file.machineStates[pid].GetKeystateJSON();
   }
   else {
-    response = machineStates[pid].GetDeltaJSON();
+    response = file.machineStates[pid].GetDeltaJSON();
   }
   //app.logger.debug("got " + response);
   cb(response);
 };
 
 var _getNext = function(pid, cb) {
-  let rc = -1;
-  rc = machineStates[pid].NextWS();
-  //app.logger.debug("NextWS() rc = " + rc);
+  file.machineStates[pid].NextWS();
   //assume switch was successful
   app.logger.debug("Switched!");
   cb();
@@ -34,7 +31,7 @@ var _getNext = function(pid, cb) {
 var _loop = function(pid, key) {
   if (loopStates[pid] === true) {
     //app.logger.debug("Loop step " + pid);
-    let rc = machineStates[pid].AdvanceState();
+    let rc = file.machineStates[pid].AdvanceState();
     if (rc === 0) {  // OK
       //app.logger.debug("OK...");
       _getDelta(pid, key, function(b) {
@@ -56,13 +53,13 @@ var _loopInit = function(req, res) {
     let ncId = req.params.ncId;
     let loopstate = req.params.loopstate;
     let ncPath = file.getPath(ncId);
-    if (typeof(machineStates[ncId]) === 'undefined') {
-      machineStates[ncId] = new StepNC.machineState(ncPath);
+    if (typeof(file.machineStates[ncId]) === 'undefined') {
+      file.machineStates[ncId] = new StepNC.machineState(ncPath);
       loopStates[ncId] = false;
 
       // load the machine tool using global options
-      if (app.machinetool != "")
-        machineStates[ncId].LoadMachine(app.machinetool);
+      if (app.machinetool !== "")
+        file.machineStates[ncId].LoadMachine(app.machinetool);
     }
     switch(loopstate) {
       case "state":

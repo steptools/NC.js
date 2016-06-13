@@ -13,5 +13,6 @@ module.exports.getPath = function (ncId){
 	if(jsoncontent[lowncId])
 		return jsoncontent[lowncId];
 	else
-		return "This project doesn't exist";
+		console.log("This project doesn't exist");
+		return 1;
 }
