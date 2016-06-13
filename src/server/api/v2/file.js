@@ -5,8 +5,9 @@ var fs = require("fs");
 module.exports.getPath = function (ncId){
 	var content = fs.readFileSync("data/pathmap.json");
 	var jsoncontent = JSON.parse(content);
-	if(jsoncontent[ncId])
-		return jsoncontent[ncId];
+	var lowncId = ncId.toLowerCase();
+	if(jsoncontent[lowncId])
+		return jsoncontent[lowncId];
 	else
 		return "This project doesn't exist";
 }
