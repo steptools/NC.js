@@ -24,7 +24,7 @@ function _getExeFromId(req, res) {
 	if (req.params.ncId && req.params.wsId){
 		let ncId = req.params.ncId;
 		let wsId = req.params.wsId;
-		var id_new = parseInt(wsId);
+		let id_new = parseInt(wsId);
 		find.OpenProject(file.getPath(ncId));
 		res.status(200).send(exeFromId(id_new));
 	}
@@ -34,7 +34,7 @@ function _getMwp(req, res) {
 	if (req.params.ncId) {
 		let ncId = req.params.ncId;
 		find.OpenProject(file.getPath(ncId));
-		var mwpId = find.GetMainWorkplan();
+		let mwpId = find.GetMainWorkplan();
 		res.status(200).send(exeFromId(mwpId));
 	}
 }

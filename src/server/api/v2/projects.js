@@ -2,10 +2,10 @@ var file = require("./file");
 var fs = require("fs");
 
 function _getProjects(req, res){
-	var content = fs.readFileSync("data/pathmap.json");
-	var projects = JSON.parse(content);
+	let content = fs.readFileSync("data/pathmap.json");
+	let projects = JSON.parse(content);
 	let rtn = {};
-	for(var proj in projects)
+	for(let proj in projects)
 		rtn[proj] = projects[proj];
 	res.status(200).send(rtn);
 }

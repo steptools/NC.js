@@ -3,9 +3,9 @@ var fs = require("fs");
 //to a particular path in the data folder
 
 module.exports.getPath = function (ncId){
-	var content = fs.readFileSync("data/pathmap.json");
-	var jsoncontent = JSON.parse(content);
-	var lowncId = ncId.toLowerCase();
+	let content = fs.readFileSync("data/pathmap.json");
+	let jsoncontent = JSON.parse(content);
+	let lowncId = ncId.toLowerCase();
 	if(jsoncontent[lowncId])
 		return jsoncontent[lowncId];
 	else
