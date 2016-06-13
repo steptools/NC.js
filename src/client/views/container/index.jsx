@@ -23,7 +23,15 @@ export default class ContainerView extends React.Component {
             this.state = { guiMode: 1 };
 
         this.handleResize   = this.handleResize.bind(this);
+        
+    }
+
+    componentDidMount() {
         window.addEventListener("resize", this.handleResize);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.handleResize);
     }
 
     handleResize() {
