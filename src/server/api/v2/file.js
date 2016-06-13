@@ -10,7 +10,7 @@ var machineStates = {};
 
 module.exports.getMachineState = function (ncId) {
 	var ncPath = module.exports.getPath(ncId)
-	if (typeof(machineStates[ncId] === 'undefined')) {
+	if (typeof(machineStates[ncId]) === 'undefined') {
 		machineStates[ncId] = new StepNC.machineState(ncPath);
 		
 	}
