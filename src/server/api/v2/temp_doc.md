@@ -10,8 +10,8 @@ The endpoint structure of these files
 + projects
 	- projectID
 		* geometry
-			+ {type}
-				+ {eid}
+			+ {uuid}
+				+ {type}
 		* state
 			+ deltastate
 			* keystate
