@@ -23,9 +23,7 @@ var _getDelta = function(pid, key, cb) {
 };
 
 var _getNext = function(pid, cb) {
-  let rc = -1;
-  rc = machineStates[pid].NextWS();
-  //app.logger.debug("NextWS() rc = " + rc);
+  machineStates[pid].NextWS();
   //assume switch was successful
   app.logger.debug("Switched!");
   cb();
