@@ -25,7 +25,7 @@ export default class ContainerView extends React.Component {
     }
 
     handleResize() {
-        if($(this.ie6 ? document.body : document).width()>$(this.ie6 ? document.body : document).height())
+        if(window.innerWidth > window.innerHeight*2)
             this.setState({ guiMode: 0 });
         else
             this.setState({ guiMode: 1 });
