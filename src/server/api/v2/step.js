@@ -25,7 +25,7 @@ function _getExeFromId(req, res) {
 		let ncId = req.params.ncId;
 		let wsId = req.params.wsId;
 		var id_new = parseInt(wsId);
-		find.OpenProject(getPath(ncId));
+		find.OpenProject(file.getPath(ncId));
 		res.status(200).send(exeFromId(id_new));
 	}
 } 
@@ -52,5 +52,6 @@ module.exports = function(app, cb) {
 	//ncId
 	app.router.get('/v2/nc/projects/:ncId/workplan',_getMwp);
 	//app.router.get('/v2/nc/projects',_getprojs);
+	
 	if (cb) cb();
 };

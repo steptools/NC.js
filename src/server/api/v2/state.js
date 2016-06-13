@@ -1,5 +1,6 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
+var file = require('./file');
 
 var app;
 var machineStates = {};
@@ -23,11 +24,11 @@ var _getDelta = function(pid, key, cb) {
 
 var _getNext = function(pid, cb) {
   let rc = -1;
-  rc = machineStates[pid].nextWS();
-  if (rc === 0) {
-    app.logger.debug("Switched!");
-    cb();
-  }
+  rc = machineStates[pid].NextWS();
+  //app.logger.debug("NextWS() rc = " + rc);
+  //assume switch was successful
+  app.logger.debug("Switched!");
+  cb();
 };
 
 var _loop = function(pid, key) {
@@ -35,7 +36,7 @@ var _loop = function(pid, key) {
     //app.logger.debug("Loop step " + pid);
     let rc = machineStates[pid].AdvanceState();
     if (rc === 0) {  // OK
-      app.logger.debug("OK...");
+      //app.logger.debug("OK...");
       _getDelta(pid, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         setTimeout(function() { _loop(pid, false); }, 300);
@@ -54,8 +55,9 @@ var _loopInit = function(req, res) {
   if (req.params.ncId && req.params.loopstate) {
     let ncId = req.params.ncId;
     let loopstate = req.params.loopstate;
+    let ncPath = file.getPath(ncId);
     if (typeof(machineStates[ncId]) === 'undefined') {
-      machineStates[ncId] = new StepNC.machineState(ncId);
+      machineStates[ncId] = new StepNC.machineState(ncPath);
       loopStates[ncId] = false;
     }
     switch(loopstate) {
@@ -94,5 +96,6 @@ var _loopInit = function(req, res) {
 module.exports = function(globalApp, cb) {
   app = globalApp;
   app.router.get('/v2/nc/:ncId/loop/:loopstate', _loopInit);
+  
   if (cb) cb();
 };

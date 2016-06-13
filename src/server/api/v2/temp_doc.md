@@ -32,10 +32,11 @@ The endpoint structure of these files
 
 In order to expand these endpoints, the typical notation is property/id/.
 
-
+### File System and Data Setup
 Must setup a data folder in the root directory that contains a pathmap.json file with example structure:
 {
-	"ncId": "Path to .stpnc file within data directory e.g. "C:/Users/Nick/Documents/STEP Tools/StepNCViewer/data/Boxy/model.stpnc" "
+	"ncId": "Path to .stpnc file within data directory>,
+	"boxy": "C:/Users/Nick/Documents/STEP Tools/StepNCViewer/data/boxy/model.stpnc"
 }
 In order to get the file path for a specific project use:
 
