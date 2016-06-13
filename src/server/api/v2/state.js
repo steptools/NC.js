@@ -59,6 +59,10 @@ var _loopInit = function(req, res) {
     if (typeof(machineStates[ncId]) === 'undefined') {
       machineStates[ncId] = new StepNC.machineState(ncPath);
       loopStates[ncId] = false;
+
+      // load the machine tool using global options
+      if (app.machinetool != "")
+        machineStates[ncId].LoadMachine(app.machinetool);
     }
     switch(loopstate) {
       case "state":

@@ -16,8 +16,8 @@ The endpoint structure of these files
 + projects
 	- projectID
 		* geometry
-			+ {type}
-				+ {eid}
+			+ {uuid}
+				+ {type}
 		* state
 			+ deltastate
 			* keystate
@@ -35,9 +35,11 @@ In order to expand these endpoints, the typical notation is property/id/.
 ### File System and Data Setup
 Must setup a data folder in the root directory that contains a pathmap.json file with example structure:
 {
-	"ncId": "Path to .stpnc file within data directory>,
-	"boxy": "C:/Users/Nick/Documents/STEP Tools/StepNCViewer/data/boxy/model.stpnc"
+	"<ncId>": "<path>"
 }
+ncId should be replaced with the ncId of the project e.g. "boxy" and should always be all lower case letters
+path should be replaced with the path to the .stpnc file within the data directory e.g "C:/Users/Nick/Documents/STEP Tools/StepNCViewer/data/boxy/model.stpnc"
+
 In order to get the file path for a specific project use:
 
 var file = require('./file'); //This is if the file.js is in the same directory as your .js file

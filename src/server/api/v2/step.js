@@ -24,7 +24,7 @@ function _getExeFromId(req, res) {
 	if (req.params.ncId && req.params.wsId){
 		let ncId = req.params.ncId;
 		let wsId = req.params.wsId;
-		var id_new = parseInt(wsId);
+		let id_new = parseInt(wsId);
 		find.OpenProject(file.getPath(ncId));
 		res.status(200).send(exeFromId(id_new));
 	}
@@ -34,16 +34,13 @@ function _getMwp(req, res) {
 	if (req.params.ncId) {
 		let ncId = req.params.ncId;
 		find.OpenProject(file.getPath(ncId));
-		var mwpId = find.GetMainWorkplan();
+		let mwpId = find.GetMainWorkplan();
 		res.status(200).send(exeFromId(mwpId));
 	}
 }
 
 
 module.exports = function(app, cb) {
-	//FIXME: Route currently only works for a model that is in StepNCViewers root directory
-	//ncId will have to be used to find the path in the future
-
 	//This route gets the executable given an Id and returns a JSON object with its 
 	//name, id and all its children (and children's children, etc.)
 	app.router.get('/v2/nc/projects/:ncId/workplan/:wsId',_getExeFromId);
@@ -51,7 +48,11 @@ module.exports = function(app, cb) {
 	//This route gets the main workplan for the project that is specified by 
 	//ncId
 	app.router.get('/v2/nc/projects/:ncId/workplan',_getMwp);
+<<<<<<< HEAD
 	//app.router.get('/v2/nc/projects',_getprojs);
 	
+=======
+
+>>>>>>> 2c3c8e6ea5138a72656bd7144f74b405d67a0794
 	if (cb) cb();
 };
