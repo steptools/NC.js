@@ -10,8 +10,15 @@ var machineStates = {};
 var getPath;
 module.exports.getPath = function getPath(ncId){
 	let lowncId = ncId.toLowerCase();
-	if(jsoncontent[lowncId])
+	if(jsoncontent[lowncId]){
+		if (fs.existsSync(jsoncontent[lowncId])) {
+	    	console.log('Found file');
+		}
+		else{
+			console.log("THE FILE WAS NOT OPEN");
+		}
 		return jsoncontent[lowncId];
+	}
 	else
 		console.log("This project doesn't exist");
 	return 1;
@@ -26,4 +33,3 @@ module.exports.getMachineState = function (ncId) {
 	}
 	return machineStates[ncId];
 }
-

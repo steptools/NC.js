@@ -20,7 +20,6 @@ function _getGeometry(req , res){
   else if(req.params.ncId){
      let ret = '';
      ret = ms.GetGeometryJSON();
-     console.log(ret);
      res.status(200).send(ret);
   }
 }
