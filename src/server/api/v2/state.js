@@ -10,18 +10,20 @@ var update = (val) => {
 };
 
 var _getDelta = function(pid, key, cb) {
+  let ms = file.getMachineState(pid);
   var response = "";
   if (key) {
-    response = file.machineStates[pid].GetKeystateJSON();
+    response = ms.GetKeystateJSON();
   }
   else {
-    response = file.machineStates[pid].GetDeltaJSON();
+    response = ms.GetDeltaJSON();
   }
   //app.logger.debug("got " + response);
   cb(response);
 };
 
 var _getNext = function(pid, cb) {
+  let ms = file.getMachineState(pid);
   file.machineStates[pid].NextWS();
   //assume switch was successful
   app.logger.debug("Switched!");
@@ -29,11 +31,12 @@ var _getNext = function(pid, cb) {
 };
 
 var _loop = function(pid, key) {
+  let ms = file.getMachineState(pid);
   if (loopStates[pid] === true) {
     //app.logger.debug("Loop step " + pid);
-    let rc = file.machineStates[pid].AdvanceState();
+    let rc = ms.AdvanceState();
     if (rc === 0) {  // OK
-      //app.logger.debug("OK...");
+      app.logger.debug("OK...");
       _getDelta(pid, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         setTimeout(function() { _loop(pid, false); }, 300);
@@ -52,15 +55,15 @@ var _loopInit = function(req, res) {
   if (req.params.ncId && req.params.loopstate) {
     let ncId = req.params.ncId;
     let loopstate = req.params.loopstate;
-    let ncPath = file.getPath(ncId);
-    if (typeof(file.machineStates[ncId]) === 'undefined') {
-      file.machineStates[ncId] = new StepNC.machineState(ncPath);
+    var ms = file.getMachineState(ncId);
+    if (typeof(loopStates[ncId]) === 'undefined') {
       loopStates[ncId] = false;
-
-      // load the machine tool using global options
-      if (app.machinetool !== "")
-        file.machineStates[ncId].LoadMachine(app.machinetool);
     }
+    
+    // load the machine tool using global options
+    if (app.machinetool !== "")
+      ms.LoadMachine(app.machinetool);
+      
     switch(loopstate) {
       case "state":
         if (loopStates[ncId] === true) {
