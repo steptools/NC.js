@@ -9,8 +9,7 @@ var update = (val) => {
   app.ioServer.emit("nc:state", val);
 };
 
-var _getDelta = function(pid, key, cb) {
-  let ms = file.getMachineState(pid);
+var _getDelta = function(ncId, ms, key, cb) {
   var response = "";
   if (key) {
     response = ms.GetKeystateJSON();
@@ -18,34 +17,32 @@ var _getDelta = function(pid, key, cb) {
   else {
     response = ms.GetDeltaJSON();
   }
-  //app.logger.debug("got " + response);
+  app.logger.debug("got " + response);
   cb(response);
 };
 
-var _getNext = function(pid, cb) {
-  let ms = file.getMachineState(pid);
-  file.machineStates[pid].NextWS();
+var _getNext = function(ncId, ms, cb) {
+  ms.NextWS();
   //assume switch was successful
   app.logger.debug("Switched!");
   cb();
 };
 
-var _loop = function(pid, key) {
-  let ms = file.getMachineState(pid);
-  if (loopStates[pid] === true) {
-    //app.logger.debug("Loop step " + pid);
+var _loop = function(ncId, ms, key) {
+  if (loopStates[ncId] === true) {
+    //app.logger.debug("Loop step " + ncId);
     let rc = ms.AdvanceState();
     if (rc === 0) {  // OK
       app.logger.debug("OK...");
-      _getDelta(pid, key, function(b) {
+      _getDelta(ncId, ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
-        setTimeout(function() { _loop(pid, false); }, 300);
+        setTimeout(function() { _loop(ncId, ms, false); }, 300);
       });
     }
     else if (rc == 1) {   // SWITCH
       app.logger.debug("SWITCH...");
-      _getNext(pid, function() {
-        _loop(pid, true);
+      _getNext(ncId, ms, function() {
+        _loop(ncId, ms, true);
       });
     }
   }
@@ -82,7 +79,7 @@ var _loopInit = function(req, res) {
         loopStates[ncId] = true;
         res.status(200).send("OK");
         update("play");
-        _loop(ncId, false);
+        _loop(ncId, ms, false);
         break;
       case "stop":
         if (loopStates[ncId] === false) {
