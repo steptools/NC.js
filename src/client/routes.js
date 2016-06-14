@@ -98,15 +98,25 @@ module.exports = Backbone.Router.extend({
 
     _stepnc: function(pid){
         var self = this;
-	    ReactDOM.render(
-		    <div style={{height:'100%'}}>
-			<ContainerView 
-			  app={this.app}
-			  />
-		    </div>
-	    , document.getElementById('primary-view'), function () {
-		// Dispatch setModel to the CADManager
-	    });
+        ReactDOM.render(
+                <div style={{height:'100%'}}>
+                    <div id='cadview-container'>
+                        <CADView
+                        manager={this.app.cadManager}
+                        viewContainerId='primary-view'
+                        root3DObject={this.app._root3DObject}
+                        />
+                    </div>
+                    <FooterView 
+		      cadManager={this.app.cadManager}
+		      actionManager={this.app.actionManager}
+		      socket={this.app.socket}
+                      />
+                </div>
+        , document.getElementById('primary-view'), function () {
+            // Dispatch setModel to the CADManager
+        });
+        pid = 'projects/' + pid;
 	this.app.cadManager.dispatchEvent({
           type: 'setModel',
           path: pid,
