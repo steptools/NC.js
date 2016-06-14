@@ -15,7 +15,6 @@ var _getGeometry = function(req , res){
   }
   else if(req.params.ncId && req.params.type === "annotation"){
     res.status(200).send(ms.GetGeometryJSON(req.params.annoId , "POLYLINE"));
-
   }
   else if(req.params.ncId){
      let ret = '';
@@ -26,6 +25,6 @@ var _getGeometry = function(req , res){
 module.exports = function(app, cb) {
   app.router.get("/v2/nc/projects/:ncId/geometry", _getGeometry);
   app.router.get("/v2/nc/projects/:ncId/geometry/:uuid/:type", _getGeometry);
-  app.router.get("/v2/nc/projects/:ncId/:type/:uuid", _getGeometry);
+  app.router.get("/v2/nc/projects/:ncId/geometry/:type/:uuid", _getGeometry);
   if (cb) cb();
 };
