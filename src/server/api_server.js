@@ -126,7 +126,7 @@ APIServer.prototype._setSite = function() {
     var services = {
         api_endpoint: endpoint,
         socket: "",
-        version: '/v1',
+        version: '/v2',
         auth: "/v1/user",
         model: "/v1/model"
     };

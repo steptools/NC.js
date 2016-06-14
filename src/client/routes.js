@@ -119,6 +119,7 @@ module.exports = Backbone.Router.extend({
         , document.getElementById('primary-view'), function () {
             // Dispatch setModel to the CADManager
         });
+        pid = 'projects/' + pid;
 	this.app.cadManager.dispatchEvent({
           type: 'setModel',
           path: pid,

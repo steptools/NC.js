@@ -77,7 +77,7 @@ export default class FooterView extends React.Component {
                 }
             }
         };
-        var url = "/v2/nc/boxy/loop/state";
+        var url = "/v2/nc/projects/boxy/loop/state";
         xhr.open("GET", url, true);
         xhr.send(null);
     } 
@@ -101,7 +101,7 @@ export default class FooterView extends React.Component {
 			    }
 		    }
 	    };
-	    var url = "/v2/nc/boxy/plan/"+ws;
+	    var url = "/v2/nc/projects/boxy/workplan/"+ws;
 	    xhr.open("GET",url,true);
 	    xhr.send(null);
     }
