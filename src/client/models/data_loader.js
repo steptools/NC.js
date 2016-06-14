@@ -166,7 +166,7 @@ export default class DataLoader extends THREE.EventDispatcher {
 
     workerMessage(event) {
         let req, shell, anno;
-        //console.log("Worker Message: " + event.data.type);
+        console.log("Worker Data: " + event.data.file);
         // Find the request this message corresponds to
         if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError"], event.data.type) != -1) {
             req = this._loading[event.data.workerID];
@@ -192,7 +192,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 data = JSON.parse(event.data.data);
                 anno = this._annotations[event.data.file];
                 if (!anno) {
-                    console.log('DataLoader.AnnotationlLoad: invalid annotation ID' + event.data.file);
+                    console.log('DataLoader.AnnotationLoad: invalid annotation ID ' + event.data.file);
                 } else {
                     anno.addGeometry(data);
                     this.dispatchEvent({ type: "annotationLoad", file: event.data.file });
@@ -249,7 +249,13 @@ export default class DataLoader extends THREE.EventDispatcher {
             type: req.type,
             dataType: req.dataType ? req.dataType : 'json'
         };
-        if (data.type === "shell") data.shellSize = req.shellSize;
+        if (data.type === "shell") {
+            data.shellSize = req.shellSize;
+            data.url = req.baseURL + '/geometry/' + req.path + '/' + req.type;
+        }
+        else if (data.type === "annotation") {
+            data.url = req.baseURL + '/geometry/' + req.path + '/' + req.type;
+        }
         worker.postMessage(data);
     }
 

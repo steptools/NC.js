@@ -16,6 +16,7 @@ var http                = require('http'),
     CoreServer          = require('./core_server'),
     util                = require('util');
 
+
 /************************* Support Site *********************************/
 
 var COOKIE_SECRET = 'imhotep';
@@ -105,9 +106,13 @@ APIServer.prototype._setRoutes = function(cb) {
     var self = this;
     require('./api/v1/auth')(this, function() {
         require('./api/v1/storage')(self, function() {
-          require('./api/v1/step')(self, function() {
-              require('./api/v1/state')(self, function () {if(cb)cb();});
-          });
+            require('./api/v2/projects')(self, function() {
+                require('./api/v2/step')(self, function() {
+                    require('./api/v2/state')(self, function () {
+                        require('./api/v2/geometry')(self, function (){if(cb)cb();});
+                    });
+                });
+            });
         });
     });
 };
@@ -117,11 +122,11 @@ APIServer.prototype._setRoutes = function(cb) {
  */
 APIServer.prototype._setSite = function() {
     var self = this;
-    var endpoint = this.config.host ? this.config.protocol + '://' + this.config.host + ':' + this.config.port : '';
+    var endpoint = this.config.host ? this.config.protocol + '://' + this.config.host + ':' + app.port : '';
     var services = {
         api_endpoint: endpoint,
         socket: "",
-        version: '/v1',
+        version: '/v2',
         auth: "/v1/user",
         model: "/v1/model"
     };
@@ -144,8 +149,8 @@ APIServer.prototype._setSite = function() {
  */
 APIServer.prototype.run = function() {
     var self = this;
-    this.server.listen(this.config.port, function () {
-        self.logger.info('CAD.js API Server listening on: ' + self.config.port);
+    this.server.listen(app.port, function () {
+        self.logger.info('CAD.js API Server listening on: ' + app.port);
     });
 };
 

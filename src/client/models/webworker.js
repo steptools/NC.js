@@ -630,14 +630,14 @@ function processAnnotation(url, workerID, data) {
     self.postMessage({
         type: "annotationLoad",
         url: url,
-        file: parts[parts.length - 1],
+        file: parts[parts.length - 2],
         data: data,
         workerID: workerID
     });
     self.postMessage({
         type: "workerFinish",
         workerID: workerID,
-        file: parts[parts.length - 1]
+        file: parts[parts.length - 2]
     });
 }
 
@@ -699,7 +699,7 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
         self.postMessage({
             type: "workerFinish",
             workerID: workerID,
-            file: parts[parts.length - 1]
+            file: parts[parts.length - 2]
         });
     }
 }
@@ -754,7 +754,7 @@ self.addEventListener("message", function(e) {
     xhr.addEventListener("load", function() {
         // Handle 404 in loadend
         if (xhr.status === 404) return;
-        self.postMessage({ type: "loadComplete", file: parts[parts.length - 1] });
+        self.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
         // What did we get back
         switch(e.data.type) {
             case "annotation":
@@ -778,7 +778,7 @@ self.addEventListener("message", function(e) {
                 }
                 self.postMessage({
                     type: "parseComplete",
-                    file: parts[parts.length - 1]
+                    file: parts[parts.length - 2]
                 });
                 // Process the Shell data
                 processShellJSON(url, workerID, dataJSON, true);
@@ -813,13 +813,13 @@ self.addEventListener("message", function(e) {
                 type: "loadError",
                 status: xhr.status,
                 url: url,
-                file: parts[parts.length - 1],
+                file: parts[parts.length - 2],
                 workerID: workerID
             });
         }
     });
     xhr.addEventListener("progress", function(event) {
-        var message = { type: "loadProgress", file: parts[parts.length - 1] };
+        var message = { type: "loadProgress", file: parts[parts.length - 2] };
         if (event.lengthComputable) {
             message.loaded = event.loaded / event.total * 100.0;
         }
