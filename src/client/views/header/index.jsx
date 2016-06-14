@@ -42,14 +42,10 @@ class ButtonImage extends React.Component{
   }
 }
 
-var getppbtnstate = function(){
-    return 'play';
-}
-
 export default class HeaderView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {'openMenu': 'file-menu', 'ppbutton':getppbtnstate()};
+        this.state = {'openMenu': 'file-menu'};
         this.openBottomMenu = this.openBottomMenu.bind(this);
         this.debugMenuItemClicked = this.debugMenuItemClicked.bind(this);
         this.fileMenuItemClicked = this.fileMenuItemClicked.bind(this);
@@ -117,11 +113,8 @@ export default class HeaderView extends React.Component {
         this.props.actionManager.emit("simulate-forward");
         break;
         case "play":
-            this.props.actionManager.emit("simulate-play");
-            break;
-        case "pause":
-            this.props.actionManager.emit("simulate-pause");
-            break;
+        this.props.actionManager.emit("simulate-play");
+        break;
         case "backward":
         this.props.actionManager.emit("simulate-backward");
         break;
@@ -157,61 +150,30 @@ export default class HeaderView extends React.Component {
         xhr.send(null);
     }
     render() {
-/*        var ppbtntxt = this.state.ppbutton;
+        if(this.props.guiMode == 1)
+            return null;
         const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
             <MenuItem key='file-menu'>File</MenuItem>
             <MenuItem key='simulate-menu'>Simulate</MenuItem>
-            {//<MenuItem key='view-menu'>View</MenuItem>
-                }
-            {//<MenuItem key='debug-menu'>Debug</MenuItem>
-                }
         </Menu> );
-        var bottomMenu = <div className='bottom-menus'>;
-        switch(this.state.openMenu) {
-            case 'file-menu':
-		bottomMenu +=
-                (<Menu mode='horizontal' onClick={this.fileMenuItemClicked} className='bottom-menu'>
-                  <MenuItem tooltip='New function is currently disabled' key='new'><ButtonImage icon='file'/>New</MenuItem>
-                  <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='save'/>Save</MenuItem>
-                  <MenuItem key='load'><ButtonImage icon='open-file'/>Load</MenuItem>
-                  </Menu>);
-		 break; 
-            case 'simulate-menu':
-              bottomMenu+= 
-                (<Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
-                  {//<MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='backward'/>Prev</MenuItem>
-		  }
-                  <MenuItem key={ppbtntxt}><ButtonImage icon={ppbtntxt}/>{ppbtntxt}</MenuItem>
-                  {//<MenuItem tooltip='Disabled' key='forward'><ButtonImage icon='forward'/>Next</MenuItem>
-		  }
-                  {//<MenuItem tooltip='Connect to remote session' delayShow={1000} key='remote-session'><ButtonImage icon='globe'/>Remote</MenuItem>
-		  }
-                 </Menu> );
-	      break;
-	    case 'view-menu':
-              bottomMenu+=
-                  (<Menu mode='horizontal' onClick={this.viewMenuItemClicked} className='bottom-menu'>
-                      <MenuItem tooltip='View Tolerance Tree' key='toleranceTree'><ButtonImage icon='tree-deciduous'/>Tolerances</MenuItem>
-                  </Menu>);
-	     break;
-	     case 'debug-menu':
-//                 bottomMenu+= 
-//                 (<Menu mode='horizontal' onClick={this.debugMenuItemClicked} className='bottom-menu'>
-//                     <MenuItem key='db1'><ButtonImage icon='fire'/>Update Tree</MenuItem>
-//                     <MenuItem key='db2'><ButtonImage icon='fire'/>Get Projects</MenuItem>
-//                     <MenuItem key='db3'><ButtonImage icon='fire'/>Action 3</MenuItem>
-//                     <MenuItem key='db4'><ButtonImage icon='fire'/>Action 4</MenuItem>
-//                     <MenuItem key='db5'><ButtonImage icon='fire'/>Action 5</MenuItem>
-//                     <MenuItem key='db6'><ButtonImage icon='fire'/>Action 6</MenuItem>
-//                 </Menu>);
-            break;
-	}
-        bottomMenu+=</div>;
+        const bottomMenu = ( <div className='bottom-menus'>
+          {this.state.openMenu == 'file-menu' ?
+          <Menu mode='horizontal' onClick={this.fileMenuItemClicked} className='bottom-menu'>
+              <MenuItem tooltip='New function is currently disabled' key='new'><ButtonImage icon='file'/>New</MenuItem>
+              <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='save'/>Save</MenuItem>
+              <MenuItem key='load'><ButtonImage icon='open-file'/>Load</MenuItem>
+          </Menu> : null }
+          {this.state.openMenu == 'simulate-menu' ?
+          <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
+              <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='backward'/>Prev</MenuItem>
+              <MenuItem tooltip='Disabled' key='play'><ButtonImage icon='play'/>Play</MenuItem>
+              <MenuItem tooltip='Disabled' key='forward'><ButtonImage icon='forward'/>Next</MenuItem>
+          </Menu> : null}
+        </div>);
 
         return <div className="header-bar">
             <div>{topMenu}</div>
             <div>{bottomMenu}</div>
-        </div>;*/
-	    return <div className="header-bar"></div>;
+        </div>;
     }
 }

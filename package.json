@@ -25,7 +25,7 @@
     "express-session": "latest",
     "jade": "latest",
     "joi": "latest",
-    "jquery": "latest",
+    "jquery": "^2.2.4",
     "jsonwebtoken": "^5.4.1",
     "jstree": "^3.2.1",
     "jwt-decode": "^1.4.0",
