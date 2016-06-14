@@ -251,10 +251,10 @@ export default class DataLoader extends THREE.EventDispatcher {
         };
         if (data.type === "shell") {
             data.shellSize = req.shellSize;
-            data.url = req.baseURL + '/' + req.path + '/' + req.type;
+            data.url = req.baseURL + '/geometry/' + req.path + '/' + req.type;
         }
         else if (data.type === "annotation") {
-            data.url = req.baseURL + '/' + req.path + '/' + req.type;
+            data.url = req.baseURL + '/geometry/' + req.path + '/' + req.type;
         }
         worker.postMessage(data);
     }
