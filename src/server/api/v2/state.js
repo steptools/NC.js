@@ -33,7 +33,7 @@ var _loop = function(ncId, ms, key) {
     //app.logger.debug("Loop step " + ncId);
     let rc = ms.AdvanceState();
     if (rc === 0) {  // OK
-      app.logger.debug("OK...");
+      //app.logger.debug("OK...");
       _getDelta(ncId, ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         setTimeout(function() { _loop(ncId, ms, false); }, 300);
