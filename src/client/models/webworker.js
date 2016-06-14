@@ -699,7 +699,7 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
         self.postMessage({
             type: "workerFinish",
             workerID: workerID,
-            file: parts[parts.length - 1]
+            file: parts[parts.length - 2]
         });
     }
 }
@@ -754,7 +754,7 @@ self.addEventListener("message", function(e) {
     xhr.addEventListener("load", function() {
         // Handle 404 in loadend
         if (xhr.status === 404) return;
-        self.postMessage({ type: "loadComplete", file: parts[parts.length - 1] });
+        self.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
         // What did we get back
         switch(e.data.type) {
             case "annotation":
