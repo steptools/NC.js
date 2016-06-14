@@ -630,14 +630,14 @@ function processAnnotation(url, workerID, data) {
     self.postMessage({
         type: "annotationLoad",
         url: url,
-        file: parts[parts.length - 1],
+        file: parts[parts.length - 2],
         data: data,
         workerID: workerID
     });
     self.postMessage({
         type: "workerFinish",
         workerID: workerID,
-        file: parts[parts.length - 1]
+        file: parts[parts.length - 2]
     });
 }
 
