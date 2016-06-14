@@ -17,7 +17,7 @@ var _getDelta = function(ncId, ms, key, cb) {
   else {
     response = ms.GetDeltaJSON();
   }
-  app.logger.debug("got " + response);
+  //app.logger.debug("got " + response);
   cb(response);
 };
 

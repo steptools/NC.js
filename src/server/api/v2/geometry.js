@@ -26,6 +26,6 @@ var _getGeometry = function(req , res){
 module.exports = function(app, cb) {
   app.router.get("/v2/nc/projects/:ncId/geometry", _getGeometry);
   app.router.get("/v2/nc/projects/:ncId/geometry/:uuid/:type", _getGeometry);
-  app.router.get("/v2/nc/projects/:ncId/geometry/:type/:uuid", _getGeometry);
+  //app.router.get("/v2/nc/projects/:ncId/geometry/:type/:uuid", _getGeometry);
   if (cb) cb();
 };
