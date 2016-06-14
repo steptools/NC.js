@@ -24,10 +24,6 @@ var _getExeFromId = function(req, res) {
 	if (req.params.ncId && req.params.wsId){
 		let ncId = req.params.ncId;
 		let wsId = req.params.wsId;
-		if (wsId === 'undefined') {
-			_getMwp(req, res);
-			return;
-		}
 		let id_new = parseInt(wsId);
 		find.OpenProject(file.getPath(ncId));
 		res.status(200).send(exeFromId(id_new));

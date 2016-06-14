@@ -95,7 +95,7 @@ var _loopInit = function(req, res) {
 };
 
 var _getKeyState = function (req, res) {
-  console.log("KETSTATE");
+  //app.logger.debug("KEYSTATE");
   if (req.params.ncId) {
     var ms = file.getMachineState(req.params.ncId);
     res.status(200).send(ms.GetKeystateJSON());
@@ -104,7 +104,8 @@ var _getKeyState = function (req, res) {
 
 module.exports = function(globalApp, cb) {
   app = globalApp;
-  app.router.get('/v2/nc/:ncId/keystate', _getKeyState);
-  app.router.get('/v2/nc/:ncId/loop/:loopstate', _loopInit);
+  app.router.get('/v2/nc/projects/:ncId', _getKeyState);
+  app.router.get('/v2/nc/projects/:ncId/keystate', _getKeyState);
+  app.router.get('/v2/nc/projects/:ncId/loop/:loopstate', _loopInit);
   if (cb) cb();
 };

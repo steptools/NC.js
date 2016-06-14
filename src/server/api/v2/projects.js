@@ -21,7 +21,7 @@ function _getSpecProject(req, res){
 
 module.exports = function(app, cb){
 	app.router.get('/v2/nc/projects/', _getProjects);
-	app.router.get('/v2/nc/projects/:ncId', _getSpecProject);
+	//app.router.get('/v2/nc/projects/:ncId', _getSpecProject);
 
 	if(cb) cb();
 }
