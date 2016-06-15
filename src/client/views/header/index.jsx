@@ -110,7 +110,7 @@ export default class HeaderView extends React.Component {
     simulateMenuItemClicked(info){
       switch (info.key){
         case "forward":
-        this.props.actionManager.emit("simulate-forward");
+        this.props.actionManager.emit("sim-f");
         break;
         case "play":
         this.props.actionManager.emit("sim-pp");
@@ -123,7 +123,7 @@ export default class HeaderView extends React.Component {
 
         break;
         case "backward":
-        this.props.actionManager.emit("simulate-backward");
+        this.props.actionManager.emit("sim-b");
         break;
         case "remote-session":
         this.props.ActionManager.emit("simulate-remote-session");
@@ -182,7 +182,7 @@ export default class HeaderView extends React.Component {
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
               <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
               <MenuItem tooltip='Not Disabled?' key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
-              <MenuItem tooltip='Disabled' key='forward'><ButtonImage icon='step-forward'/>Next</MenuItem>
+              <MenuItem key='forward'><ButtonImage icon='step-forward'/>Next</MenuItem>
           </Menu> : null}
         </div>);
 

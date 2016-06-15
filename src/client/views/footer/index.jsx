@@ -27,6 +27,8 @@ export default class FooterView extends React.Component {
         super(props);
         this.state = {'ppbutton':getppbtnstate(),"wsid":-1,"wstext":""};
 	this.btnClicked = this.btnClicked.bind(this);
+  this.ffBtnClicked = this.ffBtnClicked.bind(this);
+  this.bbBtnClicked = this.bbBtnClicked.bind(this);
 	this.updateWorkingstep = this.updateWorkingstep.bind(this);
         let self = this;
         var playpause = ()=>{
@@ -43,6 +45,19 @@ export default class FooterView extends React.Component {
             xhr.open("GET", url, true);
             xhr.send(null);
         }
+        var stepforward = function(){
+            console.log("GENERICDEBUGMESSAGE");
+            var xhr = new XMLHttpRequest();
+            var url = "/v2/nc/projects/boxy/loop/stepf"
+            xhr.open("GET",url,true);
+            xhr.send(null);
+        }
+        var stepbackward = function(){
+            var xhr = new XMLHttpRequest();
+            var url = "/v2/nc/projects/boxy/loop/stepb"
+            xhr.open("GET",url,true);
+            xhr.send(null);
+        }
         var ppstate = (state) =>
         {
             var notstate;
@@ -55,13 +70,23 @@ export default class FooterView extends React.Component {
 	    ppstate(cs);
 	    playpause();
 	};
+  var fBtnClicked = (info)=>{
+      stepforward();
+  }
+  var bBtnClicked = (info)=>{
+      stepbackward();
+  }
         ppstate = ppstate.bind(this);
 	ppBtnClicked = ppBtnClicked.bind(this);
+  fBtnClicked = fBtnClicked.bind(this);
+  bBtnClicked = bBtnClicked.bind(this);
 
 	this.props.socket.on("nc:state",(state)=>{ppstate(state)});
 
 	this.props.actionManager.on('sim-pp',ppBtnClicked);
 	this.props.actionManager.on('change-workingstep', this.updateWorkingstep);
+  this.props.actionManager.on('sim-f',fBtnClicked)
+  this.props.actionManager.on('sim-b',bBtnClicked)
     }
 
     componentDidMount() {
@@ -84,6 +109,12 @@ export default class FooterView extends React.Component {
 
     btnClicked(info){
 	    this.props.actionManager.emit('sim-pp');
+    }
+    ffBtnClicked(info){
+      this.props.actionManager.emit('sim-f');
+    }
+    bbBtnClicked(info){
+      this.props.actionManager.emit('sim-b');
     }
     updateWorkingstep(ws){
 	    var self = this;
@@ -111,9 +142,9 @@ export default class FooterView extends React.Component {
         var ppbtntxt = this.state.ppbutton;
 		return <div className="Footer-bar">
 			<div className="op-text">{this.state.wstext}</div>
-      <ButtonImage onBtnClick={this.btnClicked} icon="step-backward"/>
+      <ButtonImage onBtnClick={this.bbBtnClicked} icon="step-backward"/>
 			<ButtonImage onBtnClick={this.btnClicked} icon={ppbtntxt}/>
-      <ButtonImage onBtnClick={this.btnClicked} icon="step-forward"/>
+      <ButtonImage onBtnClick={this.ffBtnClicked} icon="step-forward"/>
 			</div>;
     }
 }
