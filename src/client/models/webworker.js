@@ -754,7 +754,13 @@ self.addEventListener("message", function(e) {
     xhr.addEventListener("load", function() {
         // Handle 404 in loadend
         if (xhr.status === 404) return;
-        self.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
+        if (parts[parts.length - 2] === "projects") {
+            var file = parts[parts.length - 2] + '/' + parts[parts.length - 1];
+            self.postMessage({type : "loadComplete", file: file });
+        }
+        else {
+            self.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
+        }
         // What did we get back
         switch(e.data.type) {
             case "annotation":
@@ -819,7 +825,8 @@ self.addEventListener("message", function(e) {
         }
     });
     xhr.addEventListener("progress", function(event) {
-        var message = { type: "loadProgress", file: parts[parts.length - 2] };
+        var file = parts[parts.length - 2] + '/' + parts[parts.length - 1];
+        var message = { type: "loadProgress", file: file };
         if (event.lengthComputable) {
             message.loaded = event.loaded / event.total * 100.0;
         }
