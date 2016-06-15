@@ -120,13 +120,14 @@ var _loopInit = function(req, res) {
         res.status(200).send("OK");
         break;
       case "stepb":
-        var temp = loopStates[ncId];
+        /*var temp = loopStates[ncId];
         loopStates[ncId] = true;
         if (temp) {
         _getPrev(ncId, ms, function() {
         _loop(ncId, ms, true);
         });
-        update("play");
+        loopStates[ncId] = false;
+        update("pause");
         }
         else{
           _loop(ncId,ms,false);
@@ -136,7 +137,7 @@ var _loopInit = function(req, res) {
           loopStates[ncId] = false;
           update("pause");
         }
-        res.status(200).send("OK");
+        res.status(200).send("OK");*/
         break;
     }
   }
