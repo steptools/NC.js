@@ -45,7 +45,8 @@ class ButtonImage extends React.Component{
 export default class HeaderView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {'openMenu': 'file-menu'};
+        //this.state = {'openMenu': this.props.openMenu};
+
         this.openBottomMenu = this.openBottomMenu.bind(this);
         this.debugMenuItemClicked = this.debugMenuItemClicked.bind(this);
         this.fileMenuItemClicked = this.fileMenuItemClicked.bind(this);
@@ -82,7 +83,8 @@ export default class HeaderView extends React.Component {
     }
 
     openBottomMenu(info){
-      this.setState({ 'openMenu' : info.key });
+        //this.setState({ 'openMenu' : info.key });
+        this.props.cb(info.key);
     }
 
     debugMenuItemClicked(info){
@@ -150,20 +152,20 @@ export default class HeaderView extends React.Component {
         xhr.send(null);
     }
     render() {
-        if(this.props.guiMode == 1)
-            return null;
+        //if(this.props.guiMode == 1)
+            //return null;
         const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
             <MenuItem key='file-menu'>File</MenuItem>
             <MenuItem key='simulate-menu'>Simulate</MenuItem>
         </Menu> );
         const bottomMenu = ( <div className='bottom-menus'>
-          {this.state.openMenu == 'file-menu' ?
+          {this.props.openMenu == 'file-menu' ?
           <Menu mode='horizontal' onClick={this.fileMenuItemClicked} className='bottom-menu'>
               <MenuItem tooltip='New function is currently disabled' key='new'><ButtonImage icon='file'/>New</MenuItem>
               <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='save'/>Save</MenuItem>
               <MenuItem key='load'><ButtonImage icon='open-file'/>Load</MenuItem>
           </Menu> : null }
-          {this.state.openMenu == 'simulate-menu' ?
+          {this.props.openMenu == 'simulate-menu' ?
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
               <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='backward'/>Prev</MenuItem>
               <MenuItem tooltip='Disabled' key='play'><ButtonImage icon='play'/>Play</MenuItem>

@@ -16,14 +16,17 @@ export default class ContainerView extends React.Component {
     constructor(props){
         super(props);
 
-        //0 is desktop, 1 is mobile
+        let tempGuiMode=1;
         if((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800))
-            this.state = { guiMode: 0 };
-        else
-            this.state = { guiMode: 1 };
+            tempGuiMode=0;
+
+        this.state = {
+            guiMode: tempGuiMode,
+            openMenu: 'file-menu'
+        };
 
         this.handleResize   = this.handleResize.bind(this);
-        
+        this.headerCB=this.headerCB.bind(this);
     }
 
     componentDidMount() {
@@ -40,16 +43,24 @@ export default class ContainerView extends React.Component {
         else
             this.setState({ guiMode: 1 });
     }
+
+    headerCB(newOpenMenu)
+    {
+        this.setState({ openMenu: newOpenMenu });
+    }
     
     render() {   
-	return(
+        let HV = this.state.guiMode == 0 ? <HeaderView
+	    cadManager={this.props.app.cadManager}
+	    actionManager={this.props.app.actionManager}
+	    socket={this.props.app.socket}
+	    openMenu={this.state.openMenu}
+	    cb={this.headerCB}
+	    /> : undefined;
+        
+        return(
 	    <div style={{height:'100%'}}>
-		<HeaderView
-		    cadManager={this.props.app.cadManager}
-		    actionManager={this.props.app.actionManager}
-		    socket={this.props.app.socket}
-		    guiMode={this.state.guiMode}
-		    />
+		{HV}
 		<SidebarView
 		    cadManager={this.props.app.cadManager}
 		    app={this.props.app}
