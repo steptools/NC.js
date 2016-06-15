@@ -57,15 +57,11 @@ var _loopInit = function(req, res) {
   if (req.params.ncId && req.params.loopstate) {
     let ncId = req.params.ncId;
     let loopstate = req.params.loopstate;
-    var ms = file.getMachineState(ncId);
+    var ms = file.getMachineState(app, ncId);
     if (typeof(loopStates[ncId]) === 'undefined') {
       loopStates[ncId] = false;
     }
-    
-    // load the machine tool using global options
-    if (app.machinetool !== "")
-      ms.LoadMachine(app.machinetool);
-      
+
     switch(loopstate) {
       case "state":
         if (loopStates[ncId] === true) {
@@ -113,7 +109,7 @@ var _loopInit = function(req, res) {
 var _getKeyState = function (req, res) {
   //app.logger.debug("KEYSTATE");
   if (req.params.ncId) {
-    var ms = file.getMachineState(req.params.ncId);
+    var ms = file.getMachineState(app, req.params.ncId);
     res.status(200).send(ms.GetKeystateJSON());
   }
 };
