@@ -4,9 +4,14 @@ var file = require('./file');
 
 var app;
 var loopStates = {};
+let playbackSpeed = 3;
 
 var update = (val) => {
   app.ioServer.emit("nc:state", val);
+};
+
+var _updateSpeed = (speed) => {
+  app.ioServer.emit("nc:speed", speed);
 };
 
 var _getDelta = function(ncId, ms, key, cb) {
@@ -36,7 +41,7 @@ var _loop = function(ncId, ms, key) {
       //app.logger.debug("OK...");
       _getDelta(ncId, ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
-        setTimeout(function() { _loop(ncId, ms, false); }, 300);
+        setTimeout(function() { _loop(ncId, ms, false); }, 1000 / playbackSpeed);
       });
     }
     else if (rc == 1) {   // SWITCH
@@ -90,6 +95,17 @@ var _loopInit = function(req, res) {
         update("pause");
         res.status(200).send("OK");
         break;
+      case "speed":
+        if (req.params.speed) {
+          playbackSpeed = req.params.speed;
+          res.status(200).send("speed " + playbackSpeed);
+          _updateSpeed(playbackSpeed);
+        }
+        else {
+          res.status(200).send(playbackSpeed.toString());
+          // app.logger.debug("Sent playback speed " + playbackSpeed);
+        }
+        break;
     }
   }
 };
@@ -107,5 +123,6 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v2/nc/projects/:ncId', _getKeyState);
   app.router.get('/v2/nc/projects/:ncId/keystate', _getKeyState);
   app.router.get('/v2/nc/projects/:ncId/loop/:loopstate', _loopInit);
+  app.router.get('/v2/nc/projects/:ncId/loop/:loopstate/:speed', _loopInit);
   if (cb) cb();
 };

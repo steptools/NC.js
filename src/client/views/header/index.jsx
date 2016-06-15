@@ -92,6 +92,7 @@ export default class HeaderView extends React.Component {
             xhr.open("GET", url, true);
             xhr.send(null);
         }
+        
         var ppstate = (state) => {
             var notstate;
             if (state === "play") 
@@ -101,12 +102,30 @@ export default class HeaderView extends React.Component {
             self.setState({'ppbutton': notstate});
         };
         ppstate = ppstate.bind(this);
-
+        
         this.props.actionManager.on('simulate-play', playpause);
         this.props.actionManager.on('simulate-pause', playpause);
         this.props.socket.on("nc:state", (state) => {
             ppstate(state);
         });
+        
+        var setSpeed = function(){
+            var xhr = new XMLHttpRequest();
+            var url = "/v2/nc/projects/boxy/loop/speed/";
+            var newSpeed = self.state.playbackSpeed + 0.5;  // needs to be updated for slider
+            url = url+newSpeed;
+            self.setState({'playbackSpeed': newSpeed});
+            xhr.open("GET", url, true);
+            xhr.send(null);
+        };
+        
+        var speedState = (speed) =>
+        {
+            self.setState({'playbackSpeed': Number(speed)});
+        };
+
+        this.props.actionManager.on('simulate-setspeed',setSpeed);
+        this.props.socket.on("nc:speed",(speed)=>{speedState(speed);});
     }
 
     openBottomMenu(info) {
@@ -178,7 +197,20 @@ export default class HeaderView extends React.Component {
                     }
                 }
         };
-        var url = "/v2/nc/boxy/loop/state";
+        var url = "/v2/nc/projects/boxy/loop/state";
+        xhr.open("GET", url, true);
+        xhr.send(null);
+        
+        // Send a request to get the current speed
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    self.setState({"playbackSpeed": Number(xhr.responseText)});
+                }
+            }
+        };
+        url = "/v2/nc/projects/boxy/loop/speed";
         xhr.open("GET", url, true);
         xhr.send(null);
     }
@@ -211,7 +243,6 @@ export default class HeaderView extends React.Component {
                     : null}
             </div>
         );
-
         return <div className="header-bar">
             <div>{topMenu}</div>
             <div>{bottomMenu}</div>
