@@ -26,14 +26,15 @@ export default class FooterView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {'ppbutton':getppbtnstate(),"wsid":-1,"wstext":""};
-	this.btnClicked = this.btnClicked.bind(this);
+  this.btnClicked = this.btnClicked.bind(this);
   this.ffBtnClicked = this.ffBtnClicked.bind(this);
   this.bbBtnClicked = this.bbBtnClicked.bind(this);
-	this.updateWorkingstep = this.updateWorkingstep.bind(this);
+  this.updateWorkingstep = this.updateWorkingstep.bind(this);
         let self = this;
         var playpause = ()=>{
             var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/boxy/loop/";
+            var url = "/v2/nc/projects/";
+            url = url + this.props.pid + "/loop/";
             if(self.state.ppbutton ==='play'){
                 ppstate('play');
                 url = url+"start";
@@ -47,13 +48,15 @@ export default class FooterView extends React.Component {
         }
         var stepforward = function(){
             var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/boxy/loop/stepf"
+            var url = "/v2/nc/projects/"
+            url = url + self.props.pid + "/loop/stepf";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
         var stepbackward = function(){
             var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/boxy/loop/stepb"
+            var url = "/v2/nc/projects/";
+            url = url + self.props.pid + "/loop/stepb";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
@@ -64,11 +67,11 @@ export default class FooterView extends React.Component {
             else notstate = "play";
             self.setState({'ppbutton':notstate});
         };
-	var ppBtnClicked = (info)=>{
-	    var cs = this.state.ppbutton;
-	    ppstate(cs);
-	    playpause();
-	};
+  var ppBtnClicked = (info)=>{
+      var cs = this.state.ppbutton;
+      ppstate(cs);
+      playpause();
+  };
   var fBtnClicked = (info)=>{
       stepforward();
   }
@@ -76,14 +79,14 @@ export default class FooterView extends React.Component {
       stepbackward();
   }
         ppstate = ppstate.bind(this);
-	ppBtnClicked = ppBtnClicked.bind(this);
+  ppBtnClicked = ppBtnClicked.bind(this);
   fBtnClicked = fBtnClicked.bind(this);
   bBtnClicked = bBtnClicked.bind(this);
 
-	this.props.socket.on("nc:state",(state)=>{ppstate(state)});
+  this.props.socket.on("nc:state",(state)=>{ppstate(state)});
 
-	this.props.actionManager.on('sim-pp',ppBtnClicked);
-	this.props.actionManager.on('change-workingstep', this.updateWorkingstep);
+  this.props.actionManager.on('sim-pp',ppBtnClicked);
+  this.props.actionManager.on('change-workingstep', this.updateWorkingstep);
   this.props.actionManager.on('sim-f',fBtnClicked)
   this.props.actionManager.on('sim-b',bBtnClicked)
     }
@@ -101,13 +104,14 @@ export default class FooterView extends React.Component {
                 }
             }
         };
-        var url = "/v2/nc/projects/boxy/loop/state";
+        var url = "/v2/nc/projects/"
+        url = url + this.props.pid + "/loop/state";
         xhr.open("GET", url, true);
         xhr.send(null);
     }
 
     btnClicked(info){
-	    this.props.actionManager.emit('sim-pp');
+      this.props.actionManager.emit('sim-pp');
     }
     ffBtnClicked(info){
       this.props.actionManager.emit('sim-f');
@@ -116,34 +120,35 @@ export default class FooterView extends React.Component {
       this.props.actionManager.emit('sim-b');
     }
     updateWorkingstep(ws){
-	    var self = this;
-	    var xhr = new XMLHttpRequest();
-	    xhr.onreadystatechange = ()=>{
-		    if (xhr.readyState == 4) {
-			    if (xhr.status == 200) {
-				    if(xhr.responseText)
-				    {
-					    var workingstep = JSON.parse(xhr.responseText);
-					    self.setState({"wsid": workingstep.id,"wstext":workingstep.name.trim()});
-				    }
-				    else
-					    self.setState({"wsid":ws,"wstxt":"Operation Unknown"});
-			    }
-		    }
-	    };
-	    var url = "/v2/nc/projects/boxy/workplan/"+ws;
-	    xhr.open("GET",url,true);
-	    xhr.send(null);
+      var self = this;
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = ()=>{
+        if (xhr.readyState == 4) {
+          if (xhr.status == 200) {
+            if(xhr.responseText)
+            {
+              var workingstep = JSON.parse(xhr.responseText);
+              self.setState({"wsid": workingstep.id,"wstext":workingstep.name.trim()});
+            }
+            else
+              self.setState({"wsid":ws,"wstxt":"Operation Unknown"});
+          }
+        }
+      };
+      var url = "/v2/nc/projects/";
+      url = url + this.props.pid + "/workplan/" + ws;
+      xhr.open("GET",url,true);
+      xhr.send(null);
     }
     render() {
         if(this.props.guiMode == 0)
             return null;
         var ppbtntxt = this.state.ppbutton;
-		return <div className="Footer-bar">
-			<div className="op-text">{this.state.wstext}</div>
+    return <div className="Footer-bar">
+      <div className="op-text">{this.state.wstext}</div>
       <ButtonImage onBtnClick={this.bbBtnClicked} icon="step-backward"/>
-			<ButtonImage onBtnClick={this.btnClicked} icon={ppbtntxt}/>
+      <ButtonImage onBtnClick={this.btnClicked} icon={ppbtntxt}/>
       <ButtonImage onBtnClick={this.ffBtnClicked} icon="step-forward"/>
-			</div>;
+      </div>;
     }
 }

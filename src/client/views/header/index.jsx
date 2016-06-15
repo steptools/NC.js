@@ -55,7 +55,8 @@ export default class HeaderView extends React.Component {
         let self = this;
         var playpause = function(){
             var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/boxy/loop/";
+            var url = "/v2/nc/projects/";
+            url = url + self.props.pid + "/loop/";
             if(self.state.ppbutton ==='play'){
                 ppstate('play');
                 url = url+"start";
@@ -152,9 +153,11 @@ export default class HeaderView extends React.Component {
                 }
             }
         };
-        var url = "/v2/nc/projects/boxy/loop/state";
+        var url = "/v2/nc/projects/";
+        url = url + this.props.pid + "/loop/state";
         xhr.open("GET", url, true);
         xhr.send(null);
+        console.log(this.props.pid);
     }
     render() {
         if(this.props.guiMode == 1)
