@@ -152,7 +152,7 @@ export default class HeaderView extends React.Component {
                 }
             }
         };
-        var url = "/v2/nc/boxy/loop/state";
+        var url = "/v2/nc/projects/boxy/loop/state";
         xhr.open("GET", url, true);
         xhr.send(null);
     }
