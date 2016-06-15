@@ -22,11 +22,22 @@ export default class ContainerView extends React.Component {
 
         this.state = {
             guiMode: tempGuiMode,
-            openMenu: 'file-menu'
+            hvopenMenu: 'file-menu',
+            svmode: 'tree',
+            svws: -1,
+            svtree: {
+                "name": "No Project Loaded",
+                "isLeaf": true
+            },
+            svaltmenu: ''
         };
 
         this.handleResize   = this.handleResize.bind(this);
         this.headerCB=this.headerCB.bind(this);
+        this.sidebarCBMode=this.sidebarCBMode.bind(this);
+        this.sidebarCBWS=this.sidebarCBWS.bind(this);
+        this.sidebarCBTree=this.sidebarCBTree.bind(this);
+        this.sidebarCBAltMenu=this.sidebarCBAltMenu.bind(this);
     }
 
     componentDidMount() {
@@ -46,28 +57,56 @@ export default class ContainerView extends React.Component {
 
     headerCB(newOpenMenu)
     {
-        this.setState({ openMenu: newOpenMenu });
+        this.setState({ hvopenMenu: newOpenMenu });
+    }
+
+    sidebarCBMode(newMode)
+    {
+        this.setState({ svmode: newMode });
+    }
+
+    sidebarCBWS(newWS)
+    {
+        this.setState({ svws: newWS });
+    }
+
+    sidebarCBTree(newTree)
+    {
+        this.setState({ svtree: newTree });
+    }
+
+    sidebarCBAltMenu(newAltMenu)
+    {
+        this.setState({ svaltmenu: newAltMenu });
     }
     
     render() {   
         let HV = this.state.guiMode == 0 ? <HeaderView
 	    cadManager={this.props.app.cadManager}
+        actionManager={this.props.app.actionManager}
+        socket={this.props.app.socket}
+        openMenu={this.state.hvopenMenu}
+        cb={this.headerCB}
+	    /> : undefined;
+        let SV = this.state.guiMode == 0 ? <SidebarView
+	    cadManager={this.props.app.cadManager}
+	    app={this.props.app}
 	    actionManager={this.props.app.actionManager}
 	    socket={this.props.app.socket}
-	    openMenu={this.state.openMenu}
-	    cb={this.headerCB}
+	    mode={this.state.svmode}
+	    ws={this.state.svws}
+	    tree={this.state.svtree}
+	    altmenu={this.state.svaltmenu}
+	    cbMode={this.sidebarCBMode}
+	    cbWS={this.sidebarCBWS}
+	    cbTree={this.sidebarCBTree}
+	    cbAltMenu={this.sidebarCBAltMenu}
 	    /> : undefined;
         
         return(
 	    <div style={{height:'100%'}}>
 		{HV}
-		<SidebarView
-		    cadManager={this.props.app.cadManager}
-		    app={this.props.app}
-		    actionManager={this.props.app.actionManager}
-		    socket={this.props.app.socket}
-		    guiMode={this.state.guiMode}
-		    />
+		{SV}
 		<div id='cadview-container'>
 		    <CADView
 			manager={this.props.app.cadManager}
