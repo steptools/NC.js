@@ -46,7 +46,6 @@ export default class FooterView extends React.Component {
             xhr.send(null);
         }
         var stepforward = function(){
-            console.log("GENERICDEBUGMESSAGE");
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/boxy/loop/stepf"
             xhr.open("GET",url,true);
