@@ -66,7 +66,7 @@ export default class HeaderView extends React.Component {
             }
             xhr.open("GET", url, true);
             xhr.send(null);
-        }
+        };
         var ppstate = (state) =>
         {
             var notstate;
@@ -74,11 +74,27 @@ export default class HeaderView extends React.Component {
             else notstate = "play";
             self.setState({'ppbutton':notstate});
         };
+        var setSpeed = function(){
+            var xhr = new XMLHttpRequest();
+            var url = "/v2/nc/projects/boxy/loop/speed/";
+            var newSpeed = self.state.playbackSpeed + 0.5;  // needs to be updated for slider
+            url = url+newSpeed;
+            self.setState({'playbackSpeed': newSpeed});
+            xhr.open("GET", url, true);
+            xhr.send(null);
+        };
+        var speedState = (speed) =>
+        {
+            self.setState({'playbackSpeed': Number(speed)});
+        };
+
         ppstate = ppstate.bind(this);
 
         this.props.actionManager.on('simulate-play',playpause);
         this.props.actionManager.on('simulate-pause',playpause);
+        this.props.actionManager.on('simulate-setspeed',setSpeed);
         this.props.socket.on("nc:state",(state)=>{ppstate(state);});
+        this.props.socket.on("nc:speed",(speed)=>{speedState(speed);});
     }
 
     openBottomMenu(info){
@@ -120,6 +136,8 @@ export default class HeaderView extends React.Component {
         else{
           this.setState({"ppbutton":"play"});
         }
+            
+            // need to add case for slider changing
 
         break;
         case "backward":
@@ -153,6 +171,19 @@ export default class HeaderView extends React.Component {
             }
         };
         var url = "/v2/nc/projects/boxy/loop/state";
+        xhr.open("GET", url, true);
+        xhr.send(null);
+        
+        // Send a request to get the current speed
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    self.setState({"playbackSpeed": Number(xhr.responseText)});
+                }
+            }
+        };
+        url = "/v2/nc/projects/boxy/loop/speed";
         xhr.open("GET", url, true);
         xhr.send(null);
     }
