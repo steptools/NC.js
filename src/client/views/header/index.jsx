@@ -57,17 +57,14 @@ class Slider extends React.Component {
     
     render() {
         var sliderId = 'range-' + this.props.id;
-        var textboxId = 'text-' + this.props.id;
+        var textId = 'text-' + this.props.id;
         return (
-            <div style={{
-                margin: 10,
-                width: 200
-            }}>
+            <div>
                 <div className="glyphicons glyphicons-turtle"/>
                 <input id={sliderId}
                        onChange={this.changed}
-                       className="slider" type="range" min="0" max="100" step="1" value={this.props.val}/>
-                <input id={textboxId} type="text" min="0" max="100" step="1"/>
+                       className={sliderId} type="range" min="0" max="100" step="1" value={this.props.val}/>
+                <output className={textId}>50</output>
                 <div className="glyphicons glyphicons-rabbit"/>
             </div>
         );
