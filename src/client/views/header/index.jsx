@@ -45,7 +45,7 @@ class ButtonImage extends React.Component{
 export default class HeaderView extends React.Component {
     constructor(props) {
         super(props);
-        //this.state = {'openMenu': this.props.openMenu};
+        this.state = { };
 
         this.openBottomMenu = this.openBottomMenu.bind(this);
         this.debugMenuItemClicked = this.debugMenuItemClicked.bind(this);
