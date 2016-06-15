@@ -78,7 +78,8 @@ export default class SidebarView extends React.Component {
           }
         }
       };
-      var url = "/v2/nc/projects/boxy/workplan/";
+      var url = "/v2/nc/projects/";
+      url = url + this.props.pid + "/workplan/";
       xhr.open("GET",url,true);
       xhr.send(null);
     }
