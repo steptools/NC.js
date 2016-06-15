@@ -8,23 +8,30 @@ Setting up a development environment
 
      ----------------
   2. build StepNCNode
+
        ```
        node-gyp configure
        node-gyp build
        ```
+
      -----------------------------------------------------------------------------------------
   3. git clone https://github.com/steptools/StepNCViewer into the same directory that contains
      /StepNCNode
+
      ------------------------------------------
   4. create a new directory in ../StepNCViewer
+
        ```
        mkdir data
        ```
+
      -----------------------------------------------
   5. create a new directory in data for each project
+
        ```
        mkdir project
        ```
+
      ------------------------------------------------------------------------------
   6. Place the projects .stpnc file in the new directory under the name model.stpnc
 
@@ -38,14 +45,18 @@ Setting up a development environment
 
     ------------
   8. Create a key
+
        ```
        ssh-keygen -t rsa -f config/id_rsa
        ```
+
      ------------------------
   9. Install nodejs packages
+
        ```
        npm install
        ```
+       
      ---------------------------
   10. Build/compile using webpack
 
@@ -57,6 +68,7 @@ Setting up a development environment
 
      --------------    
   11. Start a server
+
        ```
        npm start 
        ```
