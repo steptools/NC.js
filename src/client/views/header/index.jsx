@@ -47,18 +47,24 @@ class ButtonImage extends React.Component {
 class Slider extends React.Component {
     constructor(props) {
         super(props);
+        
+        this.changed = this.changed.bind(this);
     }
+    
+    changed(info) {
+        this.props.changed(info);
+    }
+    
     render() {
         var sliderId = 'range-' + this.props.id;
-        var textboxId = 'text-' + this.props.id
-        var onChangeVal = "printValue('" + textboxId + "','" + sliderId + "')";
+        var textboxId = 'text-' + this.props.id;
         return (
             <div style={{
                 margin: 10,
                 width: 200
             }}>
                 <div className="glyphicons glyphicons-turtle"/>
-                <input id={sliderId} className="slider" type="range" min="0" max="100" step="1"/>
+                <input id={sliderId} onChange={this.changed} className="slider" type="range" min="0" max="100" step="1"/>
                 <input id={textboxId} type="text" min="0" max="100" step="1"/>
                 <div className="glyphicons glyphicons-rabbit"/>
             </div>
@@ -109,27 +115,16 @@ export default class HeaderView extends React.Component {
             ppstate(state);
         });
         
-        var setSpeed = function(){
-            var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/boxy/loop/speed/";
-            var newSpeed = self.state.playbackSpeed + 0.5;  // needs to be updated for slider
-            url = url+newSpeed;
-            self.setState({'playbackSpeed': newSpeed});
-            xhr.open("GET", url, true);
-            xhr.send(null);
-        };
         
-        var speedState = (speed) =>
-        {
-            self.setState({'playbackSpeed': Number(speed)});
-        };
-
-        this.props.actionManager.on('simulate-setspeed',setSpeed);
-        this.props.socket.on("nc:speed",(speed)=>{speedState(speed);});
+        this.updateSpeed = this.updateSpeed.bind(this);
     }
 
     openBottomMenu(info) {
         this.setState({'openMenu': info.key});
+    }
+
+    updateSpeed(info) {
+        this.props.speedChanged(info.target.value);
     }
 
     debugMenuItemClicked(info) {
@@ -151,14 +146,10 @@ export default class HeaderView extends React.Component {
             case "load":
                 this.props.actionManager.emit("open-load-project-menu");
                 break;
-            case "speed":
-                this.props.actionManager.emit("update-speed");
-                break;
         }
     }
 
     simulateMenuItemClicked(info) {
-        console.log(info);
         switch (info.key) {
             case "forward":
                 this.props.actionManager.emit("simulate-forward");
@@ -199,19 +190,6 @@ export default class HeaderView extends React.Component {
         var url = "/v2/nc/projects/boxy/loop/state";
         xhr.open("GET", url, true);
         xhr.send(null);
-        
-        // Send a request to get the current speed
-        xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    self.setState({"playbackSpeed": Number(xhr.responseText)});
-                }
-            }
-        };
-        url = "/v2/nc/projects/boxy/loop/speed";
-        xhr.open("GET", url, true);
-        xhr.send(null);
     }
 
     render() {
@@ -237,7 +215,7 @@ export default class HeaderView extends React.Component {
                             <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='backward'/>Prev</MenuItem>
                             <MenuItem tooltip='Disabled' key='play'><ButtonImage icon='play'/>Play</MenuItem>
                             <MenuItem tooltip='Disabled' key='forward'><ButtonImage icon='forward'/>Next</MenuItem>
-                            <MenuItem key='speed'><Slider id='speed'/>Speed</MenuItem>
+                            <MenuItem key='speed'><Slider id='speed' changed={this.updateSpeed}/>Speed</MenuItem>
                         </Menu>
                     : null}
             </div>

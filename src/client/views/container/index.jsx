@@ -21,13 +21,45 @@ export default class ContainerView extends React.Component {
             this.state = { guiMode: 0 };
         else
             this.state = { guiMode: 1 };
+        
+        var self = this;
 
+        var updateSpeed = function()
+        {
+            var xhr = new XMLHttpRequest();
+            var url = "/v2/nc/projects/boxy/loop/speed/";
+            var newSpeed = self.state.playbackSpeed;
+            url = url + newSpeed;
+            self.setState({'playbackSpeed': newSpeed});
+            xhr.open("GET", url, true);
+            xhr.send(null);
+        }
+        
         this.handleResize   = this.handleResize.bind(this);
         
+		this.speedChanged = this.speedChanged.bind(this);
+        
+        this.props.app.actionManager.on('simulate-setspeed',updateSpeed);
+        this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
+        
+        var self = this;
+        
+        // Send a request to get the current speed
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    self.setState({"playbackSpeed": Number(xhr.responseText)});
+                }
+            }
+        };
+        var url = "/v2/nc/projects/boxy/loop/speed";
+        xhr.open("GET", url, true);
+        xhr.send(null);
     }
 
     componentWillUnmount() {
@@ -41,6 +73,11 @@ export default class ContainerView extends React.Component {
             this.setState({ guiMode: 1 });
     }
     
+	speedChanged(speed) {
+        console.log("speed changed: " + speed);
+        this.setState({'playbackSpeed': Number(speed)});
+    }
+
     render() {   
 	return(
 	    <div style={{height:'100%'}}>
@@ -49,6 +86,7 @@ export default class ContainerView extends React.Component {
 		    actionManager={this.props.app.actionManager}
 		    socket={this.props.app.socket}
 		    guiMode={this.state.guiMode}
+			speedChanged={this.speedChanged}
 		    />
 		<SidebarView
 		    cadManager={this.props.app.cadManager}
