@@ -106,15 +106,17 @@ var _loopInit = function(req, res) {
         _getNext(ncId, ms, function() {
         _loop(ncId, ms, true);
         });
+        update("play");
         }
         else{
           _loop(ncId,ms,false);
           _getNext(ncId, ms, function() {
           _loop(ncId, ms, true);
           });
+          loopStates[ncId] = false;
+          update("pause");
         }
         res.status(200).send("OK");
-        update("play");
         break;
       case "stepb":
         var temp = loopStates[ncId];
@@ -123,15 +125,17 @@ var _loopInit = function(req, res) {
         _getPrev(ncId, ms, function() {
         _loop(ncId, ms, true);
         });
+        update("play");
         }
         else{
           _loop(ncId,ms,false);
           _getPrev(ncId, ms, function() {
           _loop(ncId, ms, true);
           });
+          loopStates[ncId] = false;
+          update("pause");
         }
         res.status(200).send("OK");
-        update("play");
         break;
     }
   }
