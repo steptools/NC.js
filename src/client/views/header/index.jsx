@@ -115,7 +115,14 @@ export default class HeaderView extends React.Component {
         this.props.actionManager.emit("simulate-forward");
         break;
         case "play":
-        this.props.actionManager.emit("simulate-play");
+        this.props.actionManager.emit("sim-pp");
+        if (this.state.ppbutton == "play"){
+          this.setState({"ppbutton":"pause"});
+        }
+        else{
+          this.setState({"ppbutton":"play"});
+        }
+
         break;
         case "backward":
         this.props.actionManager.emit("simulate-backward");
@@ -147,13 +154,21 @@ export default class HeaderView extends React.Component {
                 }
             }
         };
-        var url = "/v2/nc/boxy/loop/state";
+        var url = "/v2/nc/projects/boxy/loop/state";
         xhr.open("GET", url, true);
         xhr.send(null);
     }
     render() {
         //if(this.props.guiMode == 1)
             //return null;
+        var ppbtntxt;
+        var ppbutton = this.state.ppbutton;
+        if(this.state.ppbutton === "play"){
+          ppbtntxt = "Play";
+        }
+        else{
+          ppbtntxt = "Pause";
+        }
         const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
             <MenuItem key='file-menu'>File</MenuItem>
             <MenuItem key='simulate-menu'>Simulate</MenuItem>
@@ -168,7 +183,7 @@ export default class HeaderView extends React.Component {
           {this.props.openMenu == 'simulate-menu' ?
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
               <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='backward'/>Prev</MenuItem>
-              <MenuItem tooltip='Disabled' key='play'><ButtonImage icon='play'/>Play</MenuItem>
+              <MenuItem tooltip='Not Disabled?' key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
               <MenuItem tooltip='Disabled' key='forward'><ButtonImage icon='forward'/>Next</MenuItem>
           </Menu> : null}
         </div>);
