@@ -105,8 +105,9 @@ var _loopInit = function(req, res) {
         if (temp) {
         _getNext(ncId, ms, function() {
         _loop(ncId, ms, true);
+        loopStates[ncId] = false;
         });
-        update("play");
+        update("pause");
         }
         else{
           _loop(ncId,ms,false);
