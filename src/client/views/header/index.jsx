@@ -124,7 +124,7 @@ export default class HeaderView extends React.Component {
     }
 
     updateSpeed(info) {
-        this.props.speedChanged(info.target.value);
+        this.props.changeSpeed(info.target.value);
     }
 
     debugMenuItemClicked(info) {
@@ -148,22 +148,28 @@ export default class HeaderView extends React.Component {
                 break;
         }
     }
-
-    simulateMenuItemClicked(info) {
-        switch (info.key) {
-            case "forward":
-                this.props.actionManager.emit("simulate-forward");
-                break;
-            case "play":
-                this.props.actionManager.emit("simulate-play");
-                break;
-            case "backward":
-                this.props.actionManager.emit("simulate-backward");
-                break;
-            case "remote-session":
-                this.props.ActionManager.emit("simulate-remote-session");
-                break;
+    
+    simulateMenuItemClicked(info){
+      switch (info.key){
+        case "forward":
+        this.props.actionManager.emit("sim-f");
+        break;
+        case "play":
+        this.props.actionManager.emit("sim-pp");
+        if (this.state.ppbutton == "play"){
+          this.setState({"ppbutton":"pause"});
         }
+        else {
+          this.setState({"ppbutton": "play"});
+        }
+        break;
+        case "backward":
+        this.props.actionManager.emit("sim-b");
+        break;
+        case "remote-session":
+        this.props.ActionManager.emit("simulate-remote-session");
+        break;
+      }
     }
 
     viewMenuItemClicked(info) {
@@ -195,31 +201,34 @@ export default class HeaderView extends React.Component {
     render() {
         if (this.props.guiMode == 1) 
             return null;
-        const topMenu = (
-            <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
-                <MenuItem key='file-menu'>File</MenuItem>
-                <MenuItem key='simulate-menu'>Simulate</MenuItem>
-            </Menu>
-        );
-        const bottomMenu = (
-            <div className='bottom-menus'>
-                {this.state.openMenu == 'file-menu'
-                    ? <Menu mode='horizontal' onClick={this.fileMenuItemClicked} className='bottom-menu'>
-                            <MenuItem tooltip='New function is currently disabled' key='new'><ButtonImage icon='file'/>New</MenuItem>
-                            <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='save'/>Save</MenuItem>
-                            <MenuItem key='load'><ButtonImage icon='open-file'/>Load</MenuItem>
-                        </Menu>
-                    : null}
-                {this.state.openMenu == 'simulate-menu'
-                    ? <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
-                            <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='backward'/>Prev</MenuItem>
-                            <MenuItem tooltip='Disabled' key='play'><ButtonImage icon='play'/>Play</MenuItem>
-                            <MenuItem tooltip='Disabled' key='forward'><ButtonImage icon='forward'/>Next</MenuItem>
-                            <MenuItem key='speed'><Slider id='speed' changed={this.updateSpeed}/>Speed</MenuItem>
-                        </Menu>
-                    : null}
-            </div>
-        );
+        var ppbtntxt;
+        var ppbutton = this.state.ppbutton;
+        if(this.state.ppbutton === "play"){
+          ppbtntxt = "Play";
+        }
+        else{
+          ppbtntxt = "Pause";
+        }
+        const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
+            <MenuItem key='file-menu'>File</MenuItem>
+            <MenuItem key='simulate-menu'>Simulate</MenuItem>
+        </Menu> );
+        const bottomMenu = ( <div className='bottom-menus'>
+          {this.state.openMenu == 'file-menu' ?
+          <Menu mode='horizontal' onClick={this.fileMenuItemClicked} className='bottom-menu'>
+              <MenuItem tooltip='New function is currently disabled' key='new'><ButtonImage icon='file'/>New</MenuItem>
+              <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='save'/>Save</MenuItem>
+              <MenuItem key='load'><ButtonImage icon='open-file'/>Load</MenuItem>
+          </Menu> : null }
+          {this.state.openMenu == 'simulate-menu' ?
+          <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
+              <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
+              <MenuItem tooltip='Not Disabled?' key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
+              <MenuItem key='forward'><ButtonImage icon='step-forward'/>Next</MenuItem>
+              <MenuItem key='speed'><Slider id='speed' changed={this.updateSpeed}/>Speed</MenuItem>
+          </Menu> : null}
+        </div>);
+
         return <div className="header-bar">
             <div>{topMenu}</div>
             <div>{bottomMenu}</div>

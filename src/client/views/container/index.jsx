@@ -22,24 +22,11 @@ export default class ContainerView extends React.Component {
         else
             this.state = { guiMode: 1 };
         
-        var self = this;
-
-        var updateSpeed = function()
-        {
-            var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/boxy/loop/speed/";
-            var newSpeed = self.state.playbackSpeed;
-            url = url + newSpeed;
-            self.setState({'playbackSpeed': newSpeed});
-            xhr.open("GET", url, true);
-            xhr.send(null);
-        }
-        
         this.handleResize   = this.handleResize.bind(this);
         
 		this.speedChanged = this.speedChanged.bind(this);
+        this.changeSpeed = this.changeSpeed.bind(this);
         
-        this.props.app.actionManager.on('simulate-setspeed',updateSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
 
@@ -73,8 +60,22 @@ export default class ContainerView extends React.Component {
             this.setState({ guiMode: 1 });
     }
     
-	speedChanged(speed) {
-        console.log("speed changed: " + speed);
+    speedChanged(speed) {
+        // console.log("speed changed: " + speed);
+
+        this.setState({'playbackSpeed': Number(speed)});
+    }
+    
+	changeSpeed(speed) {
+        // console.log("changing speed: " + speed);
+        
+        var xhr = new XMLHttpRequest();
+        var url = "/v2/nc/projects/boxy/loop/speed/";
+        var newSpeed = Number(speed);
+        url = url + newSpeed;
+        xhr.open("GET", url, true);
+        xhr.send(null);
+        
         this.setState({'playbackSpeed': Number(speed)});
     }
 
@@ -86,7 +87,7 @@ export default class ContainerView extends React.Component {
 		    actionManager={this.props.app.actionManager}
 		    socket={this.props.app.socket}
 		    guiMode={this.state.guiMode}
-			speedChanged={this.speedChanged}
+			changeSpeed={this.changeSpeed}
 		    />
 		<SidebarView
 		    cadManager={this.props.app.cadManager}
