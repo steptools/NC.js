@@ -64,7 +64,9 @@ class Slider extends React.Component {
                 width: 200
             }}>
                 <div className="glyphicons glyphicons-turtle"/>
-                <input id={sliderId} onChange={this.changed} className="slider" type="range" min="0" max="100" step="1"/>
+                <input id={sliderId}
+                       onChange={this.changed}
+                       className="slider" type="range" min="0" max="100" step="1" value={this.props.val}/>
                 <input id={textboxId} type="text" min="0" max="100" step="1"/>
                 <div className="glyphicons glyphicons-rabbit"/>
             </div>
@@ -124,7 +126,7 @@ export default class HeaderView extends React.Component {
     }
 
     updateSpeed(info) {
-        this.props.changeSpeed(info.target.value);
+        this.props.actionManager.emit("simulate-setspeed", info.target.value);
     }
 
     debugMenuItemClicked(info) {
@@ -225,7 +227,7 @@ export default class HeaderView extends React.Component {
               <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
               <MenuItem tooltip='Not Disabled?' key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
               <MenuItem key='forward'><ButtonImage icon='step-forward'/>Next</MenuItem>
-              <MenuItem key='speed'><Slider id='speed' changed={this.updateSpeed}/>Speed</MenuItem>
+              <MenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed}/>Speed</MenuItem>
           </Menu> : null}
         </div>);
 

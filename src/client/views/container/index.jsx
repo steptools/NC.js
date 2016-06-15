@@ -27,6 +27,7 @@ export default class ContainerView extends React.Component {
 		this.speedChanged = this.speedChanged.bind(this);
         this.changeSpeed = this.changeSpeed.bind(this);
         
+        this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
 
@@ -76,7 +77,6 @@ export default class ContainerView extends React.Component {
         xhr.open("GET", url, true);
         xhr.send(null);
         
-        this.setState({'playbackSpeed': Number(speed)});
     }
 
     render() {   
@@ -87,7 +87,7 @@ export default class ContainerView extends React.Component {
 		    actionManager={this.props.app.actionManager}
 		    socket={this.props.app.socket}
 		    guiMode={this.state.guiMode}
-			changeSpeed={this.changeSpeed}
+            speed={this.state.playbackSpeed}
 		    />
 		<SidebarView
 		    cadManager={this.props.app.cadManager}
