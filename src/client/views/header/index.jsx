@@ -172,7 +172,6 @@ export default class HeaderView extends React.Component {
             case "remote-session":
                 this.props.ActionManager.emit("simulate-remote-session");
                 break;
-            case ""
         }
     }
 
