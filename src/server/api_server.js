@@ -6,9 +6,7 @@ var http                = require('http'),
     _                   = require('lodash'),
     io                  = require('socket.io'),
     ioSession           = require('socket.io-express-session'),
-    redis               = require('redis'),
     expSession          = require('express-session'),
-    RedisStore          = require('connect-redis')(expSession),
     express             = require('express'),
     bodyParser          = require('body-parser'),
     cookieParser        = require('cookie-parser'),
@@ -25,9 +23,6 @@ function APIServer() {
     CoreServer.call(this);
     // Setup the session
     this.session = expSession({
-        store: new RedisStore({
-            client: this.redis.session
-        }),
         cookie: { httpOnly: false },
         secret: COOKIE_SECRET,
         resave: false,
@@ -72,8 +67,6 @@ APIServer.prototype._setExpress = function() {
  */
 APIServer.prototype._setSocket = function() {
     var self = this;
-    var redisPubSubClient = this.redisClient = redis.createClient(this.config.redis.port, this.config.redis.host);
-    redisPubSubClient.subscribe('nc:delta');
     // Socket server
     this.server = http.Server(this.express);
     this.ioServer = io(this.server, {});
@@ -82,20 +75,6 @@ APIServer.prototype._setSocket = function() {
         socket.on('disconnect', function(){
 //            console.log('Socket disconnected');
         });
-    });
-
-    // Wait on the redis pubSub and relay to clients
-    redisPubSubClient.on('message',  function (channel, message) {
-        //console.log('nc:delta: ' + message);
-        var msg = JSON.parse(message);		
-        self.ioServer.emit('nc:delta', msg);
-		if(!msg.prev) { //Message is a state update, we have to cache it locally.
-		//This should check the project, 
-		//but JOE NAMES EVERY PROJECT THE SAME THING.
-		//For now, assume only serving moldy.
-		//TODO FIXME 
-			app.MostCurrentState = msg;
-		}
     });
 };
 
