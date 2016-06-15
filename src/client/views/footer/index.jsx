@@ -46,14 +46,14 @@ export default class FooterView extends React.Component {
             xhr.open("GET", url, true);
             xhr.send(null);
         }
-        var stepforward = function(){
+        var nextws = function(){
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/"
             url = url + self.props.pid + "/loop/stepf";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
-        var stepbackward = function(){
+        var prevws = function(){
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/";
             url = url + self.props.pid + "/loop/stepb";
@@ -73,10 +73,10 @@ export default class FooterView extends React.Component {
       playpause();
   };
   var fBtnClicked = (info)=>{
-      stepforward();
+      nextws();
   }
   var bBtnClicked = (info)=>{
-      stepbackward();
+      prevws();
   }
         ppstate = ppstate.bind(this);
   ppBtnClicked = ppBtnClicked.bind(this);
