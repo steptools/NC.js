@@ -1,3 +1,18 @@
+div[data-reactid*=speed] {
+  //padding-bottom:0;
+  //display: block;
+}
+
+span[data-reactid*=speed] {
+  display: block;
+  padding-bottom: 5;
+}
+
+li[data-reactid*=speed] {
+  margin-bottom:10px;
+}
+
+// Slider style
 input[type=range] {
   -webkit-appearance: none;
   width: 100%;

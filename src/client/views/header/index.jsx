@@ -50,17 +50,11 @@ class Slider extends React.Component {
     }
     render() {
         var sliderId = 'range-' + this.props.id;
-        var textboxId = 'text-' + this.props.id
-        var onChangeVal = "printValue('" + textboxId + "','" + sliderId + "')";
+        var textId = 'text-' + this.props.id;
         return (
-            <div style={{
-                margin: 10,
-                width: 200
-            }}>
-                <div className="glyphicons glyphicons-turtle"/>
-                <input id={sliderId} className="slider" type="range" min="0" max="100" step="1"/>
-                <input id={textboxId} type="text" min="0" max="100" step="1"/>
-                <div className="glyphicons glyphicons-rabbit"/>
+            <div>
+                <input className={sliderId} type="range" min="0" max="100" step="1"/>
+                <output className={textId}>50</output>
             </div>
         );
     }
@@ -237,7 +231,7 @@ export default class HeaderView extends React.Component {
                             <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='backward'/>Prev</MenuItem>
                             <MenuItem tooltip='Disabled' key='play'><ButtonImage icon='play'/>Play</MenuItem>
                             <MenuItem tooltip='Disabled' key='forward'><ButtonImage icon='forward'/>Next</MenuItem>
-                            <MenuItem key='speed'><Slider id='speed'/>Speed</MenuItem>
+                            <MenuItem tooltip='Disabled' key='speed'><Slider id='speed'/>Speed</MenuItem>
                         </Menu>
                     : null}
             </div>
