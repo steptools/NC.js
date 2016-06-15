@@ -64,12 +64,10 @@ export default class SidebarView extends React.Component {
               node.leaf = true;
               if(node.children) node.children.forEach(nodeCheck);
               node.children = [];
-                if(!_.has(node,'type'))
+                if(node.type === 'workingstep')
                   nodes.children.push(node);
-                console.log(node);
             }
             let json = JSON.parse(xhr.responseText);
-            console.log(json);
             nodeCheck(json);
             this.setState({
               'mode': 'tree',
