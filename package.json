@@ -40,7 +40,6 @@
     "rc-menu": "4.9.0",
     "react-tooltip": "^1.0.4",
     "react-ui-tree": "^2.4.1",
-    "react-fittext": "latest",
     "redis": "latest",
     "request": "^2.67.0",
     "serve-favicon": "latest",
