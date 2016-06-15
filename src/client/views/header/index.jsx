@@ -181,7 +181,7 @@ export default class HeaderView extends React.Component {
           {this.state.openMenu == 'simulate-menu' ?
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
               <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
-              <MenuItem tooltip='Not Disabled?' key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
+              <MenuItem key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
               <MenuItem key='forward'><ButtonImage icon='step-forward'/>Next</MenuItem>
           </Menu> : null}
         </div>);
