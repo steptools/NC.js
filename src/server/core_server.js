@@ -5,7 +5,6 @@ var http        = require('http'),
     path        = require('path'),
     _           = require('lodash'),
     opts        = require('commander'),
-    redis       = require('redis'),
     winston     = require('winston'),
     configurator= require('./configurator');
 
@@ -32,37 +31,11 @@ function CoreServer() {
     this.controllers = {};
     this.logger = new winston.Logger({
         transports: [
-//            new (winston.transports.File)({ filename: 'server.log' }),
             new (winston.transports.Console)({ level: 'debug' })
         ]
     });
     // Setup the rest of the primary infrastructure connections
-    var self = this;
-    this._redisConnection(function() {
-        // Setup the async dispatch
-        self.async = {};
-        // Setup the core controllers
-        self._setControllers();
-    });
 }
-
-CoreServer.prototype._redisConnection = function(callback) {
-    // Establish connection to Redis
-    var self = this;
-    this.redisClient = redis.createClient(this.config.redis.port, this.config.redis.host);
-    this.redis = {
-        session:    this.redisClient,
-        async:      this.redisClient,
-        fetch:      this.redisClient
-    };
-    this.redisClient.on('ready', function() {
-        self.logger.info('\tRedis Connected.');
-        if (callback) callback();
-    }).on('error', function() {
-        self.logger.error('Not able to connect to Redis.');
-        process.exit(-1);
-    });
-};
 
 CoreServer.prototype._setControllers = function() {
     this.controllers = {

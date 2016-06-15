@@ -3,11 +3,6 @@
   "port": 8080,
   "protocol": "http",
   "api_version": "v1",
-  "redis": {
-    "host": "localhost",
-    "port": 6379,
-    "database": 0
-  },
   "security": {
     "auth": false,
     "key_file": "/config/id_rsa",
@@ -43,9 +38,6 @@
   },
   "environments": {
     "development": {
-      "redis": {
-        "database": 1
-      },
       "storage": {
         "module": "filesystem",
         "options": {
@@ -55,10 +47,7 @@
     },
     "test": {
       "port": 8081,
-      "fetchDuration": 5,
-      "redis": {
-        "database": 2
-      }
+      "fetchDuration": 5
     },
     "production": {
       "protocol": "https"
