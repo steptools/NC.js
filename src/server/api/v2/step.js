@@ -9,14 +9,13 @@ var exeFromId = function(id) {
 		"name": find.GetExecutableName(id)
 	};
 	if (find.IsWorkingstep(id)) {
-		ws.type = "workingstep";
 		return ws;
 	} else if (find.IsSelective(id)) {
 		ws.type = "selective";
 	} else if (find.IsWorkplan(id)) {
 		ws.type = "workplan";
 	}
-	ws.children = find.GetNestedExecutableAll(id).map(exeFromId);
+	ws.children = find.GetNestedExecutableAllEnabled(id).map(exeFromId);
 	return ws;
 };
 

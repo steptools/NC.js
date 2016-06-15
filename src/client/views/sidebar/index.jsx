@@ -25,27 +25,6 @@ export default class SidebarView extends React.Component {
         this.onProjectSelected = this.onProjectSelected.bind(this);
         this.openToleranceTree = this.openToleranceTree.bind(this);
 
-        this.props.socket.on('modeltree', (items)=>{
-          // Node preprocessing
-          var nodes = {};
-            nodes.name = "Workingsteps";
-          nodes.children = [];
-          var nodeCheck = (node)=>{
-            node.icon = this.getNodeIcon(node,nodes.children.length+1);
-            //if (!node.children)
-            node.leaf = true;
-            if(node.children) node.children.forEach(nodeCheck);
-            node.children = [];
-              if(!_.has(node,'type'))
-                nodes.children.push(node);
-          }
-          nodeCheck(items);
-          this.setState({
-            'mode': 'tree',
-            'tree': nodes
-          });
-        });
-
         var disabledView = (name) => {
           return (() => {
             this.setState({
@@ -68,6 +47,40 @@ export default class SidebarView extends React.Component {
         this.props.actionManager.on('open-tolerance-tree', this.openToleranceTree);
         this.props.actionManager.on('project-selected', this.onProjectSelected);
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
+    }
+
+    componentDidMount(){
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = ()=>{
+        if (xhr.readyState == 4) {
+          if (xhr.status == 200) {
+            // Node preprocessing
+            var nodes = {};
+              nodes.name = "Workingsteps";
+            nodes.children = [];
+            var nodeCheck = (node)=>{
+              node.icon = this.getNodeIcon(node,nodes.children.length+1);
+              //if (!node.children)
+              node.leaf = true;
+              if(node.children) node.children.forEach(nodeCheck);
+              node.children = [];
+                if(!_.has(node,'type'))
+                  nodes.children.push(node);
+                console.log(node);
+            }
+            let json = JSON.parse(xhr.responseText);
+            console.log(json);
+            nodeCheck(json);
+            this.setState({
+              'mode': 'tree',
+              'tree': nodes
+            });
+          }
+        }
+      };
+      var url = "/v2/nc/projects/boxy/workplan/";
+      xhr.open("GET",url,true);
+      xhr.send(null);
     }
 
     openLoadProjectMenu(){
