@@ -44,7 +44,7 @@ export default class ContainerView extends React.Component {
         var playpause = ()=>{
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/";
-            url = url + this.props.pid + "/loop/";
+            url = url + this.props.pid + "/state/loop/";
             if(self.state.ppbutton ==='play'){
                 ppstate('play');
                 url = url+"start";
@@ -59,14 +59,14 @@ export default class ContainerView extends React.Component {
         var nextws = function(){
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/"
-            url = url + self.props.pid + "/loop/stepf";
+            url = url + self.props.pid + "/state/ws/next";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
         var prevws = function(){
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/";
-            url = url + self.props.pid + "/loop/stepb";
+            url = url + self.props.pid + "/state/ws/prev";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
@@ -114,7 +114,6 @@ export default class ContainerView extends React.Component {
         this.footerCBWSText=this.footerCBWSText.bind(this);
         this.cbPPButton=this.cbPPButton.bind(this);
         
-        
         this.speedChanged = this.speedChanged.bind(this);
         this.changeSpeed = this.changeSpeed.bind(this);
 
@@ -130,27 +129,19 @@ export default class ContainerView extends React.Component {
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
-                    if(xhr.responseText =="play")
+                    let stateObj = JSON.parse(xhr.responseText);
+                    if(stateObj.state =="play")
                         self.setState({"ppbutton": "pause"}); //Loop is running, we need a pause button.
                     else
                         self.setState({"ppbutton":"play"});
+                    
+                    self.setState({"playbackSpeed": Number(stateObj.speed)});
                 }
             }
         };
-        let url = "/v2/nc/projects/"
-        url = url + this.props.pid + "/loop/state";
-        xhr.open("GET", url, true);
-        xhr.send(null);
         
-        xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    self.setState({"playbackSpeed": Number(xhr.responseText)});
-                }
-            }
-        };
-        url = "/v2/nc/projects/boxy/loop/speed";
+        let url = "/v2/nc/projects/";
+        url = url + this.props.pid + "/state/loop/";
         xhr.open("GET", url, true);
         xhr.send(null);
         
@@ -226,14 +217,12 @@ export default class ContainerView extends React.Component {
     }
     
     speedChanged(speed) {
-
         if (!this.state.changeSpeed) {
             // just update to match server
             this.setState({'playbackSpeed': Number(speed)});
         }
         else if (this.state.playbackSpeed === Number(speed)) {
             // server speed matches client speed now
-            
             this.setState({'changeSpeed': false});
         }
         else
@@ -250,9 +239,8 @@ export default class ContainerView extends React.Component {
         
         // now send a request to the server to change its speed
         let xhr = new XMLHttpRequest();
-        let url = "/v2/nc/projects/boxy/loop/speed/";
-        let newSpeed = Number(speed);
-        url = url + newSpeed;
+        let url = "/v2/nc/projects/boxy/state/loop/" + Number(speed);
+        console.log("sending get req to: " + url);
         xhr.open("GET", url, true);
         xhr.send(null);
         
