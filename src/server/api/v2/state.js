@@ -4,7 +4,7 @@ var file = require('./file');
 
 var app;
 var loopStates = {};
-let playbackSpeed = 3;
+let playbackSpeed = 50;
 
 var update = (val) => {
   app.ioServer.emit("nc:state", val);
@@ -41,7 +41,10 @@ var _loop = function(ncId, ms, key) {
       //app.logger.debug("OK...");
       _getDelta(ncId, ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
-        setTimeout(function() { _loop(ncId, ms, false); }, 1000 / playbackSpeed);
+        if (playbackSpeed > 0)
+            setTimeout(function() { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 100));
+        else
+            // app.logger.debug("playback speed is zero, no timeout set");
       });
     }
     else if (rc == 1) {   // SWITCH
@@ -93,6 +96,14 @@ var _loopInit = function(req, res) {
         break;
       case "speed":
         if (req.params.speed) {
+          if (Number(playbackSpeed) === 0
+              && req.params.speed > 0
+              && loopStates[ncId] === true) {
+            // app.logger.debug("Attempting to resume after being 0");
+            playbackSpeed = req.params.speed;
+            _loop(ncId, ms, false);
+          }
+              
           playbackSpeed = req.params.speed;
           res.status(200).send("speed " + playbackSpeed);
           _updateSpeed(playbackSpeed);

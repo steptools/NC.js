@@ -65,7 +65,7 @@ class Slider extends React.Component {
         return (
             <div>
                 <input id={sliderId} onChange={this.changed} className={sliderId} type="range" min="0" max="100" step="1" value={this.props.val}/>
-                <output className={textId}>50</output>
+                <output className={textId}>{this.props.val}%</output>
             </div>
         );
     }
