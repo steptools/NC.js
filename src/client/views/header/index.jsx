@@ -12,18 +12,22 @@ class MenuItem extends React.Component {
             var id = _.uniqueId("tooltip_");
             return (
                 <PlainMenuItem {...this.props}>
-                    <span data-tip data-for={id}>
-                        {this.props.children}
-                    </span>
-                    <ReactTooltip id={id} place="top" type="dark" effect="float" delayShow={this.props.delayShow}>
-                        {this.props.tooltip}
-                    </ReactTooltip>
+                    <div>
+                        <span data-tip data-for={id}>
+                            {this.props.children}
+                        </span>
+                        <ReactTooltip id={id} place="top" type="dark" effect="float" delayShow={this.props.delayShow}>
+                            {this.props.tooltip}
+                        </ReactTooltip>
+                    </div>
                 </PlainMenuItem>
             );
         } else {
             return (
                 <PlainMenuItem {...this.props}>
-                    {this.props.children}
+                    <div>
+                        {this.props.children}
+                    </div>
                 </PlainMenuItem>
             );
         }
@@ -60,12 +64,8 @@ class Slider extends React.Component {
         var textId = 'text-' + this.props.id;
         return (
             <div>
-                <div className="glyphicons glyphicons-turtle"/>
-                <input id={sliderId}
-                       onChange={this.changed}
-                       className={sliderId} type="range" min="0" max="100" step="1" value={this.props.val}/>
+                <input id={sliderId} onChange={this.changed} className={sliderId} type="range" min="0" max="100" step="1" value={this.props.val}/>
                 <output className={textId}>50</output>
-                <div className="glyphicons glyphicons-rabbit"/>
             </div>
         );
     }
