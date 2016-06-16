@@ -75,7 +75,7 @@ export default class ContainerView extends React.Component {
             this.setState({'changeSpeed': false});
         }
         else
-            // something didn't match up, wait for the proper server response
+            ;// something didn't match up, wait for the proper server response
     }
     
 	changeSpeed(speed) {
