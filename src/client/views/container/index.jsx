@@ -113,6 +113,13 @@ export default class ContainerView extends React.Component {
         this.cbWS=this.cbWS.bind(this);
         this.footerCBWSText=this.footerCBWSText.bind(this);
         this.cbPPButton=this.cbPPButton.bind(this);
+        
+        
+        this.speedChanged = this.speedChanged.bind(this);
+        this.changeSpeed = this.changeSpeed.bind(this);
+
+        this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
+        this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
 
     componentDidMount() {
@@ -134,6 +141,20 @@ export default class ContainerView extends React.Component {
         url = url + this.props.pid + "/loop/state";
         xhr.open("GET", url, true);
         xhr.send(null);
+        
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    self.setState({"playbackSpeed": Number(xhr.responseText)});
+                }
+            }
+        };
+        url = "/v2/nc/projects/boxy/loop/speed";
+        xhr.open("GET", url, true);
+        xhr.send(null);
+        
+        this.setState({"changeSpeed": false});
     }
 
     componentWillUnmount() {
@@ -204,6 +225,39 @@ export default class ContainerView extends React.Component {
         this.setState({ ppbutton: newPPButton });
     }
     
+    speedChanged(speed) {
+
+        if (!this.state.changeSpeed) {
+            // just update to match server
+            this.setState({'playbackSpeed': Number(speed)});
+        }
+        else if (this.state.playbackSpeed === Number(speed)) {
+            // server speed matches client speed now
+            
+            this.setState({'changeSpeed': false});
+        }
+        else
+            ;// something didn't match up, wait for the proper server response
+    }
+    
+	changeSpeed(speed) {
+        
+        // tell the client to wait for server speed to catch up
+        this.setState({'changeSpeed': true});
+        
+        // and set the speed itself
+        this.setState({'playbackSpeed': Number(speed)});
+        
+        // now send a request to the server to change its speed
+        let xhr = new XMLHttpRequest();
+        let url = "/v2/nc/projects/boxy/loop/speed/";
+        let newSpeed = Number(speed);
+        url = url + newSpeed;
+        xhr.open("GET", url, true);
+        xhr.send(null);
+        
+    }
+
     render() {   
         let HV = this.state.guiMode == 0 ? <HeaderView
 	    cadManager={this.props.app.cadManager}
@@ -213,6 +267,7 @@ export default class ContainerView extends React.Component {
         cb={this.headerCB}
         cbPPButton={this.cbPPButton}
         ppbutton={this.state.ppbutton}
+        speed={this.state.playbackSpeed}
         pid={this.props.pid}
 	    /> : undefined;
         let SV = this.state.guiMode == 0 ? <SidebarView
