@@ -17,30 +17,8 @@ export default class SidebarView extends React.Component {
         this.onProjectSelected = this.onProjectSelected.bind(this);
         this.openToleranceTree = this.openToleranceTree.bind(this);
 
-        this.props.socket.on('modeltree', (items)=>{
-          // Node preprocessing
-          var nodes = {};
-            nodes.name = "Workingsteps";
-          nodes.children = [];
-          var nodeCheck = (node)=>{
-            node.icon = this.getNodeIcon(node,nodes.children.length+1);
-            //if (!node.children)
-            node.leaf = true;
-            if(node.children) node.children.forEach(nodeCheck);
-            node.children = [];
-              if(!_.has(node,'type'))
-                nodes.children.push(node);
-          }
-          nodeCheck(items);
-        });
-
         var disabledView = (name) => {
           return (() => {
-            /*this.setState({
-              'mode': "disabled",
-              'altmode': 'disabled',
-              'altmenu': name
-            })*/
             this.props.cbMode("disabled");
             this.props.cbAltMenu(name);
           }).bind(this);
@@ -60,42 +38,53 @@ export default class SidebarView extends React.Component {
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
 
+    componentDidMount(){
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = ()=>{
+        if (xhr.readyState == 4) {
+          if (xhr.status == 200) {
+            // Node preprocessing
+            var nodes = {};
+              nodes.name = "Workingsteps";
+            nodes.children = [];
+            var nodeCheck = (node)=>{
+              node.icon = this.getNodeIcon(node,nodes.children.length+1);
+              //if (!node.children)
+              node.leaf = true;
+              if(node.children) node.children.forEach(nodeCheck);
+              node.children = [];
+                if(node.type === "workingstep")
+                  nodes.children.push(node);
+            }
+            let json = JSON.parse(xhr.responseText);
+            nodeCheck(json);
+            this.props.cbMode('tree');
+            this.props.cbTree(nodes);
+          }
+        }
+      };
+      var url = "/v2/nc/projects/boxy/workplan/";
+      xhr.open("GET",url,true);
+      xhr.send(null);
+    }
+
     openLoadProjectMenu(){
-      /*this.setState({
-        'mode': 'load-project',
-        'altmode': 'load-project',
-        'altmenu': 'Load Project'
-      });*/
         this.props.cbMode('load-project');
-      this.props.cbAltMenu('Load Project');
+        this.props.cbAltMenu('Load Project');
     }
 
     openObjectTree(){
-      /*this.setState({
-        mode: 'tree'
-      });*/
         this.props.cbMode('tree');
     }
 
     openToleranceTree(){
-      /*this.setState({
-        "mode": "tolerance-tree",
-        "altmode": "tolerance-tree",
-        "altmenu": "Tolerance Tree"
-      });*/
-        this.props.cbMode('tolerance-tree');
+      this.props.cbMode('tolerance-tree');
       this.props.cbAltMenu('Tolerance Tree');
     }
 
     onProjectSelected(projectId){
       this.props.socket.emit('req:modeltree', projectId);
       this.openObjectTree();
-      /*this.setState({
-        tree: {
-          name : 'Loading project...',
-          isLeaf:true
-        }
-      })*/
       this.props.cbTree({
           name : 'Loading project...',
           isLeaf:true
@@ -132,8 +121,6 @@ export default class SidebarView extends React.Component {
     }
 
     render() {
-        //if(this.props.guiMode == 1)
-            //return null;
       // TODO currently mode menu can only have two layers
       var nested = this.props.mode != "tree";
       const modeMenu = (
