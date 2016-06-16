@@ -1,5 +1,5 @@
 li[data-reactid*=speed] {
-  width: auto;
+  width: 250px;
   
   div {  
     position: relative;
@@ -27,7 +27,7 @@ li[data-reactid*=speed].rc-menu-item-active {
 // Slider style
 input[type=range] {
   -webkit-appearance: none;
-  width: 250px;
+  width: 100%;
   margin: 8.5px 0;
   &:focus {
     outline: none;
