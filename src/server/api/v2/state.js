@@ -43,8 +43,9 @@ var _loop = function(ncId, ms, key) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0)
             setTimeout(function() { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 100));
-        else
-            // app.logger.debug("playback speed is zero, no timeout set");
+        else {
+          // app.logger.debug("playback speed is zero, no timeout set");
+        }
       });
     }
     else if (rc == 1) {   // SWITCH
@@ -96,9 +97,7 @@ var _loopInit = function(req, res) {
         break;
       case "speed":
         if (req.params.speed) {
-          if (Number(playbackSpeed) === 0
-              && req.params.speed > 0
-              && loopStates[ncId] === true) {
+          if (Number(playbackSpeed) === 0 && req.params.speed > 0 && loopStates[ncId] === true) {
             // app.logger.debug("Attempting to resume after being 0");
             playbackSpeed = req.params.speed;
             _loop(ncId, ms, false);
