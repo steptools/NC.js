@@ -9,8 +9,7 @@ Setting up a development environment
   ```
   > git clone https://github.com/steptools/StepNCNode.git
   > cd StepNCNode
-  > node-gyp configure
-  > node-gyp build
+  > npm install
   ```
 
   ------------------------------------------------------------------------------
