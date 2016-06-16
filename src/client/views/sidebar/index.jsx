@@ -126,13 +126,16 @@ export default class SidebarView extends React.Component {
     }
 
     onObjectTreeNodeClick(self, node){
-
+        var xhr = new XMLHttpRequest();
+        var url = "/v2/nc/projects/boxy/loop/stepto"
+        xhr.open("GET",url,true);
+        xhr.send(null);
     }
 
     renderNode(node){
       var cName = 'node';
         if(node.id == this.state.ws) cName= 'node running-node';
-      //cName += (node.state && node.state.selected) ? ' is-active' : '';
+      console.log("Rendered a node");
       return <span
           id={node.id}
           className={cName}

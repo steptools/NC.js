@@ -35,6 +35,13 @@ var _getPrev = function(ncId, ms, cb) {
   cb();
 };
 
+var _getToWS = function(ncId, ms, cb) {
+  ms.GoToWS(ncId);
+  //assume switch was successful
+  app.logger.debug("Switched!");
+  cb();
+};
+
 
 var _loop = function(ncId, ms, key) {
   if (loopStates[ncId] === true) {
@@ -138,6 +145,26 @@ var _loopInit = function(req, res) {
           update("pause");
         }
         res.status(200).send("OK");*/
+        break;
+      case "stepto":
+        var temp = loopStates[ncId];
+        loopStates[ncId] = true;
+        if (temp) {
+        _getToWS(ncId, ms, function() {
+        _loop(ncId, ms, true);
+        });
+        loopStates[ncId] = false;
+        update("pause");
+        }
+        else{
+          _loop(ncId,ms,false);
+          _getToWS(ncId, ms, function() {
+          _loop(ncId, ms, true);
+          });
+          loopStates[ncId] = false;
+          update("pause");
+        }
+        res.status(200).send("OK");
         break;
     }
   }
