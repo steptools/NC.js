@@ -4,7 +4,7 @@ var file = require('./file');
 
 var app;
 var loopStates = {};
-let playbackSpeed = 50;
+let playbackSpeed = 100;
 
 var update = (val) => {
   app.ioServer.emit("nc:state", val);
@@ -57,7 +57,7 @@ var _loop = function(ncId, ms, key) {
       _getDelta(ncId, ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0)
-            setTimeout(function() { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 100));
+            setTimeout(function() { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 200));
         else {
           // app.logger.debug("playback speed is zero, no timeout set");
         }
