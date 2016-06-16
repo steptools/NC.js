@@ -7,7 +7,7 @@ import ReactDOM             from 'react-dom';
 import BrowserView          from './views/browser';
 import LoginView            from './views/user/login';
 import RegisterView         from './views/user/register';
-import ContainerView	    from './views/container';
+import ContainerView      from './views/container';
 // import SidebarView           from './views/sidebar';
 var qs                      = require('qs');
 const queryString =         require('query-string');
@@ -98,17 +98,18 @@ module.exports = Backbone.Router.extend({
 
     _stepnc: function(pid){
         var self = this;
-	    ReactDOM.render(
-		    <div style={{height:'100%'}}>
-			<ContainerView 
-			  app={this.app}
-			  />
-		    </div>
-	    , document.getElementById('primary-view'), function () {
-		// Dispatch setModel to the CADManager
-	    });
-	pid = 'projects/' + pid;
-	this.app.cadManager.dispatchEvent({
+      ReactDOM.render(
+        <div style={{height:'100%'}}>
+      <ContainerView
+        app={this.app}
+        pid={pid}
+        />
+        </div>
+      , document.getElementById('primary-view'), function () {
+    // Dispatch setModel to the CADManager
+      });
+  pid = 'projects/' + pid;
+  this.app.cadManager.dispatchEvent({
           type: 'setModel',
           path: pid,
           baseURL: this.app.services.api_endpoint + this.app.services.version,

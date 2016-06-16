@@ -1,63 +1,102 @@
 StepNCViewer
-======
 
-Web-based feature-rich browser for StepNC Data
-
-No data samples are provided at this time, so this is unlikely to work for you.  
-You probably want to try [Cad.JS](https://github.com/ghemingway/cad.js) instead.
 
 Setting up a development environment
 ====================================
 
-*Assumes Mac OS X or Linux*
+  1. Download and build StepNCNode
 
-Get the code
-------------
+  ```
+  > git clone https://github.com/steptools/StepNCNode.git
+  > cd StepNCNode
+  > npm install
+  ```
 
-    git clone https://github.com/steptools/StepNCViewer
-    cd cad.js
+  ------------------------------------------------------------------------------
+  2. Clone StepNCViewer into the same directory that contains the StepNCNode
+      directory, E.G.:
 
-Make a place to put cad data
-----------------------------
+  ```
+  > cd ..
+  > git clone https://github.com/steptools/StepNCViewer.git
+  > ls
+  StepNCNode     StepNCViewer
+  ```
 
-    mkdir data
+  ------------------------------------------------------------------------------
+  4. create a new directory in StepNCViewer
 
-Move models into `data` directory ([find some samples](docs/readme)).
+  ```
+  > cd StepNCViewer
+  > mkdir data
+  ```
 
-Install nodejs packages
------------------------
+  ------------------------------------------------------------------------------
+  5. create a new directory in data for each project
 
-    npm install
+  ```
+  > cd data
+  > mkdir boxy
+  > mkdir moldy
+  ```
 
-Setup Redis
------------
+  ------------------------------------------------------------------------------
+  6. Place the projects .stpnc file in the new directory under the name
+      model.stpnc
 
-Run a [redis](http://redis.io/) server and update [your config file](config/config.json#L6) to use this redis hostname/ip address and port.
+  ```
+  > cd boxy
+  > cp ~/Downloads/boxy.stpnc ./model.stpnc
+  > cd ../moldy
+  > cp ~/Downloads/moldy.stpnc ./model.stpnc
+  ```
 
-Create a key
-------------
+  ------------------------------------------------------------------------------
+  7. Create a file named pathmap.json in the data directory that contains a json
+      object that contains each project name as a key and path as a value.
 
-    ssh-keygen -t rsa -f config/id_rsa
+ ```
+ > cd ..
+ > nano pathmap.json
+ {
+   "boxy" : "c:/.../stepncviewer/data/boxy/model.stpnc",
+   "moldy" : "c:/.../StepNCViewer/data/moldy/model.stpnc"
+ }
+ ```
 
-run development server
-----------------------
+  ------------------------------------------------------------------------------
+  8. Create a key
 
-    npm run start-dev
+ ```
+ > cd ..
+ > ssh-keygen -t rsa -f config/id_rsa
+ ```
 
-Building
-========
+  ------------------------------------------------------------------------------
+  9. Install nodejs packages
 
-Build/compile using webpack:
+ ```
+ > npm install
+ ```
 
-    # if you installed webpack globally (`npm install webpack -g`)
-    webpack
+  ------------------------------------------------------------------------------
+  10. Build/compile using webpack
 
-    # if you installed webpack via package dependencies (`npm install`)
-    ./node_modules/.bin/webpack
+  #### if you installed webpack globally (`npm install -g webpack`)
 
-Snazzy Demos
-============
+ ```
+ > webpack
+ ```
 
-*From an older version*
+  #### if you installed webpack via package dependencies (`npm install`)
 
-[Live Demo](www.steptools.com/demos/mtc)
+  ```
+  > ./node_modules/.bin/webpack
+  ```
+
+  ------------------------------------------------------------------------------
+  11. Start a server
+
+  ```
+  > npm start
+  ```

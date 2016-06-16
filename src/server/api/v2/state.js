@@ -95,6 +95,46 @@ var _loopInit = function(req, res) {
         update("pause");
         res.status(200).send("OK");
         break;
+      case "stepf":
+        var temp = loopStates[ncId];
+        loopStates[ncId] = true;
+        if (temp) {
+        _getNext(ncId, ms, function() {
+        _loop(ncId, ms, true);
+        });
+        loopStates[ncId] = false;
+        update("pause");
+        }
+        else{
+          _loop(ncId,ms,false);
+          _getNext(ncId, ms, function() {
+          _loop(ncId, ms, true);
+          });
+          loopStates[ncId] = false;
+          update("pause");
+        }
+        res.status(200).send("OK");
+        break;
+      case "stepb":
+        /*var temp = loopStates[ncId];
+        loopStates[ncId] = true;
+        if (temp) {
+        _getPrev(ncId, ms, function() {
+        _loop(ncId, ms, true);
+        });
+        loopStates[ncId] = false;
+        update("pause");
+        }
+        else{
+          _loop(ncId,ms,false);
+          _getPrev(ncId, ms, function() {
+          _loop(ncId, ms, true);
+          });
+          loopStates[ncId] = false;
+          update("pause");
+        }
+        res.status(200).send("OK");*/
+        break;
       case "speed":
         if (req.params.speed) {
           if (Number(playbackSpeed) === 0 && req.params.speed > 0 && loopStates[ncId] === true) {
