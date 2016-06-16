@@ -59,14 +59,14 @@ export default class ContainerView extends React.Component {
         var nextws = function(){
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/"
-            url = url + self.props.pid + "/state/loop/next";
+            url = url + self.props.pid + "/state/ws/next";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
         var prevws = function(){
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/";
-            url = url + self.props.pid + "/state/loop/prev";
+            url = url + self.props.pid + "/state/ws/prev";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
