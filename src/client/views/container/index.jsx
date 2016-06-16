@@ -285,11 +285,25 @@ export default class ContainerView extends React.Component {
 	    pid={this.props.pid}
 	    /> : undefined;
         
+        // squish the cad view down to appropriate size
+        let cadview_style = this.state.guiMode == 0 ?
+        {
+            'left': '390px',
+            'top': '154px',
+            'bottom': '0px',
+            'right': '0px'
+        } : {
+            'left': '0px',
+            'top': '0px',
+            'bottom': '10vmin',
+            'right': '0px'
+        };
+        
         return(
 	    <div style={{height:'100%'}}>
 		{HV}
 		{SV}
-		<div id='cadview-container'>
+		<div id='cadview-container' style={cadview_style}>
 		    <CADView
 			manager={this.props.app.cadManager}
 			viewContainerId='primary-view'
