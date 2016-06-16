@@ -302,18 +302,20 @@ export default class NC extends THREE.EventDispatcher {
               window.geom.push(geom);
             }
               let obj = self._objects[geom.id];
-			  if(obj.usage==='cutter' || obj.usage==='machine') {
-				let transform = new THREE.Matrix4();
-				if (!geom.xform) return;
-				transform.fromArray(geom.xform);
-				let position = new THREE.Vector3();
-				let quaternion = new THREE.Quaternion();
-				let scale = new THREE.Vector3();
-				transform.decompose(position,quaternion,scale);
-				obj.object3D.position.copy(position);
-				obj.object3D.quaternion.copy(quaternion);
-				alter = true;
-			  }
+              if(obj !== undefined) {
+                  if (obj.usage === 'cutter' || obj.usage === 'machine') {
+                      let transform = new THREE.Matrix4();
+                      if (!geom.xform) return;
+                      transform.fromArray(geom.xform);
+                      let position = new THREE.Vector3();
+                      let quaternion = new THREE.Quaternion();
+                      let scale = new THREE.Vector3();
+                      transform.decompose(position, quaternion, scale);
+                      obj.object3D.position.copy(position);
+                      obj.object3D.quaternion.copy(quaternion);
+                      alter = true;
+                  }
+              }
           });
         }
         return alter;
