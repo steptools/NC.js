@@ -22,6 +22,8 @@ export default class ContainerView extends React.Component {
         else
             this.state = { guiMode: 1 };
         
+        this.setState({"changeSpeed": false});
+        
         this.handleResize   = this.handleResize.bind(this);
         
 		this.speedChanged = this.speedChanged.bind(this);
@@ -62,14 +64,29 @@ export default class ContainerView extends React.Component {
     }
     
     speedChanged(speed) {
-        // console.log("speed changed: " + speed);
 
-        this.setState({'playbackSpeed': Number(speed)});
+        if (!this.state.changeSpeed) {
+            // just update to match server
+            this.setState({'playbackSpeed': Number(speed)});
+        }
+        else if (this.state.playbackSpeed === Number(speed)) {
+            // server speed matches client speed now
+            
+            this.setState({'changeSpeed': false});
+        }
+        else
+            // something didn't match up, wait for the proper server response
     }
     
 	changeSpeed(speed) {
-        // console.log("changing speed: " + speed);
         
+        // tell the client to wait for server speed to catch up
+        this.setState({'changeSpeed': true});
+        
+        // and set the speed itself
+        this.setState({'playbackSpeed': Number(speed)});
+        
+        // now send a request to the server to change its speed
         var xhr = new XMLHttpRequest();
         var url = "/v2/nc/projects/boxy/loop/speed/";
         var newSpeed = Number(speed);
