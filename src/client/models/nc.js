@@ -156,6 +156,27 @@ export default class NC extends THREE.EventDispatcher {
         return this.boundingBox.clone();
     }
 
+    calcBoundingBox() {
+        let self = this;
+
+        this._overlay3D.remove(this.bbox);
+        this.boundingBox = new THREE.Box3();
+        let keys = _.keys(this._objects);
+        _.each(keys, function(key) {
+            let object = self._objects[key];
+            if (object.type !== 'polyline') {
+                object.bbox = new THREE.Box3().setFromObject(object.object3D);
+                self.boundingBox.union(object.bbox);
+            }
+        });
+        let bounds = self.boundingBox;
+
+        this.bbox = Assembly.buildBoundingBox(bounds);
+        if (this.bbox) {
+            this._overlay3D.add(this.bbox);
+        }
+    }
+
     getTree(root) {
         let node = {
             id:                 root,
