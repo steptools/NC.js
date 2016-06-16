@@ -6,16 +6,29 @@ li[data-reactid*=speed] {
     bottom: 2px;
     
     div > output {
-      padding-top: 0;
+      padding-top: 5px;
+      height: 20px;
     }
   }
+}
+
+li[data-reactid*=speed].rc-menu-item-active {
+  border-bottom: hidden;
+  color: #666;
+  
+  input[type=range] {
+    &::-webkit-slider-thumb {
+      //background: #2db7f5;
+    }
+  }
+  
 }
 
 // Slider style
 input[type=range] {
   -webkit-appearance: none;
-  width: 100%;
-  margin: 9.8px 0;
+  width: 250px;
+  margin: 8.5px 0;
   &:focus {
     outline: none;
   }
