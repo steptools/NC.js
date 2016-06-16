@@ -172,7 +172,7 @@ export default class NC extends THREE.EventDispatcher {
         let bounds = self.boundingBox;
 
         this.bbox = Assembly.buildBoundingBox(bounds);
-        if (this.bbox) {
+        if (this.bbox && this.state.selected) {
             this._overlay3D.add(this.bbox);
         }
     }
