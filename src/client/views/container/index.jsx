@@ -300,7 +300,7 @@ export default class ContainerView extends React.Component {
         };
         
         return(
-	    <div style={{height:'100%'}}>
+	    <div style={{height:'69%'}}>
 		{HV}
 		{SV}
 		<div id='cadview-container' style={cadview_style}>
