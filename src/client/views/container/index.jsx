@@ -294,7 +294,7 @@ export default class ContainerView extends React.Component {
         } : {
             'left': '0px',
             'top': '0px',
-            'bottom': '10vmin',
+            'bottom': '0px',
             'right': '0px'
         };
         
