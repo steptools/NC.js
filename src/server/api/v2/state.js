@@ -189,6 +189,21 @@ var _wsInit = function(req, res) {
         }
         res.status(200).send("OK");*/
         break;
+        default:
+          if (!isNaN(parseFloat(loopstate)) && isFinite(loopstate)) {
+            let newSpeed = Number(loopstate);
+            if (Number(playbackSpeed) === 0 && Number(loopstate) > 0 && loopStates[ncId] === true) {
+              // app.logger.debug("Attempting to resume after being 0");
+              playbackSpeed = newSpeed;
+              _loop(ncId, ms, false);
+            }
+            playbackSpeed = newSpeed;
+            res.status(200).send(JSON.stringify({"state": loopStates[ncId], "speed": playbackSpeed}));
+            _updateSpeed(playbackSpeed);
+          }
+          else {
+            // untested case
+          }
     }
   }
 };
@@ -200,7 +215,7 @@ var _getKeyState = function (req, res) {
     //FIXME: Needs to be fixed once set function for project name comes out
     var holder = JSON.parse(ms.GetKeystateJSON()); 
     holder["project"] = req.params.ncId;
-    res.status(200).send(JSON.stringify(holder));
+    res.status(200).send(ms.GetKeystateJSON());
   }
 };
 
