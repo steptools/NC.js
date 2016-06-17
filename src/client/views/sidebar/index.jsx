@@ -63,7 +63,7 @@ export default class SidebarView extends React.Component {
           }
         }
       };
-      var url = "/v2/nc/projects/boxy/workplan/";
+      var url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
       xhr.open("GET",url,true);
       xhr.send(null);
     }
@@ -78,7 +78,7 @@ export default class SidebarView extends React.Component {
     }
 
     openToleranceTree(){
-      this.props.cbMode('tolerance-tree');
+        this.props.cbMode('tolerance-tree');
       this.props.cbAltMenu('Tolerance Tree');
     }
 
@@ -102,13 +102,15 @@ export default class SidebarView extends React.Component {
     }
 
     onObjectTreeNodeClick(self, node){
-
+        var xhr = new XMLHttpRequest();
+        var url = "/v2/nc/projects/"+this.props.pid+"/state/loop/" + id
+        xhr.open("GET",url,true);
+        xhr.send(null);
     }
 
     renderNode(node){
       var cName = 'node';
         if(node.id == this.props.ws) cName= 'node running-node';
-      //cName += (node.state && node.state.selected) ? ' is-active' : '';
       return <span
           id={node.id}
           className={cName}

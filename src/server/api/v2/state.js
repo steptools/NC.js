@@ -4,18 +4,28 @@ var file = require('./file');
 
 var app;
 var loopStates = {};
+let playbackSpeed = 100;
 
 var update = (val) => {
   app.ioServer.emit("nc:state", val);
 };
 
+var _updateSpeed = (speed) => {
+  app.ioServer.emit("nc:speed", speed);
+};
+
+//TODO: Get rid of this function and consolidate with endpoint functions if possible
 var _getDelta = function(ncId, ms, key, cb) {
   var response = "";
   if (key) {
-    response = ms.GetKeystateJSON();
+    var holder = JSON.parse(ms.GetKeystateJSON()); 
+    holder["project"] = ncId;
+    response = JSON.stringify(holder);
   }
   else {
-    response = ms.GetDeltaJSON();
+    var holder = JSON.parse(ms.GetDeltaJSON()); 
+    holder["project"] = ncId;
+    response = JSON.stringify(holder);
   }
   //app.logger.debug("got " + response);
   cb(response);
@@ -35,6 +45,13 @@ var _getPrev = function(ncId, ms, cb) {
   cb();
 };
 
+var _getToWS = function(ncId, ms, cb) {
+  ms.GoToWS(ncId);
+  //assume switch was successful
+  app.logger.debug("Switched!");
+  cb();
+};
+
 
 var _loop = function(ncId, ms, key) {
   if (loopStates[ncId] === true) {
@@ -44,7 +61,11 @@ var _loop = function(ncId, ms, key) {
       //app.logger.debug("OK...");
       _getDelta(ncId, ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
-        setTimeout(function() { _loop(ncId, ms, false); }, 300);
+        if (playbackSpeed > 0)
+            setTimeout(function() { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 200));
+        else {
+          // app.logger.debug("playback speed is zero, no timeout set");
+        }
       });
     }
     else if (rc == 1) {   // SWITCH
@@ -56,11 +77,72 @@ var _loop = function(ncId, ms, key) {
   }
 };
 
-
 var _loopInit = function(req, res) {
-  if (req.params.ncId && req.params.loopstate) {
+  // app.logger.debug("loopstate is " + req.params.loopstate);
+  if (req.params.ncId !== undefined) {
     let ncId = req.params.ncId;
-    let loopstate = req.params.loopstate;
+    
+    if (req.params.loopstate === undefined) {
+      if (loopStates[ncId] === true) {
+        res.status(200).send(JSON.stringify({'state': "play", 'speed': playbackSpeed}));
+      }
+      else {
+        res.status(200).send(JSON.stringify({'state': "pause", 'speed': playbackSpeed}));
+      }
+    }
+    else
+    {
+      let loopstate = req.params.loopstate;
+      var ms = file.getMachineState(app, ncId);
+      if (typeof(loopStates[ncId]) === 'undefined') {
+        loopStates[ncId] = false;
+      }
+
+      switch (loopstate) {
+        case "start":
+          if (loopStates[ncId] === true) {
+            res.status(200).send("Already running");
+            return;
+          }
+          app.logger.debug("Looping " + ncId);
+          loopStates[ncId] = true;
+          res.status(200).send("OK");
+          update("play");
+          _loop(ncId, ms, false);
+          break;
+        case "stop":
+          if (loopStates[ncId] === false) {
+            res.status(200).send("Already stopped");
+            return;
+          }
+          loopStates[ncId] = false;
+          update("pause");
+          res.status(200).send("OK");
+          break;
+        default:
+          if (!isNaN(parseFloat(loopstate)) && isFinite(loopstate)) {
+            let newSpeed = Number(loopstate);
+            if (Number(playbackSpeed) === 0 && Number(loopstate) > 0 && loopStates[ncId] === true) {
+              // app.logger.debug("Attempting to resume after being 0");
+              playbackSpeed = newSpeed;
+              _loop(ncId, ms, false);
+            }
+            playbackSpeed = newSpeed;
+            res.status(200).send(JSON.stringify({"state": loopStates[ncId], "speed": playbackSpeed}));
+            _updateSpeed(playbackSpeed);
+          }
+          else {
+            // untested case
+          }
+      }
+    }
+  }
+};
+
+var _wsInit = function(req, res) {
+  if (req.params.ncId && req.params.command) {
+    let ncId = req.params.ncId;
+    let command = req.params.command;
     var ms = file.getMachineState(app, ncId);
     if (typeof(loopStates[ncId]) === 'undefined') {
       loopStates[ncId] = false;
@@ -70,36 +152,8 @@ var _loopInit = function(req, res) {
     if (app.machinetool !== "")
       ms.LoadMachine(app.machinetool);
 
-    switch(loopstate) {
-      case "state":
-        if (loopStates[ncId] === true) {
-          res.status(200).send("play");
-        }
-        else {
-          res.status(200).send("pause");
-        }
-        break;
-      case "start":
-        if (loopStates[ncId] === true) {
-          res.status(200).send("Already running");
-          return;
-        }
-        app.logger.debug("Looping " + ncId);
-        loopStates[ncId] = true;
-        res.status(200).send("OK");
-        update("play");
-        _loop(ncId, ms, false);
-        break;
-      case "stop":
-        if (loopStates[ncId] === false) {
-          res.status(200).send("Already stopped");
-          return;
-        }
-        loopStates[ncId] = false;
-        update("pause");
-        res.status(200).send("OK");
-        break;
-      case "stepf":
+    switch(command) {
+      case "next":
         var temp = loopStates[ncId];
         loopStates[ncId] = true;
         if (temp) {
@@ -119,7 +173,7 @@ var _loopInit = function(req, res) {
         }
         res.status(200).send("OK");
         break;
-      case "stepb":
+      case "prev":
         /*var temp = loopStates[ncId];
         loopStates[ncId] = true;
         if (temp) {
@@ -139,6 +193,21 @@ var _loopInit = function(req, res) {
         }
         res.status(200).send("OK");*/
         break;
+        default:
+          if (!isNaN(parseFloat(loopstate)) && isFinite(loopstate)) {
+            let newSpeed = Number(loopstate);
+            if (Number(playbackSpeed) === 0 && Number(loopstate) > 0 && loopStates[ncId] === true) {
+              // app.logger.debug("Attempting to resume after being 0");
+              playbackSpeed = newSpeed;
+              _loop(ncId, ms, false);
+            }
+            playbackSpeed = newSpeed;
+            res.status(200).send(JSON.stringify({"state": loopStates[ncId], "speed": playbackSpeed}));
+            _updateSpeed(playbackSpeed);
+          }
+          else {
+            // untested case
+          }
     }
   }
 };
@@ -147,14 +216,29 @@ var _getKeyState = function (req, res) {
   //app.logger.debug("KEYSTATE");
   if (req.params.ncId) {
     var ms = file.getMachineState(app, req.params.ncId);
-    res.status(200).send(ms.GetKeystateJSON());
+    //FIXME: Needs to be fixed once set function for project name comes out
+    var holder = JSON.parse(ms.GetKeystateJSON()); 
+    holder["project"] = req.params.ncId;
+    res.status(200).send(JSON.stringify(holder));
+  }
+};
+
+var _getDeltaState = function (req, res) {
+  if (req.params.ncId) {
+    var ms = file.getMachineState(app, req.params.ncId);
+    var holder = JSON.parse(ms.GetDeltaJSON()); 
+    holder["project"] = req.params.ncId;
+    res.status(200).send(JSON.stringify(holder));
   }
 };
 
 module.exports = function(globalApp, cb) {
   app = globalApp;
-  app.router.get('/v2/nc/projects/:ncId', _getKeyState);
-  app.router.get('/v2/nc/projects/:ncId/keystate', _getKeyState);
-  app.router.get('/v2/nc/projects/:ncId/loop/:loopstate', _loopInit);
+  //app.router.get('/v2/nc/projects/:ncId', _getKeyState);
+  app.router.get('/v2/nc/projects/:ncId/state/key', _getKeyState);
+  app.router.get('/v2/nc/projects/:ncId/state/delta', _getDeltaState);
+  app.router.get('/v2/nc/projects/:ncId/state/loop/:loopstate', _loopInit);
+  app.router.get('/v2/nc/projects/:ncId/state/loop/', _loopInit);
+  app.router.get('/v2/nc/projects/:ncId/state/ws/:command', _wsInit)
   if (cb) cb();
 };

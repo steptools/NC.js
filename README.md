@@ -13,7 +13,7 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  2. Clone StepNCViewer into the same directory that contains the StepNCNode 
+  2. Clone StepNCViewer into the same directory that contains the StepNCNode
       directory, E.G.:
 
   ```
@@ -41,7 +41,7 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  6. Place the projects .stpnc file in the new directory under the name 
+  6. Place the projects .stpnc file in the new directory under the name
       model.stpnc
 
   ```
@@ -89,7 +89,7 @@ Setting up a development environment
  ```
 
   #### if you installed webpack via package dependencies (`npm install`)
-  
+
   ```
   > ./node_modules/.bin/webpack
   ```
@@ -98,5 +98,5 @@ Setting up a development environment
   11. Start a server
 
   ```
-  > npm start 
+  > npm start
   ```

@@ -27,7 +27,6 @@ export default class ContainerView extends React.Component {
 
         this.state = {
             guiMode: tempGuiMode,
-            hvopenMenu: 'file-menu',
             svmode: 'tree',
             ws: -1,
             svtree: {
@@ -44,7 +43,7 @@ export default class ContainerView extends React.Component {
         var playpause = ()=>{
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/";
-            url = url + this.props.pid + "/loop/";
+            url = url + this.props.pid + "/state/loop/";
             if(self.state.ppbutton ==='play'){
                 ppstate('play');
                 url = url+"start";
@@ -59,14 +58,14 @@ export default class ContainerView extends React.Component {
         var nextws = function(){
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/"
-            url = url + self.props.pid + "/loop/stepf";
+            url = url + self.props.pid + "/state/ws/next";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
         var prevws = function(){
             var xhr = new XMLHttpRequest();
             var url = "/v2/nc/projects/";
-            url = url + self.props.pid + "/loop/stepb";
+            url = url + self.props.pid + "/state/ws/prev";
             xhr.open("GET",url,true);
             xhr.send(null);
         }
@@ -102,17 +101,22 @@ export default class ContainerView extends React.Component {
 
 
         this.updateWorkingstep = this.updateWorkingstep.bind(this);
-        
+
         this.handleResize   = this.handleResize.bind(this);
         this.props.app.actionManager.on('change-workingstep', this.updateWorkingstep);
 
-        this.headerCB=this.headerCB.bind(this);
         this.sidebarCBMode=this.sidebarCBMode.bind(this);
         this.sidebarCBTree=this.sidebarCBTree.bind(this);
         this.sidebarCBAltMenu=this.sidebarCBAltMenu.bind(this);
         this.cbWS=this.cbWS.bind(this);
         this.footerCBWSText=this.footerCBWSText.bind(this);
         this.cbPPButton=this.cbPPButton.bind(this);
+
+        this.speedChanged = this.speedChanged.bind(this);
+        this.changeSpeed = this.changeSpeed.bind(this);
+
+        this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
+        this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
 
     componentDidMount() {
@@ -123,17 +127,23 @@ export default class ContainerView extends React.Component {
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
-                    if(xhr.responseText =="play")
+                    let stateObj = JSON.parse(xhr.responseText);
+                    if(stateObj.state =="play")
                         self.setState({"ppbutton": "pause"}); //Loop is running, we need a pause button.
                     else
                         self.setState({"ppbutton":"play"});
+
+                    self.setState({"playbackSpeed": Number(stateObj.speed)});
                 }
             }
         };
-        let url = "/v2/nc/projects/"
-        url = url + this.props.pid + "/loop/state";
+
+        let url = "/v2/nc/projects/";
+        url = url + this.props.pid + "/state/loop/";
         xhr.open("GET", url, true);
         xhr.send(null);
+
+        this.setState({"changeSpeed": false});
     }
 
     componentWillUnmount() {
@@ -169,10 +179,6 @@ export default class ContainerView extends React.Component {
         xhr.send(null);
     }
 
-    headerCB(newOpenMenu)
-    {
-        this.setState({ hvopenMenu: newOpenMenu });
-    }
 
     sidebarCBMode(newMode)
     {
@@ -203,16 +209,44 @@ export default class ContainerView extends React.Component {
     {
         this.setState({ ppbutton: newPPButton });
     }
-    
-    render() {   
+
+    speedChanged(speed) {
+        if (!this.state.changeSpeed) {
+            // just update to match server
+            this.setState({'playbackSpeed': Number(speed)});
+        }
+        else if (this.state.playbackSpeed === Number(speed)) {
+            // server speed matches client speed now
+            this.setState({'changeSpeed': false});
+        }
+        else
+            ;// something didn't match up, wait for the proper server response
+    }
+
+	changeSpeed(speed) {
+
+        // tell the client to wait for server speed to catch up
+        this.setState({'changeSpeed': true});
+
+        // and set the speed itself
+        this.setState({'playbackSpeed': Number(speed)});
+
+        // now send a request to the server to change its speed
+        let xhr = new XMLHttpRequest();
+        let url = "/v2/nc/projects/boxy/state/loop/" + Number(speed);
+        xhr.open("GET", url, true);
+        xhr.send(null);
+
+    }
+
+    render() {
         let HV = this.state.guiMode == 0 ? <HeaderView
 	    cadManager={this.props.app.cadManager}
         actionManager={this.props.app.actionManager}
         socket={this.props.app.socket}
-        openMenu={this.state.hvopenMenu}
-        cb={this.headerCB}
         cbPPButton={this.cbPPButton}
         ppbutton={this.state.ppbutton}
+        speed={this.state.playbackSpeed}
         pid={this.props.pid}
 	    /> : undefined;
         let SV = this.state.guiMode == 0 ? <SidebarView
@@ -230,7 +264,7 @@ export default class ContainerView extends React.Component {
 	    cbAltMenu={this.sidebarCBAltMenu}
 	    pid={this.props.pid}
 	    /> : undefined;
-	let FV = this.state.guiMode == 1 ? <FooterView 
+	let FV = this.state.guiMode == 1 ? <FooterView
 	    cadManager={this.props.app.cadManager}
 	    actionManager={this.props.app.actionManager}
 	    socket={this.props.app.socket}
@@ -241,12 +275,26 @@ export default class ContainerView extends React.Component {
 	    ppbutton={this.state.ppbutton}
 	    pid={this.props.pid}
 	    /> : undefined;
-        
+
+        // squish the cad view down to appropriate size
+        let cadview_style = this.state.guiMode == 0 ?
+        {
+            'left': '390px',
+            'top': '94px',
+            'bottom': '0px',
+            'right': '0px'
+        } : {
+            'left': '0px',
+            'top': '0px',
+            'bottom': '0px',
+            'right': '0px'
+        };
+
         return(
 	    <div style={{height:'100%'}}>
 		{HV}
 		{SV}
-		<div id='cadview-container'>
+		<div id='cadview-container' style={cadview_style}>
 		    <CADView
 			manager={this.props.app.cadManager}
 			viewContainerId='primary-view'
