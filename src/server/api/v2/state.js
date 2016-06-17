@@ -14,13 +14,18 @@ var _updateSpeed = (speed) => {
   app.ioServer.emit("nc:speed", speed);
 };
 
+//TODO: Get rid of this function and consolidate with endpoint functions if possible
 var _getDelta = function(ncId, ms, key, cb) {
   var response = "";
   if (key) {
-    response = ms.GetKeystateJSON();
+    var holder = JSON.parse(ms.GetKeystateJSON()); 
+    holder["project"] = ncId;
+    response = JSON.stringify(holder);
   }
   else {
-    response = ms.GetDeltaJSON();
+    var holder = JSON.parse(ms.GetDeltaJSON()); 
+    holder["project"] = ncId;
+    response = JSON.stringify(holder);
   }
   //app.logger.debug("got " + response);
   cb(response);
@@ -76,7 +81,6 @@ var _loopInit = function(req, res) {
   // app.logger.debug("loopstate is " + req.params.loopstate);
   if (req.params.ncId !== undefined) {
     let ncId = req.params.ncId;
-
     
     if (req.params.loopstate === undefined) {
       if (loopStates[ncId] === true) {
@@ -189,6 +193,21 @@ var _wsInit = function(req, res) {
         }
         res.status(200).send("OK");*/
         break;
+        default:
+          if (!isNaN(parseFloat(loopstate)) && isFinite(loopstate)) {
+            let newSpeed = Number(loopstate);
+            if (Number(playbackSpeed) === 0 && Number(loopstate) > 0 && loopStates[ncId] === true) {
+              // app.logger.debug("Attempting to resume after being 0");
+              playbackSpeed = newSpeed;
+              _loop(ncId, ms, false);
+            }
+            playbackSpeed = newSpeed;
+            res.status(200).send(JSON.stringify({"state": loopStates[ncId], "speed": playbackSpeed}));
+            _updateSpeed(playbackSpeed);
+          }
+          else {
+            // untested case
+          }
     }
   }
 };
@@ -207,7 +226,9 @@ var _getKeyState = function (req, res) {
 var _getDeltaState = function (req, res) {
   if (req.params.ncId) {
     var ms = file.getMachineState(app, req.params.ncId);
-    res.status(200).send(ms.GetDeltaJSON());
+    var holder = JSON.parse(ms.GetDeltaJSON()); 
+    holder["project"] = req.params.ncId;
+    res.status(200).send(JSON.stringify(holder));
   }
 };
 

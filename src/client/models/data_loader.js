@@ -252,12 +252,14 @@ export default class DataLoader extends THREE.EventDispatcher {
         if (data.type === "shell") {
             data.shellSize = req.shellSize;
             let newpath = (req.baseURL).split('state')[0];
-            newpath = newpath.substring(0 , newpath.length - 1);
+            if(newpath[newpath.length - 1] === '/')
+                newpath = newpath.substring(0 , newpath.length - 1);
             data.url = newpath + '/geometry/' + req.path + '/' + req.type;
         }
         else if (data.type === "annotation") {
             let newpath = (req.baseURL).split('state')[0];
-            newpath = newpath.substring(0 , newpath.length - 1);
+            if(newpath[newpath.length - 1] === '/')
+                newpath = newpath.substring(0 , newpath.length - 1);
             data.url = newpath + '/geometry/' + req.path + '/' + req.type;
         }
         worker.postMessage(data);
