@@ -281,7 +281,7 @@ export default class ContainerView extends React.Component {
         let cadview_style = this.state.guiMode == 0 ?
         {
             'left': '390px',
-            'top': '91px',
+            'top': '94px',
             'bottom': '0px',
             'right': '0px'
         } : {
