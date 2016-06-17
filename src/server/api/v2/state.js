@@ -224,6 +224,10 @@ var _getKeyState = function (req, res) {
   //app.logger.debug("KEYSTATE");
   if (req.params.ncId) {
     var ms = file.getMachineState(app, req.params.ncId);
+    if (ms === undefined) {
+      res.status(404).send("Machine state could not be found");
+      return;
+    }
     //FIXME: Needs to be fixed once set function for project name comes out
     var holder = JSON.parse(ms.GetKeystateJSON()); 
     holder["project"] = req.params.ncId;
