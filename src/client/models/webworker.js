@@ -801,7 +801,6 @@ self.addEventListener("message", function(e) {
                 }
                 break;
             case "nc":
-                console.log("THIS IS MY RESPONSE TEXT:  " + xhr.responseText);
                 processNCState(url, workerID, xhr.responseText);
                 break;
             case "assembly":

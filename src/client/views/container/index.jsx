@@ -240,7 +240,6 @@ export default class ContainerView extends React.Component {
         // now send a request to the server to change its speed
         let xhr = new XMLHttpRequest();
         let url = "/v2/nc/projects/boxy/state/loop/" + Number(speed);
-        console.log("sending get req to: " + url);
         xhr.open("GET", url, true);
         xhr.send(null);
         
