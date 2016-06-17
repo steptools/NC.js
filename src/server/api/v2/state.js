@@ -219,7 +219,7 @@ var _getKeyState = function (req, res) {
     //FIXME: Needs to be fixed once set function for project name comes out
     var holder = JSON.parse(ms.GetKeystateJSON()); 
     holder["project"] = req.params.ncId;
-    res.status(200).send(holder);
+    res.status(200).send(JSON.stringify(holder));
   }
 };
 
@@ -228,7 +228,7 @@ var _getDeltaState = function (req, res) {
     var ms = file.getMachineState(app, req.params.ncId);
     var holder = JSON.parse(ms.GetDeltaJSON()); 
     holder["project"] = req.params.ncId;
-    res.status(200).send(holder);
+    res.status(200).send(JSON.stringify(holder));
   }
 };
 
