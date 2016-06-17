@@ -4,7 +4,6 @@ import _ from 'lodash';
 var SubMenu = Menu.SubMenu;
 var PlainMenuItem = Menu.Item;
 import ReactTooltip from 'react-tooltip';
-require('./header.scss');
 
 // TODO: Fix so tooltips work
 class MenuItem extends React.Component {
@@ -191,7 +190,6 @@ export default class HeaderView extends React.Component {
           </Menu> : null }
           {this.props.openMenu == 'simulate-menu' ?
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
-<<<<<<< HEAD
               <MenuItem key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
               <MenuItem key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
               <MenuItem key='forward'><ButtonImage icon='step-forward'/>Next</MenuItem>
