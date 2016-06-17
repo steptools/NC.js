@@ -197,7 +197,10 @@ var _getKeyState = function (req, res) {
   //app.logger.debug("KEYSTATE");
   if (req.params.ncId) {
     var ms = file.getMachineState(app, req.params.ncId);
-    res.status(200).send(ms.GetKeystateJSON());
+    //FIXME: Needs to be fixed once set function for project name comes out
+    var holder = JSON.parse(ms.GetKeystateJSON()); 
+    holder["project"] = req.params.ncId;
+    res.status(200).send(JSON.stringify(holder));
   }
 };
 
@@ -210,7 +213,7 @@ var _getDeltaState = function (req, res) {
 
 module.exports = function(globalApp, cb) {
   app = globalApp;
-  app.router.get('/v2/nc/projects/:ncId', _getKeyState);
+  //app.router.get('/v2/nc/projects/:ncId', _getKeyState);
   app.router.get('/v2/nc/projects/:ncId/state/key', _getKeyState);
   app.router.get('/v2/nc/projects/:ncId/state/delta', _getDeltaState);
   app.router.get('/v2/nc/projects/:ncId/state/loop/:loopstate', _loopInit);
