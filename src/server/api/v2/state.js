@@ -14,13 +14,18 @@ var _updateSpeed = (speed) => {
   app.ioServer.emit("nc:speed", speed);
 };
 
+//TODO: Get rid of this function and consolidate with endpoint functions if possible
 var _getDelta = function(ncId, ms, key, cb) {
   var response = "";
   if (key) {
-    response = ms.GetKeystateJSON();
+    var holder = JSON.parse(ms.GetKeystateJSON()); 
+    holder["project"] = ncId;
+    response = JSON.stringify(holder);
   }
   else {
-    response = ms.GetDeltaJSON();
+    var holder = JSON.parse(ms.GetDeltaJSON()); 
+    holder["project"] = ncId;
+    response = JSON.stringify(holder);
   }
   //app.logger.debug("got " + response);
   cb(response);
@@ -76,7 +81,6 @@ var _loopInit = function(req, res) {
   // app.logger.debug("loopstate is " + req.params.loopstate);
   if (req.params.ncId !== undefined) {
     let ncId = req.params.ncId;
-
     
     if (req.params.loopstate === undefined) {
       if (loopStates[ncId] === true) {
@@ -215,14 +219,16 @@ var _getKeyState = function (req, res) {
     //FIXME: Needs to be fixed once set function for project name comes out
     var holder = JSON.parse(ms.GetKeystateJSON()); 
     holder["project"] = req.params.ncId;
-    res.status(200).send(ms.GetKeystateJSON());
+    res.status(200).send(holder);
   }
 };
 
 var _getDeltaState = function (req, res) {
   if (req.params.ncId) {
     var ms = file.getMachineState(app, req.params.ncId);
-    res.status(200).send(ms.GetDeltaJSON());
+    var holder = JSON.parse(ms.GetDeltaJSON()); 
+    holder["project"] = req.params.ncId;
+    res.status(200).send(holder);
   }
 };
 
