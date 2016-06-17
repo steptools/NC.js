@@ -140,7 +140,6 @@ var _loopInit = function(req, res) {
 };
 
 var _wsInit = function(req, res) {
-  console.log("THIS IS MY REQUEST: " + req);
   if (req.params.ncId && req.params.command) {
     let ncId = req.params.ncId;
     let command = req.params.command;
@@ -197,7 +196,6 @@ var _wsInit = function(req, res) {
         default:
           if (!isNaN(parseFloat(command)) && isFinite(command)) {
             let ws = Number(command);
-            console.log(ws);
             var temp = loopStates[ncId];
             loopStates[ncId] = true;
             if (temp) {
