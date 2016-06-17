@@ -16,7 +16,7 @@ var exeFromId = function(id) {
 	} else if (find.IsWorkplan(id)) {
 		ws.type = "workplan";
 	}
-	ws.children = find.GetNestedExecutableAll(id).map(exeFromId);
+	ws.children = find.GetNestedExecutableAllEnabled(id).map(exeFromId);
 	return ws;
 };
 

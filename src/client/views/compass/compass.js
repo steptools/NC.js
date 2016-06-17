@@ -92,9 +92,7 @@ export default class CompassView extends React.Component {
     }
 
     render() {
-        let iCantThinkOfAVariableName={"top": "30px"};
-        if(this.props.guiMode == 0)
-            iCantThinkOfAVariableName={"top": "184px"};
+        let iCantThinkOfAVariableName={"top": "30px", 'z-order': '100'};
 
         return <div id="compass-cube" className="cube" style={iCantThinkOfAVariableName}>
             <div className="cube-face cube-face-front">

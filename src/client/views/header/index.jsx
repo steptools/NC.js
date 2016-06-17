@@ -90,58 +90,24 @@ class Slider extends React.Component {
                 </div>
             );
         }
+
     }
 }
 
 export default class HeaderView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            'openMenu': 'file-menu'
-        };
+
         this.openBottomMenu = this.openBottomMenu.bind(this);
         this.debugMenuItemClicked = this.debugMenuItemClicked.bind(this);
         this.fileMenuItemClicked = this.fileMenuItemClicked.bind(this);
         this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
         this.viewMenuItemClicked = this.viewMenuItemClicked.bind(this);
-
-        let self = this;
-        var playpause = function() {
-            var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/boxy/loop/";
-            if (self.state.ppbutton === 'play') {
-                ppstate('play');
-                url = url + "start";
-            } else {
-                ppstate('pause');
-                url = url + "stop";
-            }
-            xhr.open("GET", url, true);
-            xhr.send(null);
-        }
-        
-        var ppstate = (state) => {
-            var notstate;
-            if (state === "play") 
-                notstate = "pause";
-            else 
-                notstate = "play";
-            self.setState({'ppbutton': notstate});
-        };
-        ppstate = ppstate.bind(this);
-        
-        this.props.actionManager.on('simulate-play', playpause);
-        this.props.actionManager.on('simulate-pause', playpause);
-        this.props.socket.on("nc:state", (state) => {
-            ppstate(state);
-        });
-        
-        
         this.updateSpeed = this.updateSpeed.bind(this);
     }
 
-    openBottomMenu(info) {
-        this.setState({'openMenu': info.key});
+    openBottomMenu(info){
+        this.props.cb(info.key);
     }
 
     updateSpeed(info) {
@@ -177,11 +143,11 @@ export default class HeaderView extends React.Component {
         break;
         case "play":
         this.props.actionManager.emit("sim-pp");
-        if (this.state.ppbutton == "play"){
-          this.setState({"ppbutton":"pause"});
+        if (this.props.ppbutton == "play"){
+            this.props.cbPPButton("pause");
         }
-        else {
-          this.setState({"ppbutton": "play"});
+        else{
+            this.props.cbPPButton("play");
         }
         break;
         case "backward":
@@ -201,48 +167,31 @@ export default class HeaderView extends React.Component {
         }
     }
 
-    componentDidMount() {
-        var xhr = new XMLHttpRequest();
-        var self = this;
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    if (xhr.responseText == "play") 
-                        self.setState({"ppbutton": "pause"}); //Loop is running, we need a pause button.
-                    else 
-                        self.setState({"ppbutton": "play"});
-                    }
-                }
-        };
-        var url = "/v2/nc/projects/boxy/loop/state";
-        xhr.open("GET", url, true);
-        xhr.send(null);
-    }
-
     render() {
-        if (this.props.guiMode == 1) 
-            return null;
+        //if(this.props.guiMode == 1)
+            //return null;
         var ppbtntxt;
-        var ppbutton = this.state.ppbutton;
-        if(this.state.ppbutton === "play"){
-          ppbtntxt = "Play";
+        var ppbutton = this.props.ppbutton;
+        if(this.props.ppbutton === "play"){
+            ppbtntxt = "Play";
         }
         else{
-          ppbtntxt = "Pause";
+            ppbtntxt = "Pause";
         }
         const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
             <MenuItem key='file-menu'>File</MenuItem>
             <MenuItem key='simulate-menu'>Simulate</MenuItem>
         </Menu> );
         const bottomMenu = ( <div className='bottom-menus'>
-          {this.state.openMenu == 'file-menu' ?
+          {this.props.openMenu == 'file-menu' ?
           <Menu mode='horizontal' onClick={this.fileMenuItemClicked} className='bottom-menu'>
               <MenuItem tooltip='New function is currently disabled' key='new'><ButtonImage icon='file'/>New</MenuItem>
               <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='save'/>Save</MenuItem>
               <MenuItem key='load'><ButtonImage icon='open-file'/>Load</MenuItem>
           </Menu> : null }
-          {this.state.openMenu == 'simulate-menu' ?
+          {this.props.openMenu == 'simulate-menu' ?
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
+<<<<<<< HEAD
               <MenuItem key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
               <MenuItem key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
               <MenuItem key='forward'><ButtonImage icon='step-forward'/>Next</MenuItem>
