@@ -146,8 +146,6 @@ export default class HeaderView extends React.Component {
               <SliderMenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed} left='turtle' right='rabbit'/></SliderMenuItem>
           </Menu>);
 
-        return <div className="header-bar">
-            <div>{bottomMenu}</div>
-        </div>;
+        return <div className="header-bar">{bottomMenu}</div>;
     }
 }
