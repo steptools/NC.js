@@ -92,7 +92,7 @@ export default class CompassView extends React.Component {
     }
 
     render() {
-        let style={"top": "30px", 'zOrder': '100'};
+        let style={"top": "30px", 'zIndex': '100'};
 
         return <div id="compass-cube" className="cube" style={style}>
             <div className="cube-face cube-face-front">

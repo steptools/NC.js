@@ -35,7 +35,8 @@ export default class ContainerView extends React.Component {
             },
             svaltmenu: '',
             wstext: '',
-            ppbutton: getppbtnstate()
+            ppbutton: getppbtnstate(),
+            resize: false
         };
 
 
@@ -155,6 +156,9 @@ export default class ContainerView extends React.Component {
             this.setState({ guiMode: 0 });
         else
             this.setState({ guiMode: 1 });
+        
+        this.setState({resize: true});
+        this.setState({resize: false});
     }
 
     updateWorkingstep(ws){
@@ -284,10 +288,10 @@ export default class ContainerView extends React.Component {
             'bottom': '0px',
             'right': '0px'
         } : {
-            'left': '0px',
-            'top': '0px',
             'bottom': '0px',
-            'right': '0px'
+            'right': '0px',
+            'width': '100%',
+            'height': '100%'
         };
 
         return(
@@ -300,6 +304,7 @@ export default class ContainerView extends React.Component {
 			viewContainerId='primary-view'
 			root3DObject={this.props.app._root3DObject}
 			guiMode={this.state.guiMode}
+            resize={this.state.resize}
 			/>
 		</div>
 		{FV}
