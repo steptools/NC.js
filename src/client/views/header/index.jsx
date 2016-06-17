@@ -6,6 +6,7 @@ var PlainMenuItem = Menu.Item;
 import ReactTooltip from 'react-tooltip';
 require('./header.scss');
 
+// TODO: Fix so tooltips work
 class MenuItem extends React.Component {
     render() {
         if (this.props.tooltip) {
@@ -34,16 +35,26 @@ class MenuItem extends React.Component {
     }
 }
 
+class SliderMenuItem extends React.Component {
+    render() {
+        console.log(...this.props);
+        return (
+            <PlainMenuItem {...this.props}>
+                <div>
+                    {this.props.children}
+                </div>
+            </PlainMenuItem>
+        )
+    }
+}
+
 class ButtonImage extends React.Component {
     constructor(props) {
         super(props);
     }
     render() {
-        var classes = 'button-icon glyphicon glyphicon-' + this.props.icon;
         return (
-            <div>
-                <div className={classes}/>
-            </div>
+            <div className={"button-icon glyphicon glyphicon-"+this.props.icon}/>
         );
     }
 }
@@ -51,7 +62,6 @@ class ButtonImage extends React.Component {
 class Slider extends React.Component {
     constructor(props) {
         super(props);
-        
         this.changed = this.changed.bind(this);
     }
     
@@ -60,14 +70,26 @@ class Slider extends React.Component {
     }
     
     render() {
-        var sliderId = 'range-' + this.props.id;
-        var textId = 'text-' + this.props.id;
-        return (
-            <div>
-                <input id={sliderId} onChange={this.changed} className={sliderId} type="range" min="0" max="100" step="1" value={this.props.val}/>
-                <output className={textId}>{this.props.val}%</output>
-            </div>
-        );
+        var name = this.props.id.charAt(0).toUpperCase() + this.props.id.slice(1);
+        if (this.props.left && this.props.right) {
+            var left = this.props.left;
+            var right = this.props.right;
+            return (
+                <div className="slider sliderWithIcons">
+                    <input className={"range-"+this.props.id} onChange={this.changed} type="range" min="0" max="200" step="1" value={this.props.val}/>
+                    <span className={"slider-icon slider-left-icon icon-"+left}/>
+                    <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
+                    <span className={"slider-icon slider-right-icon icon-"+right}/>    
+                </div>
+            );
+        } else {
+            return (
+                <div className="slider sliderNoIcons">
+                    <input className={"range-"+this.props.id} onChange={this.changed} type="range" min="0" max="200" step="1" value={this.props.val}/>
+                    <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
+                </div>
+            );
+        }
     }
 }
 
@@ -221,10 +243,10 @@ export default class HeaderView extends React.Component {
           </Menu> : null }
           {this.state.openMenu == 'simulate-menu' ?
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
-              <MenuItem tooltip='Disabled' key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
-              <MenuItem tooltip='Not Disabled?' key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
+              <MenuItem key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
+              <MenuItem key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
               <MenuItem key='forward'><ButtonImage icon='step-forward'/>Next</MenuItem>
-              <MenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed}/>Speed</MenuItem>
+              <SliderMenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed} left='turtle' right='rabbit'/></SliderMenuItem>
           </Menu> : null}
         </div>);
 
