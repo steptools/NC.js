@@ -122,12 +122,10 @@ var _loopInit = function(req, res) {
         default:
           if (!isNaN(parseFloat(loopstate)) && isFinite(loopstate)) {
             let newSpeed = Number(loopstate);
-            if (Number(playbackSpeed) === 0 && Number(loopstate) > 0 && loopStates[ncId] === true) {
-              // app.logger.debug("Attempting to resume after being 0");
+            if (Number(playbackSpeed) !== newSpeed && loopStates[ncId] === true) {
               playbackSpeed = newSpeed;
               _loop(ncId, ms, false);
             }
-            playbackSpeed = newSpeed;
             res.status(200).send(JSON.stringify({"state": loopStates[ncId], "speed": playbackSpeed}));
             _updateSpeed(playbackSpeed);
           }
