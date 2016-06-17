@@ -36,7 +36,6 @@ class MenuItem extends React.Component {
 
 class SliderMenuItem extends React.Component {
     render() {
-        console.log(...this.props);
         return (
             <PlainMenuItem {...this.props}>
                 <div>
