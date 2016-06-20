@@ -82,7 +82,7 @@ class Slider extends React.Component {
                         type="range" min="0" max="200" step="1" />
                     <div className="sliderData">
                         <span className={"slider-icon slider-left-icon glyphicons glyphicons-"+left}/>
-                        <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
+                        <output className={"text-"+this.props.id}>{name}</output>
                         <span className={"slider-icon slider-right-icon glyphicons glyphicons-"+right}/>
                     </div>
                 </div>
@@ -92,7 +92,7 @@ class Slider extends React.Component {
                 <div className="slider sliderNoIcons">
                     <input className={"range-"+this.props.id} onChange={this.changed} type="range" min="0" max="200" step="1" value={this.props.val}/>
                     <div className="sliderData">
-                        <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
+                        <output className={"text-"+this.props.id}>{name}</output>
                     </div>
                 </div>
             );

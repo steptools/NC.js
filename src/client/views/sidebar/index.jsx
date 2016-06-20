@@ -114,7 +114,6 @@ export default class SidebarView extends React.Component {
       return <span
           id={node.id}
           className={cName}
-          name={node.id}
           onClick={this.onObjectTreeNodeClick.bind(this, node)}
           onMouseDown={function(e){e.stopPropagation()}}
       >
