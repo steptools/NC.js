@@ -75,27 +75,27 @@ Setting up a development environment
  ------------------------------------------------------------------------------
  9. Install Glyphicons
 
- ```
- > cd src/client
- > cp ~Downloads/fonts ./fonts
- > cp ~Downloads/glyphicons.scss ./stylesheets/fonts
- ```
+  ```
+  > cd src/client
+  > cp ~Downloads/fonts ./fonts
+  > cp ~Downloads/glyphicons.scss ./stylesheets/fonts
+  ```
 
   ------------------------------------------------------------------------------
   10. Install nodejs packages
 
- ```
- > npm install
- ```
+  ```
+  > npm install
+  ```
 
   ------------------------------------------------------------------------------
   11. Build/compile using webpack
 
   #### if you installed webpack globally (`npm install -g webpack`)
 
- ```
- > webpack
- ```
+  ```
+  > webpack
+  ```
 
   #### if you installed webpack via package dependencies (`npm install`)
 
