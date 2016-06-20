@@ -3,6 +3,7 @@ var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 var file = require('./file');
 
 var app;
+var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
 
@@ -61,8 +62,11 @@ var _loop = function(ncId, ms, key) {
       //app.logger.debug("OK...");
       _getDelta(ncId, ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
-        if (playbackSpeed > 0)
-            setTimeout(function() { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 200));
+        if (playbackSpeed > 0) {
+          if (loopTimer !== undefined)
+              clearTimeout(loopTimer);
+          loopTimer = setTimeout(function () { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 200));
+        }
         else {
           // app.logger.debug("playback speed is zero, no timeout set");
         }
