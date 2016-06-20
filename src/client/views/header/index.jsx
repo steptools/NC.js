@@ -74,7 +74,12 @@ class Slider extends React.Component {
             var right = this.props.right;
             return (
                 <div className="slider sliderWithIcons">
-                    <input className={"range-"+this.props.id} onChange={this.changed} type="range" min="0" max="200" step="1" value={this.props.val}/>
+                    <input className={"range-"+this.props.id}
+                           onChange={this.changed}  // Can remove onMouseUp / onKeyUp if bug is fixed with onChange
+                           onMouseUp={this.changed}
+                           onKeyUp={this.changed}
+                           value={this.props.val}
+                        type="range" min="0" max="200" step="1" />
                     <span className={"slider-icon slider-left-icon icon-"+left}/>
                     <output className={"text-"+this.props.id}>{name}</output>
                     <span className={"slider-icon slider-right-icon icon-"+right}/>
@@ -101,7 +106,7 @@ export default class HeaderView extends React.Component {
     }
 
     updateSpeed(info) {
-        this.props.actionManager.emit("simulate-setspeed", info.target.value);
+        this.props.actionManager.emit("simulate-setspeed", info);
     }
 
     simulateMenuItemClicked(info){
