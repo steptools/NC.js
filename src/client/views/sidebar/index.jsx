@@ -71,7 +71,7 @@ export default class SidebarView extends React.Component {
         <div className='sidebar-menu-tabs'>
           <span style={{opacity:nested ?.5:0}} className='glyphicons glyphicons-menu-left back-button'></span>
           <div style={{opacity:nested?.5:1, left:nested?40:140}} onClick={this.openObjectTree} className='back'>
-            <div>Object Tree</div>
+            <div>Workingsteps</div>
           </div>
           <div style={{left:nested?200:400}} className='current'>
             {this.props.altmenu}
@@ -81,7 +81,7 @@ export default class SidebarView extends React.Component {
         return <div className="sidebar">
                   {modeMenu}
                   {this.props.mode == 'tree' ?
-                  <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}/>
+                  <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
                   : null}
                   {this.props.mode == 'load-project' ?
                   <LoadProjectView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
