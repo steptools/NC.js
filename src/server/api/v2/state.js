@@ -170,8 +170,6 @@ var _wsInit = function(req, res) {
         _getNext(ncId, ms, function() {
         _loop(ncId, ms, true);
         });
-        loopStates[ncId] = false;
-        update("pause");
         }
         else{
           _loop(ncId,ms,false);
