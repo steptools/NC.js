@@ -227,17 +227,23 @@ export default class ContainerView extends React.Component {
             ;// something didn't match up, wait for the proper server response
     }
 
-	changeSpeed(speed) {
+	changeSpeed(event) {
 
+        let speed = event.target.value;
+
+        // set the value itself
+        this.setState({'playbackSpeed': Number(speed)});
+
+        if (event.type === 'change') {
+            return; // we don't want to commit anything until some other type of event
+        }
+        
         // tell the client to wait for server speed to catch up
         this.setState({'changeSpeed': true});
 
-        // and set the speed itself
-        this.setState({'playbackSpeed': Number(speed)});
-
         // now send a request to the server to change its speed
         let xhr = new XMLHttpRequest();
-        let url = "/v2/nc/projects/boxy/state/loop/" + Number(speed);   //FIXME: needs to be non-boxy url
+        let url = "/v2/nc/projects/" + this.props.pid + "/state/loop/" + Number(speed);
         xhr.open("GET", url, true);
         xhr.send(null);
 
@@ -280,19 +286,36 @@ export default class ContainerView extends React.Component {
 	    pid={this.props.pid}
 	    /> : undefined;
 
+        let cadview_bottom, cadview_style;
+        
+        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)
+            || (navigator.userAgent.indexOf("Chrome") === -1
+                && navigator.userAgent.indexOf("Safari") !== -1)) {
+            cadview_bottom = '10vmin';
+        }
+        else {
+            cadview_bottom = '0px';
+        }
+        
         // squish the cad view down to appropriate size
-        let cadview_style = this.state.guiMode == 0 ?
-        {
-            'left': '390px',
-            'top': '94px',
-            'bottom': '0px',
-            'right': '0px'
-        } : {
-            'bottom': '0px',    // FIXME: broken in Safari
-            'right': '0px',
-            'width': '100%',
-            'height': '100%'
-        };
+        if (this.state.guiMode === 0) {
+            cadview_style =
+            {
+                'left': '390px',
+                'top': '94px',
+                'bottom': '0px',
+                'right': '0px'
+            };
+        }
+        else {
+            cadview_style =
+            {
+                'bottom': cadview_bottom,
+                'right': '0px',
+                'width': '100%',
+                'top': '0px'
+            };
+        }
 
         return(
 	    <div style={{height:'100%'}}>
