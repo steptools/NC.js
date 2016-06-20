@@ -24,7 +24,7 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  4. create a new directory in StepNCViewer
+  3. create a new directory in StepNCViewer
 
   ```
   > cd StepNCViewer
@@ -32,7 +32,7 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  5. create a new directory in data for each project
+  4. create a new directory in data for each project
 
   ```
   > cd data
@@ -41,7 +41,7 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  6. Place the projects .stpnc file in the new directory under the name
+  5. Place the projects .stpnc file in the new directory under the name
       model.stpnc
 
   ```
@@ -52,7 +52,7 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  7. Create a file named pathmap.json in the data directory that contains a json
+  6. Create a file named pathmap.json in the data directory that contains a json
       object that contains each project name as a key and path as a value.
 
   ```
@@ -65,7 +65,7 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  8. Create a key
+  7. Create a key
 
   ```
   > cd ..
@@ -73,7 +73,7 @@ Setting up a development environment
   ```
  
  ------------------------------------------------------------------------------
- 9. Install Glyphicons
+  8. Install Glyphicons
 
   ```
   > cd src/client
@@ -82,14 +82,14 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  10. Install nodejs packages
+  9. Install nodejs packages
 
   ```
   > npm install
   ```
 
   ------------------------------------------------------------------------------
-  11. Build/compile using webpack
+  10. Build/compile using webpack
 
   #### if you installed webpack globally (`npm install -g webpack`)
 
@@ -104,7 +104,7 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  12. Start a server
+  11. Start a server
 
   ```
   > npm start
