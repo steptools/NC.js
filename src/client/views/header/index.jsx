@@ -75,7 +75,7 @@ class Slider extends React.Component {
             return (
                 <div className="slider sliderWithIcons">
                     <input className={"range-"+this.props.id}
-                           onChange={this.changed}
+                           onChange={this.changed}  // Can remove onMouseUp / onKeyUp if bug is fixed with onChange
                            onMouseUp={this.changed}
                            onKeyUp={this.changed}
                            value={this.props.val}
