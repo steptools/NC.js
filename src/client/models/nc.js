@@ -268,8 +268,8 @@ export default class NC extends THREE.EventDispatcher {
           });
 
             //Load new Stuff.
-            var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath');
-            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || geom.usage =="tobe" || geom.usage =="asis"||geom.usage=='machine'));
+            var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
+            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || (geom.usage =="tobe" && _.has(geom, 'shell')) || geom.usage =="asis"||geom.usage=='machine'));
            _.each(toolpaths, (geomData) => {
              let name = geomData.polyline.split('.')[0];
              if (!this._loader._annotations[name]){
