@@ -3,6 +3,7 @@ var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 var file = require('./file');
 
 var app;
+var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
 
@@ -61,8 +62,11 @@ var _loop = function(ncId, ms, key) {
       //app.logger.debug("OK...");
       _getDelta(ncId, ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
-        if (playbackSpeed > 0)
-            setTimeout(function() { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 200));
+        if (playbackSpeed > 0) {
+          if (loopTimer !== undefined)
+              clearTimeout(loopTimer);
+          loopTimer = setTimeout(function () { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 200));
+        }
         else {
           // app.logger.debug("playback speed is zero, no timeout set");
         }
@@ -122,11 +126,19 @@ var _loopInit = function(req, res) {
         default:
           if (!isNaN(parseFloat(loopstate)) && isFinite(loopstate)) {
             let newSpeed = Number(loopstate);
-            if (Number(playbackSpeed) !== newSpeed && loopStates[ncId] === true) {
+            
+            if (Number(playbackSpeed) !== newSpeed) {
               playbackSpeed = newSpeed;
-              _loop(ncId, ms, false);
+              app.logger.debug("Changing speed to " + newSpeed);
             }
-            res.status(200).send(JSON.stringify({"state": loopStates[ncId], "speed": playbackSpeed}));
+            
+            if (loopStates[ncId] === true) {
+              _loop(ncId, ms, false);
+              res.status(200).send(JSON.stringify({"state": "play", "speed": playbackSpeed}));
+            }
+            else {
+              res.status(200).send(JSON.stringify({"state": "pause", "speed": playbackSpeed}));
+            }
             _updateSpeed(playbackSpeed);
           }
           else {
