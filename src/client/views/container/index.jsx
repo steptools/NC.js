@@ -227,17 +227,23 @@ export default class ContainerView extends React.Component {
             ;// something didn't match up, wait for the proper server response
     }
 
-	changeSpeed(speed) {
+	changeSpeed(event) {
 
+        let speed = event.target.value;
+
+        // set the value itself
+        this.setState({'playbackSpeed': Number(speed)});
+
+        if (event.type === 'change') {
+            return; // we don't want to commit anything until some other type of event
+        }
+        
         // tell the client to wait for server speed to catch up
         this.setState({'changeSpeed': true});
 
-        // and set the speed itself
-        this.setState({'playbackSpeed': Number(speed)});
-
         // now send a request to the server to change its speed
         let xhr = new XMLHttpRequest();
-        let url = "/v2/nc/projects/"+this.props.pid+"/state/loop/" + Number(speed);   //FIXME: needs to be non-boxy url
+        let url = "/v2/nc/projects/" + this.props.pid + "/state/loop/" + Number(speed);
         xhr.open("GET", url, true);
         xhr.send(null);
 
