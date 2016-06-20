@@ -91,13 +91,9 @@ class Slider extends React.Component {
             return (
                 <div className="slider sliderNoIcons">
                     <input className={"range-"+this.props.id} onChange={this.changed} type="range" min="0" max="200" step="1" value={this.props.val}/>
-<<<<<<< HEAD
                     <div className="sliderData">
                         <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
                     </div>
-=======
-                    <output className={"text-"+this.props.id}>{name}</output>
->>>>>>> 8bc9179e046fb3cb1c7ce11f4f3061791ab82306
                 </div>
             );
         }
@@ -151,22 +147,7 @@ export default class HeaderView extends React.Component {
         else{
             ppbtntxt = "Pause";
         }
-<<<<<<< HEAD
-        const topMenu = ( <Menu mode='horizontal' onClick={this.openBottomMenu} className='top-menu'>
-            <MenuItem key='file-menu'>File</MenuItem>
-            <MenuItem key='simulate-menu'>Simulate</MenuItem>
-        </Menu> );
-        const bottomMenu = ( <div className='bottom-menus'>
-          {this.props.openMenu == 'file-menu' ?
-          <Menu mode='horizontal' onClick={this.fileMenuItemClicked} className='bottom-menu'>
-              <MenuItem tooltip='New function is currently disabled' key='new'><ButtonImage icon='file'/>New</MenuItem>
-              <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='disk-save'/>Save</MenuItem>
-              <MenuItem tooltip='Load function is currently disabled' key='load'><ButtonImage icon='disk-open'/>Load</MenuItem>
-          </Menu> : null }
-          {this.props.openMenu == 'simulate-menu' ?
-=======
         const bottomMenu = (
->>>>>>> 8bc9179e046fb3cb1c7ce11f4f3061791ab82306
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
               <MenuItem key='backward'><ButtonImage icon='step-backward'/>Prev</MenuItem>
               <MenuItem key='play'><ButtonImage icon={ppbutton}/>{ppbtntxt}</MenuItem>
