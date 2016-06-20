@@ -35,7 +35,7 @@ export default class WorkingstepList extends React.Component {
           onClick={this.onObjectTreeNodeClick.bind(this, node)}
           onMouseDown={function(e){e.stopPropagation()}}
           style={{"paddingLeft" : "5px"}}
-      >
+          key={node.id} >
           {node.icon}
           <span className="node-text">{node.name}</span>
       </ol>;
@@ -74,7 +74,7 @@ export default class WorkingstepList extends React.Component {
     return (
       <div className='m-tree'>
         {this.state.workingsteps.map((workingstep, i) => {
-          return <div className='m-node'>
+          return <div className='m-node' key={i}>
             {this.renderNode(workingstep)}
           </div>;
         })}
