@@ -53,7 +53,7 @@ class ButtonImage extends React.Component {
     }
     render() {
         return (
-            <div className={"button-icon glyphicon glyphicon-"+this.props.icon}/>
+            <div className={"button-icon glyphicons glyphicons-"+this.props.icon}/>
         );
     }
 }
@@ -76,16 +76,20 @@ class Slider extends React.Component {
             return (
                 <div className="slider sliderWithIcons">
                     <input className={"range-"+this.props.id} onChange={this.changed} type="range" min="0" max="200" step="1" value={this.props.val}/>
-                    <span className={"slider-icon slider-left-icon icon-"+left}/>
-                    <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
-                    <span className={"slider-icon slider-right-icon icon-"+right}/>    
+                    <div className="sliderData">
+                        <span className={"slider-icon slider-left-icon glyphicons glyphicons-"+left}/>
+                        <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
+                        <span className={"slider-icon slider-right-icon glyphicons glyphicons-"+right}/>
+                    </div>  
                 </div>
             );
         } else {
             return (
                 <div className="slider sliderNoIcons">
                     <input className={"range-"+this.props.id} onChange={this.changed} type="range" min="0" max="200" step="1" value={this.props.val}/>
-                    <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
+                    <div className="sliderData">
+                        <output className={"text-"+this.props.id}>{name} - {this.props.val}%</output>
+                    </div>
                 </div>
             );
         }
@@ -185,8 +189,8 @@ export default class HeaderView extends React.Component {
           {this.props.openMenu == 'file-menu' ?
           <Menu mode='horizontal' onClick={this.fileMenuItemClicked} className='bottom-menu'>
               <MenuItem tooltip='New function is currently disabled' key='new'><ButtonImage icon='file'/>New</MenuItem>
-              <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='save'/>Save</MenuItem>
-              <MenuItem key='load'><ButtonImage icon='open-file'/>Load</MenuItem>
+              <MenuItem tooltip='Save function is currently disabled' key='save'><ButtonImage icon='disk-save'/>Save</MenuItem>
+              <MenuItem tooltip='Load function is currently disabled' key='load'><ButtonImage icon='disk-open'/>Load</MenuItem>
           </Menu> : null }
           {this.props.openMenu == 'simulate-menu' ?
           <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='bottom-menu'>
