@@ -237,7 +237,7 @@ export default class ContainerView extends React.Component {
 
         // now send a request to the server to change its speed
         let xhr = new XMLHttpRequest();
-        let url = "/v2/nc/projects/boxy/state/loop/" + Number(speed);
+        let url = "/v2/nc/projects/boxy/state/loop/" + Number(speed);   //FIXME: needs to be non-boxy url
         xhr.open("GET", url, true);
         xhr.send(null);
 
@@ -288,7 +288,7 @@ export default class ContainerView extends React.Component {
             'bottom': '0px',
             'right': '0px'
         } : {
-            'bottom': '0px',
+            'bottom': '0px',    // FIXME: broken in Safari
             'right': '0px',
             'width': '100%',
             'height': '100%'
