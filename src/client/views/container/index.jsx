@@ -286,19 +286,36 @@ export default class ContainerView extends React.Component {
 	    pid={this.props.pid}
 	    /> : undefined;
 
+        let cadview_bottom, cadview_style;
+        
+        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)
+            || (navigator.userAgent.indexOf("Chrome") === -1
+                && navigator.userAgent.indexOf("Safari") !== -1)) {
+            cadview_bottom = '10vmin';
+        }
+        else {
+            cadview_bottom = '0px';
+        }
+        
         // squish the cad view down to appropriate size
-        let cadview_style = this.state.guiMode == 0 ?
-        {
-            'left': '390px',
-            'top': '94px',
-            'bottom': '0px',
-            'right': '0px'
-        } : {
-            'bottom': '0px',    // FIXME: broken in Safari
-            'right': '0px',
-            'width': '100%',
-            'height': '100%'
-        };
+        if (this.state.guiMode === 0) {
+            cadview_style =
+            {
+                'left': '390px',
+                'top': '94px',
+                'bottom': '0px',
+                'right': '0px'
+            };
+        }
+        else {
+            cadview_style =
+            {
+                'bottom': cadview_bottom,
+                'right': '0px',
+                'width': '100%',
+                'top': '0px'
+            };
+        }
 
         return(
 	    <div style={{height:'100%'}}>
