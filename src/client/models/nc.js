@@ -257,8 +257,11 @@ export default class NC extends THREE.EventDispatcher {
           // this._loader.annotations = {};
 
           // Delete existing Stuff.
-          var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"));
-          _.each(oldgeom,(geom)=>geom.setInvisible());
+            var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"));
+            _.each(oldgeom,(geom)=> this._object3D.remove(geom.object3D));
+
+            this._objects = _.reject(this._objects, function(geom) { return (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"); });
+
           var oldannotations =_.values(this._loader._annotations);
           _.each(oldannotations, (oldannotation) => {
             oldannotation.removeFromScene();
@@ -275,9 +278,11 @@ export default class NC extends THREE.EventDispatcher {
                this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
                // Push the annotation for later completion
                this._loader._annotations[name] = annotation;
+               var url = "/v2/nc/projects/";
+               url = url + this.project;
                this._loader.addRequest({
                    path: name,
-                   baseURL: "/v2/nc/projects/boxy",
+                   baseURL: url,
                    type: "annotation"
                });
              }else{
@@ -286,11 +291,8 @@ export default class NC extends THREE.EventDispatcher {
            });
 
            _.each(geoms, (geomData)=>{
-               let name = geomData.shell.split('.')[0];
+               let name = geomData.id;
                if(geomData.usage =="asis") return;
-               if(self._objects[geomData.id]) {
-                   self._objects[geomData.id].setVisible();
-               }
                else {
                    let color = DataLoader.parseColor("7d7d7d");
                    if(geomData.usage =="cutter"){
@@ -301,9 +303,11 @@ export default class NC extends THREE.EventDispatcher {
                    let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);
                    this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
                    this._loader._shells[geomData.shell]=shell;
+                   var url = "/v2/nc/projects/";
+                   url = url + this.project;
                    this._loader.addRequest({
                        path: name,
-                       baseURL: "/v2/nc/projects/boxy",
+                       baseURL: url,
                        type: "shell"
                    })
                    //this.addModel(geomData,geomData.usage,'cutter',)
