@@ -82,3 +82,6 @@ export default class WorkingstepList extends React.Component {
     );
   }
 }
+
+WorkingstepList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, 
+                                pid: React.PropTypes.string.isRequired, ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired}
