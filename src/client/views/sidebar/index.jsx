@@ -81,10 +81,13 @@ export default class SidebarView extends React.Component {
       );
       if((!scrolled) && (this.props.ws > -1))
       {
-        $('.m-tree').animate({
-        scrollTop: $("#"+this.props.ws).offset().top-$(".m-tree").offset().top
-        }, 1000);
-        scrolled=true;
+        if(document.getElementById(this.props.ws) != null)
+        {
+          $('.m-tree').animate({
+          scrollTop: $("#"+this.props.ws).offset().top-$(".m-tree").offset().top
+          }, 1000);
+          scrolled=true;
+        }
       }
         return <div className="sidebar">
                   {modeMenu}
