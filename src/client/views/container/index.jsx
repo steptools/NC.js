@@ -36,7 +36,8 @@ export default class ContainerView extends React.Component {
             svaltmenu: '',
             wstext: '',
             ppbutton: getppbtnstate(),
-            resize: false
+            resize: false,
+            changeSpeed: false
         };
 
 
@@ -119,10 +120,14 @@ export default class ContainerView extends React.Component {
         this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
+    
+    
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
-
+    }
+    
+    componentWillMount() {
         let xhr = new XMLHttpRequest();
         let self = this;
         xhr.onreadystatechange = function () {
@@ -143,8 +148,6 @@ export default class ContainerView extends React.Component {
         url = url + this.props.pid + "/state/loop/";
         xhr.open("GET", url, true);
         xhr.send(null);
-
-        this.setState({"changeSpeed": false});
     }
 
     componentWillUnmount() {
