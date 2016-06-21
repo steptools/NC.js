@@ -1,12 +1,10 @@
 import React from 'react';
 import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
-import LoadProjectView from './loadproject';
-import ToleranceTreeView from './tolerancetree';
 import WorkingstepList from './workingstepslist';
 import ReactTooltip from 'react-tooltip';
-var MenuItem = Menu.Item;
-var scrolled=false;
+let MenuItem = Menu.Item;
+let scrolled=false;
 
 export default class SidebarView extends React.Component {
     constructor(props) {
@@ -18,15 +16,15 @@ export default class SidebarView extends React.Component {
         this.onProjectSelected = this.onProjectSelected.bind(this);
         this.openToleranceTree = this.openToleranceTree.bind(this);
 
-        var disabledView = (name) => {
+        let disabledView = (name) => {
           return (() => {
             this.props.cbMode("disabled");
             this.props.cbAltMenu(name);
           }).bind(this);
         };
 
-        var self = this;
-        var updateWorkingstep = (state) => {
+        let self = this;
+        let updateWorkingstep = (state) => {
             self.props.cbWS(state);
             return;
         };
@@ -67,7 +65,7 @@ export default class SidebarView extends React.Component {
 
     render() {
       // TODO currently mode menu can only have two layers
-      var nested = this.props.mode != "tree";
+      let nested = this.props.mode != "tree";
       const modeMenu = (
         <div className='sidebar-menu-tabs'>
           <span style={{opacity:nested ?.5:0}} className='glyphicons glyphicons-menu-left back-button'></span>
