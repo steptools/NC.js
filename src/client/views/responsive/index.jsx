@@ -38,26 +38,19 @@ export default class ResponsiveView extends React.Component {
 
         this.ppstate = this.ppstate.bind(this);
         this.ppBtnClicked = this.ppBtnClicked.bind(this);
-        this.fBtnClicked = this.fBtnClicked.bind(this);
-        this.bBtnClicked = this.bBtnClicked.bind(this);
 
         this.props.app.socket.on("nc:state",(state)=>{this.ppstate(state)});
 
-        this.props.app.actionManager.on('sim-pp',this.ppBtnClicked);
-        this.props.app.actionManager.on('sim-f',this.fBtnClicked);
-        this.props.app.actionManager.on('sim-b',this.bBtnClicked);
+        this.props.app.actionManager.on('sim-pp', this.ppBtnClicked);
+        this.props.app.actionManager.on('sim-f',(info) => {console.log(this); this.nextws()});
+        this.props.app.actionManager.on('sim-b',(info) => {this.prevws()});
 
         this.updateWorkingstep = this.updateWorkingstep.bind(this);
 
         this.handleResize   = this.handleResize.bind(this);
         this.props.app.actionManager.on('change-workingstep', this.updateWorkingstep);
 
-        this.sidebarCBMode=this.sidebarCBMode.bind(this);
-        this.sidebarCBTree=this.sidebarCBTree.bind(this);
-        this.sidebarCBAltMenu=this.sidebarCBAltMenu.bind(this);
         this.cbWS=this.cbWS.bind(this);
-        this.footerCBWSText=this.footerCBWSText.bind(this);
-        this.cbPPButton=this.cbPPButton.bind(this);
 
         this.speedChanged = this.speedChanged.bind(this);
         this.changeSpeed = this.changeSpeed.bind(this);
@@ -137,29 +130,17 @@ export default class ResponsiveView extends React.Component {
             this.ppstate('pause');
             url = url+"stop";
         }
-        request
-            .get(url)
-            .end(function(err, res){
-                //
-            });
+        request.get(url).end((res) => {});
     }
     nextws(){
         let url = "/v2/nc/projects/"
         url = url + this.props.pid + "/state/ws/next";
-        request
-            .get(url)
-            .end(function(err, res){
-                //
-            });
+        request.get(url).end((res) => {});
     }
     prevws(){
         let url = "/v2/nc/projects/"
         url = url + this.props.pid + "/state/ws/prev";
-        request
-            .get(url)
-            .end(function(err, res){
-                //
-            });
+        request.get(url).end((res) => {});
     }
     ppstate(state){
         let notstate;
@@ -172,41 +153,10 @@ export default class ResponsiveView extends React.Component {
         this.ppstate(cs);
         this.playpause();
     }
-    fBtnClicked(info){
-        this.nextws();
-    }
-    bBtnClicked(info){
-        this.prevws();
-    }
-
-    sidebarCBMode(newMode)
-    {
-        this.setState({ svmode: newMode });
-    }
-
-    sidebarCBTree(newTree)
-    {
-        this.setState({ svtree: newTree });
-    }
-
-    sidebarCBAltMenu(newAltMenu)
-    {
-        this.setState({ svaltmenu: newAltMenu });
-    }
 
     cbWS(newWS)
     {
         this.setState({ ws: newWS });
-    }
-
-    footerCBWSText(newWSText)
-    {
-        this.setState({ wstext: newWSText });
-    }
-
-    cbPPButton(newPPButton)
-    {
-        this.setState({ ppbutton: newPPButton });
     }
 
     speedChanged(speed) {
@@ -238,11 +188,7 @@ export default class ResponsiveView extends React.Component {
 
         // now send a request to the server to change its speed
         let url = "/v2/nc/projects/" + this.props.pid + "/state/loop/" + Number(speed);
-        request
-            .get(url)
-            .end(function(err, res){
-                //
-            });
+        request.get(url).end(() => {});
     }
 
     render() {
@@ -252,7 +198,9 @@ export default class ResponsiveView extends React.Component {
                 cadManager={this.props.app.cadManager}
                 actionManager={this.props.app.actionManager}
                 socket={this.props.app.socket}
-                cbPPButton={this.cbPPButton}
+                cbPPButton={
+                    (newPPButton) => {this.setState({ ppbutton: newPPButton })}
+                }
                 ppbutton={this.state.ppbutton}
                 speed={this.state.playbackSpeed}
                 pid={this.props.pid}
@@ -266,10 +214,16 @@ export default class ResponsiveView extends React.Component {
                 ws={this.state.ws}
                 tree={this.state.svtree}
                 altmenu={this.state.svaltmenu}
-                cbMode={this.sidebarCBMode}
+                cbMode={
+                    (newMode) => {this.setState({ svmode: newMode })}
+                }
                 cbWS={this.cbWS}
-                cbTree={this.sidebarCBTree}
-                cbAltMenu={this.sidebarCBAltMenu}
+                cbTree={
+                    (newTree) => {this.setState({ svtree: newTree })}
+                }
+                cbAltMenu={
+                    (newAltMenu) => {this.setState({ svaltmenu: newAltMenu })}
+                }
                 pid={this.props.pid}
             />;
         }
@@ -281,7 +235,9 @@ export default class ResponsiveView extends React.Component {
                 wsid={this.state.ws}
                 wstext={this.state.wstext}
                 cbWS={this.cbWS}
-                cbWSText={this.footerCBWSText}
+                cbWSText={
+                    (newWSText) => {this.setState({ wstext: newWSText })}
+                }
                 ppbutton={this.state.ppbutton}
                 pid={this.props.pid}
             />;
