@@ -7,9 +7,9 @@ import ReactDOM             from 'react-dom';
 import BrowserView          from './views/browser';
 import LoginView            from './views/user/login';
 import RegisterView         from './views/user/register';
-import ContainerView      from './views/container';
+import ResponsiveView      from './views/responsive';
 // import SidebarView           from './views/sidebar';
-var qs                      = require('qs');
+let qs                      = require('qs');
 const queryString =         require('query-string');
 
 /*************************************************************************/
@@ -97,7 +97,7 @@ module.exports = Backbone.Router.extend({
     },
 
     _stepnc: function(pid){
-        var self = this;
+        let self = this;
         
         let xhr = new XMLHttpRequest();
         
@@ -110,7 +110,7 @@ module.exports = Backbone.Router.extend({
                         // project exists, render view
                         ReactDOM.render(
                         <div style={{ height:'100%'}}>
-                            <ContainerView
+                            <ResponsiveView
                                 app = {self.app }
                                 pid = {pid}
                                 />

@@ -1,4 +1,5 @@
 import React from 'react';
+import request from 'superagent';
 
 export default class WorkingstepList extends React.Component {
   constructor(props){
@@ -20,10 +21,12 @@ export default class WorkingstepList extends React.Component {
   }
 
   onObjectTreeNodeClick(node, self){
-        let xhr = new XMLHttpRequest();
         let url = "/v2/nc/projects/"+this.props.pid+"/state/ws/" + node["id"];
-        xhr.open("GET",url,true);
-        xhr.send(null);
+        request
+          .get(url)
+          .end(function(err, res){
+            //
+          });
     }
 
   renderNode(node){
@@ -42,32 +45,29 @@ export default class WorkingstepList extends React.Component {
   }
 
   componentDidMount(){
-    //populate the state to have all workingsteps as individual json objects in a list
-    let xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = ()=>{
-        if (xhr.readyState == 4) {
-          if (xhr.status == 200) {
-            // Node preprocessing
-            let nodes = [];
-            let nodeCheck = (node)=>{
-              node.icon = this.getNodeIcon(node,nodes.length+1);
-              if(node.children) node.children.forEach(nodeCheck);
-              node.children = [];
-                if(node.type === "workingstep")
-                  nodes.push(node);
-            }
-            let json = JSON.parse(xhr.responseText);
-            nodeCheck(json);
-            this.props.cbMode('tree');
-            this.props.cbTree(nodes);
-            this.setState({workingsteps: nodes});
-          }
-        }
-      };
-      console.log(this.props.pid);
       let url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
-      xhr.open("GET",url,true);
-      xhr.send(null);
+      let resCb = function(err,res){ //Callback function for response
+            if(!err && res.ok){
+              // Node preprocessing
+              let nodes = [];
+              let nodeCheck = (node)=>{
+                node.icon = this.getNodeIcon(node,nodes.length+1);
+                if(node.children) node.children.forEach(nodeCheck);
+                node.children = [];
+                  if(node.type === "workingstep")
+                    nodes.push(node);
+              }
+              let json = JSON.parse(res.text);
+              nodeCheck(json);
+              this.props.cbMode('tree');
+              this.props.cbTree(nodes);
+              this.setState({workingsteps: nodes});
+            }
+      }
+      resCb = resCb.bind(this); //Needs to bind this in order to have correct this
+      request
+        .get(url)
+        .end(resCb);
   }
 
   render(){
