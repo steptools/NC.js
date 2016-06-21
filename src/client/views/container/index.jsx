@@ -35,56 +35,6 @@ export default class ContainerView extends React.Component {
             resize: false
         };
 
-
-        let self = this;
-        var playpause = ()=>{
-            var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/";
-            url = url + this.props.pid + "/state/loop/";
-            if(self.state.ppbutton ==='play'){
-                ppstate('play');
-                url = url+"start";
-            }
-            else{
-                ppstate('pause');
-                url = url+"stop";
-            }
-            xhr.open("GET", url, true);
-            xhr.send(null);
-        }
-        var nextws = function(){
-            var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/"
-            url = url + self.props.pid + "/state/ws/next";
-            xhr.open("GET",url,true);
-            xhr.send(null);
-        }
-        var prevws = function(){
-            var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/";
-            url = url + self.props.pid + "/state/ws/prev";
-            xhr.open("GET",url,true);
-            xhr.send(null);
-        }
-        var ppstate = (state) =>
-        {
-            var notstate;
-            if(state==="play") notstate = "pause";
-            else notstate = "play";
-            self.setState({'ppbutton':notstate});
-        };
-        var ppBtnClicked = (info)=>{
-            var cs = this.state.ppbutton;
-            ppstate(cs);
-            playpause();
-        };
-        var fBtnClicked = (info)=>{
-            nextws();
-        }
-        var bBtnClicked = (info)=>{
-            prevws();
-        }
-
         ppstate = ppstate.bind(this);
         ppBtnClicked = ppBtnClicked.bind(this);
         fBtnClicked = fBtnClicked.bind(this);
@@ -179,6 +129,52 @@ export default class ContainerView extends React.Component {
         xhr.send(null);
     }
 
+    playpause(){
+        let xhr = new XMLHttpRequest();
+        let url = "/v2/nc/projects/";
+        url = url + this.props.pid + "/state/loop/";
+        if(this.state.ppbutton ==='play'){
+            this.ppstate('play');
+            url = url+"start";
+        }
+        else{
+            this.ppstate('pause');
+            url = url+"stop";
+        }
+        xhr.open("GET", url, true);
+        xhr.send(null);
+    }
+    nextws(){
+        let xhr = new XMLHttpRequest();
+        let url = "/v2/nc/projects/"
+        url = url + this.props.pid + "/state/ws/next";
+        xhr.open("GET",url,true);
+        xhr.send(null);
+    }
+    prevws(){
+        let xhr = new XMLHttpRequest();
+        let url = "/v2/nc/projects/";
+        url = url + this.props.pid + "/state/ws/prev";
+        xhr.open("GET",url,true);
+        xhr.send(null);
+    }
+    ppstate(){
+        let notstate;
+        if(state==="play") notstate = "pause";
+        else notstate = "play";
+        this.setState({'ppbutton':notstate});
+    }
+    ppBtnClicked(info){
+        let cs = this.state.ppbutton;
+        this.ppstate(cs);
+        this.playpause();
+    }
+    fBtnClicked(info){
+        this.nextws();
+    }
+    bBtnClicked(info){
+        this.prevws();
+    }
 
     sidebarCBMode(newMode)
     {
