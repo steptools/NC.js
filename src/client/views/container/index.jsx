@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Menu from 'rc-menu';
 import _ from 'lodash';
+import request from 'superagent';
 import BrowserView          from '../browser';
 import LoginView            from '../user/login';
 import RegisterView         from '../user/register';
@@ -164,7 +165,7 @@ export default class ContainerView extends React.Component {
                 if (xhr.status == 200) {
                     if(xhr.responseText)
                     {
-                        var workingstep = JSON.parse(xhr.responseText);
+                        let workingstep = JSON.parse(xhr.responseText);
                         self.setState({"ws": workingstep.id,"wstext":workingstep.name.trim()});
                     }
                     else
