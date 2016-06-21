@@ -20,14 +20,14 @@ export default class WorkingstepList extends React.Component {
   }
 
   onObjectTreeNodeClick(node, self){
-        var xhr = new XMLHttpRequest();
-        var url = "/v2/nc/projects/"+this.props.pid+"/state/ws/" + node["id"];
+        let xhr = new XMLHttpRequest();
+        let url = "/v2/nc/projects/"+this.props.pid+"/state/ws/" + node["id"];
         xhr.open("GET",url,true);
         xhr.send(null);
     }
 
   renderNode(node){
-      var cName = 'node';
+      let cName = 'node';
         if(node.id == this.props.ws) cName= 'node running-node';
       return <ol
           id={node.id}
@@ -43,13 +43,13 @@ export default class WorkingstepList extends React.Component {
 
   componentDidMount(){
     //populate the state to have all workingsteps as individual json objects in a list
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
       xhr.onreadystatechange = ()=>{
         if (xhr.readyState == 4) {
           if (xhr.status == 200) {
             // Node preprocessing
-            var nodes = [];
-            var nodeCheck = (node)=>{
+            let nodes = [];
+            let nodeCheck = (node)=>{
               node.icon = this.getNodeIcon(node,nodes.length+1);
               if(node.children) node.children.forEach(nodeCheck);
               node.children = [];
@@ -65,7 +65,7 @@ export default class WorkingstepList extends React.Component {
         }
       };
       console.log(this.props.pid);
-      var url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
+      let url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
       xhr.open("GET",url,true);
       xhr.send(null);
   }
