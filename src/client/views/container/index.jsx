@@ -156,7 +156,7 @@ export default class ContainerView extends React.Component {
             this.setState({ guiMode: 0 });
         else
             this.setState({ guiMode: 1 });
-        
+
         this.setState({resize: true});
         this.setState({resize: false});
     }
@@ -237,7 +237,7 @@ export default class ContainerView extends React.Component {
         if (event.type === 'change') {
             return; // we don't want to commit anything until some other type of event
         }
-        
+
         // tell the client to wait for server speed to catch up
         this.setState({'changeSpeed': true});
 
@@ -287,7 +287,7 @@ export default class ContainerView extends React.Component {
 	    /> : undefined;
 
         let cadview_bottom, cadview_style;
-        
+
         if (navigator.userAgent.match(/iPhone|iPad|iPod/i)
             || (navigator.userAgent.indexOf("Chrome") === -1
                 && navigator.userAgent.indexOf("Safari") !== -1)) {
@@ -296,13 +296,13 @@ export default class ContainerView extends React.Component {
         else {
             cadview_bottom = '0px';
         }
-        
+
         // squish the cad view down to appropriate size
         if (this.state.guiMode === 0) {
             cadview_style =
             {
                 'left': '390px',
-                'top': '94px',
+                'top': '12.5vmin',
                 'bottom': '0px',
                 'right': '0px'
             };

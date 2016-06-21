@@ -1,8 +1,8 @@
 .sidebar{
   .m-tree{
     padding:20px;
-    height:77%;
-    max-height: none;
+    height:77vmin;
+    max-height: max-content;
     .m-node .collapse:hover{
       background-color:#f00;
     }
