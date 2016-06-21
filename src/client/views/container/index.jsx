@@ -36,10 +36,6 @@ export default class ContainerView extends React.Component {
             changeSpeed: false
         };
 
-        this.playpause = this.playpause.bind(this);
-        this.nextws = this.nextws.bind(this);
-        this.prevws = this.prevws.bind(this);
-        
         this.ppstate = this.ppstate.bind(this);
         this.ppBtnClicked = this.ppBtnClicked.bind(this);
         this.fBtnClicked = this.fBtnClicked.bind(this);
@@ -131,7 +127,6 @@ export default class ContainerView extends React.Component {
     }
 
     playpause(){
-        let xhr = new XMLHttpRequest();
         let url = "/v2/nc/projects/";
         url = url + this.props.pid + "/state/loop/";
         if(this.state.ppbutton ==='play'){
@@ -142,24 +137,31 @@ export default class ContainerView extends React.Component {
             this.ppstate('pause');
             url = url+"stop";
         }
-        xhr.open("GET", url, true);
-        xhr.send(null);
+        request
+            .get(url)
+            .end(function(err, res){
+                //
+            });
     }
     nextws(){
-        let xhr = new XMLHttpRequest();
         let url = "/v2/nc/projects/"
         url = url + this.props.pid + "/state/ws/next";
-        xhr.open("GET",url,true);
-        xhr.send(null);
+        request
+            .get(url)
+            .end(function(err, res){
+                //
+            });
     }
     prevws(){
-        let xhr = new XMLHttpRequest();
-        let url = "/v2/nc/projects/";
+        let url = "/v2/nc/projects/"
         url = url + this.props.pid + "/state/ws/prev";
-        xhr.open("GET",url,true);
-        xhr.send(null);
+        request
+            .get(url)
+            .end(function(err, res){
+                //
+            });
     }
-    ppstate(state) {
+    ppstate(state){
         let notstate;
         if(state==="play") notstate = "pause";
         else notstate = "play";
