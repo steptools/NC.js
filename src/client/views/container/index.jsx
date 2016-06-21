@@ -237,11 +237,12 @@ export default class ContainerView extends React.Component {
         this.setState({'changeSpeed': true});
 
         // now send a request to the server to change its speed
-        let xhr = new XMLHttpRequest();
         let url = "/v2/nc/projects/" + this.props.pid + "/state/loop/" + Number(speed);
-        xhr.open("GET", url, true);
-        xhr.send(null);
-
+        request
+            .get(url)
+            .end(function(err, res){
+                //
+            });
     }
 
     render() {
