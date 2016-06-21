@@ -13,7 +13,7 @@ import FooterView	    from '../footer';
 
 import ReactTooltip from 'react-tooltip';
 
-export default class ContainerView extends React.Component {
+export default class ResponsiveView extends React.Component {
     constructor(props){
         super(props);
 
