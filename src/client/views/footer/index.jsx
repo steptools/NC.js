@@ -10,7 +10,7 @@ class ButtonImage extends React.Component{
     super(props);
   }
   render(){
-    var classes = 'button-icon glyphicons glyphicons-' + this.props.icon;
+    let classes = 'button-icon glyphicons glyphicons-' + this.props.icon;
     if(this.props.onBtnClick)
       return (<div className={classes} onClick={this.props.onBtnClick}/>);
     return (<div className={classes}/>);
@@ -38,7 +38,7 @@ export default class FooterView extends React.Component {
     render() {
         //if(this.props.guiMode == 0)
             //return null;
-        var ppbtntxt = this.props.ppbutton;
+        let ppbtntxt = this.props.ppbutton;
 		return (<div className="Footer-bar">
 			<div className="op-text">{this.props.wstext}</div>
             <div className="footer-buttons">
