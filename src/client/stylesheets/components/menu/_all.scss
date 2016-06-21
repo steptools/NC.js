@@ -10,6 +10,7 @@
     .rc-menu-item {
         padding: 0;
         min-width: 90px;
+        min-height:85px;
         height: 12vmin;
         margin-top: 4px;
         margin-bottom: 4px;
@@ -20,6 +21,7 @@
     }
     .rc-menu-item-selected {
         background: none;
+        min-height:85px;
         height: 12vmin;
     }
     .rc-menu-item:hover {
@@ -28,6 +30,7 @@
     }
     .slider {
         width: 250px;
+        min-height:85px;
         height: 12vmin;
         padding-left: 15px;
         padding-right: 15px;

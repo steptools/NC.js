@@ -12,9 +12,10 @@ $sidebarWidth: 390;
       position:relative;
       background-color: #333;
       height:10vmin;
+      min-height:75px;
       font-size:20px;
       color:#ddd;
-      overflow:hidden;
+      overflow:visible;
 
       .back-button{
         position:absolute;
