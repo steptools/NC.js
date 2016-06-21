@@ -1,6 +1,7 @@
 /* Copyright G. Hemingway, 2015 - All rights reserved */
 "use strict";
 
+import request from 'superagent';
 
 import React                from 'react';
 import ReactDOM             from 'react-dom';
@@ -99,12 +100,13 @@ module.exports = Backbone.Router.extend({
     _stepnc: function(pid){
         var self = this;
         
-        let xhr = new XMLHttpRequest();
         
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    let projectList = JSON.parse(xhr.responseText);
+
+        let url = "/v2/nc/projects/";
+        
+        let requestCB = function(error, response) {
+            if (!error && response.ok) {
+                let projectList = JSON.parse(response.text);
                     
                     if (projectList[pid] !== undefined) {
                         // project exists, render view
@@ -136,13 +138,14 @@ module.exports = Backbone.Router.extend({
                             </div>
                         , document.getElementById('primary-view'), function() {});            
                     }
-                }
             }
         };
+        
+        requestCB = requestCB.bind(this);
+        
+        request.get(url).end(requestCB);
 
-        let url = "/v2/nc/projects/";
-        xhr.open("GET", url, true);
-        xhr.send(null);
+
     },
 
     /************** Default Route ************************/
