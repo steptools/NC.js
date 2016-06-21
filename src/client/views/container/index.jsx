@@ -228,8 +228,10 @@ export default class ContainerView extends React.Component {
     }
 
 	changeSpeed(event) {
-
         let speed = event.target.value;
+        if (!speed) {
+            speed = event.target.attributes.value.value;
+        }
 
         // set the value itself
         this.setState({'playbackSpeed': Number(speed)});
