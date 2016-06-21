@@ -1,15 +1,15 @@
 import React from 'react';
 import Menu from 'rc-menu';
 import _ from 'lodash';
-var SubMenu = Menu.SubMenu;
-var PlainMenuItem = Menu.Item;
+let SubMenu = Menu.SubMenu;
+let PlainMenuItem = Menu.Item;
 import ReactTooltip from 'react-tooltip';
 
 // TODO: Fix so tooltips work
 class MenuItem extends React.Component {
     render() {
         if (this.props.tooltip) {
-            var id = _.uniqueId("tooltip_");
+            let id = _.uniqueId("tooltip_");
             return (
                 <PlainMenuItem {...this.props}>
                     <div>
@@ -68,10 +68,10 @@ class Slider extends React.Component {
     }
 
     render() {
-        var name = this.props.id.charAt(0).toUpperCase() + this.props.id.slice(1);
+        let name = this.props.id.charAt(0).toUpperCase() + this.props.id.slice(1);
         if (this.props.left && this.props.right) {
-            var left = this.props.left;
-            var right = this.props.right;
+            let left = this.props.left;
+            let right = this.props.right;
             return (
                 <div className="slider sliderWithIcons">
                     <input className={"range-"+this.props.id}
@@ -139,8 +139,8 @@ export default class HeaderView extends React.Component {
     render() {
         //if(this.props.guiMode == 1)
             //return null;
-        var ppbtntxt;
-        var ppbutton = this.props.ppbutton;
+        let ppbtntxt;
+        let ppbutton = this.props.ppbutton;
         if(this.props.ppbutton === "play"){
             ppbtntxt = "Play";
         }

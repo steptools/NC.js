@@ -10,7 +10,7 @@ import LoginView            from './views/user/login';
 import RegisterView         from './views/user/register';
 import ResponsiveView      from './views/responsive';
 // import SidebarView           from './views/sidebar';
-var qs                      = require('qs');
+let qs                      = require('qs');
 const queryString =         require('query-string');
 
 /*************************************************************************/
@@ -98,7 +98,7 @@ module.exports = Backbone.Router.extend({
     },
 
     _stepnc: function(pid){
-        var self = this;
+        let self = this;
         
         
 
