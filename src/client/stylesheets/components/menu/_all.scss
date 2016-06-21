@@ -104,7 +104,7 @@
     }
 }
 // Slider style
-// rgba(102, 102, 102, .75) == #666 at .75 opacity
+// TODO: Fix in Edge, padding and thumb are currently buggy
 input[type=range] {
     -webkit-appearance: none;
     width: 100%;
@@ -167,7 +167,6 @@ input[type=range] {
         border-radius: 2px;
         background: #ffffff;
         cursor: pointer;
-        height: 8px;
     }
     &:focus {
         &::-ms-fill-lower,
