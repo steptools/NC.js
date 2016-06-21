@@ -178,6 +178,10 @@ export default class ResponsiveView extends React.Component {
 
         let speed = event.target.value;
 
+        if (!speed) {
+            speed = event.target.attributes.value.value;
+        }
+
         // set the value itself
         this.setState({'playbackSpeed': Number(speed)});
 
