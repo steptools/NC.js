@@ -57,6 +57,8 @@ class ButtonImage extends React.Component {
     }
 }
 
+ButtonImage.propTypes = {icon: React.PropTypes.string.isRequired};
+
 class Slider extends React.Component {
     constructor(props) {
         super(props);
@@ -101,6 +103,9 @@ class Slider extends React.Component {
     }
 }
 
+Slider.propTypes = {changed: React.PropTypes.func.isRequired, id: React.PropTypes.string.isRequired, val: React.PropTypes.number.isRequired,
+                    left: React.PropTypes.string.isRequired, right: React.PropTypes.string.isRequired};
+
 export default class HeaderView extends React.Component {
     constructor(props) {
         super(props);
@@ -137,8 +142,6 @@ export default class HeaderView extends React.Component {
     }
 
     render() {
-        //if(this.props.guiMode == 1)
-            //return null;
         var ppbtntxt;
         var ppbutton = this.props.ppbutton;
         if(this.props.ppbutton === "play"){
@@ -158,3 +161,6 @@ export default class HeaderView extends React.Component {
         return <div className="header-bar">{bottomMenu}</div>;
     }
 }
+
+HeaderView.propTypes = {cadManager: React.PropTypes.object.isRequired,
+                          cbPPButton: React.PropTypes.func.isRequired, ppbutton: React.PropTypes.string.isRequired};

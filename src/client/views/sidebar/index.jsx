@@ -111,4 +111,4 @@ export default class SidebarView extends React.Component {
 SidebarView.propTypes = {cadManager: React.PropTypes.instanceOf(cadManager).isRequired, mode : React.PropTypes.string.isRequired, 
                           ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired,
                           cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, cbWS: React.PropTypes.func.isRequired, 
-                          cbAltMenu: React.PropTypes.func.isRequired, pid: React.PropTypes.string.isRequired}
+                          cbAltMenu: React.PropTypes.func.isRequired, pid: React.PropTypes.string.isRequired};
