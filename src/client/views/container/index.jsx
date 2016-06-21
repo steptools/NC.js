@@ -32,7 +32,8 @@ export default class ContainerView extends React.Component {
             svaltmenu: '',
             wstext: '',
             ppbutton: 'play',
-            resize: false
+            resize: false,
+            changeSpeed: false
         };
 
         this.playpause = this.playpause.bind(this);
@@ -49,7 +50,6 @@ export default class ContainerView extends React.Component {
         this.props.app.actionManager.on('sim-pp',this.ppBtnClicked);
         this.props.app.actionManager.on('sim-f',this.fBtnClicked);
         this.props.app.actionManager.on('sim-b',this.bBtnClicked);
-
 
         this.updateWorkingstep = this.updateWorkingstep.bind(this);
 
@@ -72,29 +72,28 @@ export default class ContainerView extends React.Component {
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
+    }
 
-        let xhr = new XMLHttpRequest();
-        let self = this;
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    let stateObj = JSON.parse(xhr.responseText);
-                    if(stateObj.state =="play")
-                        self.setState({"ppbutton": "pause"}); //Loop is running, we need a pause button.
-                    else
-                        self.setState({"ppbutton":"play"});
-
-                    self.setState({"playbackSpeed": Number(stateObj.speed)});
-                }
-            }
-        };
-
+    componentWillMount() {
         let url = "/v2/nc/projects/";
         url = url + this.props.pid + "/state/loop/";
-        xhr.open("GET", url, true);
-        xhr.send(null);
+        
+        let requestCB = function(error, response) {
+            if (!error && response.ok) {
+                let stateObj = JSON.parse(response.text);
+                
+                if(stateObj.state === "play")
+                    this.setState({"ppbutton": "pause"}); //Loop is running, we need a pause button.
+                else
+                    this.setState({"ppbutton":"play"});
 
-        this.setState({"changeSpeed": false});
+                this.setState({"playbackSpeed": Number(stateObj.speed)});
+            }
+        };
+        
+        requestCB = requestCB.bind(this);
+        
+        request.get(url).end(requestCB);
     }
 
     componentWillUnmount() {
@@ -112,25 +111,23 @@ export default class ContainerView extends React.Component {
     }
 
     updateWorkingstep(ws){
-        let self = this;
-        let xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = ()=>{
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    if(xhr.responseText)
-                    {
-                        let workingstep = JSON.parse(xhr.responseText);
-                        self.setState({"ws": workingstep.id,"wstext":workingstep.name.trim()});
-                    }
-                    else
-                        self.setState({"ws":ws,"wstxt":"Operation Unknown"});
-                }
-            }
-        };
         let url = "/v2/nc/projects/";
         url = url + this.props.pid + "/workplan/" + ws;
-        xhr.open("GET",url,true);
-        xhr.send(null);
+        
+        let requestCB = function(error, response) {
+            if (!error && response.ok) {
+                if (response.text) {
+                    let workingstep = JSON.parse(response.text);
+                    this.setState({"ws": workingstep.id, "wstext":workingstep.name.trim()});
+                }
+                else
+                    this.setState({"ws":ws,"wstxt":"Operation Unknown"});
+            }
+        };
+        
+        requestCB = requestCB.bind(this);
+        
+        request.get(url).end(requestCB);
     }
 
     playpause(){
