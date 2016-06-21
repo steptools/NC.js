@@ -35,16 +35,16 @@ export default class ContainerView extends React.Component {
             resize: false
         };
 
-        ppstate = ppstate.bind(this);
-        ppBtnClicked = ppBtnClicked.bind(this);
-        fBtnClicked = fBtnClicked.bind(this);
-        bBtnClicked = bBtnClicked.bind(this);
+        this.ppstate = this.ppstate.bind(this);
+        this.ppBtnClicked = this.ppBtnClicked.bind(this);
+        this.fBtnClicked = this.fBtnClicked.bind(this);
+        this.bBtnClicked = this.bBtnClicked.bind(this);
 
-        this.props.app.socket.on("nc:state",(state)=>{ppstate(state)});
+        this.props.app.socket.on("nc:state",(state)=>{this.ppstate(state)});
 
-        this.props.app.actionManager.on('sim-pp',ppBtnClicked);
-        this.props.app.actionManager.on('sim-f',fBtnClicked);
-        this.props.app.actionManager.on('sim-b',bBtnClicked);
+        this.props.app.actionManager.on('sim-pp',this.ppBtnClicked);
+        this.props.app.actionManager.on('sim-f',this.fBtnClicked);
+        this.props.app.actionManager.on('sim-b',this.bBtnClicked);
 
 
         this.updateWorkingstep = this.updateWorkingstep.bind(this);
