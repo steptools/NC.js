@@ -4,7 +4,8 @@ import Menu from 'rc-menu';
 import WorkingstepList from './workingstepslist';
 import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager'
-var scrolled=false;
+let MenuItem = Menu.Item;
+let scrolled=false;
 
 export default class SidebarView extends React.Component {
     constructor(props) {
