@@ -68,36 +68,34 @@ class Slider extends React.Component {
     }
 
     render() {
-        var name = this.props.id.charAt(0).toUpperCase() + this.props.id.slice(1);
+        let name = this.props.id.charAt(0).toUpperCase() + this.props.id.slice(1);
+        let className = "slider ";
+        let left, right;
+        
         if (this.props.left && this.props.right) {
-            var left = this.props.left;
-            var right = this.props.right;
-            return (
-                <div className="slider sliderWithIcons">
-                    <input className={"range-"+this.props.id}
-                           onChange={this.changed}  // Can remove onMouseUp / onKeyUp if bug is fixed with onChange
-                           onMouseUp={this.changed}
-                           onKeyUp={this.changed}
-                           value={this.props.val}
-                        type="range" min="0" max="200" step="1" />
-                    <div className="sliderData">
-                        <span className={"slider-icon slider-left-icon glyphicons glyphicons-"+left}/>
-                        <output className={"text-"+this.props.id}>{name}</output>
-                        <span className={"slider-icon slider-right-icon glyphicons glyphicons-"+right}/>
-                    </div>
-                </div>
-            );
-        } else {
-            return (
-                <div className="slider sliderNoIcons">
-                    <input className={"range-"+this.props.id} onChange={this.changed} type="range" min="0" max="200" step="1" value={this.props.val}/>
-                    <div className="sliderData">
-                        <output className={"text-"+this.props.id}>{name}</output>
-                    </div>
-                </div>
-            );
+            className = className + "sliderWithIcons";
+            left = <span className={"slider-icon slider-left-icon glyphicons glyphicons-"+this.props.left}/>;
+            right = <span className={"slider-icon slider-right-icon glyphicons glyphicons-"+this.props.right}/>;
         }
-
+        else {
+            className = className + "sliderNoIcons";
+        }
+        
+        return (
+            <div className={className}>
+                <input className={"range-"+this.props.id}
+                       onChange={this.changed}  // Can remove onMouseUp / onKeyUp if bug is fixed with onChange
+                       onMouseUp={this.changed}
+                       // onKeyPress={this.changed}
+                       value={this.props.val}
+                    type="range" min="0" max="200" step="1" />
+                <div className="sliderData">
+                    {left}
+                    <output className={"text-"+this.props.id}>{name}</output>
+                    {right}
+                </div>
+            </div>
+        );
     }
 }
 
