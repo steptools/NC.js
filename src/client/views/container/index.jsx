@@ -35,6 +35,10 @@ export default class ContainerView extends React.Component {
             resize: false
         };
 
+        this.playpause = this.playpause.bind(this);
+        this.nextws = this.nextws.bind(this);
+        this.prevws = this.prevws.bind(this);
+        
         this.ppstate = this.ppstate.bind(this);
         this.ppBtnClicked = this.ppBtnClicked.bind(this);
         this.fBtnClicked = this.fBtnClicked.bind(this);
@@ -158,9 +162,9 @@ export default class ContainerView extends React.Component {
         xhr.open("GET",url,true);
         xhr.send(null);
     }
-    ppstate(){
+    ppstate(state) {
         let notstate;
-        if(this.state==="play") notstate = "pause";
+        if(state==="play") notstate = "pause";
         else notstate = "play";
         this.setState({'ppbutton':notstate});
     }
