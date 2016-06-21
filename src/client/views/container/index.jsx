@@ -58,6 +58,8 @@ export default class ResponsiveView extends React.Component {
         this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
+    
+    
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
