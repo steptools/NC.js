@@ -45,6 +45,7 @@ export default class NC extends THREE.EventDispatcher {
             usage: usage,
             type: type,
             id: id,
+            rendered: true,
             object3D: new THREE.Object3D(),
             transform: (new THREE.Matrix4()).copy(transform),
             bbox: bbox,
@@ -162,10 +163,10 @@ export default class NC extends THREE.EventDispatcher {
 
         this._overlay3D.remove(this.bbox);
         this.boundingBox = new THREE.Box3();
-        let keys = _.keys(this._objects);
+        let keys = _.keys(self._objects);
         _.each(keys, function(key) {
             let object = self._objects[key];
-            if (object.type !== 'polyline') {
+            if (object.rendered !== false && object.type !== 'polyline') {
                 object.bbox = new THREE.Box3().setFromObject(object.object3D);
                 self.boundingBox.union(object.bbox);
             }
@@ -259,7 +260,10 @@ export default class NC extends THREE.EventDispatcher {
 
           // Delete existing Stuff.
             var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"));
-            _.each(oldgeom,(geom)=> this._object3D.remove(geom.object3D));
+            _.each(oldgeom,(geom)=> {
+                self._object3D.remove(geom.object3D);
+                geom.rendered = false;
+            });
 
             this._objects = _.reject(this._objects, function(geom) { return (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"); });
 
@@ -294,6 +298,14 @@ export default class NC extends THREE.EventDispatcher {
            _.each(geoms, (geomData)=>{
                let name = geomData.id;
                if(geomData.usage =="asis") return;
+                if(self._objects[geomData.id]) {
+                    let obj = self._objects[geomData.id];
+                    if (!obj.rendered) {
+                        self._overlay3D.add(obj.object3D);
+                        obj.rendered = true;
+                        self._objects[geomData.id] = obj;
+                    }
+                }
                else {
                    let color = DataLoader.parseColor("7d7d7d");
                    if(geomData.usage =="cutter"){
