@@ -160,7 +160,7 @@ export default class ContainerView extends React.Component {
     }
     ppstate(){
         let notstate;
-        if(state==="play") notstate = "pause";
+        if(this.state==="play") notstate = "pause";
         else notstate = "play";
         this.setState({'ppbutton':notstate});
     }
