@@ -4,21 +4,26 @@ var fs = require("fs");
 //Query for a json file that maps all projects in the data directory
 //to a particular path in the data folder
 
-var content = fs.readFileSync("data/pathmap.json");
-var jsoncontent = JSON.parse(content);
-var machineStates = {};
-var getPath;
+let content = fs.readFileSync("data/pathmap.json");
+let jsoncontent = JSON.parse(content);
+let machineStates = {};
+let getPath;
 
 module.exports.getPath = function getPath(ncId){
 	let lowncId = ncId.toLowerCase();
-	if(jsoncontent[lowncId]){
+	if(jsoncontent[lowncId] || jsoncontent[ncId]){
 		if (fs.existsSync(jsoncontent[lowncId])) {
 	    	console.log('Found file');
+	    	return jsoncontent[lowncId];
+		}
+		else if(fs.existsSync(jsoncontent[ncId])){
+			console.log('Found file');
+			return jsoncontent[ncId];
 		}
 		else{
 			console.log("THE FILE WAS NOT OPEN");
+			return jsoncontent[lowncId];
 		}
-		return jsoncontent[lowncId];
 	}
 	else
 		console.log("This project doesn't exist");
@@ -27,7 +32,7 @@ module.exports.getPath = function getPath(ncId){
 getPath=module.exports.getPath;
 
 module.exports.getMachineState = function (globalApp, ncId) {
-    var ncPath = getPath(ncId);
+    let ncPath = getPath(ncId);
 	if (ncPath === undefined)
 		return;
 	if (typeof(machineStates[ncId]) === 'undefined') {

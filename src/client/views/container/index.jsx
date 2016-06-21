@@ -42,8 +42,8 @@ export default class ContainerView extends React.Component {
 
         let self = this;
         var playpause = ()=>{
-            var xhr = new XMLHttpRequest();
-            var url = "/v2/nc/projects/";
+            let xhr = new XMLHttpRequest();
+            let url = "/v2/nc/projects/";
             url = url + this.props.pid + "/state/loop/";
             if(self.state.ppbutton ==='play'){
                 ppstate('play');
@@ -274,7 +274,7 @@ export default class ContainerView extends React.Component {
 	    cbAltMenu={this.sidebarCBAltMenu}
 	    pid={this.props.pid}
 	    /> : undefined;
-	let FV = this.state.guiMode == 1 ? <FooterView
+	   let FV = this.state.guiMode == 1 ? <FooterView
 	    cadManager={this.props.app.cadManager}
 	    actionManager={this.props.app.actionManager}
 	    socket={this.props.app.socket}
