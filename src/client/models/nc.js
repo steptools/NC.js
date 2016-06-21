@@ -68,7 +68,8 @@ export default class NC extends THREE.EventDispatcher {
         this._object3D.add(obj.object3D);
         this._overlay3D.add(obj.overlay3D);
         this._annotation3D.add(obj.annotation3D);
-        if (type === 'shell') {
+        // TODO: add selector for displaying asis geometry or not
+        if (type === 'shell' && usage !== 'asis') {
             model.addEventListener('shellEndLoad', function (event) {
                 let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
                 let mesh = new THREE.Mesh(event.shell.getGeometry(), material, false);
@@ -76,7 +77,7 @@ export default class NC extends THREE.EventDispatcher {
                 mesh.receiveShadow = true;
                 mesh.userData = obj;
                 obj.object3D.add(mesh);
-                // Dim the asis
+                // Dim the asis (should never happen as long as asis geometry isn't loaded
                 if (usage === 'asis' && asisOpacity !== 1.0) {
                     obj.object3D.traverse(function (object) {
                         if (object.material && object.material.uniforms.opacity) {
