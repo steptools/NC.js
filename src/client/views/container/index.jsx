@@ -12,11 +12,6 @@ import FooterView	    from '../footer';
 
 import ReactTooltip from 'react-tooltip';
 
-//TODO: Should this be a xmlhttpreq?
-var getppbtnstate = function() {
-    return 'play';
-}
-
 export default class ContainerView extends React.Component {
     constructor(props){
         super(props);
@@ -35,7 +30,7 @@ export default class ContainerView extends React.Component {
             },
             svaltmenu: '',
             wstext: '',
-            ppbutton: getppbtnstate(),
+            ppbutton: 'play',
             resize: false
         };
 
@@ -250,41 +245,46 @@ export default class ContainerView extends React.Component {
     }
 
     render() {
-        let HV = this.state.guiMode == 0 ? <HeaderView
-	    cadManager={this.props.app.cadManager}
-        actionManager={this.props.app.actionManager}
-        socket={this.props.app.socket}
-        cbPPButton={this.cbPPButton}
-        ppbutton={this.state.ppbutton}
-        speed={this.state.playbackSpeed}
-        pid={this.props.pid}
-	    /> : undefined;
-        let SV = this.state.guiMode == 0 ? <SidebarView
-	    cadManager={this.props.app.cadManager}
-	    app={this.props.app}
-	    actionManager={this.props.app.actionManager}
-	    socket={this.props.app.socket}
-	    mode={this.state.svmode}
-	    ws={this.state.ws}
-	    tree={this.state.svtree}
-	    altmenu={this.state.svaltmenu}
-	    cbMode={this.sidebarCBMode}
-	    cbWS={this.cbWS}
-	    cbTree={this.sidebarCBTree}
-	    cbAltMenu={this.sidebarCBAltMenu}
-	    pid={this.props.pid}
-	    /> : undefined;
-	   let FV = this.state.guiMode == 1 ? <FooterView
-	    cadManager={this.props.app.cadManager}
-	    actionManager={this.props.app.actionManager}
-	    socket={this.props.app.socket}
-	    wsid={this.state.ws}
-	    wstext={this.state.wstext}
-	    cbWS={this.cbWS}
-	    cbWSText={this.footerCBWSText}
-	    ppbutton={this.state.ppbutton}
-	    pid={this.props.pid}
-	    /> : undefined;
+        let HV, SV, FV;
+        if(this.state.guiMode == 0) {
+            HV = <HeaderView
+                cadManager={this.props.app.cadManager}
+                actionManager={this.props.app.actionManager}
+                socket={this.props.app.socket}
+                cbPPButton={this.cbPPButton}
+                ppbutton={this.state.ppbutton}
+                speed={this.state.playbackSpeed}
+                pid={this.props.pid}
+            />;
+            SV = <SidebarView
+                cadManager={this.props.app.cadManager}
+                app={this.props.app}
+                actionManager={this.props.app.actionManager}
+                socket={this.props.app.socket}
+                mode={this.state.svmode}
+                ws={this.state.ws}
+                tree={this.state.svtree}
+                altmenu={this.state.svaltmenu}
+                cbMode={this.sidebarCBMode}
+                cbWS={this.cbWS}
+                cbTree={this.sidebarCBTree}
+                cbAltMenu={this.sidebarCBAltMenu}
+                pid={this.props.pid}
+            />;
+        }
+        else {
+            FV = <FooterView
+                cadManager={this.props.app.cadManager}
+                actionManager={this.props.app.actionManager}
+                socket={this.props.app.socket}
+                wsid={this.state.ws}
+                wstext={this.state.wstext}
+                cbWS={this.cbWS}
+                cbWSText={this.footerCBWSText}
+                ppbutton={this.state.ppbutton}
+                pid={this.props.pid}
+            />;
+        }
 
         let cadview_bottom, cadview_style;
         
