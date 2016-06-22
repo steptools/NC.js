@@ -14,8 +14,6 @@ import LoadQueueView    from '../load_queue';
 // Import shaders
 require('./shaders/VelvetyShader');
 
-//Import style sheets
-require('../../stylesheets/components/tree.scss');
 
 /*************************************************************************/
 
