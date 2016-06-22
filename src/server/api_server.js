@@ -84,14 +84,10 @@ APIServer.prototype._setSocket = function() {
  */
 APIServer.prototype._setRoutes = function(cb) {
     var self = this;
-    require('./api/v1/auth')(this, function() {
-        require('./api/v1/storage')(self, function() {
-            require('./api/v2/projects')(self, function() {
-                require('./api/v2/step')(self, function() {
-                    require('./api/v2/state')(self, function () {
-                        require('./api/v2/geometry')(self, function (){if(cb)cb();});
-                    });
-                });
+    require('./api/v2/projects')(self, function() {
+        require('./api/v2/step')(self, function() {
+            require('./api/v2/state')(self, function () {
+                require('./api/v2/geometry')(self, function (){if(cb)cb();});
             });
         });
     });
@@ -107,8 +103,6 @@ APIServer.prototype._setSite = function() {
         api_endpoint: endpoint,
         socket: "",
         version: '/v2',
-        auth: "/v1/user",
-        model: "/v1/model"
     };
     // Serve the root client framework - customized as needed
     var _serveRoot = function (req, res) {
