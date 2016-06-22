@@ -2,6 +2,7 @@ import React from 'react';
 import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
 import WorkingstepList from './workingstepslist';
+import WorkplanList from './workplanlist'
 import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager'
 let MenuItem = Menu.Item;
@@ -90,9 +91,7 @@ export default class SidebarView extends React.Component {
       }
         return <div className="sidebar">
                   {modeMenu}
-                  {this.props.mode == 'tree' ?
-                  <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
-                  : null}
+                  <WorkplanList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
                   {this.props.mode == 'load-project' ?
                   <LoadProjectView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
                   : null}
