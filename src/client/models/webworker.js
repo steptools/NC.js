@@ -4,6 +4,8 @@
  * Extended by Gabor Pap to include TySON decoding
  */
 
+import request from 'superagent';
+
 /*********************************************************************
  *
  * TYSON decoder
@@ -625,7 +627,7 @@ function processNCState(url, workerID, data) {
 }
 
 function processAnnotation(url, workerID, data) {
-    var parts = url.split("/");
+    let parts = url.split("/");
     // All we really need to do is pass this back to the main thread
     self.postMessage({
         type: "annotationLoad",
@@ -644,20 +646,20 @@ function processAnnotation(url, workerID, data) {
 /*********************************************************************/
 
 function unindexValues(data, buffers) {
-    var numValues = data.pointsIndex.length;
-    for (var i = 0; i < numValues; i++) {
+    let numValues = data.pointsIndex.length;
+    for (let i = 0; i < numValues; i++) {
         buffers.position[i] = data.values[data.pointsIndex[i]];
         buffers.normals[i] = data.values[data.normalsIndex[i]];
     }
 }
 
 function uncompressColors(data, colorsBuffer) {
-    var index = 0;
-    var numBlocks = data.colorsData.length;
-    for (var i = 0; i < numBlocks; i++) {
-        var block = data.colorsData[i];
-        for (var j = 0; j < block.duration; j++) {
-            var bdnull = (block.data ===null);
+    let index = 0;
+    let numBlocks = data.colorsData.length;
+    for (let i = 0; i < numBlocks; i++) {
+        let block = data.colorsData[i];
+        for (let j = 0; j < block.duration; j++) {
+            let bdnull = (block.data ===null);
             colorsBuffer[index++] = bdnull?-1:block.data[0];
             colorsBuffer[index++] = bdnull?-1:block.data[1];
             colorsBuffer[index++] = bdnull?-1:block.data[2];
@@ -667,7 +669,7 @@ function uncompressColors(data, colorsBuffer) {
 
 function processShellJSON(url, workerID, dataJSON, signalFinish) {
     // Just copy the data into arrays
-    var buffers = {
+    let buffers = {
         position: new Float32Array(dataJSON.pointsIndex.length),
         normals: new Float32Array(dataJSON.pointsIndex.length),
         colors: new Float32Array(dataJSON.pointsIndex.length)
@@ -675,9 +677,9 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
 
     if (dataJSON.values) {
         if (dataJSON.precision) {
-            var factor = Math.pow(10, dataJSON.precision);
-            var length = dataJSON.values.length;
-            for (var i = 0; i < length; i++) {
+            let factor = Math.pow(10, dataJSON.precision);
+            let length = dataJSON.values.length;
+            for (let i = 0; i < length; i++) {
                 dataJSON.values[i] /= factor;
             }
         }
@@ -687,7 +689,7 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
         uncompressColors(dataJSON, buffers.colors);
     }
 
-    var parts = url.split("/");
+    let parts = url.split("/");
     self.postMessage({
         type: "shellLoad",
         data: buffers,
@@ -705,13 +707,13 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
 }
 
 function processBatchJSON(url, workerID, data) {
-    var dataJSON = JSON.parse(data);
-    var parts = url.split("/");
+    let dataJSON = JSON.parse(data);
+    let parts = url.split("/");
     self.postMessage({
         type: "parseComplete",
         file: parts[parts.length - 1]
     });
-    for (var i = 0; i < dataJSON.shells.length; i++) {
+    for (let i = 0; i < dataJSON.shells.length; i++) {
         processShellJSON(url, workerID, dataJSON.shells[i], false);
     }
     self.postMessage({
@@ -722,14 +724,14 @@ function processBatchJSON(url, workerID, data) {
 }
 
 function processBatchTYSON(url, workerID, buffer) {
-    var tyson = TYSON(buffer);
-    var dataJSON = tyson.decode();
-    var parts = url.split("/");
+    let tyson = TYSON(buffer);
+    let dataJSON = tyson.decode();
+    let parts = url.split("/");
     self.postMessage({
         type: "parseComplete",
         file: parts[parts.length - 1]
     });
-    for (var i = 0; i < dataJSON.shells.length; i++) {
+    for (let i = 0; i < dataJSON.shells.length; i++) {
         processShellJSON(url, workerID, dataJSON.shells[i], false);
     }
     self.postMessage({
@@ -744,37 +746,38 @@ function processBatchTYSON(url, workerID, buffer) {
 
 self.addEventListener("message", function(e) {
     // Get the request URL info
-    var url = e.data.url;
-    var workerID = e.data.workerID;
-    var xhr = new XMLHttpRequest();
+    let url = e.data.url;
+    let workerID = e.data.workerID;
+    
     // Determine data type
-    var parts = url.split('.');
-    var dataType = e.data.dataType;
+    let parts = url.split('.');
+    let dataType = e.data.dataType;
     parts = url.split("/");
-    xhr.addEventListener("load", function() {
-        // Handle 404 in loadend
-        if (xhr.status === 404) return;
+    
+    // define a callback for the "load" event
+    // using arrow function to bind 'this' to the higher-level 'self'
+    let loadCb = (res) => {
         //TODO: MAKE THIS LESS HARDCODED
         if (parts[parts.length - 4] === "projects") {
-            var file = parts[parts.length - 4] + '/' + parts[parts.length - 3] + '/' + parts[parts.length - 2] + '/' + parts[parts.length - 1];
-            self.postMessage({type : "loadComplete", file: file });
+            let file = parts[parts.length - 4] + '/' + parts[parts.length - 3] + '/' + parts[parts.length - 2] + '/' + parts[parts.length - 1];
+            this.postMessage({type : "loadComplete", file: file });
         }
         else {
-            self.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
+            this.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
         }
         // What did we get back
         switch(e.data.type) {
             case "annotation":
-                processAnnotation(url, workerID, xhr.responseText);
+                processAnnotation(url, workerID, res.text);
                 break;
             case "shell":
                 // Try to parse the JSON file
                 let dataJSON;
                 try {
-                     dataJSON = JSON.parse(xhr.responseText);
+                     dataJSON = JSON.parse(res.text);
                 } catch(ex) {
                     console.log(ex);
-                    console.log(xhr.responseText);
+                    console.log(res.text);
                     dataJSON = {
                         precision:      2,
                         pointsIndex:    [],
@@ -783,7 +786,7 @@ self.addEventListener("message", function(e) {
                         values:         []
                     };
                 }
-                self.postMessage({
+                this.postMessage({
                     type: "parseComplete",
                     file: parts[parts.length - 2]
                 });
@@ -793,55 +796,74 @@ self.addEventListener("message", function(e) {
             case "batch":
                 switch (dataType) {
                     case "json":
-                        processBatchJSON(url, workerID, xhr.responseText);
+                        processBatchJSON(url, workerID, res.text);
                         break;
                     case "tyson":
-                        processBatchTYSON(url, workerID, xhr.response);
+                        processBatchTYSON(url, workerID, res.text);
                         break;
                 }
                 break;
             case "nc":
-                processNCState(url, workerID, xhr.responseText);
+                processNCState(url, workerID, res.text);
                 break;
             case "assembly":
-                processAssembly(url, workerID, xhr.responseText);
+                processAssembly(url, workerID, res.text);
                 break;
             case "cloudassembly":
-                processAssembly(url, workerID, xhr.responseText);
+                processAssembly(url, workerID, res.text);
                 break;
             default:
                 throw Error("DataLoader.webworker - Invalid request type: " + e.data.type);
                 break;
         }
-    });
-    xhr.addEventListener("loadend", function() {
-        if (xhr.status === 404 || xhr.status === 403) {
-            self.postMessage({
+    }
+    
+    // define a callback for the "progress" event
+    // we use arrow functions here to properly bind 'this'
+    let progressCb = (event) => {
+        let file = parts[parts.length - 2] + '/' + parts[parts.length - 1];
+        let message = { type: "loadProgress", file: file };
+        if (event.lengthComputable) {
+            message.loaded = event.loaded / event.total * 100.0;
+        }
+        this.postMessage(message);
+    }
+
+    // initialize the GET request
+    let req = request.get(url);
+
+    // set the proper request headers for TYSON if needed
+    if (dataType == 'tyson'){
+        req.accept('arraybuffer');
+        req.set('content-type', 'application/arraybuffer');
+    }
+    
+    // now define a handler callback for the response on the request
+    // we use arrow functions here to properly bind 'this'
+    let handle = (err, res) => {
+        
+        // we need to use the response's underlying xhr because events are dispatched to it
+        // again using an arrow function to bind 'this' since loadCb needs access to the response
+        res.xhr.addEventListener("load", () => {loadCb(res);});
+        res.xhr.addEventListener("progress", progressCb);
+        
+        // check for errors and post message accordingly
+        if (res.status === 404 || res.status === 403) {
+            this.postMessage({
                 type: "loadError",
-                status: xhr.status,
+                status: res.status,
                 url: url,
                 file: parts[parts.length - 2],
                 workerID: workerID
             });
         }
-    });
-    xhr.addEventListener("progress", function(event) {
-        var file = parts[parts.length - 2] + '/' + parts[parts.length - 1];
-        var message = { type: "loadProgress", file: file };
-        if (event.lengthComputable) {
-            message.loaded = event.loaded / event.total * 100.0;
+        // this catches any other errors that may occur
+        else if (err) {
+            console.log ("DataLoader.webworker - Error " + err.status + " loading file: " + url);
         }
-        self.postMessage(message);
-    });
-    xhr.open("GET", url, true);
-    if (dataType == 'tyson'){
-        xhr.responseType = 'arraybuffer';
-        xhr.setRequestHeader('content-type', 'application/arraybuffer');
     }
-    // Go get it
-    try {
-        xhr.send();
-    } catch (ex) {
-        console.log ("DataLoader.webworker - Error loading file: " + url);
-    }
+    
+    // actually send the request
+    req.end(handle);
+    
 }, false);

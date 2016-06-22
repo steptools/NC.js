@@ -4,7 +4,7 @@
   For example, "open-sidebar", "load-file"
 */
 
-var LOG_ALL_ACTIONS = true;
+let LOG_ALL_ACTIONS = true;
 
 if (LOG_ALL_ACTIONS){
   console.info(`
@@ -29,7 +29,7 @@ class ActionManager extends EventEmitter {
 const actionManager = new ActionManager();
 
 if (LOG_ALL_ACTIONS){
-  var oldEmit = actionManager.emit;
+  let oldEmit = actionManager.emit;
   actionManager.emit = function(event, data){
     console.log("ActionManager : Action : " + event);
     oldEmit.apply(actionManager, arguments);

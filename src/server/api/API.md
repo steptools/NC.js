@@ -2,35 +2,43 @@
 
 /v2/nc is appended to the beginning of all endpoints
 
-#### *Found in state.js*
+### *Found in state.js*
 
- 
-> **/projects/{ncId}**
-
-Returns the information for the project defined by ncId
-
-> **/projects/{ncId}/keystate**
+> **/projects/{ncId}/state/key**
 
 Returns the current keystate for the project defined by ncId
 
-> **/projects/{ncId}/loop/{loopstate}**
+> **/projects/{ncId}/state/delta**
 
-For the given project defined by ncId there are options for loopstate as follows:
+Returns the current delta state for the project defined by ncId\
 
-- state: returns the current state
-- start: starts the current simulation
-- stop: stops the current simulation
-- stepf: steps to the next workingstep
-- stepb: steps to the last workingstep
-- stepto: steps to the workingstep of the node clicked
+> **/projects/{ncId}/state/loop/**
 
-#### *Found in projects.js*
+Returns the current state for the project (e.g. play or pause) defined by ncId
+
+> **/projects/{ncId}/state/loop/{loopstate}**
+
+For loopstate the options are as follows:
+
+ - start : starts the simulation
+ - stop : stops the simulation
+ - {int} : changes the speed of the simulation
+
+> **/projects/{ncId}/state/ws/{command}**
+
+For command the options are as follows:
+
+ - next : moves the simulation to the next workingstep
+ - prev : moves the simulation to the previous workingstep
+ - {int} : moves the simulation to a specific workingstep defined by the int 
+
+### *Found in projects.js*
 
 > **/projects/**
 
 Returns a list of projects that are in pathmap.json
 
-#### *Found in geometry.js*
+### *Found in geometry.js*
 
 > **/projects/{ncId}/geometry**
 
@@ -40,7 +48,7 @@ Returns a list of geometry in JSON format for the given ncId
 
 Returns a JSON format geometry information for the given ncId with uuid and type given
 
-#### *Found in step.js*
+### *Found in step.js*
 
 > **/projects/{ncId}/workplan/{wsId}**
 

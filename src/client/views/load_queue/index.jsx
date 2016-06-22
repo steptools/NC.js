@@ -91,5 +91,5 @@ export default class LoadQueueView extends React.Component {
 }
 
 LoadQueueView.propTypes = {
-    dispatcher: React.PropTypes.object.isRequired
+    dispatcher: React.PropTypes.object.isRequired, guiMode: React.PropTypes.number.isRequired
 };

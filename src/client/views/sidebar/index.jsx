@@ -1,12 +1,11 @@
 import React from 'react';
 import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
-import LoadProjectView from './loadproject';
-import ToleranceTreeView from './tolerancetree';
 import WorkingstepList from './workingstepslist';
 import ReactTooltip from 'react-tooltip';
-var MenuItem = Menu.Item;
-var scrolled=false;
+import cadManager from '../../models/cad_manager'
+let MenuItem = Menu.Item;
+let scrolled=false;
 
 export default class SidebarView extends React.Component {
     constructor(props) {
@@ -18,15 +17,15 @@ export default class SidebarView extends React.Component {
         this.onProjectSelected = this.onProjectSelected.bind(this);
         this.openToleranceTree = this.openToleranceTree.bind(this);
 
-        var disabledView = (name) => {
+        let disabledView = (name) => {
           return (() => {
             this.props.cbMode("disabled");
             this.props.cbAltMenu(name);
           }).bind(this);
         };
 
-        var self = this;
-        var updateWorkingstep = (state) => {
+        let self = this;
+        let updateWorkingstep = (state) => {
             self.props.cbWS(state);
             return;
         };
@@ -67,7 +66,7 @@ export default class SidebarView extends React.Component {
 
     render() {
       // TODO currently mode menu can only have two layers
-      var nested = this.props.mode != "tree";
+      let nested = this.props.mode != "tree";
       const modeMenu = (
         <div className='sidebar-menu-tabs'>
           <span style={{opacity:nested ?.5:0}} className='glyphicons glyphicons-menu-left back-button'></span>
@@ -81,10 +80,13 @@ export default class SidebarView extends React.Component {
       );
       if((!scrolled) && (this.props.ws > -1))
       {
-        $('.m-tree').animate({
-        scrollTop: $("#"+this.props.ws).offset().top-$(".m-tree").offset().top
-        }, 1000);
-        scrolled=true;
+        if(document.getElementById(this.props.ws) != null)
+        {
+          $('.m-tree').animate({
+          scrollTop: $("#"+this.props.ws).offset().top-$(".m-tree").offset().top
+          }, 1000);
+          scrolled=true;
+        }
       }
         return <div className="sidebar">
                   {modeMenu}
@@ -103,3 +105,8 @@ export default class SidebarView extends React.Component {
                </div>;
     }
 }
+
+SidebarView.propTypes = {cadManager: React.PropTypes.instanceOf(cadManager).isRequired, mode : React.PropTypes.string.isRequired, 
+                          ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired,
+                          cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, cbWS: React.PropTypes.func.isRequired, 
+                          cbAltMenu: React.PropTypes.func.isRequired, pid: React.PropTypes.string.isRequired};
