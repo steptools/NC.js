@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom';
 import Menu from 'rc-menu';
 import _ from 'lodash';
 import request from 'superagent';
-import BrowserView          from '../browser';
-import LoginView            from '../user/login';
-import RegisterView         from '../user/register';
 import CADView              from '../cad';
 import HeaderView           from '../header';
 import SidebarView          from '../sidebar';
@@ -33,7 +30,8 @@ export default class ResponsiveView extends React.Component {
             wstext: '',
             ppbutton: 'play',
             resize: false,
-            changeSpeed: false
+            changeSpeed: false,
+            playbackSpeed: 50
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -265,7 +263,7 @@ export default class ResponsiveView extends React.Component {
             cadview_style =
             {
                 'left': '390px',
-                'top': '94px',
+                'top': '90px',
                 'bottom': '0px',
                 'right': '0px'
             };

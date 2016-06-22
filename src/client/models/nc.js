@@ -253,108 +253,110 @@ export default class NC extends THREE.EventDispatcher {
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
         if (!delta.hasOwnProperty('prev')){
-          //For keyframes, we need to remove current toolpaths, cutters,
-          // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
-          console.log("Keyframe recieved");
-          // this._loader.annotations = {};
+            //For keyframes, we need to remove current toolpaths, cutters,
+            // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
+            console.log("Keyframe recieved");
+            // this._loader.annotations = {};
 
-          // Delete existing Stuff.
+            // Delete existing Stuff.
             var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"));
             _.each(oldgeom,(geom)=> {
                 self._object3D.remove(geom.object3D);
+                self._overlay3D.remove(geom.object3D);
                 geom.rendered = false;
             });
 
-            this._objects = _.reject(this._objects, function(geom) { return (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"); });
-
-          var oldannotations =_.values(this._loader._annotations);
-          _.each(oldannotations, (oldannotation) => {
-            oldannotation.removeFromScene();
-          });
+            var oldannotations =_.values(this._loader._annotations);
+            _.each(oldannotations, (oldannotation) => {
+                oldannotation.removeFromScene();
+            });
 
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
             var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || (geom.usage =="tobe" && _.has(geom, 'shell')) || geom.usage =="asis"||geom.usage=='machine'));
-           _.each(toolpaths, (geomData) => {
-             let name = geomData.polyline.split('.')[0];
-             if (!this._loader._annotations[name]){
-               let annotation = new Annotation(geomData.id, this, this);
-               let transform = DataLoader.parseXform(geomData.xform, true);
-               this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
-               // Push the annotation for later completion
-               this._loader._annotations[name] = annotation;
-               var url = "/v2/nc/projects/";
-               url = url + this.project;
-               this._loader.addRequest({
-                   path: name,
-                   baseURL: url,
-                   type: "annotation"
-               });
-             }else{
-               this._loader._annotations[name].addToScene();
-             }
-           });
+            _.each(toolpaths, (geomData) => {
+                let name = geomData.polyline.split('.')[0];
+                if (!this._loader._annotations[name]){
+                    let annotation = new Annotation(geomData.id, this, this);
+                    let transform = DataLoader.parseXform(geomData.xform, true);
+                    this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
+                    // Push the annotation for later completion
+                    this._loader._annotations[name] = annotation;
+                    var url = "/v2/nc/projects/";
+                    url = url + this.project;
+                    this._loader.addRequest({
+                        path: name,
+                        baseURL: url,
+                        type: "annotation"
+                    });
+                } else {
+                    this._loader._annotations[name].addToScene();
+                }
+            });
 
-           _.each(geoms, (geomData)=>{
-               let name = geomData.id;
-               if(geomData.usage =="asis") return;
-                if(self._objects[geomData.id]) {
-                    let obj = self._objects[geomData.id];
+
+            _.each(geoms, (geomData)=>{
+                let name = geomData.id;
+                if(geomData.usage =="asis") return;
+
+                if(self._objects[name]) {
+                    let obj = self._objects[name];
                     if (!obj.rendered) {
                         self._overlay3D.add(obj.object3D);
                         obj.rendered = true;
-                        self._objects[geomData.id] = obj;
+                        self._objects[name] = obj;
                     }
                 }
-               else {
-                   let color = DataLoader.parseColor("7d7d7d");
-                   if(geomData.usage =="cutter"){
-                       color = DataLoader.parseColor("FF530D");
-                   }
-                   let transform = DataLoader.parseXform(geomData.xform,true);
-                   let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
-                   let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);
-                   this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
-                   this._loader._shells[geomData.shell]=shell;
-                   var url = "/v2/nc/projects/";
-                   url = url + this.project;
-                   this._loader.addRequest({
-                       path: name,
-                       baseURL: url,
-                       type: "shell"
-                   })
+                else {
+                    let color = DataLoader.parseColor("7d7d7d");
+                    if(geomData.usage =="cutter"){
+                        color = DataLoader.parseColor("FF530D");
+                    }
+                    let transform = DataLoader.parseXform(geomData.xform,true);
+                    let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
+                    let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);
+                    this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
+                    this._loader._shells[geomData.shell]=shell;
+                    var url = "/v2/nc/projects/";
+                    url = url + this.project;
+                    this._loader.addRequest({
+                        path: name,
+                        baseURL: url,
+                        type: "shell"
+                    })
                    //this.addModel(geomData,geomData.usage,'cutter',)
-               }
-           });
-           this._loader.runLoadQueue();
-           alter = true;
-          this.app.actionManager.emit('change-workingstep',delta.workingstep);
+                }
+            });
+
+            this._loader.runLoadQueue();
+            alter = true;
+            this.app.actionManager.emit('change-workingstep',delta.workingstep);
             //  let lineGeometries = event.annotation.getGeometry();
         }
-        else{
-          // Handle each geom update in the delta
-          // This is usually just a tool movement.
-          _.each(delta.geom, function(geom) {
-            if (!window.geom || window.geom.length < 100){
-              window.geom = window.geom || [];
-              window.geom.push(geom);
-            }
-              let obj = self._objects[geom.id];
-              if(obj !== undefined) {
-                  if (obj.usage === 'cutter' || obj.usage === 'machine') {
-                      let transform = new THREE.Matrix4();
-                      if (!geom.xform) return;
-                      transform.fromArray(geom.xform);
-                      let position = new THREE.Vector3();
-                      let quaternion = new THREE.Quaternion();
-                      let scale = new THREE.Vector3();
-                      transform.decompose(position, quaternion, scale);
-                      obj.object3D.position.copy(position);
-                      obj.object3D.quaternion.copy(quaternion);
-                      alter = true;
-                  }
-              }
-          });
+        else {
+            // Handle each geom update in the delta
+            // This is usually just a tool movement.
+            _.each(delta.geom, function(geom) {
+                if (!window.geom || window.geom.length < 100){
+                    window.geom = window.geom || [];
+                    window.geom.push(geom);
+                }
+                let obj = self._objects[geom.id];
+                if(obj !== undefined) {
+                    if (obj.rendered !== false && obj.usage === 'cutter' || obj.usage === 'machine') {
+                        let transform = new THREE.Matrix4();
+                        if (!geom.xform) return;
+                        transform.fromArray(geom.xform);
+                        let position = new THREE.Vector3();
+                        let quaternion = new THREE.Quaternion();
+                        let scale = new THREE.Vector3();
+                        transform.decompose(position, quaternion, scale);
+                        obj.object3D.position.copy(position);
+                        obj.object3D.quaternion.copy(quaternion);
+                        alter = true;
+                    }
+                }
+            });
         }
         return alter;
     }
@@ -373,7 +375,7 @@ export default class NC extends THREE.EventDispatcher {
             // On selection
         } else {
             let bounds = this.getBoundingBox(false);
-            if (!this.bbox && !bounds.empty()) {
+            if (!this.bbox && !bounds.isEmpty()) {
                 this.bbox = Assembly.buildBoundingBox(bounds);
             }
             if (this.bbox) {
