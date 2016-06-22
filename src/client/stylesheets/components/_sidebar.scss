@@ -38,6 +38,15 @@ $sidebarWidth: 390;
             background-color: rgba(255,255,255,.5);
             margin-bottom: 1px;
             cursor: pointer;
+
+                .textbox {
+                    display:inline-block;
+                    padding: 5px;
+                    width : 285px;
+                   
+
+                }
+
         }
 
         .icon-letter {
@@ -46,6 +55,7 @@ $sidebarWidth: 390;
             padding: 5px;
             border-radius: 5px;
             width: 30px;
+            height:30px;
             display: inline-block;
             text-align: center;
             margin-right: 8px;
