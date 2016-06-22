@@ -2,7 +2,7 @@
 .rc-menu-item:hover {
     cursor: pointer;
 }
-.bottom-menu {
+.topbar {
     background-color: #f8f8f8;
     .rc-menu-item {
         padding: 0;
@@ -40,6 +40,9 @@
         padding-top: 19px;
         .sliderData {
             padding-top: 11px;
+            & + span {
+                display: none;
+            }
         }
     }
     .sliderWithIcons {
@@ -65,6 +68,8 @@
         }
     }
 }
+// sidebar menu MIGHT be needed once we have nested trees in sidebar
+/*
 .sidebar-menu {
     border-bottom: none;
     .rc-menu-item {
@@ -82,9 +87,7 @@
         background-color: #ddd;
     }
 }
-.rc-menu-item:disabled {
-    opacity: 0.25;
-}
+*/
 .rc-menu-item .button-icon {
     font-size: 32px;
     opacity: 0.5;
@@ -95,7 +98,6 @@
         opacity: 1;
     }
 }
-// Slider style
 // TODO: Fix in Edge, padding and thumb are currently buggy
 input[type=range] {
     -webkit-appearance: none;
