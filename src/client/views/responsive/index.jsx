@@ -33,7 +33,8 @@ export default class ResponsiveView extends React.Component {
             wstext: '',
             ppbutton: 'play',
             resize: false,
-            changeSpeed: false
+            changeSpeed: false,
+            playbackSpeed: 50
         };
 
         this.ppstate = this.ppstate.bind(this);
