@@ -172,20 +172,6 @@ $sidebarWidth: 390;
             opacity: 1;
             left: 45px;
         }
-        /*.current{
-        position:absolute;
-        transition: left .5s, opacity .5s;
-        left:200px;
-        top:26px;
-        white-space: nowrap;
-        color:#fff;
-      }
-      .current:hover{
-        cursor:pointer;
-      }*/
-        .current:hover {
-            cursor: pointer;
-        }
     }
 
     .disabled-view {
