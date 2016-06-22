@@ -262,10 +262,9 @@ export default class NC extends THREE.EventDispatcher {
             var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"));
             _.each(oldgeom,(geom)=> {
                 self._object3D.remove(geom.object3D);
+                self._overlay3D.remove(geom.object3D);
                 geom.rendered = false;
             });
-
-            this._objects = _.reject(this._objects, function(geom) { return (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"); });
 
             var oldannotations =_.values(this._loader._annotations);
             _.each(oldannotations, (oldannotation) => {
@@ -278,60 +277,60 @@ export default class NC extends THREE.EventDispatcher {
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
-                let annotation = new Annotation(geomData.id, this, this);
-                let transform = DataLoader.parseXform(geomData.xform, true);
-                this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
-                // Push the annotation for later completion
-                this._loader._annotations[name] = annotation;
-                var url = "/v2/nc/projects/";
-                url = url + this.project;
-                this._loader.addRequest({
-                   path: name,
-                   baseURL: url,
-                   type: "annotation"
-                });
-            } else {
-                this._loader._annotations[name].addToScene();
-            }
-        });
-
-
-        _.each(geoms, (geomData)=>{
-            let name = geomData.id;
-            if(geomData.usage =="asis") return;
-
-            if(self._objects[name]) {
-                let obj = self._objects[name];
-                if (!obj.rendered) {
-                    self._overlay3D.add(obj.object3D);
-                    obj.rendered = true;
-                    self._objects[name] = obj;
+                    let annotation = new Annotation(geomData.id, this, this);
+                    let transform = DataLoader.parseXform(geomData.xform, true);
+                    this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
+                    // Push the annotation for later completion
+                    this._loader._annotations[name] = annotation;
+                    var url = "/v2/nc/projects/";
+                    url = url + this.project;
+                    this._loader.addRequest({
+                        path: name,
+                        baseURL: url,
+                        type: "annotation"
+                    });
+                } else {
+                    this._loader._annotations[name].addToScene();
                 }
-            }
-            else {
-               let color = DataLoader.parseColor("7d7d7d");
-               if(geomData.usage =="cutter"){
-                   color = DataLoader.parseColor("FF530D");
-               }
-               let transform = DataLoader.parseXform(geomData.xform,true);
-               let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
-               let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);
-               this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
-               this._loader._shells[geomData.shell]=shell;
-               var url = "/v2/nc/projects/";
-               url = url + this.project;
-               this._loader.addRequest({
-                   path: name,
-                   baseURL: url,
-                   type: "shell"
-               })
-                   //this.addModel(geomData,geomData.usage,'cutter',)
-           }
-        });
+            });
 
-        this._loader.runLoadQueue();
-        alter = true;
-        this.app.actionManager.emit('change-workingstep',delta.workingstep);
+
+            _.each(geoms, (geomData)=>{
+                let name = geomData.id;
+                if(geomData.usage =="asis") return;
+
+                if(self._objects[name]) {
+                    let obj = self._objects[name];
+                    if (!obj.rendered) {
+                        self._overlay3D.add(obj.object3D);
+                        obj.rendered = true;
+                        self._objects[name] = obj;
+                    }
+                }
+                else {
+                    let color = DataLoader.parseColor("7d7d7d");
+                    if(geomData.usage =="cutter"){
+                        color = DataLoader.parseColor("FF530D");
+                    }
+                    let transform = DataLoader.parseXform(geomData.xform,true);
+                    let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
+                    let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);
+                    this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
+                    this._loader._shells[geomData.shell]=shell;
+                    var url = "/v2/nc/projects/";
+                    url = url + this.project;
+                    this._loader.addRequest({
+                        path: name,
+                        baseURL: url,
+                        type: "shell"
+                    })
+                   //this.addModel(geomData,geomData.usage,'cutter',)
+                }
+            });
+
+            this._loader.runLoadQueue();
+            alter = true;
+            this.app.actionManager.emit('change-workingstep',delta.workingstep);
             //  let lineGeometries = event.annotation.getGeometry();
         }
         else {
@@ -344,7 +343,7 @@ export default class NC extends THREE.EventDispatcher {
                 }
                 let obj = self._objects[geom.id];
                 if(obj !== undefined) {
-                    if (obj.usage === 'cutter' || obj.usage === 'machine') {
+                    if (obj.rendered !== false && obj.usage === 'cutter' || obj.usage === 'machine') {
                         let transform = new THREE.Matrix4();
                         if (!geom.xform) return;
                         transform.fromArray(geom.xform);
