@@ -18,7 +18,6 @@
 
         &:first-child {
             margin-left: 2px;
-            border-left: 1px solid #ddd;
         }
 
         &:hover {
@@ -40,50 +39,8 @@
             }
         }
     }
-
-    .slider {
-        width: 250px;
-        min-height: 85px;
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-top: 19px;
-
-        .sliderData {
-            padding-top: 11px;
-
-            & + span {
-                display: none;
-            }
-        }
-    }
-
-    .sliderWithIcons {
-        .sliderData {
-            div {
-                display: inline-block;
-            }
-
-            .slider-icon {
-                font-size: 20px;
-                opacity: 0.5;
-                color: #666;
-
-                &:hover {
-                    color: #2baee9;
-                    opacity: 1;
-                }
-            }
-
-            .slider-left-icon {
-                float: left;
-            }
-
-            .slider-right-icon {
-                float: right;
-            }
-        }
-    }
 }
+
 .rc-menu-item .button-icon {
     font-size: 32px;
     opacity: 0.5;
@@ -95,7 +52,46 @@
         opacity: 1;
     }
 }
-// TODO: Fix in Edge, padding and thumb are currently buggy
+
+.slider {
+    width: 250px;
+    min-height: 85px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 19px;
+
+    .sliderData {
+        padding-top: 11px;
+        
+        div {
+            display: inline-block;
+        }
+
+        & + span {
+            display: none;
+        }
+    }
+    
+    .slider-icon {
+        font-size: 20px;
+        opacity: 0.5;
+        color: #666;
+
+        &:hover {
+            color: #2baee9;
+            opacity: 1;
+        }
+    }
+
+    .slider-left-icon {
+        float: left;
+    }
+
+    .slider-right-icon {
+        float: right;
+    }
+}
+
 input[type=range] {
     -webkit-appearance: none;
     width: 100%;
@@ -176,7 +172,6 @@ input[type=range] {
         }
     }
 }
-
 /*
 // .sidebar-menu styles MIGHT be needed once we have nested trees in sidebar
 .sidebar-menu {

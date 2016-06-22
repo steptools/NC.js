@@ -165,24 +165,14 @@ $sidebarWidth: 390;
             left: 40px;
             top: 26px;
             color: #fff;
+            
+            &:hover {
+                cursor: pointer;
+                opacity: 1;
+                left: 45px;
+            }
         }
 
-        .back:hover {
-            cursor: pointer;
-            opacity: 1;
-            left: 45px;
-        }
-        /*.current{
-        position:absolute;
-        transition: left .5s, opacity .5s;
-        left:200px;
-        top:26px;
-        white-space: nowrap;
-        color:#fff;
-      }
-      .current:hover{
-        cursor:pointer;
-      }*/
         .current:hover {
             cursor: pointer;
         }
