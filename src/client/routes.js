@@ -18,7 +18,6 @@ const queryString =         require('query-string');
 module.exports = Backbone.Router.extend({
     routes: {
         '':                             '_landing',
-        'browse':                       '_browse',
         'login':                        '_login',
         'register':                     '_register',
         'stepnc/:projectid':            '_stepnc',
