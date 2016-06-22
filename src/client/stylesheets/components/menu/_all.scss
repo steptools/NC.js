@@ -10,10 +10,10 @@
     .rc-menu-item {
         padding: 0;
         min-width: 90px;
-        min-height:85px;
-        height: 12vmin;
-        margin-top: 4px;
-        margin-bottom: 4px;
+        height: 85px;
+        //height: 12vmin;
+        //margin-top: 4px;
+        //margin-bottom: 4px;
         text-align: center;
         border-right: 1px solid #ddd;
         background: none;
@@ -21,17 +21,13 @@
     }
     .rc-menu-item-selected {
         background: none;
-        min-height:85px;
-        height: 12vmin;
     }
     .rc-menu-item:hover {
         margin-bottom: 0;
-        height: 12vmin;
     }
     .slider {
         width: 250px;
         min-height:85px;
-        height: 12vmin;
         padding-left: 15px;
         padding-right: 15px;
         padding-top: 28px;

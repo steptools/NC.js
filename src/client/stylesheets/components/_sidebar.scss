@@ -1,7 +1,6 @@
 $sidebarWidth: 390;
 
 .sidebar{
-    height:100%;
     width: $sidebarWidth;
     background-color:#ddd;
     position:relative;
@@ -11,8 +10,7 @@ $sidebarWidth: 390;
 
       position:relative;
       background-color: #333;
-      height:10vmin;
-      min-height:75px;
+      height:75px;
       font-size:20px;
       color:#ddd;
       overflow:visible;

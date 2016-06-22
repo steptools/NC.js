@@ -2,9 +2,7 @@
   .m-tree{
     position:relative;
     padding:20px;
-    height:77vmin;
-    max-height: max-content;
-    min-height: 100px;
+    height: calc(100% - 75px - 90px);
     .m-node .collapse:hover{
       background-color:#f00;
     }

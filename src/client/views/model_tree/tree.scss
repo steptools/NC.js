@@ -1,21 +1,3 @@
-.model-tree {
-  position: absolute;
-  top: 10px;
-  left: -244px;
-  min-width: 250px;
-  max-width: 250px;
-  min-height: 40px;
-  color: white;
-  border: 1px solid #aaa;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  opacity: .9;
-  padding: 5px;
-  white-space: nowrap;
-  transition: left .2s, opacity .2s;
-  font-size: 10px;
-}
-
 .model-tree:hover {
   opacity: 0.9;
   left: 0;
@@ -32,7 +14,6 @@
 .m-tree {
   position: relative;
   overflow-y: scroll;
-  max-height: 400px;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
