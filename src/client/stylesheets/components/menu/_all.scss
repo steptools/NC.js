@@ -4,13 +4,13 @@
     cursor: pointer;
 }
 
-.topbar {
+.header-menu {
     background-color: #f8f8f8;
 
     .rc-menu-item {
         padding: 0;
-        min-width: 90px;
-        height: 85px;
+        min-width: 85px;
+        min-height: 88px;
         text-align: center;
         border-right: 1px solid #ddd;
         background: none;
@@ -55,14 +55,13 @@
 
 .slider {
     width: 250px;
-    min-height: 85px;
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 19px;
 
     .sliderData {
         padding-top: 11px;
-        
+
         div {
             display: inline-block;
         }
@@ -71,7 +70,7 @@
             display: none;
         }
     }
-    
+
     .slider-icon {
         font-size: 20px;
         opacity: 0.5;

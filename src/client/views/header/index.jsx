@@ -142,7 +142,7 @@ export default class HeaderView extends React.Component {
             ppbtntxt = "Pause";
         }
         const headerMenu = (
-            <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='top-menu'>
+            <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='header-menu'>
                 <MenuItem tooltip='Backward function is currently disabled' key='backward'><ButtonImage prefix='glyphicon' icon='step-backward'/>Prev</MenuItem>
                 <MenuItem key='play'><ButtonImage prefix='glyphicon' icon={ppbutton}/>{ppbtntxt}</MenuItem>
                 <MenuItem key='forward'><ButtonImage prefix='glyphicon' icon='step-forward'/>Next</MenuItem>
@@ -150,7 +150,7 @@ export default class HeaderView extends React.Component {
             </Menu>
         );
 
-        return <div className="topbar">{headerMenu}</div>;
+        return <div className="header">{headerMenu}</div>;
     }
 }
 
