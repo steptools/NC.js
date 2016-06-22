@@ -10,10 +10,12 @@ import React            from 'react';
 import ViewerControls   from './viewer_controls';
 import CompassView      from '../compass/compass';
 import LoadQueueView    from '../load_queue';
-import ModelTreeView    from '../model_tree/model_tree';
 
 // Import shaders
 require('./shaders/VelvetyShader');
+
+//Import style sheets
+require('./tree.scss');
 
 /*************************************************************************/
 
