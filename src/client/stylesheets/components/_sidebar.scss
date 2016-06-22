@@ -145,37 +145,32 @@ $sidebarWidth: 390;
 
     .sidebar-menu-tabs {
         background-color: #333;
-        height: 75px;
-        font-size: 20px;
+        font-size: 18px;
         color: #ddd;
-        overflow: visible;
+        min-height: 0px;
+        overflow: auto;
 
-        .back-button {
-            position: absolute;
-            transition: left 0.5s, opacity 0.5s;
-            left: 10px;
-            top: 30px;
-            opacity: 0.25;
-        }
-
-        .back {
-            opacity: 0.5;
-            position: absolute;
-            transition: left 0.5s, opacity 0.5s;
-            left: 40px;
-            top: 26px;
+        .rc-menu-item {
+            width: $sidebarWidth/3;
+            text-align: center;
             color: #fff;
-            
+            background-color: #333;
+            white-space: nowrap;
+            padding: 15px 0px;
+
+            &:disabled {
+                opacity: 0.5;
+            }
             &:hover {
+                background-color: #555;
                 cursor: pointer;
-                opacity: 1;
-                left: 45px;
             }
         }
 
-        .current:hover {
-            cursor: pointer;
+        .rc-menu-item-selected {
+            background-color: #555;
         }
+
     }
 
     .disabled-view {
@@ -186,24 +181,3 @@ $sidebarWidth: 390;
         padding: 20px;
     }
 }
-
-/*
-// .sidebar-menu styles MIGHT be needed once we have nested trees in sidebar
-.sidebar-menu {
-    border-bottom: none;
-    .rc-menu-item {
-        width: $sidebarWidth/2;
-        text-align: center;
-        background-color: #eee;
-        &:first-child {
-            border-right: 2px solid #aaa;
-        }
-        &:disabled {
-            opacity: 0.5;
-        }
-    }
-    .rc-menu-item-selected {
-        background-color: #ddd;
-    }
-}
-*/
