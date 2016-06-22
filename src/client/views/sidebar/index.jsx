@@ -13,8 +13,6 @@ export default class SidebarView extends React.Component {
         super(props);
         this.state = { };
 
-        this.openObjectTree = this.openObjectTree.bind(this);
-
         let disabledView = (name) => {
           return (() => {
             this.props.cbMode("disabled");
@@ -33,31 +31,20 @@ export default class SidebarView extends React.Component {
 
     componentDidMount(){
     }
-
-    openObjectTree(){
-        this.props.cbMode('tree');
-    }
-
+    
     render() {
       // TODO currently mode menu can only have two layers
       let nested = this.props.mode != "tree";
+
       const modeMenu = (
-        <div className='sidebar-menu-tabs'>
-          <span style={{opacity:nested ?.5:0}} className='glyphicons glyphicons-menu-left back-button'></span>
-          <div style={{opacity:nested?.5:1, left:nested?40:140}} onClick={this.openObjectTree} className='back'>
-            {this.props.mode === 'tree' ?
-              <div>Workplan</div>
-              :null
-            }
-            {this.props.mode === 'ws' ?
-              <div>Workingsteps</div>
-              :null
-            }
-          </div>
-          <div style={{left:nested?200:400}} className='current'>
-            {this.props.altmenu}
-          </div>
-        </div>
+          <Menu onSelect={(event) => {this.props.cbMode(event.key);}}
+                defaultSelectedKeys={[this.props.mode]}
+                mode='horizontal'
+                className='sidebar-menu-tabs'>
+              <MenuItem key='ws' >Workingsteps</MenuItem>
+              <MenuItem key='tree' >Workplan</MenuItem>
+              <MenuItem key='tools' disabled >Tools</MenuItem>
+          </Menu>
       );
       if((!scrolled) && (this.props.ws > -1))
       {
