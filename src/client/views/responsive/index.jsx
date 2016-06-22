@@ -265,7 +265,7 @@ export default class ResponsiveView extends React.Component {
             cadview_style =
             {
                 'left': '390px',
-                'top': '94px',
+                'top': '90px',
                 'bottom': '0px',
                 'right': '0px'
             };

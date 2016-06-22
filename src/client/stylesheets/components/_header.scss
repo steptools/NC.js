@@ -1,9 +1,5 @@
-$headerHeight: 13.2vmin;
-
-.header-bar{
-    height:$headerHeight;
+.header-bar {
     width:100%;
-    min-height:90px;
     background-color:white;
     position:relative;
     z-index: 10;
