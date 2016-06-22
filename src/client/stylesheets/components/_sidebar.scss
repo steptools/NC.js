@@ -6,9 +6,32 @@ $sidebarWidth: 390;
     position:relative;
     z-index: 5;
 
+    .m-tree{
+      position:relative;
+      padding:20px;
+      height: calc(100% - 75px - 90px);
+      .m-node .collapse:hover{
+        background-color:#f00;
+    }
+      .m-node {
+        background-color:rgba(255,255,255,.5);
+        margin-bottom:1px;
+        cursor: pointer;
+      }
+      .icon-letter{
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        border-radius: 5px;
+        width: 30px;
+        display: inline-block;
+        text-align: center;
+        margin-right: 8px;
+    }
+  }
+
     .sidebar-menu-tabs{
 
-      position:relative;
       background-color: #333;
       height:75px;
       font-size:20px;
@@ -37,7 +60,7 @@ $sidebarWidth: 390;
         left:45px;
       }
 
-      .current{
+      /*.current{
         position:absolute;
         transition: left .5s, opacity .5s;
         left:200px;
@@ -47,7 +70,7 @@ $sidebarWidth: 390;
       }
       .current:hover{
         cursor:pointer;
-      }
+      }*/
 
     }
 
@@ -58,51 +81,4 @@ $sidebarWidth: 390;
       color:#888;
       padding:20px;
     }
-
-    .load-projects{
-
-      .project:first-child{
-        margin-top:10px;
-      }
-
-      .project{
-
-        background-color: #fff;
-        padding: 14px;
-        font-size:18px;
-        margin:6px;
-        box-shadow: 1px 1px 5px rgba(0,0,0,.25);
-        transition: box-shadow .25s;
-
-          .project-id{
-
-          }
-
-          .glyphicons {
-            opacity:.5;
-            padding-right:10px;
-          }
-
-          .icon-word{
-            float:right;
-            font-size:14px;
-            background-color: #333;
-            color: #fff;
-            padding: 4px;
-            padding-left: 8px;
-            border-radius: 4px;
-            padding-right: 8px;
-            margin-right:4px;
-          }
-      }
-
-      .project:hover{
-        cursor:pointer;
-        box-shadow: 1px 1px 8px rgba(0,0,0,.5);
-      }
-
-
-    }
-
-
 }
