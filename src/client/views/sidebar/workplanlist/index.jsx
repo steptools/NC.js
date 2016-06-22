@@ -78,6 +78,7 @@ export default class WorkplanList extends React.Component {
                 }
               }
               nodeCheck(nodes);
+              //this.cbMode('tree');
               this.setState({workplan: nodes});
             }
       }

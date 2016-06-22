@@ -23,7 +23,7 @@ export default class ResponsiveView extends React.Component {
 
         this.state = {
             guiMode: tempGuiMode,
-            svmode: 'tree',
+            svmode: 'ws',
             ws: -1,
             svtree: {
                 "name": "No Project Loaded",

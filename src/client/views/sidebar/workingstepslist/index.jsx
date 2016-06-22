@@ -59,8 +59,6 @@ export default class WorkingstepList extends React.Component {
               }
               let json = JSON.parse(res.text);
               nodeCheck(json);
-              this.props.cbMode('tree');
-              this.props.cbTree(nodes);
               this.setState({workingsteps: nodes});
             }
       }

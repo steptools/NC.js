@@ -14,9 +14,6 @@ export default class SidebarView extends React.Component {
         this.state = { };
 
         this.openObjectTree = this.openObjectTree.bind(this);
-        this.openLoadProjectMenu = this.openLoadProjectMenu.bind(this);
-        this.onProjectSelected = this.onProjectSelected.bind(this);
-        this.openToleranceTree = this.openToleranceTree.bind(this);
 
         let disabledView = (name) => {
           return (() => {
@@ -31,38 +28,14 @@ export default class SidebarView extends React.Component {
             return;
         };
 
-        this.props.actionManager.on('open-load-project-menu',  this.openLoadProjectMenu);
-        this.props.actionManager.on('open-new-project-menu', disabledView('New Project'));
-        this.props.actionManager.on('open-save-project-menu', disabledView('Save Project'));
-        this.props.actionManager.on('open-tolerance-tree', this.openToleranceTree);
-        this.props.actionManager.on('project-selected', this.onProjectSelected);
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
 
     componentDidMount(){
     }
 
-    openLoadProjectMenu(){
-        this.props.cbMode('load-project');
-        this.props.cbAltMenu('Load Project');
-    }
-
     openObjectTree(){
         this.props.cbMode('tree');
-    }
-
-    openToleranceTree(){
-        this.props.cbMode('tolerance-tree');
-      this.props.cbAltMenu('Tolerance Tree');
-    }
-
-    onProjectSelected(projectId){
-      this.props.socket.emit('req:modeltree', projectId);
-      this.openObjectTree();
-      this.props.cbTree({
-          name : 'Loading project...',
-          isLeaf:true
-      });
     }
 
     render() {
@@ -72,7 +45,14 @@ export default class SidebarView extends React.Component {
         <div className='sidebar-menu-tabs'>
           <span style={{opacity:nested ?.5:0}} className='glyphicons glyphicons-menu-left back-button'></span>
           <div style={{opacity:nested?.5:1, left:nested?40:140}} onClick={this.openObjectTree} className='back'>
-            <div>Workingsteps</div>
+            {this.props.mode === 'tree' ?
+              <div>Workplan</div>
+              :null
+            }
+            {this.props.mode === 'ws' ?
+              <div>Workingsteps</div>
+              :null
+            }
           </div>
           <div style={{left:nested?200:400}} className='current'>
             {this.props.altmenu}
@@ -91,15 +71,11 @@ export default class SidebarView extends React.Component {
       }
         return <div className="sidebar">
                   {modeMenu}
+                  {this.props.mode == 'ws' ?
+                  <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                  : null}
+                  {this.props.mode == 'tree' ?
                   <WorkplanList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
-                  {this.props.mode == 'load-project' ?
-                  <LoadProjectView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
-                  : null}
-                  {this.props.mode == 'tolerance-tree' ?
-                  <ToleranceTreeView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
-                  : null}
-                  {this.props.mode == "disabled" ?
-                  <div className='disabled-view'> {this.props.altmenu} is currently disabled.</div>
                   : null}
                </div>;
     }
