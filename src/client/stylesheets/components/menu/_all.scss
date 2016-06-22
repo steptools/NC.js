@@ -1,30 +1,38 @@
 @import "base_style";
+
 .rc-menu-item:hover {
     cursor: pointer;
 }
+
 .topbar {
     background-color: #f8f8f8;
+
     .rc-menu-item {
         padding: 0;
         min-width: 90px;
-        height: 87px;
+        height: 85px;
         text-align: center;
         border-right: 1px solid #ddd;
         background: none;
         white-space: normal;
+
         &:first-child {
-            margin-left: 8px;
+            //margin-left: 8px;
+            border-left: 1px solid #ddd;
         }
+
         &:hover {
             input[type=range] {
                 &::-webkit-slider-thumb {
                     background: #35b8fd;
                     border: 0;
                 }
+
                 &::-moz-range-thumb {
                     background: #35b8fd;
                     border: 0;
                 }
+
                 &::-ms-thumb {
                     background: #35b8fd;
                     border: 0;
@@ -32,44 +40,145 @@
             }
         }
     }
+
     .slider {
         width: 250px;
-        min-height:85px;
+        min-height: 85px;
         padding-left: 15px;
         padding-right: 15px;
         padding-top: 19px;
+
         .sliderData {
             padding-top: 11px;
+
             & + span {
                 display: none;
             }
         }
     }
+
     .sliderWithIcons {
         .sliderData {
             div {
                 display: inline-block;
             }
+
             .slider-icon {
                 font-size: 20px;
                 opacity: 0.5;
                 color: #666;
+
                 &:hover {
                     color: #2baee9;
                     opacity: 1;
                 }
             }
+
             .slider-left-icon {
                 float: left;
             }
+
             .slider-right-icon {
                 float: right;
             }
         }
     }
 }
-// sidebar menu MIGHT be needed once we have nested trees in sidebar
+.rc-menu-item .button-icon {
+    font-size: 32px;
+    opacity: 0.5;
+    padding-bottom: 11px;
+    padding-top: 15px;
+    display: block;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+// TODO: Fix in Edge, padding and thumb are currently buggy
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    margin: 10px 0;
+
+    &:focus {
+        outline: none;
+    }
+
+    &::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 8px;
+        cursor: pointer;
+        background: rgba(102, 102, 102, .75);
+        border-radius: 1px;
+    }
+
+    &::-webkit-slider-thumb {
+        border: 1px solid rgba(102, 102, 102, .75);
+        height: 28px;
+        width: 10px;
+        border-radius: 2px;
+        background: #ffffff;
+        cursor: pointer;
+        -webkit-appearance: none;
+        margin-top: -10px;
+    }
+
+    &:focus::-webkit-slider-runnable-track {
+        background: rgba(102, 102, 102, .75);
+    }
+
+    &::-moz-range-track {
+        width: 100%;
+        height: 8px;
+        cursor: pointer;
+        background: rgba(102, 102, 102, .75);
+        border-radius: 1px;
+    }
+
+    &::-moz-range-thumb {
+        border: 1px solid rgba(102, 102, 102, .75);
+        height: 28px;
+        width: 10px;
+        border-radius: 2px;
+        background: #ffffff;
+        cursor: pointer;
+    }
+
+    &::-ms-track {
+        width: 100%;
+        height: 8px;
+        cursor: pointer;
+        background: transparent;
+        border-color: transparent;
+        color: transparent;
+    }
+
+    &::-ms-fill-lower,
+    &::-ms-fill-upper {
+        background: rgba(102, 102, 102, .75);
+        border-radius: 1px;
+    }
+
+    &::-ms-thumb {
+        border: 1px solid rgba(102, 102, 102, .75);
+        height: 28px;
+        width: 10px;
+        border-radius: 2px;
+        background: #ffffff;
+        cursor: pointer;
+    }
+
+    &:focus {
+        &::-ms-fill-lower,
+        &::-ms-fill-upper {
+            background: rgba(102, 102, 102, .75);
+        }
+    }
+}
+
 /*
+// .sidebar-menu styles MIGHT be needed once we have nested trees in sidebar
 .sidebar-menu {
     border-bottom: none;
     .rc-menu-item {
@@ -88,84 +197,3 @@
     }
 }
 */
-.rc-menu-item .button-icon {
-    font-size: 32px;
-    opacity: 0.5;
-    padding-bottom: 11px;
-    padding-top: 15px;
-    display: block;
-    &:hover {
-        opacity: 1;
-    }
-}
-// TODO: Fix in Edge, padding and thumb are currently buggy
-input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    margin: 10px 0;
-    &:focus {
-        outline: none;
-    }
-    &::-webkit-slider-runnable-track {
-        width: 100%;
-        height: 8px;
-        cursor: pointer;
-        background: rgba(102, 102, 102, .75);
-        border-radius: 1px;
-    }
-    &::-webkit-slider-thumb {
-        border: 1px solid rgba(102, 102, 102, .75);
-        height: 28px;
-        width: 10px;
-        border-radius: 2px;
-        background: #ffffff;
-        cursor: pointer;
-        -webkit-appearance: none;
-        margin-top: -10px;
-    }
-    &:focus::-webkit-slider-runnable-track {
-        background: rgba(102, 102, 102, .75);
-    }
-    &::-moz-range-track {
-        width: 100%;
-        height: 8px;
-        cursor: pointer;
-        background: rgba(102, 102, 102, .75);
-        border-radius: 1px;
-    }
-    &::-moz-range-thumb {
-        border: 1px solid rgba(102, 102, 102, .75);
-        height: 28px;
-        width: 10px;
-        border-radius: 2px;
-        background: #ffffff;
-        cursor: pointer;
-    }
-    &::-ms-track {
-        width: 100%;
-        height: 8px;
-        cursor: pointer;
-        background: transparent;
-        border-color: transparent;
-        color: transparent;
-    }
-    &::-ms-fill-lower,
-    &::-ms-fill-upper {
-        background: rgba(102, 102, 102, .75);
-        border-radius: 1px;
-    }
-    &::-ms-thumb {
-        border: 1px solid rgba(102, 102, 102, .75);
-        height: 28px;
-        width: 10px;
-        border-radius: 2px;
-        background: #ffffff;
-        cursor: pointer;
-    }
-    &:focus {
-        &::-ms-fill-lower,
-        &::-ms-fill-upper {
-            background: rgba(102, 102, 102, .75);
-        }
-    }
-}

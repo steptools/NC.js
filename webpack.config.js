@@ -28,8 +28,10 @@ module.exports = {
                 test: /\.scss$/,
                 loader: ExtractTextPlugin.extract("css?sourceMap!sass?sourceMap")
             },
-            { test: /\.png$/,           loader: "url-loader?mimetype=image/png" },
-            { test: /\.gif$/,           loader: "url-loader?mimetype=image/gif" },
+            { 
+                test: /\.(png|gif)$/,           
+                loader: "url-loader?mimetype=image/[ext]" 
+            },
             // required for glyphicons
             {
                test: /\.(eot|svg|ttf|woff|woff2)$/,
