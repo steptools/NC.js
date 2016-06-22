@@ -15,7 +15,7 @@ import LoadQueueView    from '../load_queue';
 require('./shaders/VelvetyShader');
 
 //Import style sheets
-require('./tree.scss');
+require('../../stylesheets/components/tree.scss');
 
 /*************************************************************************/
 
@@ -198,7 +198,7 @@ export default class CADView extends React.Component {
         this.props.manager.removeEventListener("annotationLoad", this.invalidate);
         this.props.manager.removeEventListener("invalidate", this.invalidate);
     }
-    
+
     componentDidUpdate() {
         if (this.props.resize)
             this.handleResize();
