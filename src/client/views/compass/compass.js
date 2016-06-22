@@ -3,7 +3,7 @@
 
 
 import React from 'react';
-require('./compass.scss');
+require('../../stylesheets/components/compass.scss');
 
 /*************************************************************************/
 

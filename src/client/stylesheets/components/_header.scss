@@ -1,9 +1,7 @@
-$headerHeight: 94px;
-
-.header-bar{
-    height:$headerHeight;
-    width:100%;
-    background-color:white;
-    position:relative;
+.header {
+    width: 100%;
+    height: 90px;
+    background-color: white;
+    position: relative;
     z-index: 10;
 }
