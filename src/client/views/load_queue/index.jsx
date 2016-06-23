@@ -81,7 +81,7 @@ export default class LoadQueueView extends React.Component {
         });
         let style = items.length > 0 ? 'load-queue' : 'load-queue out';
         return <div className={style} style={bottom}>
-                <div className="header">
+                <div className="load-queue-header">
                     <span>Downloads&nbsp;</span>
                     <span>({items.length}):</span>
                 </div>
