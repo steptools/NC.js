@@ -45,6 +45,8 @@ class SliderMenuItem extends React.Component {
     }
 }
 
+
+
 class ButtonImage extends React.Component {
     constructor(props) {
         super(props);

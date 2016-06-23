@@ -70,7 +70,7 @@
 .rc-menu-submenu-title {
     margin: 0;
     position: relative;
-    display: block;
+    display: inline-block;
     padding: 7px 7px 7px 16px;
     white-space: nowrap;
 }
@@ -122,7 +122,7 @@
 
 .rc-menu-horizontal > .rc-menu-item,
 .rc-menu-horizontal > .rc-menu-submenu {
-    float: left;
+    //float: left;
     //border-bottom: 2px solid transparent;
 }
 
