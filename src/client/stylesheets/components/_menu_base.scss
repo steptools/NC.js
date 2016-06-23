@@ -6,11 +6,11 @@
     padding-left: 0;
     list-style: none;
     z-index: 99999;
-    border: 1px solid #d9d9d9;
+    //border: 1px solid #d9d9d9;
     box-shadow: 0 0 4px #d9d9d9;
     border-radius: 3px;
     color: #666;
-    min-height: 90px;
+    min-height: 88px;
 }
 
 .rc-menu-hidden {
@@ -111,7 +111,7 @@
     background-color: #F3F5F7;
     border: none;
     border-top: 1px solid transparent;
-    //border-bottom: 1px solid #d9d9d9;
+    border-bottom: 1px solid #d9d9d9;
     box-shadow: none;
 }
 

@@ -12,57 +12,65 @@
     .rc-menu-item {
         padding: 0;
         min-width: 85px;
-        min-height: 88px;
+        min-height: inherit;
         text-align: center;
         border-right: 1px solid #ddd;
         background: none;
         white-space: normal;
-        
-        div {
-            height: inherit;
-        }
+    }
+}
 
-        &:first-child {
-            margin-left: 2px;
-        }
+.rc-menu-item:first-child {
+    margin-left: 2px;
+}
+
+.header-menu-item {
+    min-height: inherit;
+    &:hover {
+        border-bottom: 2px solid #2db7f5;
+    }
+}
+
+.menu-item-button {
+    .button-icon {
+        font-size: 32px;
+        opacity: 0.5;
+        padding-bottom: 11px;
+        padding-top: 15px;
+        display: block;
 
         &:hover {
-            cursor: pointer;
+            opacity: 1;
+        }
+    }
+    &:hover {
+        cursor: pointer;
+    }
+}
 
-            input[type=range] {
-                &::-webkit-slider-thumb {
-                    background: #35b8fd;
-                    border: 0;
-                }
+.menu-item-slider {
+    &:hover {
+        input[type=range] {
+            &::-webkit-slider-thumb {
+                background: #35b8fd;
+                border: 0;
+            }
 
-                &::-moz-range-thumb {
-                    background: #35b8fd;
-                    border: 0;
-                }
+            &::-moz-range-thumb {
+                background: #35b8fd;
+                border: 0;
+            }
 
-                &::-ms-thumb {
-                    background: #35b8fd;
-                    border: 0;
-                }
+            &::-ms-thumb {
+                background: #35b8fd;
+                border: 0;
             }
         }
     }
 }
 
-.rc-menu-item .button-icon {
-    font-size: 32px;
-    opacity: 0.5;
-    padding-bottom: 11px;
-    padding-top: 15px;
-    display: block;
-
-    &:hover {
-        opacity: 1;
-    }
-}
-
 .slider {
-    width: 250px;
+    min-width: 249px;
     padding: 19px 15px 8px;
     cursor: default;
 
