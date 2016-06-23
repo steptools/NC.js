@@ -8,7 +8,14 @@
 
 .header-menu {
     background-color: #f8f8f8;
+    .changelog{
+        float: right;
+        display: none;
+        width: 400px;
+        margin-top : 90px;
+        background-color : white;
 
+    }
     .rc-menu-item {
         padding: 0;
         min-width: 85px;

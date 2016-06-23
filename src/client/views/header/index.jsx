@@ -130,6 +130,9 @@ export default class HeaderView extends React.Component {
             case "backward":
                 this.props.actionManager.emit("sim-b");
                 break;
+            case "showlog":
+            let changelog = document.getElementsByClassName("changelog");
+            changelog[0].style.display = "inline-block";
         }
     }
 
@@ -147,7 +150,10 @@ export default class HeaderView extends React.Component {
                 <MenuItem key='play'><ButtonImage prefix='glyphicon' icon={ppbutton}/>{ppbtntxt}</MenuItem>
                 <MenuItem key='forward'><ButtonImage prefix='glyphicon' icon='step-forward'/>Next</MenuItem>
                 <SliderMenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed} prefix='glyphicons' left='turtle' right='rabbit'/></SliderMenuItem>
+                <MenuItem key='showlog'> WE ARE THE BUTTON </MenuItem>
+                <div className = "changelog"> WE ARE THE LOG OF CHANGE </div>
             </Menu>
+            
         );
 
         return <div className="header">{headerMenu}</div>;
