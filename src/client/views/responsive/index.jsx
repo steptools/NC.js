@@ -29,6 +29,7 @@ export default class ResponsiveView extends React.Component {
             svaltmenu: '',
             wstext: '',
             ppbutton: 'play',
+            logstate : false,
             resize: false,
             changeSpeed: false,
             playbackSpeed: 50
@@ -205,7 +206,11 @@ export default class ResponsiveView extends React.Component {
                 cbPPButton={
                     (newPPButton) => {this.setState({ ppbutton: newPPButton })}
                 }
+                cbLogstate = {
+                    (newlogstate) => {this.setState({logstate: newlogstate})}
+                }
                 ppbutton={this.state.ppbutton}
+                logstate={this.state.logstate}
                 speed={this.state.playbackSpeed}
                 pid={this.props.pid}
             />;
