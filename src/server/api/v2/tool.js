@@ -3,6 +3,7 @@ var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 var find = new StepNC.Finder();
 var file = require('./file');
 
+/*
 var _getTools = function (req, res) {
 	console.log("MADE IT");
   if (req.params.ncId) {
@@ -19,10 +20,11 @@ var _getSpecTool = function (req, res) {
     
     res.status(200).send();
   }
-};
+};*/
 
 module.exports = function(app, cb) {
-  app.router.get("/v2/nc/projects/:ncId/tools", _getTools);
-  app.router.get("/v2/nc/projects/:ncId/tools/:toolId", _getSpecTool);
+  console.log("TOOL.JS IS HERE!!!");
+  //app.router.get("/v2/nc/projects/:ncId/tools", _getTools);
+  //app.router.get("/v2/nc/projects/:ncId/tools/:toolId", _getSpecTool);
   if (cb) cb();
 };
