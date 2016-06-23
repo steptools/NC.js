@@ -29,6 +29,10 @@
         background: none;
         white-space: normal;
     }
+    
+    li:last-child {
+        float: right;
+    }
 }
 
 .rc-menu-item:first-child {
