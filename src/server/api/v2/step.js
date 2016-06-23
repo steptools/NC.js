@@ -1,7 +1,7 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
-var find = new StepNC.Finder();
 var file = require('./file');
+var find = file.find;
 
 var exeFromId = function(id) {
 	let ws = {
@@ -49,7 +49,6 @@ var _getMwp = function(req, res) {
 		res.status(200).send(exeFromId(mwpId));
 	}
 };
-
 
 module.exports = function(app, cb) {
 	//This route gets the executable given an Id and returns a JSON object with its 
