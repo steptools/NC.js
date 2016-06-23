@@ -2,9 +2,10 @@ import React from 'react';
 import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
 import WorkingstepList from './workingstepslist';
-import WorkplanList from './workplanlist'
+import WorkplanList from './workplanlist';
+import ToleranceList from './tolerancelist';
 import ReactTooltip from 'react-tooltip';
-import cadManager from '../../models/cad_manager'
+import cadManager from '../../models/cad_manager';
 let MenuItem = Menu.Item;
 let scrolled=false;
 
@@ -73,7 +74,7 @@ export default class SidebarView extends React.Component {
                   <MenuItem key='ws' id='sidebar-menu-ws' >Workingsteps</MenuItem>
                   <MenuItem key='tree' id='sidebar-menu-tree' >Workplan</MenuItem>
                   <MenuItem disabled key='tools' id='sidebar-menu-tools' >Tools</MenuItem>
-                  <MenuItem disabled key='tolerance' id='sidebar-menu-tolerance'>Tolerances</MenuItem>
+                  <MenuItem key='tolerance' id='sidebar-menu-tolerance'>Tolerances</MenuItem>
               </Menu>
           </div>
       );
@@ -90,11 +91,14 @@ export default class SidebarView extends React.Component {
         return <div className="sidebar">
                   {modeMenu}
                   {this.props.mode == 'ws' ?
-                  <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
-                  : null}
+                      <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      : null}
                   {this.props.mode == 'tree' ?
-                  <WorkplanList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
-                  : null}
+                      <WorkplanList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      : null}
+                  {this.props.mode == 'tolerance' ?
+                      <ToleranceList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}  />
+                      : null}
                </div>;
     }
 }
