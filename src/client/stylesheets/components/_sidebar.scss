@@ -150,35 +150,42 @@ $sidebarWidth: 390;
     }
 
     .sidebar-menu-tabs {
-        background-color: #333;
+        background-color: #666666;
         font-size: 20px;
-        color: #ddd;
         white-space: nowrap;
         min-height: 0px;
         overflow-x: auto;
         margin-bottom: -20vh;
         padding-bottom: 20vh;
         height: inherit;
+        max-width: none;
 
         .rc-menu-item {
-            width: $sidebarWidth/2.5;
+            width: $sidebarWidth/2.25;
             text-align: center;
-            color: #fff;
+            color: #F8F8F8;
             background-color: #333;
             display: inline-block;
             float: none;
+            border-left: 1px solid #AFAFAF;
 
+            &:first-child {
+                border-left: none;
+            }
             &:disabled {
                 opacity: 0.5;
             }
             &:hover {
-                background-color: #555;
                 cursor: pointer;
+                color: #2BAEE9;
+            }
+            &:active {
+                border-color: inherit;
             }
         }
 
         .rc-menu-item-selected {
-            background-color: #555;
+            background-color: #7E7E7E;
         }
 
     }

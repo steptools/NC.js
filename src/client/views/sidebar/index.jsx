@@ -25,11 +25,39 @@ export default class SidebarView extends React.Component {
             self.props.cbWS(state);
             return;
         };
+        
+        this.selectMenuItem = this.selectMenuItem.bind(this);
 
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
 
     componentDidMount(){
+    }
+    
+    selectMenuItem (info) {
+        this.props.cbMode(info.key);
+        
+        let item = $(info.domEvent.target);
+        let menu = $(".sidebar-menu");
+        let menutabs = $(".sidebar-menu-tabs");
+        
+        let item_left = Number(item.offset().left);
+        let item_width = Number(item.outerWidth(true));
+        let menu_left = Number(menu.offset().left);
+        let menu_width = Number(menu.outerWidth(true));
+        
+        let shouldScrollLeft =  item_left < menu_left;
+        let shouldScrollRight = item_left + item_width > menu_left + menu_width;
+       
+        let offset = menutabs.scrollLeft() + item_left - menu_left;
+        if (shouldScrollRight)
+            offset = menutabs.scrollLeft() + ((item_left + item_width) - (menu_left + menu_width));
+        
+        if (shouldScrollLeft || shouldScrollRight) {
+            menutabs.animate({
+                scrollLeft: offset
+            }, 250);
+        }            
     }
     
     render() {
@@ -38,14 +66,14 @@ export default class SidebarView extends React.Component {
 
       const modeMenu = (
           <div className="sidebar-menu">
-              <Menu onSelect={(event) => {this.props.cbMode(event.key);}}
+              <Menu onSelect={this.selectMenuItem}
                     defaultSelectedKeys={[this.props.mode]}
                     mode='horizontal'
                     className='sidebar-menu-tabs'>
-                  <MenuItem key='ws' >Workingsteps</MenuItem>
-                  <MenuItem key='tree' >Workplan</MenuItem>
-                  <MenuItem key='tools' disabled >Tools</MenuItem>
-                  <MenuItem key='tol'>Tolerances</MenuItem>
+                  <MenuItem key='ws' id='sidebar-menu-ws' >Workingsteps</MenuItem>
+                  <MenuItem key='tree' id='sidebar-menu-tree' >Workplan</MenuItem>
+                  <MenuItem disabled key='tools' id='sidebar-menu-tools' >Tools</MenuItem>
+                  <MenuItem disabled key='tolerance' id='sidebar-menu-tolerance'>Tolerances</MenuItem>
               </Menu>
           </div>
       );
