@@ -152,39 +152,51 @@ $sidebarWidth: 390;
         background-color: #111;
     }
 
+    .sidebar-menu {
+        overflow: hidden;
+        display: inline-block;
+        max-width: $sidebarWidth;
+    }
+
     .sidebar-menu-tabs {
-        background-color: #333;
-        height: 75px;
+        background-color: #666666;
         font-size: 20px;
-        color: #ddd;
-        overflow: visible;
+        white-space: nowrap;
+        min-height: 0px;
+        overflow-x: auto;
+        margin-bottom: -20vh;
+        padding-bottom: 20vh;
+        height: inherit;
+        max-width: none;
 
-        .back-button {
-            position: absolute;
-            transition: left 0.5s, opacity 0.5s;
-            left: 10px;
-            top: 30px;
-            opacity: 0.25;
-        }
+        .rc-menu-item {
+            width: $sidebarWidth/2.25;
+            text-align: center;
+            color: #F8F8F8;
+            background-color: #333;
+            display: inline-block;
+            float: none;
+            border-left: 1px solid #AFAFAF;
 
-        .back {
-            opacity: 0.5;
-            position: absolute;
-            transition: left 0.5s, opacity 0.5s;
-            left: 40px;
-            top: 26px;
-            color: #fff;
-            
+            &:first-child {
+                border-left: none;
+            }
+            &:disabled {
+                opacity: 0.5;
+            }
             &:hover {
                 cursor: pointer;
-                opacity: 1;
-                left: 45px;
+                color: #2BAEE9;
+            }
+            &:active {
+                border-color: inherit;
             }
         }
 
-        .current:hover {
-            cursor: pointer;
+        .rc-menu-item-selected {
+            background-color: #7E7E7E;
         }
+
     }
 
     .disabled-view {
@@ -195,24 +207,3 @@ $sidebarWidth: 390;
         padding: 20px;
     }
 }
-
-/*
-// .sidebar-menu styles MIGHT be needed once we have nested trees in sidebar
-.sidebar-menu {
-    border-bottom: none;
-    .rc-menu-item {
-        width: $sidebarWidth/2;
-        text-align: center;
-        background-color: #eee;
-        &:first-child {
-            border-right: 2px solid #aaa;
-        }
-        &:disabled {
-            opacity: 0.5;
-        }
-    }
-    .rc-menu-item-selected {
-        background-color: #ddd;
-    }
-}
-*/
