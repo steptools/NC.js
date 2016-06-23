@@ -167,44 +167,28 @@ $icons: '../icons/';
         background-color: #111;
     }
 
-    .sidebar-menu {
-        overflow: hidden;
-        display: inline-block;
-        max-width: $sidebarWidth;
-    }
-
     .sidebar-menu-tabs {
         background-color: #666666;
         font-size: 20px;
-        white-space: nowrap;
         min-height: 0px;
-        overflow-x: auto;
-        margin-bottom: -20vh;
-        padding-bottom: 20vh;
-        height: inherit;
-        max-width: none;
 
         .rc-menu-item {
-            width: $sidebarWidth/2.25;
             text-align: center;
             color: #F8F8F8;
-            background-color: #333;
-            display: inline-block;
-            float: none;
-            border-left: 1px solid #AFAFAF;
+            padding: 10px 5px;
+            border-right: 2px solid #AFAFAF;
+            border-bottom: 2px solid #AFAFAF;
+            width: 50%;
+            margin-left: 0;
+            background-color: #333333;
 
-            &:first-child {
-                border-left: none;
-            }
             &:disabled {
                 opacity: 0.5;
             }
             &:hover {
                 cursor: pointer;
                 color: #2BAEE9;
-            }
-            &:active {
-                border-color: inherit;
+                border-bottom: 2px solid #2BAEE9;
             }
         }
 

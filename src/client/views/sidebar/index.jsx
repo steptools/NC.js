@@ -26,7 +26,7 @@ export default class SidebarView extends React.Component {
             self.props.cbWS(state);
             return;
         };
-        
+
         this.selectMenuItem = this.selectMenuItem.bind(this);
 
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
@@ -34,49 +34,47 @@ export default class SidebarView extends React.Component {
 
     componentDidMount(){
     }
-    
+
     selectMenuItem (info) {
         this.props.cbMode(info.key);
-        
+
         let item = $(info.domEvent.target);
         let menu = $(".sidebar-menu");
         let menutabs = $(".sidebar-menu-tabs");
-        
+
         let item_left = Number(item.offset().left);
         let item_width = Number(item.outerWidth(true));
         let menu_left = Number(menu.offset().left);
         let menu_width = Number(menu.outerWidth(true));
-        
+
         let shouldScrollLeft =  item_left < menu_left;
         let shouldScrollRight = item_left + item_width > menu_left + menu_width;
-       
+
         let offset = menutabs.scrollLeft() + item_left - menu_left;
         if (shouldScrollRight)
             offset = menutabs.scrollLeft() + ((item_left + item_width) - (menu_left + menu_width));
-        
+
         if (shouldScrollLeft || shouldScrollRight) {
             menutabs.animate({
                 scrollLeft: offset
             }, 250);
-        }            
+        }
     }
-    
+
     render() {
       // TODO currently mode menu can only have two layers
       let nested = this.props.mode != "tree";
 
       const modeMenu = (
-          <div className="sidebar-menu">
-              <Menu onSelect={this.selectMenuItem}
-                    defaultSelectedKeys={[this.props.mode]}
-                    mode='horizontal'
-                    className='sidebar-menu-tabs'>
-                  <MenuItem key='ws' id='sidebar-menu-ws' >Workingsteps</MenuItem>
-                  <MenuItem key='tree' id='sidebar-menu-tree' >Workplan</MenuItem>
-                  <MenuItem disabled key='tools' id='sidebar-menu-tools' >Tools</MenuItem>
-                  <MenuItem key='tolerance' id='sidebar-menu-tolerance'>Tolerances</MenuItem>
-              </Menu>
-          </div>
+          <Menu onSelect={this.selectMenuItem}
+                defaultSelectedKeys={[this.props.mode]}
+                mode='horizontal'
+                className='sidebar-menu-tabs'>
+              <MenuItem key='ws' id='sidebar-menu-ws' >Workingsteps</MenuItem>
+              <MenuItem key='tree' id='sidebar-menu-tree' >Workplan</MenuItem>
+              <MenuItem disabled key='tools' id='sidebar-menu-tools' >Tools</MenuItem>
+              <MenuItem key='tolerance' id='sidebar-menu-tolerance'>Tolerances</MenuItem>
+          </Menu>
       );
       if((!scrolled) && (this.props.ws > -1))
       {
@@ -103,7 +101,7 @@ export default class SidebarView extends React.Component {
     }
 }
 
-SidebarView.propTypes = {cadManager: React.PropTypes.instanceOf(cadManager).isRequired, mode : React.PropTypes.string.isRequired, 
+SidebarView.propTypes = {cadManager: React.PropTypes.instanceOf(cadManager).isRequired, mode : React.PropTypes.string.isRequired,
                           ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired,
-                          cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, cbWS: React.PropTypes.func.isRequired, 
+                          cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, cbWS: React.PropTypes.func.isRequired,
                           cbAltMenu: React.PropTypes.func.isRequired, pid: React.PropTypes.string.isRequired};

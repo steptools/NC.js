@@ -30,17 +30,17 @@ export default class ToleranceList extends React.Component {
   }
 
   componentDidMount(){
-      let url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
+      let url = "/v2/nc/projects/"+this.props.pid+"/tolerances/";
       let resCb = function(err,res){ //Callback function for response
             if(!err && res.ok){
               // Node preprocessing
               let nodes = [];
               let nodeCheck = (node)=>{
                 node.icon = <span className={'icon-tolerance ' + 'tolerance-' + node.type}></span>;
-                if(node.children) node.children.forEach(nodeCheck);
-                node.children = [];
-                if(node.type === "workingstep")
-                    nodes.push(node);
+                //if(node.children) node.children.forEach(nodeCheck);
+                //node.children = [];
+                //if(node.type === "workingstep")
+                nodes.push(node);
               };
               let json = JSON.parse(res.text);
               nodeCheck(json);
@@ -66,5 +66,5 @@ export default class ToleranceList extends React.Component {
   }
 }
 
-ToleranceList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, 
+ToleranceList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired,
                                 pid: React.PropTypes.string.isRequired}
