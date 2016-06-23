@@ -38,16 +38,14 @@ $sidebarWidth: 390;
             background-color: rgba(255,255,255,.5);
             margin-bottom: 1px;
             cursor: pointer;
-
-                .textbox {
-                    display:inline-block;
-                    padding: 5px;
+            
+            .textbox {
+                    vertical-align : middle;
+                    display: inline-block;
                     width : 285px;
-                   
+            }
 
-                }
-
-        }
+        }       
 
         .icon-letter {
             background-color: #333;
@@ -97,6 +95,7 @@ $sidebarWidth: 390;
         display: inline-block;
         width: 100%;
         padding: 4px 5px;
+
     }
 
     .m-node .node.is-active {
