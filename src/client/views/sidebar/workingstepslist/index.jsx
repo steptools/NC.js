@@ -53,7 +53,6 @@ export default class WorkingstepList extends React.Component {
               let nodeCheck = (node)=>{
                 node.icon = this.getNodeIcon(node,nodes.length+1);
                 if(node.children) node.children.forEach(nodeCheck);
-                node.children = [];
                   if(node.type === "workingstep" && node.enabled)
                     nodes.push(node);
               }

@@ -34,12 +34,32 @@ export default class WorkplanList extends React.Component {
 
   renderNode(node){
       var cName = 'node';
-      if(node.id == this.props.ws) cName= 'node running-node';
-      if(node.type === 'workingstep'){
+      //node is a generic white node
+      //node running-node is a node that is the current workingstep
+      //node disabled is a node that is part of a selective but isn't
+      //currently enabled
+      if(node.id == this.props.ws) {
+        cName= 'node running-node';
+      }
+      else{
+        if(node.enabled === false)
+          cName = 'node disabled';
+      }
+      if(node.type === 'workingstep' && node.enabled === true){
         return <span
             id={node.id}
             className={cName}
             onClick={this.onObjectTreeNodeClick.bind(this, node)}
+            onMouseDown={function(e){e.stopPropagation()}}
+        >
+            {node.icon}
+            {node.name}
+        </span>;
+      }
+      else if(node.type === 'workingstep' && node.enabled === false){
+        return <span
+            id={node.id}
+            className={cName}
             onMouseDown={function(e){e.stopPropagation()}}
         >
             {node.icon}

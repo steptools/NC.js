@@ -8,7 +8,6 @@ var _getTools = function (req, res) {
     let ncId = req.params.ncId;
     find.OpenProject(file.getPath(ncId));
     var rtn = find.GetWorkplanToolAll(find.GetMainWorkplan());
-    console.log(rtn);
     res.status(200).send(rtn);
   }
 };
