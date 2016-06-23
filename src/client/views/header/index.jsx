@@ -11,7 +11,7 @@ class MenuItem extends React.Component {
             let id = _.uniqueId("tooltip_");
             return (
                 <PlainMenuItem {...this.props}>
-                    <div>
+                    <div className="menu-item-button">
                         <span data-tip data-for={id}>
                             {this.props.children}
                         </span>
@@ -24,7 +24,7 @@ class MenuItem extends React.Component {
         } else {
             return (
                 <PlainMenuItem {...this.props}>
-                    <div>
+                    <div className="menu-item-button">
                         {this.props.children}
                     </div>
                 </PlainMenuItem>
@@ -37,7 +37,7 @@ class SliderMenuItem extends React.Component {
     render() {
         return (
             <PlainMenuItem {...this.props}>
-                <div>
+                <div className="menu-item-slider">
                     {this.props.children}
                 </div>
             </PlainMenuItem>
