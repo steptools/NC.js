@@ -16,7 +16,7 @@ export default class ToleranceList extends React.Component {
 
   renderNode(node){
       let cName = 'node';
-        if(node.id == this.state.tol) cName= 'node running-node';
+        if(node.id == this.state) cName= 'node running-node';
       return <ol
           id={node.id}
           className={cName}
@@ -25,7 +25,7 @@ export default class ToleranceList extends React.Component {
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
           {node.icon}
-          <span className="textbox">{node.name}</span>
+          <span className="textbox-tolerance">{node.name}</span>
       </ol>;
   }
 
@@ -36,7 +36,7 @@ export default class ToleranceList extends React.Component {
               // Node preprocessing
               let nodes = [];
               let nodeCheck = (node)=>{
-                node.icon = <span className={'icon-tolerance '+node.type} />
+                node.icon = <span className={'icon-tolerance ' + 'tolerance-' + node.type}></span>;
                 if(node.children) node.children.forEach(nodeCheck);
                 node.children = [];
                 if(node.type === "workingstep")

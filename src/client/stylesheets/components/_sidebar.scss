@@ -41,39 +41,38 @@ $icons: '../icons/';
             cursor: pointer;
             
             .textbox {
-                    vertical-align : middle;
-                    display: inline-block;
-                    width : 285px;
+                  vertical-align : middle;
+                  display: inline-block;
+                  width : 285px;
             }
 
-        }       
+            .textbox-tolerance {
+                //vertical-align: text-top;
+            }
 
-        .icon-letter {
-            background-color: #333;
-            color: #fff;
-            padding: 5px;
-            border-radius: 5px;
-            width: 30px;
-            height:30px;
-            display: inline-block;
-            text-align: center;
-            margin-right: 8px;
+            .icon-letter, .icon-tolerance {
+                background-color: #333;
+                color: #fff;
+                padding: 5px;
+                border-radius: 5px;
+                width: 30px;
+                height:30px;
+                display: inline-block;
+                text-align: center;
+                margin-right: 8px;
+            }
+
+            .icon-tolerance {
+                background-color: #fff;
+                padding: 15px;
+                vertical-align: middle;
+            }
+
+            .tolerance-workingstep {
+                background-image: url($icons + 'tolerance/angularity.svg');
+            }
         }
 
-        .icon-tolerance {
-            background-color: #fff;
-            padding: 5px;
-            border-radius: 5px;
-            width: 30px;
-            height:30px;
-            display: inline-block;
-            text-align: center;
-            margin-right: 8px;
-        }
-
-        .workingstep {
-            background-image: url($icons + 'tolerance/angularity.svg');
-        }
     }
 
     .m-draggable {
