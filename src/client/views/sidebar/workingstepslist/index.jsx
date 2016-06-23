@@ -40,7 +40,7 @@ export default class WorkingstepList extends React.Component {
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
           {node.icon}
-          <span className="node-text">{node.name}</span>
+          <span className="textbox">{node.name}</span>
       </ol>;
   }
 
@@ -59,8 +59,6 @@ export default class WorkingstepList extends React.Component {
               }
               let json = JSON.parse(res.text);
               nodeCheck(json);
-              this.props.cbMode('tree');
-              this.props.cbTree(nodes);
               this.setState({workingsteps: nodes});
             }
       }
