@@ -37,14 +37,17 @@ export default class SidebarView extends React.Component {
       let nested = this.props.mode != "tree";
 
       const modeMenu = (
-          <Menu onSelect={(event) => {this.props.cbMode(event.key);}}
-                defaultSelectedKeys={[this.props.mode]}
-                mode='horizontal'
-                className='sidebar-menu-tabs'>
-              <MenuItem key='ws' >Workingsteps</MenuItem>
-              <MenuItem key='tree' >Workplan</MenuItem>
-              <MenuItem key='tools' disabled >Tools</MenuItem>
-          </Menu>
+          <div className="sidebar-menu">
+              <Menu onSelect={(event) => {this.props.cbMode(event.key);}}
+                    defaultSelectedKeys={[this.props.mode]}
+                    mode='horizontal'
+                    className='sidebar-menu-tabs'>
+                  <MenuItem key='ws' >Workingsteps</MenuItem>
+                  <MenuItem key='tree' >Workplan</MenuItem>
+                  <MenuItem key='tools' disabled >Tools</MenuItem>
+                  <MenuItem key='tol'>Tolerances</MenuItem>
+              </Menu>
+          </div>
       );
       if((!scrolled) && (this.props.ws > -1))
       {

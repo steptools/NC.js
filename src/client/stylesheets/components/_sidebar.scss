@@ -143,6 +143,12 @@ $sidebarWidth: 390;
         background-color: #111;
     }
 
+    .sidebar-menu {
+        overflow: hidden;
+        display: inline-block;
+        max-width: $sidebarWidth;
+    }
+
     .sidebar-menu-tabs {
         background-color: #333;
         font-size: 20px;
@@ -150,6 +156,9 @@ $sidebarWidth: 390;
         white-space: nowrap;
         min-height: 0px;
         overflow-x: auto;
+        margin-bottom: -20vh;
+        padding-bottom: 20vh;
+        height: inherit;
 
         .rc-menu-item {
             width: $sidebarWidth/2.5;
