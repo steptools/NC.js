@@ -142,7 +142,7 @@ export default class CADView extends React.Component {
 
         // CAMERA
         this.camera = new THREE.PerspectiveCamera(
-            75,
+            45,
             this.canvasParent.offsetWidth / this.canvasParent.offsetHeight,
             0.1,
             1000000
