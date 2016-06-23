@@ -8,6 +8,10 @@ var exeFromId = function(id) {
 		"id": id,
 		"name": find.GetExecutableName(id)
 	};
+	if(find.IsEnabled(id))
+		ws.enabled = true;
+	else
+		ws.enabled = false;
 	if (find.IsWorkingstep(id)) {
 		ws.type = "workingstep";
 		return ws;
@@ -16,7 +20,7 @@ var exeFromId = function(id) {
 	} else if (find.IsWorkplan(id)) {
 		ws.type = "workplan";
 	}
-	let children = find.GetNestedExecutableAllEnabled(id);
+	let children = find.GetNestedExecutableAll(id);
 	if (children !== undefined) {
 		ws.children = children.map(exeFromId);
 	}

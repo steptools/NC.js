@@ -4,7 +4,6 @@ var file = require('./file');
 var find = file.find;
 
 var _getTools = function (req, res) {
-	console.log("MADE IT");
   if (req.params.ncId) {
     let ncId = req.params.ncId;
     find.OpenProject(file.getPath(ncId));
@@ -15,7 +14,9 @@ var _getTools = function (req, res) {
 };
 
 var _getSpecTool = function (req, res) {
-  if (req.params.ncId) {
+  if (req.params.ncId && req.params.toolId) {
+  	let ncId = req.params.ncId;
+  	let toolId = req.params.toolId;
     
     res.status(200).send();
   }
