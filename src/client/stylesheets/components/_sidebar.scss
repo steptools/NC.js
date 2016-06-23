@@ -145,18 +145,19 @@ $sidebarWidth: 390;
 
     .sidebar-menu-tabs {
         background-color: #333;
-        font-size: 18px;
+        font-size: 20px;
         color: #ddd;
+        white-space: nowrap;
         min-height: 0px;
-        overflow: auto;
+        overflow-x: auto;
 
         .rc-menu-item {
-            width: $sidebarWidth/3;
+            width: $sidebarWidth/2.5;
             text-align: center;
             color: #fff;
             background-color: #333;
-            white-space: nowrap;
-            padding: 15px 0px;
+            display: inline-block;
+            float: none;
 
             &:disabled {
                 opacity: 0.5;
