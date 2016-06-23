@@ -48,3 +48,5 @@ module.exports.getMachineState = function (globalApp, ncId) {
 	}
 	return machineStates[ncId];
 }
+
+module.exports.find = new StepNC.Finder();
