@@ -40,7 +40,7 @@ export default class WorkingstepList extends React.Component {
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
           {node.icon}
-          <span className="node-text">{node.name}</span>
+          <span className="textbox">{node.name}</span>
       </ol>;
   }
 
