@@ -88,10 +88,21 @@ export default class SidebarView extends React.Component {
                       />
                       : null}
                   {this.props.mode == 'tree' ?
-                      <WorkplanList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      <WorkplanList
+                          pid = {this.props.pid}
+                          cbMode = {this.props.cbMode}
+                          cbTree = {this.props.cbTree}
+                          ws = {this.props.ws}
+                          propertyCb = {this.openProperties}
+                      />
                       : null}
                   {this.props.mode == 'tolerance' ?
-                      <ToleranceList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}  />
+                      <ToleranceList 
+                          pid = {this.props.pid}
+                          cbMode = {this.props.cbMode}
+                          cbTree = {this.props.cbTree}
+                          propertyCb = {this.openProperties}
+                      />
                       : null}
                </div>;
     }

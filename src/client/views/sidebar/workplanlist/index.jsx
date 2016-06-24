@@ -23,15 +23,6 @@ export default class WorkplanList extends React.Component {
       }
   }
 
-  onObjectTreeNodeClick(node, self){
-        let url = "/v2/nc/projects/"+this.props.pid+"/state/ws/" + node["id"];
-        request
-          .get(url)
-          .end(function(err, res){
-            //
-          });
-    }
-
   renderNode(node){
       var cName = 'node';
       //node is a generic white node
@@ -45,37 +36,14 @@ export default class WorkplanList extends React.Component {
         if(node.enabled === false)
           cName = 'node disabled';
       }
-      if(node.type === 'workingstep' && node.enabled === true){
-        return <span
-            id={node.id}
-            className={cName}
-            onClick={this.onObjectTreeNodeClick.bind(this, node)}
-            onMouseDown={function(e){e.stopPropagation()}}
-        >
-            {node.icon}
-            {node.name}
-        </span>;
-      }
-      else if(node.type === 'workingstep' && node.enabled === false){
-        return <span
-            id={node.id}
-            className={cName}
-            onMouseDown={function(e){e.stopPropagation()}}
-        >
-            {node.icon}
-            {node.name}
-        </span>;
-      }
-      else{
-        return <span
-            id={node.id}
-            className={cName}
-            onMouseDown={function(e){e.stopPropagation()}}
-        >
-            {node.icon}
-            {node.name}
-        </span>;
-      }
+      return <span
+          id={node.id}
+          className={cName}
+          onClick={(event) => {this.props.propertyCb(node);}}
+      >
+          {node.icon}
+          {node.name}
+      </span>;
   }
 
   componentDidMount(){

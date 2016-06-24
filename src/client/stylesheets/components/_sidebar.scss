@@ -327,6 +327,49 @@ $icons: '../icons/';
                     content: 'W';
                 }
             }
+
+            .tolerance-angularity {
+                background-image: url($icons + 'tolerance/angularity.svg');
+            }
+            .tolerance-circular-runout {
+                background-image: url($icons + 'tolerance/circular_runout.svg');
+            }
+            .tolerance-circularity {
+                background-image: url($icons + 'tolerance/circularity.svg');
+            }
+            .tolerance-concentricity {
+                background-image: url($icons + 'tolerance/concentricity.svg');
+            }
+            .tolerance-cylindricity {
+                background-image: url($icons + 'tolerance/cylindricity.svg');
+            }
+            .tolerance-flatness {
+                background-image: url($icons + 'tolerance/flatness.svg');
+            }
+            .tolerance-parallelism {
+                background-image: url($icons + 'tolerance/parallelism.svg');
+            }
+            .tolerance-perpendicularity {
+                background-image: url($icons + 'tolerance/perpendicularity.svg');
+            }
+            .tolerance-position {
+                background-image: url($icons + 'tolerance/position.svg');
+            }
+            .tolerance-profile-line {
+                background-image: url($icons + 'tolerance/profile_line.svg');
+            }
+            .tolerance-profile-surface {
+                background-image: url($icons + 'tolerance/profile_surface.svg');
+            }
+            .tolerance-straightness {
+                background-image: url($icons + 'tolerance/straightness.svg');
+            }
+            .tolerance-symmetry {
+                background-image: url($icons + 'tolerance/symmetry.svg');
+            }
+            .tolerance-total-runout {
+                background-image: url($icons + 'tolerance/total_runout.svg');
+            }
         }
 
         &.visible {

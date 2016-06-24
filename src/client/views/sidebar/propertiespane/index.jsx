@@ -19,22 +19,27 @@ export default class PropertiesPane extends React.Component {
     }
 
     formatToleranceName(type) {
-        let name = type.replace(/_/g, ' ').toLowerCase();
 
-        return name.replace(/\w\S*/g, (txt) => {
-            return txt.charAt(0).toUpperCase() + txt.slice(1);
-        });
+        return type.charAt(0).toUpperCase() + type.slice(1) + ' Tolerance';
     }
     
     renderProperties(entity) {
+        console.log(entity);
+        
+        let items=null;
+
         if (entity === null)
             return null;
-        
-        let items = null;
-        
+
         switch (entity.type) {
             case 'tolerance':
-                // TODO: show type of tolerance and value
+                // TODO: add more tolerance properties
+                items = (
+                    <Menu className='properties'>
+                        <MenuItem className='property'>{entity.toleranceType}</MenuItem>
+                        <MenuItem className='property'>Value: {entity.value}</MenuItem>
+                    </Menu>
+                );
                 break;
             case 'workingstep':
                 // TODO: show workingstep properties
@@ -47,7 +52,9 @@ export default class PropertiesPane extends React.Component {
                 break;
             default:
                 items = (
-                    <MenuItem className='property'>No information available</MenuItem>
+                    <Menu className='properties'>
+                        <MenuItem className='property'>No information available</MenuItem>
+                    </Menu>
                 );
         }
         
@@ -59,11 +66,15 @@ export default class PropertiesPane extends React.Component {
         let visible = false;
         // TODO: get real icons for workingstep/workplan/tool
         
+        let tolType = '';
+        
         if (this.props.entity !== null) {
             visible = true;
             
-            if (this.props.entity.type === 'tolerance')
-                entityName = this.formatToleranceName(this.props.entity.type);
+            if (this.props.entity.type === 'tolerance') {
+                entityName = this.formatToleranceName(this.props.entity.toleranceType);
+                tolType = 'tolerance-' + this.props.entity.toleranceType;
+            }
             else {
                 entityName = this.props.entity.name;
             }
@@ -74,12 +85,10 @@ export default class PropertiesPane extends React.Component {
                 <div className='titlebar'>
                     <span className="exit glyphicons glyphicons-remove-sign"
                           onClick={this.props.clearEntity}></span>
-                    <span className={'icon' + (visible ? ' ' + this.props.entity.type : '')}></span>
+                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + tolType : '')}></span>
                     <div className='title'>#{visible ? this.props.entity.id : null}: {entityName} </div>
                 </div>
-                <Menu className='properties'>
-                    {this.renderProperties(this.props.entity)}
-                </Menu>
+                {this.renderProperties(this.props.entity)}
             </div>
         );
     }

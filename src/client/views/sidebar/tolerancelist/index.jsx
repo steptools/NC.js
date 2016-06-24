@@ -10,24 +10,20 @@ export default class ToleranceList extends React.Component {
     this.renderNode = this.renderNode.bind(this);
   }
 
-  onObjectTreeNodeClick(node, self){
-      // TODO: do something when we click a tolerance
-    }
-
   renderNode(node){
       let cName = 'node';
         if(node.id == this.state) cName= 'node running-node';
       return <ol
           id={node.id}
           value = {node.value}
-          type = {node.type}
+          type = {node.toleranceType}
           className={cName}
-          onClick={this.onObjectTreeNodeClick.bind(this, node)}
+          onClick={(event) => {this.props.propertyCb(node)}}
           onMouseDown={function(e){e.stopPropagation()}}
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
           {node.icon}
-          <span className="textbox-tolerance">{node.type} {node.value}</span>
+          <span className="textbox-tolerance">{node.toleranceType} {node.value}</span>
       </ol>;
   }
 
@@ -39,8 +35,9 @@ export default class ToleranceList extends React.Component {
                 let json = JSON.parse(res.text);
 
                 _.each(json, (tolerance) => {
-                    tolerance.type = tolerance.type.replace(/_TOLERANCE/g, '').toLowerCase();
-                    tolerance.icon = <span className={'icon-tolerance tolerance-'+tolerance.type} />
+                    tolerance.toleranceType = tolerance.type.replace(/_TOLERANCE/g, '').toLowerCase();
+                    tolerance.type = 'tolerance';
+                    tolerance.icon = <span className={'icon-tolerance tolerance-'+tolerance.toleranceType} />
                 })
 
                 this.setState({tolerances: json});
