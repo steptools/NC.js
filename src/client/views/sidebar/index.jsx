@@ -36,28 +36,6 @@ export default class SidebarView extends React.Component {
     
     selectMenuItem (info) {
         this.props.cbMode(info.key);
-        
-        let item = $(info.domEvent.target);
-        let menu = $(".sidebar-menu");
-        let menutabs = $(".sidebar-menu-tabs");
-        
-        let item_left = Number(item.offset().left);
-        let item_width = Number(item.outerWidth(true));
-        let menu_left = Number(menu.offset().left);
-        let menu_width = Number(menu.outerWidth(true));
-        
-        let shouldScrollLeft =  item_left < menu_left;
-        let shouldScrollRight = item_left + item_width > menu_left + menu_width;
-       
-        let offset = menutabs.scrollLeft() + item_left - menu_left;
-        if (shouldScrollRight)
-            offset = menutabs.scrollLeft() + ((item_left + item_width) - (menu_left + menu_width));
-        
-        if (shouldScrollLeft || shouldScrollRight) {
-            menutabs.animate({
-                scrollLeft: offset
-            }, 250);
-        }            
     }
     
     render() {
@@ -69,10 +47,10 @@ export default class SidebarView extends React.Component {
                 defaultSelectedKeys={[this.props.mode]}
                 mode='horizontal'
                 className='sidebar-menu-tabs'>
-              <MenuItem key='ws' id='sidebar-menu-ws' >Workingsteps</MenuItem>
-              <MenuItem key='tree' id='sidebar-menu-tree' >Workplan</MenuItem>
-              <MenuItem disabled key='tools' id='sidebar-menu-tools' >Tools</MenuItem>
-              <MenuItem key='tolerance' id='sidebar-menu-tolerance'>Tolerances</MenuItem>
+              <MenuItem key='ws' id='sidebar-menu-ws' className='ws'>Workingsteps</MenuItem>
+              <MenuItem key='tree' id='sidebar-menu-tree' className='wp'>Workplan</MenuItem>
+              <MenuItem key='tools' id='sidebar-menu-tools' className='tool'>Tools</MenuItem>
+              <MenuItem key='tolerance' id='sidebar-menu-tolerance' className='tolerance'>Tolerances</MenuItem>
           </Menu>
       );
       if((!scrolled) && (this.props.ws > -1))

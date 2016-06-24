@@ -181,7 +181,23 @@ $sidebarWidth: 390;
         }
 
         .rc-menu-item-selected {
-            background-color: #7E7E7E;
+            color: #333333;
+            &:hover {
+                color: #666666;
+                border-bottom: 2px solid #666666;
+            }
+        }
+        .rc-menu-item-selected.ws {
+            background-color: #97A1FD;
+        }
+        .rc-menu-item-selected.wp {
+            background-color: #FF3900;
+        }
+        .rc-menu-item-selected.tool {
+            background-color: #FFC52A;
+        }
+        .rc-menu-item-selected.tolerance {
+            background-color: #2AFD8C;
         }
 
     }
