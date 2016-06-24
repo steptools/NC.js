@@ -34,16 +34,9 @@ export default class ToleranceList extends React.Component {
       let resCb = function(err,res){ //Callback function for response
             if(!err && res.ok){
               // Node preprocessing
-              let nodes = [];
-              let nodeCheck = (node)=>{
-                node.icon = <span className={'icon-tolerance ' + 'tolerance-' + node.type}></span>;
-                //if(node.children) node.children.forEach(nodeCheck);
-                //node.children = [];
-                //if(node.type === "workingstep")
-                nodes.push(node);
-              };
               let json = JSON.parse(res.text);
-              nodeCheck(json);
+
+              let nodes = json;
               this.setState({tolerances: nodes});
             }
       }
