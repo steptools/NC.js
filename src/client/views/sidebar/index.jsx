@@ -3,6 +3,7 @@ import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
 import WorkingstepList from './workingstepslist';
 import WorkplanList from './workplanlist';
+import ToolList from './toollist';
 import ToleranceList from './tolerancelist';
 import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager';
@@ -75,6 +76,9 @@ export default class SidebarView extends React.Component {
                   {this.props.mode == 'tolerance' ?
                       <ToleranceList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}  />
                       : null}
+                  {this.props.mode == 'tools' ?
+                      <ToolList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}/>
+                      : null}    
                </div>;
     }
 }
