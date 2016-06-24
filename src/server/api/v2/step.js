@@ -1,11 +1,9 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
-var find = new StepNC.Finder();
-var apt = new StepNC.AptStepMaker();
-var tol = new StepNC.Tolerance();
-
 var file = require('./file');
-//var find = file.find;
+var tol = file.tol;
+var apt = file.apt;
+var find = file.find;
 
 var exeFromId = function(id) {
 	let ws = {
