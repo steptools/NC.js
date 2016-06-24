@@ -30,9 +30,10 @@ var _getWsTols = function(req,res) {
 }
 
 
-
+module.exports = function(app, cb) {
   //This route gets all toleranceId's associated with a given workingstep
   app.router.get('/v2/nc/projects/:ncId/tolerances/:wsId',_getWsTols);
-
   //This route returns a JSON object with all Tolerances (ID-{type,value})
   app.router.get('/v2/nc/projects/:ncId/tolerances',_getTols);
+  if (cb) cb();
+};

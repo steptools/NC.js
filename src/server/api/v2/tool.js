@@ -7,7 +7,11 @@ var _getTools = function (req, res) {
   if (req.params.ncId) {
     let ncId = req.params.ncId;
     find.OpenProject(file.getPath(ncId));
-    var rtn = find.GetToolAll();
+    let toolList = find.GetToolAll();
+    let rtn = []
+    for(let id of toolList){
+        rtn.push({"id" : id, "type" : find.GetToolType(id)})
+    }
     res.status(200).send(rtn);
   }
 };
