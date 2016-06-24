@@ -19,13 +19,15 @@ export default class ToleranceList extends React.Component {
         if(node.id == this.state) cName= 'node running-node';
       return <ol
           id={node.id}
+          value = {node.value}
+          type = {node.type}
           className={cName}
           onClick={this.onObjectTreeNodeClick.bind(this, node)}
           onMouseDown={function(e){e.stopPropagation()}}
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
           {node.icon}
-          <span className="textbox-tolerance">{node.name}</span>
+          <span className="textbox-tolerance">{node.id} {node.type} {node.value}</span>
       </ol>;
   }
 
@@ -35,9 +37,7 @@ export default class ToleranceList extends React.Component {
             if(!err && res.ok){
               // Node preprocessing
               let json = JSON.parse(res.text);
-
-              let nodes = json;
-              this.setState({tolerances: nodes});
+              this.setState({tolerances: json});
             }
       }
       resCb = resCb.bind(this); //Needs to bind this in order to have correct this
