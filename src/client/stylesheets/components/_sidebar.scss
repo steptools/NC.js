@@ -165,6 +165,9 @@ $icons: '../icons/';
     .running-node {
         background-color: #9BFA9B;
     }
+    .disabled {
+        background-color: #666666;
+    }
 
     .m-node .node.is-highlighted:not(.is-active) {
         background-color: rgba(49, 54, 63, 0.43);
@@ -234,7 +237,23 @@ $icons: '../icons/';
         }
 
         .rc-menu-item-selected {
-            background-color: #7E7E7E;
+            color: #333333;
+            &:hover {
+                color: #666666;
+                border-bottom: 2px solid #666666;
+            }
+        }
+        .rc-menu-item-selected.ws {
+            background-color: #97A1FD;
+        }
+        .rc-menu-item-selected.wp {
+            background-color: #FF3900;
+        }
+        .rc-menu-item-selected.tool {
+            background-color: #FFC52A;
+        }
+        .rc-menu-item-selected.tolerance {
+            background-color: #2AFD8C;
         }
 
     }

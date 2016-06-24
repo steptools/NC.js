@@ -1,16 +1,19 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
-var find = new StepNC.Finder();
-var apt = new StepNC.AptStepMaker();
-var tol = new StepNC.Tolerance();
-
 var file = require('./file');
+var tol = file.tol;
+var apt = file.apt;
+var find = file.find;
 
 var exeFromId = function(id) {
 	let ws = {
 		"id": id,
 		"name": find.GetExecutableName(id)
 	};
+	if(find.IsEnabled(id))
+		ws.enabled = true;
+	else
+		ws.enabled = false;
 	if (find.IsWorkingstep(id)) {
 		ws.type = "workingstep";
 		return ws;
@@ -19,7 +22,7 @@ var exeFromId = function(id) {
 	} else if (find.IsWorkplan(id)) {
 		ws.type = "workplan";
 	}
-	let children = find.GetNestedExecutableAllEnabled(id);
+	let children = find.GetNestedExecutableAll(id);
 	if (children !== undefined) {
 		ws.children = children.map(exeFromId);
 	}
@@ -66,6 +69,7 @@ var _getTols = function(req,res) {
   }
 };
 
+<<<<<<< HEAD
 var _getWsTols = function(req,res) {
   if (req.params.ncId && req.params.wsId){
     let ncId = req.params.ncId;
@@ -76,6 +80,8 @@ var _getWsTols = function(req,res) {
 }
 
 
+=======
+>>>>>>> refs/remotes/origin/master
 module.exports = function(app, cb) {
 	//This route gets the executable given an Id and returns a JSON object with its
 	//name, id and all its children (and children's children, etc.)

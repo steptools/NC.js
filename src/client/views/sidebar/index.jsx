@@ -37,7 +37,6 @@ export default class SidebarView extends React.Component {
 
     selectMenuItem (info) {
         this.props.cbMode(info.key);
-
         let item = $(info.domEvent.target);
         let menu = $(".sidebar-menu");
         let menutabs = $(".sidebar-menu-tabs");
@@ -70,10 +69,10 @@ export default class SidebarView extends React.Component {
                 defaultSelectedKeys={[this.props.mode]}
                 mode='horizontal'
                 className='sidebar-menu-tabs'>
-              <MenuItem key='ws' id='sidebar-menu-ws' >Workingsteps</MenuItem>
-              <MenuItem key='tree' id='sidebar-menu-tree' >Workplan</MenuItem>
-              <MenuItem disabled key='tools' id='sidebar-menu-tools' >Tools</MenuItem>
-              <MenuItem key='tolerance' id='sidebar-menu-tolerance'>Tolerances</MenuItem>
+              <MenuItem key='ws' id='sidebar-menu-ws' className='ws'>Workingsteps</MenuItem>
+              <MenuItem key='tree' id='sidebar-menu-tree' className='wp'>Workplan</MenuItem>
+              <MenuItem key='tools' id='sidebar-menu-tools' className='tool'>Tools</MenuItem>
+              <MenuItem key='tolerance' id='sidebar-menu-tolerance' className='tolerance'>Tolerances</MenuItem>
           </Menu>
       );
       if((!scrolled) && (this.props.ws > -1))

@@ -5,6 +5,7 @@
 + `step.js` contains code for getting information on workingsteps
 + 'geometry.js' contains code for getting information about the geometry of a given project
 + 'projects.js' contains code for getting information about the current projects available
++ 'tool.js' contains code for getting information about the current tools within the given project
 
 ### Coding Conventions
 + When in doubt, follow the [Node Style Guide] https://github.com/felixge/node-style-guide
