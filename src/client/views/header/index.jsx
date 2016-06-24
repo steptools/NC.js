@@ -5,8 +5,6 @@ import _ from 'lodash';
 let SubMenu = Menu.SubMenu;
 let PlainMenuItem = Menu.Item;
 import ReactTooltip from 'react-tooltip';
-var jade = require("jade");
-
 class MenuItem extends React.Component {
     render() {
         let name = "header-menu-item menu-item-button";
@@ -149,8 +147,11 @@ export default class HeaderView extends React.Component {
         }
     }
 
-    render() {
-        let log = jade.renderFile("log.jade");
+
+ render() {
+        let chlog = new XMLHttpRequest();
+        chlog.open("GET","file://c:/git/stepncviewer/changelog.txt", false);
+        let chlogtext = chlog.responseText;
         let ppbtntxt;
         let ppbutton = this.props.ppbutton;
         let showlog = this.props.logstate;
@@ -172,10 +173,9 @@ export default class HeaderView extends React.Component {
 
         return <div className="header">
         {headerMenu}
-        <div className = "changelog">{log}</div>
+        <div className = "changelog">{chlogtext}</div>
         </div>;
-    }   
+    }  
 }
-
 HeaderView.propTypes = {cadManager: React.PropTypes.object.isRequired,
                           cbPPButton: React.PropTypes.func.isRequired, ppbutton: React.PropTypes.string.isRequired};
