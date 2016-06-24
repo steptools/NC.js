@@ -1,9 +1,11 @@
+
 import React from 'react';
 import Menu from 'rc-menu';
 import _ from 'lodash';
 let SubMenu = Menu.SubMenu;
 let PlainMenuItem = Menu.Item;
 import ReactTooltip from 'react-tooltip';
+var jade = require("jade");
 
 class MenuItem extends React.Component {
     render() {
@@ -148,6 +150,7 @@ export default class HeaderView extends React.Component {
     }
 
     render() {
+        let log = jade.renderFile("log.jade");
         let ppbtntxt;
         let ppbutton = this.props.ppbutton;
         let showlog = this.props.logstate;
@@ -169,9 +172,9 @@ export default class HeaderView extends React.Component {
 
         return <div className="header">
         {headerMenu}
-        <div className = "changelog"> Call me Ishmael. AAAAAAAAAAAAAAAAAYYYYYYYYYYYYy</div>
+        <div className = "changelog">{log}</div>
         </div>;
-    }
+    }   
 }
 
 HeaderView.propTypes = {cadManager: React.PropTypes.object.isRequired,
