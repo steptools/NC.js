@@ -1,4 +1,5 @@
 $sidebarWidth: 390;
+$icons: '../icons/';
 
 .sidebar {
     width: $sidebarWidth;
@@ -40,24 +41,79 @@ $sidebarWidth: 390;
             cursor: pointer;
             
             .textbox {
-                    vertical-align : middle;
-                    display: inline-block;
-                    width : 285px;
+                  vertical-align : middle;
+                  display: inline-block;
+                  width : 285px;
             }
 
-        }       
+            .textbox-tolerance {
+                //vertical-align: text-top;
+            }
 
-        .icon-letter {
-            background-color: #333;
-            color: #fff;
-            padding: 5px;
-            border-radius: 5px;
-            width: 30px;
-            height:30px;
-            display: inline-block;
-            text-align: center;
-            margin-right: 8px;
+            .icon-letter, .icon-tolerance {
+                background-color: #333;
+                color: #fff;
+                padding: 5px;
+                border-radius: 5px;
+                width: 30px;
+                height:30px;
+                display: inline-block;
+                text-align: center;
+                margin-right: 8px;
+            }
+
+            .icon-tolerance {
+                background-color: #fff;
+                padding: 15px;
+                vertical-align: middle;
+                background-image: url($icons + 'tolerance/unknown.svg');
+                background-size: contain;
+            }
+
+            .tolerance-angularity {
+                background-image: url($icons + 'tolerance/angularity.svg');
+            }
+            .tolerance-circular-runout {
+                background-image: url($icons + 'tolerance/circular_runout.svg');
+            }
+            .tolerance-circularity {
+                background-image: url($icons + 'tolerance/circularity.svg');
+            }
+            .tolerance-concentricity {
+                background-image: url($icons + 'tolerance/concentricity.svg');
+            }
+            .tolerance-cylindricity {
+                background-image: url($icons + 'tolerance/cylindricity.svg');
+            }
+            .tolerance-flatness {
+                background-image: url($icons + 'tolerance/flatness.svg');
+            }
+            .tolerance-parallelism {
+                background-image: url($icons + 'tolerance/parallelism.svg');
+            }
+            .tolerance-perpendicularity {
+                background-image: url($icons + 'tolerance/perpendicularity.svg');
+            }
+            .tolerance-position {
+                background-image: url($icons + 'tolerance/position.svg');
+            }
+            .tolerance-profile-line {
+                background-image: url($icons + 'tolerance/profile_line.svg');
+            }
+            .tolerance-profile-surface {
+                background-image: url($icons + 'tolerance/profile_surface.svg');
+            }
+            .tolerance-straightness {
+                background-image: url($icons + 'tolerance/straightness.svg');
+            }
+            .tolerance-symmetry {
+                background-image: url($icons + 'tolerance/symmetry.svg');
+            }
+            .tolerance-total-runout {
+                background-image: url($icons + 'tolerance/total_runout.svg');
+            }
         }
+
     }
 
     .m-draggable {
