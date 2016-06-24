@@ -27,7 +27,7 @@ export default class ToleranceList extends React.Component {
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
           {node.icon}
-          <span className="textbox-tolerance">{node.id} {node.type} {node.value}</span>
+          <span className="textbox-tolerance">{node.type} {node.value}</span>
       </ol>;
   }
 

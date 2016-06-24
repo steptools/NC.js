@@ -69,7 +69,6 @@ var _getTols = function(req,res) {
   }
 };
 
-<<<<<<< HEAD
 var _getWsTols = function(req,res) {
   if (req.params.ncId && req.params.wsId){
     let ncId = req.params.ncId;
@@ -78,10 +77,6 @@ var _getWsTols = function(req,res) {
     res.status(200).send(tol.GetWorkingstepToleranceAll(wsId));
   }
 }
-
-
-=======
->>>>>>> refs/remotes/origin/master
 module.exports = function(app, cb) {
 	//This route gets the executable given an Id and returns a JSON object with its
 	//name, id and all its children (and children's children, etc.)
