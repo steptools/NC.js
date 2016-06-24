@@ -58,10 +58,9 @@ var _getTols = function(req,res) {
     let ncId = req.params.ncId;
     apt.OpenProject(file.getPath(ncId));
     let tol_list = tol.GetToleranceAll();
-    let ret = {};
+    let ret = [];
     for (let id of tol_list){
-      console.log(id);
-      ret[id] = {"type":tol.GetToleranceType(id),"value":tol.GetToleranceValue(id)};
+      ret.push({"id":id,"type":tol.GetToleranceType(id),"value":tol.GetToleranceValue(id)});
     }
     res.status(200).send(ret);
   }
