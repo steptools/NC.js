@@ -13,8 +13,6 @@ export default class SidebarView extends React.Component {
         super(props);
         this.state = { };
 
-        this.openObjectTree = this.openObjectTree.bind(this);
-
         let disabledView = (name) => {
           return (() => {
             this.props.cbMode("disabled");
@@ -27,37 +25,55 @@ export default class SidebarView extends React.Component {
             self.props.cbWS(state);
             return;
         };
+        
+        this.selectMenuItem = this.selectMenuItem.bind(this);
 
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
 
     componentDidMount(){
     }
-
-    openObjectTree(){
-        this.props.cbMode('tree');
+    
+    selectMenuItem (info) {
+        this.props.cbMode(info.key);
+        
+        let item = $(info.domEvent.target);
+        let menu = $(".sidebar-menu");
+        let menutabs = $(".sidebar-menu-tabs");
+        
+        let item_left = Number(item.offset().left);
+        let item_width = Number(item.outerWidth(true));
+        let menu_left = Number(menu.offset().left);
+        let menu_width = Number(menu.outerWidth(true));
+        
+        let shouldScrollLeft =  item_left < menu_left;
+        let shouldScrollRight = item_left + item_width > menu_left + menu_width;
+       
+        let offset = menutabs.scrollLeft() + item_left - menu_left;
+        if (shouldScrollRight)
+            offset = menutabs.scrollLeft() + ((item_left + item_width) - (menu_left + menu_width));
+        
+        if (shouldScrollLeft || shouldScrollRight) {
+            menutabs.animate({
+                scrollLeft: offset
+            }, 250);
+        }            
     }
-
+    
     render() {
       // TODO currently mode menu can only have two layers
       let nested = this.props.mode != "tree";
+
       const modeMenu = (
-        <div className='sidebar-menu-tabs'>
-          <span style={{opacity:nested ?.5:0}} className='glyphicons glyphicons-menu-left back-button'></span>
-          <div style={{opacity:nested?.5:1, left:nested?40:140}} onClick={this.openObjectTree} className='back'>
-            {this.props.mode === 'tree' ?
-              <div>Workplan</div>
-              :null
-            }
-            {this.props.mode === 'ws' ?
-              <div>Workingsteps</div>
-              :null
-            }
-          </div>
-          <div style={{left:nested?200:400}} className='current'>
-            {this.props.altmenu}
-          </div>
-        </div>
+          <Menu onSelect={this.selectMenuItem}
+                defaultSelectedKeys={[this.props.mode]}
+                mode='horizontal'
+                className='sidebar-menu-tabs'>
+              <MenuItem key='ws' id='sidebar-menu-ws' >Workingsteps</MenuItem>
+              <MenuItem key='tree' id='sidebar-menu-tree' >Workplan</MenuItem>
+              <MenuItem disabled key='tools' id='sidebar-menu-tools' >Tools</MenuItem>
+              <MenuItem key='tolerance' id='sidebar-menu-tolerance'>Tolerances</MenuItem>
+          </Menu>
       );
       if((!scrolled) && (this.props.ws > -1))
       {

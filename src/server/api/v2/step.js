@@ -1,7 +1,11 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
+var find = new StepNC.Finder();
+var apt = new StepNC.AptStepMaker();
+var tol = new StepNC.Tolerance();
+
 var file = require('./file');
-var find = file.find;
+//var find = file.find;
 
 var exeFromId = function(id) {
 	let ws = {
@@ -54,12 +58,31 @@ var _getMwp = function(req, res) {
 	}
 };
 
+var _getTols = function(req,res) {
+  if (req.params.ncId) {
+    let ncId = req.params.ncId;
+    apt.OpenProject(file.getPath(ncId));
+    let tol_list = tol.GetToleranceAll();
+    let ret = {};
+    for (let id of tol_list){
+      console.log(id);
+      ret[id] = {"type":tol.GetToleranceType(id),"value":tol.GetToleranceValue(id)};
+    }
+    res.status(200).send(ret);
+  }
+
+
+};
+
 module.exports = function(app, cb) {
-	//This route gets the executable given an Id and returns a JSON object with its 
+	//This route gets the executable given an Id and returns a JSON object with its
 	//name, id and all its children (and children's children, etc.)
 	app.router.get('/v2/nc/projects/:ncId/workplan/:wsId',_getExeFromId);
 
-	//This route gets the main workplan for the project that is specified by 
+  //This route returns a JSON object with all Tolerances (ID-{type,value})
+  app.router.get('/v2/nc/projects/:ncId/tolerances',_getTols);
+
+	//This route gets the main workplan for the project that is specified by
 	//ncId
 	app.router.get('/v2/nc/projects/:ncId/workplan',_getMwp);
 	if (cb) cb();
