@@ -23,7 +23,7 @@ $icons: '../icons/';
     .m-tree {
         position: relative;
         padding: 20px;
-        height: calc(100% - 75px - 90px);
+        height: calc(100% - 100px - 90px);
         overflow-y: scroll;
         -webkit-user-select: none;
         -khtml-user-select: none;
@@ -39,7 +39,7 @@ $icons: '../icons/';
             background-color: rgba(255,255,255,.5);
             margin-bottom: 1px;
             cursor: pointer;
-            
+
             .textbox {
                   vertical-align : middle;
                   display: inline-block;
