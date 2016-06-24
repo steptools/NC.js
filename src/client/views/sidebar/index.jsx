@@ -4,6 +4,7 @@ import Menu from 'rc-menu';
 import WorkingstepList from './workingstepslist';
 import WorkplanList from './workplanlist';
 import ToleranceList from './tolerancelist';
+import PropertiesPane from './propertiespane';
 import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager';
 let MenuItem = Menu.Item;
@@ -12,7 +13,7 @@ let scrolled=false;
 export default class SidebarView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { };
+        this.state = { selectedEntity : null };
 
         let disabledView = (name) => {
           return (() => {
@@ -37,33 +38,17 @@ export default class SidebarView extends React.Component {
 
     selectMenuItem (info) {
         this.props.cbMode(info.key);
-        let item = $(info.domEvent.target);
-        let menu = $(".sidebar-menu");
-        let menutabs = $(".sidebar-menu-tabs");
-
-        let item_left = Number(item.offset().left);
-        let item_width = Number(item.outerWidth(true));
-        let menu_left = Number(menu.offset().left);
-        let menu_width = Number(menu.outerWidth(true));
-
-        let shouldScrollLeft =  item_left < menu_left;
-        let shouldScrollRight = item_left + item_width > menu_left + menu_width;
-
-        let offset = menutabs.scrollLeft() + item_left - menu_left;
-        if (shouldScrollRight)
-            offset = menutabs.scrollLeft() + ((item_left + item_width) - (menu_left + menu_width));
-
-        if (shouldScrollLeft || shouldScrollRight) {
-            menutabs.animate({
-                scrollLeft: offset
-            }, 250);
-        }
     }
-
+    
     render() {
       // TODO currently mode menu can only have two layers
       let nested = this.props.mode != "tree";
-
+        
+      let properties = <PropertiesPane 
+          entity={this.state.selectedEntity}
+          pid={this.props.pid}
+          clearEntity={(event) => {this.setState({selectedEntity: null}); }}/>;
+        
       const modeMenu = (
           <Menu onSelect={this.selectMenuItem}
                 defaultSelectedKeys={[this.props.mode]}
@@ -86,6 +71,7 @@ export default class SidebarView extends React.Component {
         }
       }
         return <div className="sidebar">
+                  {properties}
                   {modeMenu}
                   {this.props.mode == 'ws' ?
                       <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>

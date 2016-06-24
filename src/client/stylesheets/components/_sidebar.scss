@@ -1,4 +1,4 @@
-$sidebarWidth: 390;
+$sidebarWidth: 390px;
 $icons: '../icons/';
 
 .sidebar {
@@ -264,5 +264,51 @@ $icons: '../icons/';
         text-align: center;
         color: #888;
         padding: 20px;
+    }
+
+    .properties-pane {
+        display: block;
+        width: $sidebarWidth;
+        background-color: #F8F8F8;
+
+        position: absolute;
+        top: 0;
+        z-index: 10;
+
+        height: 100%;
+
+        left: $sidebarWidth*-1;
+
+        -webkit-transition: -webkit-transform ease 250ms;
+        -moz-transition: -moz-transform ease 250ms;
+        -ms-transition: -ms-transform ease 250ms;
+        -o-transition: -o-transform ease 250ms;
+        transition: transform ease 250ms;
+
+        .titlebar {
+            padding: 5px;
+            overflow: hidden;
+
+            .title {
+                font-size: 18px;
+            }
+            .exit {
+                float: right;
+                font-size: 32px;
+
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+
+
+        &.visible {
+            -webkit-transform: translate3d($sidebarWidth, 0, 0);
+            -moz-transform: translate3d($sidebarWidth, 0, 0);
+            -ms-transform: translate3d($sidebarWidth, 0, 0);
+            -o-transform: translate3d($sidebarWidth, 0, 0);
+            transform: translate3d($sidebarWidth, 0, 0);
+        }
     }
 }
