@@ -15,9 +15,7 @@ export default class PropertiesPane extends React.Component {
     }
 
     componentWillUpdate(nextProps, nextState) {
-        if (nextProps.entity !== null) {
-            request.url("/v2/nc/projects"+this.props.pid+"/")
-        }
+        //TODO: collect more information via GET if necessary
     }
 
     formatToleranceName(type) {
@@ -57,25 +55,27 @@ export default class PropertiesPane extends React.Component {
     }
 
     render(){
-        let entityName;
+        let entityName = null;
+        let visible = false;
+        // TODO: get real icons for workingstep/workplan/tool
+        
         if (this.props.entity !== null) {
+            visible = true;
+            
             if (this.props.entity.type === 'tolerance')
                 entityName = this.formatToleranceName(this.props.entity.type);
-            else
+            else {
                 entityName = this.props.entity.name;
+            }
         }
-        
-        let visible = false;
-        if (this.props.entity !== null)
-            visible = true;
         
         return (
             <div className={'properties-pane' + (visible ? ' visible' : '')}>
                 <div className='titlebar'>
-                    <span className='icon'></span>
-                    <span className = 'title'> #{visible ? this.props.entity.id : null}: {entityName} </span>
                     <span className="exit glyphicons glyphicons-remove-sign"
-                        onClick={this.props.clearEntity}></span>
+                          onClick={this.props.clearEntity}></span>
+                    <span className={'icon' + (visible ? ' ' + this.props.entity.type : '')}></span>
+                    <div className='title'>#{visible ? this.props.entity.id : null}: {entityName} </div>
                 </div>
                 <Menu className='properties'>
                     {this.renderProperties(this.props.entity)}

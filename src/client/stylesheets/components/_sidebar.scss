@@ -290,7 +290,8 @@ $icons: '../icons/';
             overflow: hidden;
 
             .title {
-                font-size: 18px;
+                font-size: 16px;
+                display: flex;
             }
             .exit {
                 float: right;
@@ -300,8 +301,33 @@ $icons: '../icons/';
                     cursor: pointer;
                 }
             }
-        }
 
+            .icon {
+                background-color: #fff;
+                padding: 15px;
+                border-radius: 5px;
+                width: 30px;
+                height:30px;
+                float:left;
+                text-align: center;
+                margin-right: 8px;
+                vertical-align: middle;
+
+                background-image: url($icons + 'tolerance/unknown.svg');
+                background-size: contain;
+            }
+
+            .icon.workingstep {
+                background-color: #333;
+                background-image: none;
+                color: #fff;
+                padding: 5px;
+
+                &:after {
+                    content: 'W';
+                }
+            }
+        }
 
         &.visible {
             -webkit-transform: translate3d($sidebarWidth, 0, 0);

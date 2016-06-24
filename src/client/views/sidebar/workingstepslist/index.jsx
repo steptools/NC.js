@@ -20,22 +20,13 @@ export default class WorkingstepList extends React.Component {
       }
   }
 
-  onObjectTreeNodeClick(node, self){
-        let url = "/v2/nc/projects/"+this.props.pid+"/state/ws/" + node["id"];
-        request
-          .get(url)
-          .end(function(err, res){
-            //
-          });
-    }
-
   renderNode(node){
       let cName = 'node';
         if(node.id == this.props.ws) cName= 'node running-node';
       return <ol
           id={node.id}
           className={cName}
-          onClick={this.onObjectTreeNodeClick.bind(this, node)}
+          onClick={(event) => {this.props.propertyCb(node);}}
           onMouseDown={function(e){e.stopPropagation()}}
           style={{"paddingLeft" : "5px"}}
           key={node.id} >

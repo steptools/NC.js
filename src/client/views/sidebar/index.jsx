@@ -29,6 +29,7 @@ export default class SidebarView extends React.Component {
         };
 
         this.selectMenuItem = this.selectMenuItem.bind(this);
+        this.openProperties = this.openProperties.bind(this);
 
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
@@ -38,6 +39,10 @@ export default class SidebarView extends React.Component {
 
     selectMenuItem (info) {
         this.props.cbMode(info.key);
+    }
+    
+    openProperties(node) {
+        this.setState({selectedEntity: node});
     }
     
     render() {
@@ -74,7 +79,13 @@ export default class SidebarView extends React.Component {
                   {properties}
                   {modeMenu}
                   {this.props.mode == 'ws' ?
-                      <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      <WorkingstepList
+                          pid = {this.props.pid}
+                          cbMode = {this.props.cbMode}
+                          cbTree = {this.props.cbTree}
+                          ws = {this.props.ws}
+                          propertyCb = {this.openProperties}
+                      />
                       : null}
                   {this.props.mode == 'tree' ?
                       <WorkplanList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
