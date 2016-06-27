@@ -10,6 +10,7 @@ export default class PropertiesPane extends React.Component {
         super(props);
         
         this.selectWS = this.selectWS.bind(this);
+        this.renderNode = this.renderNode.bind(this);
     }
 
     componentDidMount(){
@@ -38,6 +39,33 @@ export default class PropertiesPane extends React.Component {
         else {
             // some other menu item clicked, no need to do anything
         }
+    }
+
+    renderNode(node){
+      var cName = 'node';
+      //node is a generic white node
+      //node running-node is a node that is the current workingstep
+      //node disabled is a node that is part of a selective but isn't
+      //currently enabled
+      if(node.id == this.props.ws) {
+        cName= 'node running-node';
+      }
+      else{
+        if(node.enabled === false)
+          cName = 'node disabled';
+      }
+        
+      let icon = <span className={'icon ' + node.type} />;
+      return (<div key={node.id}>
+              <span
+                  id={node.id}
+                  className={cName}
+                  onClick={(event) => {this.props.propertiesCb(node);}}
+              >
+                  {icon}
+                  {node.name}
+              </span>
+          </div>);
     }
     
     renderProperties(entity) {
@@ -80,7 +108,18 @@ export default class PropertiesPane extends React.Component {
                 );
                 break;
             case 'workplan':
-                // not sure if we want to do anything for this
+            case 'selective':
+                items = (
+                    <Menu className='properties'>
+                        <MenuItem key='children' className='property children'>
+                            <div className='title'>Children:</div>
+                            <div className='list'>
+                                {entity.children.map(this.renderNode)}
+                            </div>
+                        </MenuItem>
+                    </Menu>
+                );
+                break;
             case 'tool':
                 // no support yet
             default:
