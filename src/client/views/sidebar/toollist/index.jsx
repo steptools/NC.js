@@ -37,7 +37,6 @@ export default class ToolList extends React.Component {
                 let json = JSON.parse(res.text);
 
                 _.each(json, (tool)=> {
-                    tool.type = tool.type;
                     tool.icon = <span className='icon-tool' />
                 })
 

@@ -1,10 +1,11 @@
-
 import React from 'react';
+var md = require("node-markdown").Markdown;
 import Menu from 'rc-menu';
 import _ from 'lodash';
 let SubMenu = Menu.SubMenu;
 let PlainMenuItem = Menu.Item;
 import ReactTooltip from 'react-tooltip';
+
 class MenuItem extends React.Component {
     render() {
         let name = "header-menu-item menu-item-button";
@@ -135,16 +136,6 @@ export default class HeaderView extends React.Component {
                 break;
             case "showlog":
                 let changelog = document.getElementById("changes");
-                let chlog = new XMLHttpRequest();
-                chlog.open("GET","log.txt");
-                chlog.onreadystatechange = function(){
-                    if (chlog.readyState == 4 && chlog.status == 200) {
-                        document.getElementById("changes").innerHTML =
-                        chlog.responseText;
-                    }
-                }
-                chlog.send();
-
                 if(this.props.logstate === false){
                     changelog.style.display = "inline-block";
                     this.props.cbLogstate(true);
@@ -159,6 +150,15 @@ export default class HeaderView extends React.Component {
 
 
  render() {
+        let changelog = document.getElementById("changes");
+        let chlog = new XMLHttpRequest();
+        chlog.open("GET","/log");
+        chlog.onreadystatechange = function(){
+            if (chlog.readyState == 4 && chlog.status == 200) {
+                document.getElementById("changes").innerHTML = md(chlog.responseText.toString());
+            }
+        }
+        chlog.send();
         let ppbtntxt;
         let ppbutton = this.props.ppbutton;
         let showlog = this.props.logstate;
@@ -174,14 +174,14 @@ export default class HeaderView extends React.Component {
                 <MenuItem key='play'><ButtonImage prefix='glyphicon' icon={ppbutton}/>{ppbtntxt}</MenuItem>
                 <MenuItem key='forward'><ButtonImage prefix='glyphicon' icon='step-forward'/>Next</MenuItem>
                 <SliderMenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed} prefix='glyphicons' left='turtle' right='rabbit'/></SliderMenuItem>
-                <MenuItem key='showlog' > VERSION NUMBER </MenuItem>
+                <MenuItem key='showlog' id="logbutton"><ButtonImage prefix='glyphicon' icon='book'/>1.1.0</MenuItem>
             </Menu>
             
         );
 
         return <div className="header">
         {headerMenu}
-        <div className="changelog" id="changes">"NOPE"</div>
+        <div className="changelog" id="changes"></div>
         </div>;
     }  
 }
