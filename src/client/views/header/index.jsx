@@ -181,7 +181,7 @@ export default class HeaderView extends React.Component {
 
         return <div className="header">
         {headerMenu}
-        <div className="changelog" id="changes">"NOPENOPENOPENOPENOPENOPENOPENOPENOPENOPE"</div>
+        <div className="changelog" id="changes"></div>
         </div>;
     }  
 }
