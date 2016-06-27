@@ -8,8 +8,8 @@
     .changelog{
         float: right;
         padding : 6px 6px;
-        height : 350px;
-        overflow-y:scroll;
+        max-height : 350px;
+        overflow-y: auto;
         display: none;
         width: 450px;
         text-align : left;
