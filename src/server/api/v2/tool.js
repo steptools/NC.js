@@ -10,7 +10,8 @@ var _getTools = function (req, res) {
     let toolList = find.GetToolAll();
     let rtn = []
     for(let id of toolList){
-        rtn.push({"id" : id, "type" : find.GetToolType(id)})
+        let type = find.GetToolType(id) + " - " + find.GetToolIdentifier(id);
+        rtn.push({"id" : id, "type" : type})
     }
     res.status(200).send(rtn);
   }
