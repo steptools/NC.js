@@ -1,4 +1,4 @@
-Version 1.1.0
+Version 1.1.0 
 
 -Fixed sidebar text wrapping  
 -Implemented tabs to switch between list views  
