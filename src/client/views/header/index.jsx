@@ -134,13 +134,23 @@ export default class HeaderView extends React.Component {
                 this.props.actionManager.emit("sim-b");
                 break;
             case "showlog":
-                let changelog = document.getElementsByClassName("changelog");
+                let changelog = document.getElementById("changes");
+                let chlog = new XMLHttpRequest();
+                chlog.open("GET","log.txt");
+                chlog.onreadystatechange = function(){
+                    if (chlog.readyState == 4 && chlog.status == 200) {
+                        document.getElementById("changes").innerHTML =
+                        chlog.responseText;
+                    }
+                }
+                chlog.send();
+
                 if(this.props.logstate === false){
-                    changelog[0].style.display = "inline-block";
+                    changelog.style.display = "inline-block";
                     this.props.cbLogstate(true);
                 }   
                 else{
-                    changelog[0].style.display = "none";
+                    changelog.style.display = "none";
                     this.props.cbLogstate(false);
                 }
             
@@ -149,15 +159,13 @@ export default class HeaderView extends React.Component {
 
 
  render() {
-        let chlog = new XMLHttpRequest();
-        chlog.open("GET","file://c:/git/stepncviewer/changelog.txt", false);
-        let chlogtext = chlog.responseText;
         let ppbtntxt;
         let ppbutton = this.props.ppbutton;
         let showlog = this.props.logstate;
         if (this.props.ppbutton === "play") {
             ppbtntxt = "Play";
-        } else {
+        }
+        else {
             ppbtntxt = "Pause";
         }
         const headerMenu = (
@@ -173,9 +181,10 @@ export default class HeaderView extends React.Component {
 
         return <div className="header">
         {headerMenu}
-        <div className = "changelog">{chlogtext}</div>
+        <div className="changelog" id="changes">"NOPE"</div>
         </div>;
     }  
 }
+
 HeaderView.propTypes = {cadManager: React.PropTypes.object.isRequired,
                           cbPPButton: React.PropTypes.func.isRequired, ppbutton: React.PropTypes.string.isRequired};
