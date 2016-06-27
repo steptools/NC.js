@@ -1,4 +1,3 @@
-
 import React from 'react';
 var md = require("node-markdown").Markdown;
 import Menu from 'rc-menu';
@@ -6,6 +5,7 @@ import _ from 'lodash';
 let SubMenu = Menu.SubMenu;
 let PlainMenuItem = Menu.Item;
 import ReactTooltip from 'react-tooltip';
+
 class MenuItem extends React.Component {
     render() {
         let name = "header-menu-item menu-item-button";
