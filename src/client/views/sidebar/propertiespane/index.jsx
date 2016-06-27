@@ -140,7 +140,7 @@ export default class PropertiesPane extends React.Component {
             
             if (this.props.entity.type === 'tolerance') {
                 entityName = this.props.entity.toleranceType[0].toUpperCase() + this.props.entity.toleranceType.slice(1);
-                tolType = 'tolerance-' + this.props.entity.toleranceType;
+                tolType = 'tolerance ' + this.props.entity.toleranceType;
             }
             else {
                 entityName = this.props.entity.name;
