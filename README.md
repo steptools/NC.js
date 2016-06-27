@@ -4,23 +4,23 @@ StepNCViewer
 Setting up a development environment
 ====================================
 
-  1. Download and build StepNCNode
+  1. Download and build NC.js
 
   ```
-  > git clone https://github.com/steptools/StepNCNode.git
-  > cd StepNCNode
+  > git clone https://github.com/steptools/NC.js.git
+  > cd NC.js
   > npm install
   ```
 
   ------------------------------------------------------------------------------
-  2. Clone StepNCViewer into the same directory that contains the StepNCNode
+  2. Clone StepNCViewer into the same directory that contains the NC.js
       directory, E.G.:
 
   ```
   > cd ..
   > git clone https://github.com/steptools/StepNCViewer.git
   > ls
-  StepNCNode     StepNCViewer
+  NC.js     StepNCViewer
   ```
 
   ------------------------------------------------------------------------------
