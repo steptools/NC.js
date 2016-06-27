@@ -110,7 +110,7 @@ export default class WorkplanList extends React.Component {
   render(){
     return (
         <Tree
-          paddingLeft={32}              // left padding for children nodes in pixels
+          paddingLeft={12}              // left padding for children nodes in pixels
           tree={this.state.workplan}        // tree object
           renderNode={this.renderNode}  // renderNode(node) return react element
         />
