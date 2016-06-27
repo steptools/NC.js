@@ -4,7 +4,12 @@
     background-color: white;
     position: relative;
     z-index: 10;
-
+    -moz-user-select: none; 
+    -webkit-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none;
+    -o-user-select: none;
+    
     .changelog {
         float: right;
         padding: 6px;
@@ -14,6 +19,11 @@
         width: 450px;
         text-align: left;
         background-color: rgb(248, 248, 248);
+        -moz-user-select: text; 
+        -webkit-user-select: text; 
+        -ms-user-select: text; 
+        user-select: text;
+        -o-user-select: text;
     }
 }
 
