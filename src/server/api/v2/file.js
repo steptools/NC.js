@@ -37,18 +37,18 @@ module.exports.getMachineState = function (globalApp, ncId) {
 		return;
 	if (typeof(machineStates[ncId]) === 'undefined') {
 		machineStates[ncId] = new StepNC.machineState(ncPath);
-		 
+
         // load the machine tool using global options
         if (globalApp.machinetool !== "")
           if (!machineStates[ncId].LoadMachine(globalApp.machinetool))
               globalApp.logger.error("Failed to load machine tool: " + globalApp.machinetool);
           else
               globalApp.logger.info("Loaded machine tool: " + globalApp.machinetool);
-          
+
 	}
 	return machineStates[ncId];
 }
 
-module.exports.find = new StepNC.Finder();
 module.exports.apt = new StepNC.AptStepMaker();
+module.exports.find = new StepNC.Finder();
 module.exports.tol = new StepNC.Tolerance();
