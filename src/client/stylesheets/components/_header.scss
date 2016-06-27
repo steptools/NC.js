@@ -5,21 +5,21 @@
     position: relative;
     z-index: 10;
 
-    .changelog{
+    .changelog {
         float: right;
-        padding : 6px 6px;
-        max-height : 350px;
+        padding: 6px;
+        max-height: 350px;
         overflow-y: auto;
         display: none;
         width: 450px;
-        text-align : left;
-        background-color : white;
+        text-align: left;
+        background-color: rgb(248, 248, 248);
     }
 }
 
 .header-menu {
     background-color: #f8f8f8;
-    
+
     .rc-menu-item {
         padding: 0;
         min-width: 85px;
@@ -29,7 +29,7 @@
         background: none;
         white-space: normal;
     }
-    
+
     li:last-child {
         float: right;
     }
@@ -41,6 +41,7 @@
 
 .header-menu-item {
     min-height: inherit;
+
     &:hover {
         border-bottom: 2px solid #2db7f5;
     }
@@ -53,13 +54,13 @@
         padding-bottom: 11px;
         padding-top: 15px;
         display: block;
-
-        &:hover {
-            opacity: 1;
-        }
     }
+
     &:hover {
         cursor: pointer;
+        .button-icon {
+            opacity: 1;
+        }
     }
 }
 
