@@ -1,4 +1,5 @@
 $sidebarWidth: 390;
+$icons: '../icons/';
 
 .sidebar {
     width: $sidebarWidth;
@@ -22,7 +23,7 @@ $sidebarWidth: 390;
     .m-tree {
         position: relative;
         padding: 20px;
-        height: calc(100% - 75px - 90px);
+        height: calc(100% - 100px - 90px);
         overflow-y: scroll;
         -webkit-user-select: none;
         -khtml-user-select: none;
@@ -38,26 +39,93 @@ $sidebarWidth: 390;
             background-color: rgba(255,255,255,.5);
             margin-bottom: 1px;
             cursor: pointer;
-            
+
             .textbox {
-                    vertical-align : middle;
-                    display: inline-block;
-                    width : 285px;
+                  vertical-align : middle;
+                  display: inline-block;
+                  width : 285px;
             }
 
-        }       
+            .textbox-tolerance {
+                //vertical-align: text-top;
+            }
 
-        .icon-letter {
-            background-color: #333;
-            color: #fff;
-            padding: 5px;
-            border-radius: 5px;
-            width: 30px;
-            height:30px;
-            display: inline-block;
-            text-align: center;
-            margin-right: 8px;
+            .textbox-tool {
+                //vertical-align: text-top;
+            }
+
+            .icon-letter, .icon-tolerance, .icon-tool {
+                background-color: #333;
+                color: #fff;
+                padding: 5px;
+                border-radius: 5px;
+                width: 30px;
+                height:30px;
+                display: inline-block;
+                text-align: center;
+                margin-right: 8px;
+            }
+
+            .icon-tolerance{
+                background-color: #fff;
+                padding: 15px;
+                vertical-align: middle;
+                background-image: url($icons + 'tolerance/unknown.svg');
+                background-size: contain;
+            }
+
+            .icon-tool {
+                background-color: #fff;
+                padding: 15px;
+                vertical-align: middle;
+                background-image: url($icons + 'tools/tool.svg');
+                background-size: contain;
+            }
+
+            .tolerance-angularity {
+                background-image: url($icons + 'tolerance/angularity.svg');
+            }
+            .tolerance-circular-runout {
+                background-image: url($icons + 'tolerance/circular_runout.svg');
+            }
+            .tolerance-circularity {
+                background-image: url($icons + 'tolerance/circularity.svg');
+            }
+            .tolerance-concentricity {
+                background-image: url($icons + 'tolerance/concentricity.svg');
+            }
+            .tolerance-cylindricity {
+                background-image: url($icons + 'tolerance/cylindricity.svg');
+            }
+            .tolerance-flatness {
+                background-image: url($icons + 'tolerance/flatness.svg');
+            }
+            .tolerance-parallelism {
+                background-image: url($icons + 'tolerance/parallelism.svg');
+            }
+            .tolerance-perpendicularity {
+                background-image: url($icons + 'tolerance/perpendicularity.svg');
+            }
+            .tolerance-position {
+                background-image: url($icons + 'tolerance/position.svg');
+            }
+            .tolerance-profile-line {
+                background-image: url($icons + 'tolerance/profile_line.svg');
+            }
+            .tolerance-profile-surface {
+                background-image: url($icons + 'tolerance/profile_surface.svg');
+            }
+            .tolerance-straightness {
+                background-image: url($icons + 'tolerance/straightness.svg');
+            }
+            .tolerance-symmetry {
+                background-image: url($icons + 'tolerance/symmetry.svg');
+            }
+            .tolerance-total-runout {
+                background-image: url($icons + 'tolerance/total_runout.svg');
+            }
         }
+
     }
 
     .m-draggable {
@@ -108,6 +176,9 @@ $sidebarWidth: 390;
 
     .running-node {
         background-color: #9BFA9B;
+    }
+    .disabled {
+        background-color: #666666;
     }
 
     .m-node .node.is-highlighted:not(.is-active) {
@@ -178,7 +249,23 @@ $sidebarWidth: 390;
         }
 
         .rc-menu-item-selected {
-            background-color: #7E7E7E;
+            color: #333333;
+            &:hover {
+                color: #666666;
+                border-bottom: 2px solid #666666;
+            }
+        }
+        .rc-menu-item-selected.ws {
+            background-color: #97A1FD;
+        }
+        .rc-menu-item-selected.wp {
+            background-color: #FF3900;
+        }
+        .rc-menu-item-selected.tool {
+            background-color: #FFC52A;
+        }
+        .rc-menu-item-selected.tolerance {
+            background-color: #2AFD8C;
         }
 
     }

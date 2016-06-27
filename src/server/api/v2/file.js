@@ -48,3 +48,7 @@ module.exports.getMachineState = function (globalApp, ncId) {
 	}
 	return machineStates[ncId];
 }
+
+module.exports.find = new StepNC.Finder();
+module.exports.apt = new StepNC.AptStepMaker();
+module.exports.tol = new StepNC.Tolerance();
