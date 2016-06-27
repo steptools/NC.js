@@ -63,7 +63,7 @@ export default class ToolList extends React.Component {
 
   }
 
-  componentDidUpdate(){
+  componentWillReceiveProps(){
     let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
       let resCb2 = function(err,res){
         if(!err && res.ok){
