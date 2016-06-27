@@ -67,11 +67,13 @@ $icons: '../icons/';
             }
 
             .icon-tolerance{
-                background-color: #fff;
+                background-color: rgba(#fff, 0);
+                border: 2px solid #333333;
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tolerance/unknown.svg');
-                background-size: contain;
+                background-size: cover;
+                background-position: center;
             }
 
             .icon-tool {
@@ -157,6 +159,7 @@ $icons: '../icons/';
         left: 0;
         cursor: pointer;
         display: inherit;
+        width: 10;
     }
 
     .m-node .node {
@@ -226,7 +229,7 @@ $icons: '../icons/';
     .sidebar-menu-tabs {
         background-color: #666666;
         font-size: 20px;
-        min-height: 0px;
+        height: 102px;
 
         .rc-menu-item {
             text-align: center;

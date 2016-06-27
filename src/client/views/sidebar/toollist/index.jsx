@@ -5,7 +5,7 @@ export default class ToolList extends React.Component {
   constructor(props){
     //Create the constructor for the component
     super(props);
-    this.state = {tools: []};
+    this.state = {tools: [],"curtool":""};
 
     this.renderNode = this.renderNode.bind(this);
   }
@@ -16,16 +16,17 @@ export default class ToolList extends React.Component {
 
   renderNode(node){
       let cName = 'node';
+      if(node.id == this.state.curtool) cName= 'node running-node';
       return <ol
           id={node.id}
-          type = {node.type}
+          type = {node.name}
           className={cName}
           onClick={this.onObjectTreeNodeClick.bind(this, node)}
           onMouseDown={function(e){e.stopPropagation()}}
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
           {node.icon}
-          <span className="textbox-tool">{node.type} {node.value}</span>
+          <span className="textbox-tool">{node.name} {node.value}</span>
       </ol>;
   }
 
@@ -47,6 +48,30 @@ export default class ToolList extends React.Component {
       request
         .get(url)
         .end(resCb);
+      let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
+      let resCb2 = function(err,res){
+        if(!err && res.ok){
+          this.setState({"curtool":res.text});
+        }
+      }
+      resCb2 = resCb2.bind(this);
+      request
+        .get(url2)
+        .end(resCb2);
+
+  }
+
+  componentWillReceiveProps(){
+    let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
+      let resCb2 = function(err,res){
+        if(!err && res.ok){
+          this.setState({"curtool":res.text});
+        }
+      }
+      resCb2 = resCb2.bind(this);
+      request
+        .get(url2)
+        .end(resCb2);
   }
 
   render(){
