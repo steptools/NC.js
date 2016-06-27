@@ -285,6 +285,39 @@ $icons: '../icons/';
         -o-transition: -o-transform ease 250ms;
         transition: transform ease 250ms;
 
+        .properties {
+
+            .property {
+
+                color: #333333;
+
+                &.goTo {
+                    text-align: center;
+                    padding: 10px 5px;
+                    margin: 0 20%;
+                    background-color: #333333;
+                    color: #F8F8F8;
+                    border-bottom: 2px solid #AFAFAF;
+
+                    &:hover {
+                        color: #35B7FD;
+                        cursor: pointer;
+                        border-bottom: 2px solid #35B7FD;
+                    }
+
+                    &.rc-menu-item-disabled {
+                        opacity: 0.5;
+
+                        &:hover {
+                            color: #F8F8F8;
+                            border-bottom: 2px solid #AFAFAF;
+                            cursor: inherit;
+                        }
+                    }
+                }
+            }
+        }
+
         .titlebar {
             padding: 5px;
             overflow: hidden;

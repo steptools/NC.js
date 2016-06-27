@@ -8,6 +8,8 @@ export default class PropertiesPane extends React.Component {
     constructor(props){
         //Create the constructor for the component
         super(props);
+        
+        this.selectWS = this.selectWS.bind(this);
     }
 
     componentDidMount(){
@@ -22,10 +24,23 @@ export default class PropertiesPane extends React.Component {
 
         return type.charAt(0).toUpperCase() + type.slice(1) + ' Tolerance';
     }
+
+    selectWS(event, ws) {
+        if (event.key='goto') {
+            let url = '/v2/nc/projects/' + this.props.pid + '/state/ws/' + ws.id;
+            console.log(event);
+            request
+                .get(url)
+                .end(function (err, res) {
+                    //
+                });
+        } 
+        else {
+            // some other menu item clicked, no need to do anything
+        }
+    }
     
     renderProperties(entity) {
-        console.log(entity);
-        
         let items=null;
 
         if (entity === null)
@@ -36,24 +51,42 @@ export default class PropertiesPane extends React.Component {
                 // TODO: add more tolerance properties
                 items = (
                     <Menu className='properties'>
-                        <MenuItem className='property'>{entity.toleranceType}</MenuItem>
-                        <MenuItem className='property'>Value: {entity.value}</MenuItem>
+                        <MenuItem disabled className='property'>{entity.toleranceType}</MenuItem>
+                        <MenuItem disabled className='property'>Value: {entity.value}</MenuItem>
                     </Menu>
                 );
                 break;
             case 'workingstep':
-                // TODO: show workingstep properties
+                let selectStep, goToButton;
+                
+                goToButton = (<MenuItem
+                    disabled={!(entity.enabled && this.props.ws !== entity.id)}
+                    className='property goTo'>Go to Workingstep</MenuItem>);
+                
+                if (this.props.ws === entity.id) {
+                    selectStep = <MenuItem disabled className='property'>Status: Active</MenuItem>;
+                }
+                else if (entity.enabled) {
+                    selectStep = <MenuItem disabled className='property'>Status: Inactive</MenuItem>
+                }
+                else {
+                    selectStep = <MenuItem disabled className='property'>Status: Disabled</MenuItem>
+                }
+                items = (
+                    <Menu className='properties' onSelect={(event) => {this.selectWS(event, entity);}}>
+                        {selectStep}
+                        {goToButton}
+                    </Menu>
+                );
                 break;
             case 'workplan':
                 // not sure if we want to do anything for this
-                break;
             case 'tool':
                 // no support yet
-                break;
             default:
                 items = (
                     <Menu className='properties'>
-                        <MenuItem className='property'>No information available</MenuItem>
+                        <MenuItem disabled className='property'>No information available</MenuItem>
                     </Menu>
                 );
         }

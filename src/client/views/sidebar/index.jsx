@@ -52,6 +52,7 @@ export default class SidebarView extends React.Component {
       let properties = <PropertiesPane 
           entity={this.state.selectedEntity}
           pid={this.props.pid}
+          ws={this.props.ws}
           clearEntity={(event) => {this.setState({selectedEntity: null}); }}/>;
         
       const modeMenu = (
