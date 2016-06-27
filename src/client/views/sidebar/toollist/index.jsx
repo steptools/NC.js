@@ -19,14 +19,14 @@ export default class ToolList extends React.Component {
       if(node.id == this.state.curtool) cName= 'node running-node';
       return <ol
           id={node.id}
-          type = {node.type}
+          type = {node.name}
           className={cName}
           onClick={this.onObjectTreeNodeClick.bind(this, node)}
           onMouseDown={function(e){e.stopPropagation()}}
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
           {node.icon}
-          <span className="textbox-tool">{node.type} {node.value}</span>
+          <span className="textbox-tool">{node.name} {node.value}</span>
       </ol>;
   }
 
@@ -38,8 +38,6 @@ export default class ToolList extends React.Component {
                 let json = JSON.parse(res.text);
 
                 _.each(json, (tool)=> {
-                    tool.id = tool.id;
-                    tool.type = tool.type;
                     tool.icon = <span className='icon-tool' />
                 })
 
