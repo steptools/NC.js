@@ -1,6 +1,6 @@
 
 import React from 'react';
-
+var md = require("node-markdown").Markdown;
 import Menu from 'rc-menu';
 import _ from 'lodash';
 let SubMenu = Menu.SubMenu;
@@ -140,7 +140,7 @@ export default class HeaderView extends React.Component {
                 chlog.open("GET","/log");
                 chlog.onreadystatechange = function(){
                     if (chlog.readyState == 4 && chlog.status == 200) {
-                        document.getElementById("changes").innerHTML = chlog.responseText;
+                        document.getElementById("changes").innerHTML = md(chlog.responseText.toString());
                     }
                 }
                 chlog.send();

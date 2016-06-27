@@ -1,12 +1,12 @@
 "use strict";
-var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
+var StepNC = require('../../../../../NC.js/build/Release/StepNC');
 var file = require('./file');
 var fs = require('fs')
 var app;
 
 
 var _getchangelog = function(req,res){
-    fs.readFile("log.txt", "utf8", function(err,data){
+    fs.readFile("changelog.md", "utf8", function(err,data){
       if(err) {
         return console.log(err);
       }
