@@ -70,6 +70,7 @@
     "less-loader": "^2.2.2",
     "mocha": "latest",
     "node-sass": "latest",
+    "node-markdown" : "latest",
     "sass-loader": "latest",
     "style-loader": "latest",
     "url-loader": "latest",

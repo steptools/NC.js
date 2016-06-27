@@ -7,7 +7,7 @@ import CADView              from '../cad';
 import HeaderView           from '../header';
 import SidebarView          from '../sidebar';
 import FooterView	    from '../footer';
-
+var md = require("node-markdown").Markdown;
 import ReactTooltip from 'react-tooltip';
 
 export default class ResponsiveView extends React.Component {
@@ -29,9 +29,11 @@ export default class ResponsiveView extends React.Component {
             svaltmenu: '',
             wstext: '',
             ppbutton: 'play',
+            logstate : false,
             resize: false,
             changeSpeed: false,
-            playbackSpeed: 50
+            playbackSpeed: 50,
+            logtext : "default"
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -66,8 +68,18 @@ export default class ResponsiveView extends React.Component {
     componentWillMount() {
         let url = "/v2/nc/projects/";
         url = url + this.props.pid + "/state/loop/";
-        
         let requestCB = function(error, response) {
+
+            let chlog = new XMLHttpRequest();
+            chlog.open("GET","/log");
+            var log = "fauile";
+            chlog.onreadystatechange = function(){
+                if (chlog.readyState == 4 && chlog.status == 200) {
+                    log = md(chlog.responseText.toString());
+                }
+            }
+            chlog.send();
+            this.setState({"logtext" : log});
             if (!error && response.ok) {
                 let stateObj = JSON.parse(response.text);
                 
@@ -205,7 +217,11 @@ export default class ResponsiveView extends React.Component {
                 cbPPButton={
                     (newPPButton) => {this.setState({ ppbutton: newPPButton })}
                 }
+                cbLogstate = {
+                    (newlogstate) => {this.setState({logstate: newlogstate})}
+                }
                 ppbutton={this.state.ppbutton}
+                logstate={this.state.logstate}
                 speed={this.state.playbackSpeed}
                 pid={this.props.pid}
             />;
