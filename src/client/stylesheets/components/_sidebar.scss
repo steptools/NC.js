@@ -380,15 +380,18 @@ $icons: '../icons/';
 
         .titlebar {
             padding: 5px;
-            overflow: hidden;
+            display: flex;
 
             .title {
-                font-size: 16px;
+                width: 78%;
+                font-size: 14px;
                 font-weight: bold;
-                display: flex;
+                .type {
+                    border-bottom: 1px solid #666666;
+                }
             }
             .exit {
-                float: right;
+                margin-left: auto;
                 font-size: 32px;
 
                 &:hover {
@@ -398,7 +401,7 @@ $icons: '../icons/';
         }
 
         .icon {
-            background-color: #fff;
+            background-color: rgba(#fff, 0);
             padding: 15px;
             border-radius: 5px;
             width: 30px;
@@ -408,12 +411,14 @@ $icons: '../icons/';
             margin-right: 8px;
             vertical-align: middle;
 
+            border: 2px solid #333333;
+
             background-image: url($icons + 'tolerance/unknown.svg');
-            background-size: contain;
+            background-size: cover;
+            background-position: center;
 
             &.workingstep, &.workplan, &.selective {
                 background-color: #333;
-                background-image: none;
                 color: #fff;
                 padding: 5px;
 

@@ -21,11 +21,6 @@ export default class PropertiesPane extends React.Component {
         //TODO: collect more information via GET if necessary
     }
 
-    formatToleranceName(type) {
-
-        return type.charAt(0).toUpperCase() + type.slice(1) + ' Tolerance';
-    }
-
     selectWS(event, ws) {
         if (event.key='goto') {
             let url = '/v2/nc/projects/' + this.props.pid + '/state/ws/' + ws.id;
@@ -144,7 +139,7 @@ export default class PropertiesPane extends React.Component {
             visible = true;
             
             if (this.props.entity.type === 'tolerance') {
-                entityName = this.formatToleranceName(this.props.entity.toleranceType);
+                entityName = this.props.entity.toleranceType[0].toUpperCase() + this.props.entity.toleranceType.slice(1);
                 tolType = 'tolerance-' + this.props.entity.toleranceType;
             }
             else {
@@ -155,10 +150,17 @@ export default class PropertiesPane extends React.Component {
         return (
             <div className={'properties-pane' + (visible ? ' visible' : '')}>
                 <div className='titlebar'>
+                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + tolType : '')} />
+                    <span className='title'>
+                        <div className='type'>
+                        {visible?
+                            this.props.entity.type[0].toUpperCase() + this.props.entity.type.slice(1)
+                            : null}
+                        </div>
+                        <div className='name'>{entityName}</div>
+                    </span>
                     <span className="exit glyphicons glyphicons-remove-sign"
-                          onClick={this.props.clearEntity}></span>
-                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + tolType : '')}></span>
-                    <div className='title'>#{visible ? this.props.entity.id : null}: {entityName} </div>
+                          onClick={this.props.clearEntity} />
                 </div>
                 {this.renderProperties(this.props.entity)}
             </div>
