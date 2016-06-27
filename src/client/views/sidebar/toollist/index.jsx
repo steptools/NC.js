@@ -5,7 +5,7 @@ export default class ToolList extends React.Component {
   constructor(props){
     //Create the constructor for the component
     super(props);
-    this.state = {tools: []};
+    this.state = {tools: [],"curtool":""};
 
     this.renderNode = this.renderNode.bind(this);
   }
@@ -16,6 +16,7 @@ export default class ToolList extends React.Component {
 
   renderNode(node){
       let cName = 'node';
+      if(node.id == this.state.curtool) cName= 'node running-node';
       return <ol
           id={node.id}
           type = {node.type}
@@ -37,6 +38,8 @@ export default class ToolList extends React.Component {
                 let json = JSON.parse(res.text);
 
                 _.each(json, (tool)=> {
+                    tool.id = tool.id;
+                    tool.type = tool.type;
                     tool.icon = <span className='icon-tool' />
                 })
 
@@ -47,6 +50,30 @@ export default class ToolList extends React.Component {
       request
         .get(url)
         .end(resCb);
+      let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
+      let resCb2 = function(err,res){
+        if(!err && res.ok){
+          this.setState({"curtool":res.text});
+        }
+      }
+      resCb2 = resCb2.bind(this);
+      request
+        .get(url2)
+        .end(resCb2);
+
+  }
+
+  componentWillReceiveProps(){
+    let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
+      let resCb2 = function(err,res){
+        if(!err && res.ok){
+          this.setState({"curtool":res.text});
+        }
+      }
+      resCb2 = resCb2.bind(this);
+      request
+        .get(url2)
+        .end(resCb2);
   }
 
   render(){
