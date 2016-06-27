@@ -10,6 +10,6 @@ Version 1.1.0
 -removed useles code  
 -Added tools view  
 -Replaced references to StepNCNode with NC.js  
-
+-added changelog
 
 
