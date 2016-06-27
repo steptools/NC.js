@@ -50,7 +50,11 @@ $icons: '../icons/';
                 //vertical-align: text-top;
             }
 
-            .icon-letter, .icon-tolerance {
+            .textbox-tool {
+                //vertical-align: text-top;
+            }
+
+            .icon-letter, .icon-tolerance, .icon-tool {
                 background-color: #333;
                 color: #fff;
                 padding: 5px;
@@ -62,11 +66,19 @@ $icons: '../icons/';
                 margin-right: 8px;
             }
 
-            .icon-tolerance {
+            .icon-tolerance{
                 background-color: #fff;
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tolerance/unknown.svg');
+                background-size: contain;
+            }
+
+            .icon-tool {
+                background-color: #fff;
+                padding: 15px;
+                vertical-align: middle;
+                background-image: url($icons + 'tools/tool.svg');
                 background-size: contain;
             }
 

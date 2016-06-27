@@ -1,5 +1,5 @@
 "use strict";
-var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
+var StepNC = require('../../../../../NC.js/build/Release/StepNC');
 var file = require('./file');
 var find = file.find;
 
@@ -7,7 +7,12 @@ var _getTools = function (req, res) {
   if (req.params.ncId) {
     let ncId = req.params.ncId;
     find.OpenProject(file.getPath(ncId));
-    var rtn = find.GetToolAll();
+    let toolList = find.GetToolAll();
+    let rtn = []
+    for(let id of toolList){
+        let type = find.GetToolType(id) + " - " + find.GetToolIdentifier(id);
+        rtn.push({"id" : id, "type" : type})
+    }
     res.status(200).send(rtn);
   }
 };

@@ -3,6 +3,7 @@ import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
 import WorkingstepList from './workingstepslist';
 import WorkplanList from './workplanlist';
+import ToolList from './toollist';
 import ToleranceList from './tolerancelist';
 import PropertiesPane from './propertiespane';
 import ReactTooltip from 'react-tooltip';
@@ -107,6 +108,9 @@ export default class SidebarView extends React.Component {
                           propertyCb = {this.openProperties}
                       />
                       : null}
+                  {this.props.mode == 'tools' ?
+                      <ToolList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}/>
+                      : null}    
                </div>;
     }
 }
