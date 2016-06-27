@@ -174,7 +174,7 @@ export default class HeaderView extends React.Component {
                 <MenuItem key='play'><ButtonImage prefix='glyphicon' icon={ppbutton}/>{ppbtntxt}</MenuItem>
                 <MenuItem key='forward'><ButtonImage prefix='glyphicon' icon='step-forward'/>Next</MenuItem>
                 <SliderMenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed} prefix='glyphicons' left='turtle' right='rabbit'/></SliderMenuItem>
-                <MenuItem key='showlog'><ButtonImage prefix='glyphicon' icon='book'/></MenuItem>
+                <MenuItem key='showlog'><ButtonImage prefix='glyphicon' icon='book'/>1.1.0</MenuItem>
             </Menu>
             
         );
