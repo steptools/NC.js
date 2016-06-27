@@ -67,11 +67,13 @@ $icons: '../icons/';
             }
 
             .icon-tolerance{
-                background-color: #fff;
+                background-color: rgba(#fff, 0);
+                border: 2px solid #333333;
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tolerance/unknown.svg');
-                background-size: contain;
+                background-size: cover;
+                background-position: center;
             }
 
             .icon-tool {
