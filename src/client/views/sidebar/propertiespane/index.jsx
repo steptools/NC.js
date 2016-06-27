@@ -63,7 +63,7 @@ export default class PropertiesPane extends React.Component {
                   onClick={(event) => {this.props.propertiesCb(node);}}
               >
                   {icon}
-                  {node.name}
+                  <span className='textbox'>{node.name}</span>
               </span>
           </div>);
     }

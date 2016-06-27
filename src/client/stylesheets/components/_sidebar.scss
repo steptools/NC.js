@@ -299,11 +299,12 @@ $icons: '../icons/';
 
         .properties {
 
-            height: 100%;
+            height: calc(100% - 54px);
             overflow-y: scroll;
 
             .property {
 
+                padding: 20px;
                 color: #333333;
 
                 &.goTo {
@@ -332,37 +333,45 @@ $icons: '../icons/';
                 }
 
                 &.children {
+                    white-space: normal;
+
                     .title {
                         font-size: 18px;
                     }
 
-                    .list .node {
-                        display: inline-block;
-                        width: 100%;
-                        padding: 4px 5px;
+                    .list {
+                        .node {
+                            display: inline-block;
+                            width: 100%;
+                            padding: 4px 5px;
 
-                        &.is-active {
-                            background-color: #0000ff;
-                        }
+                            .textbox {
+                                display: flex;
+                            }
 
-                        &.is-hidden {
-                            color: #1b6d85;
-                        }
+                            &.is-active {
+                                background-color: #0000ff;
+                            }
 
-                        &.running-node {
-                            background-color: #9BFA9B;
-                        }
+                            &.is-hidden {
+                                color: #1b6d85;
+                            }
 
-                        &.disabled {
-                            background-color: #666666;
-                        }
+                            &.running-node {
+                                background-color: #9BFA9B;
+                            }
 
-                        &.is-highlighted:not(.is-active) {
-                            background-color: rgba(49, 54, 63, 0.43);
-                        }
+                            &.disabled {
+                                background-color: #666666;
+                            }
 
-                        &:hover:not(.is-active) {
-                            background-color: rgba(49, 54, 63, 0.43);
+                            &.is-highlighted:not(.is-active) {
+                                background-color: rgba(49, 54, 63, 0.43);
+                            }
+
+                            &:hover:not(.is-active) {
+                                background-color: rgba(49, 54, 63, 0.43);
+                            }
                         }
                     }
                 }
