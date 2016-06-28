@@ -5,18 +5,15 @@ $icons: '../icons/';
     background-color: #DDD;
     position: relative;
     z-index: 5;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
     .model-tree:hover {
         opacity: 0.9;
         left: 0;
-    }
-
-    .f-no-select {
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
     }
 
     .m-tree {
@@ -24,11 +21,6 @@ $icons: '../icons/';
         padding: 20px;
         height: calc(100% - 100px - 90px);
         overflow-y: scroll;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
 
         .m-node .collapse:hover {
             color: #fff;
@@ -244,18 +236,23 @@ $icons: '../icons/';
 
     .sidebar-menu-tabs {
         background-color: #666666;
+        border-top: none;
         font-size: 20px;
         height: 102px;
 
         .rc-menu-item {
             text-align: center;
             color: #F8F8F8;
+            position: relative;
+            border: 2px solid #AFAFAF;
+            border-bottom-color: #AFAFAF;
+            border-left: none;
+            border-right: none;
             padding: 10px 5px;
-            border-right: 2px solid #AFAFAF;
-            border-bottom: 2px solid #AFAFAF;
             width: 50%;
             margin-left: 0;
             background-color: #333333;
+            text-shadow: -1px -1px 0 #333333, 1px -1px 0 #333333, -1px 1px 0 #333333, 1px 1px 0 #333333;
 
             &:disabled {
                 opacity: 0.5;
@@ -264,12 +261,76 @@ $icons: '../icons/';
             &:hover {
                 cursor: pointer;
                 color: #2BAEE9;
-                border-bottom: 2px solid #2BAEE9;
+                border-bottom-color: #2BAEE9;
             }
         }
 
         .rc-menu-item-selected {
-            color: #2BAEE9;
+            background-color: #2BAEE9;
+
+            &:hover {
+                color: #fff;
+            }
+        }
+
+        .rc-menu-item.ws:before {
+            display: block;
+            content: '.';
+            color: transparent;
+            font-size: 0;
+            border-left: 2px solid #AFAFAF;
+            border-right: 2px solid #AFAFAF;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -2px;
+            bottom: -2px;
+        }
+        
+        .rc-menu-item.wp:before {
+            display: block;
+            content: '.';
+            color: transparent;
+            font-size: 0;
+            border-right: 2px solid #AFAFAF;
+            position: absolute;
+            right: 0;
+            top: -2px;
+            bottom: -2px;
+        }
+        
+        .rc-menu-item.tool {
+            border-top: none;
+        }
+        
+        .rc-menu-item.tool:before {
+            display: block;
+            content: '.';
+            color: transparent;
+            font-size: 0;
+            border-left: 2px solid #AFAFAF;
+            border-right: 2px solid #AFAFAF;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: -2px;
+        }
+        
+        .rc-menu-item.tolerance {
+            border-top: none;
+        }
+        
+        .rc-menu-item.tolerance:before {
+            display: block;
+            content: '.';
+            color: transparent;
+            font-size: 0;
+            border-right: 2px solid #AFAFAF;
+            position: absolute;
+            right: 0;
+            top: 0px;
+            bottom: -2px;
         }
     }
 
