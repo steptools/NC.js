@@ -9,39 +9,6 @@
     -ms-user-select: none;
     user-select: none;
     -o-user-select: none;
-
-    .changelog {
-        max-height: 350px;
-        width: $sidebarWidth;
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        z-index: -1;
-        display: block;
-        padding: 6px;
-        border: 2px #333 solid;
-        overflow-y: auto;
-        text-align: left;
-        background-color: rgb(248, 248, 248);
-        -moz-user-select: text;
-        -webkit-user-select: text;
-        -ms-user-select: text;
-        user-select: text;
-        -o-user-select: text;
-        -webkit-transition: -webkit-transform ease 250ms;
-        -moz-transition: -moz-transform ease 250ms;
-        -ms-transition: -ms-transform ease 250ms;
-        -o-transition: -o-transform ease 250ms;
-        transition: transform ease 250ms;
-
-        &.visible {
-            -webkit-transform: translateY(100%);
-            -moz-transform: translateY(100%);
-            -ms-transform: translateY(100%);
-            -o-transform: translateY(100%);
-            transform: translateY(100%);
-        }
-    }
 }
 
 .header-menu {
@@ -230,5 +197,38 @@ input[type=range] {
         &::-ms-fill-upper {
             background: rgba(102, 102, 102, .75);
         }
+    }
+}
+
+.changelog {
+    max-height: 350px;
+    width: $sidebarWidth;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    display: block;
+    padding: 6px;
+    border: 2px #333 solid;
+    overflow-y: auto;
+    text-align: left;
+    background-color: rgb(248, 248, 248);
+    -moz-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    -o-user-select: text;
+    -webkit-transition: -webkit-transform ease 250ms;
+    -moz-transition: -moz-transform ease 250ms;
+    -ms-transition: -ms-transform ease 250ms;
+    -o-transition: -o-transform ease 250ms;
+    transition: transform ease 250ms;
+
+    &.visible {
+        -webkit-transform: translateY(100%);
+        -moz-transform: translateY(100%);
+        -ms-transform: translateY(100%);
+        -o-transform: translateY(100%);
+        transform: translateY(100%);
     }
 }

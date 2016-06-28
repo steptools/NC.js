@@ -150,12 +150,10 @@ export default class HeaderView extends React.Component {
                 let changelog = document.getElementById("changes");
                 if(this.props.logstate === false) {
                     changelog.className = "changelog visible"
-                    //changelog.style.display = "inline-block";
                     this.props.cbLogstate(true);
                 }   
                 else {
                     changelog.className = "changelog"
-                    //changelog.style.display = "none";
                     this.props.cbLogstate(false);
                 }
             
