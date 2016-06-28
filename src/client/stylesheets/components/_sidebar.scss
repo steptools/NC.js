@@ -41,9 +41,9 @@ $icons: '../icons/';
             cursor: pointer;
 
             .textbox {
-                  vertical-align : middle;
-                  display: inline-block;
-                  width : 285px;
+                vertical-align: middle;
+                display: inline-block;
+                width: 285px;
             }
 
             .textbox-tolerance {
@@ -54,19 +54,21 @@ $icons: '../icons/';
                 //vertical-align: text-top;
             }
 
-            .icon-letter, .icon-tolerance, .icon-tool {
+            .icon-letter,
+            .icon-tolerance,
+            .icon-tool {
                 background-color: #333;
                 color: #FFF;
                 padding: 5px;
                 border-radius: 5px;
                 width: 30px;
-                height:30px;
+                height: 30px;
                 display: inline-block;
                 text-align: center;
                 margin-right: 8px;
             }
 
-            .icon-tolerance{
+            .icon-tolerance {
                 background-color: #FFF;
                 padding: 15px;
                 vertical-align: middle;
@@ -85,47 +87,59 @@ $icons: '../icons/';
             .tolerance-angularity {
                 background-image: url($icons + 'tolerance/angularity.svg');
             }
+
             .tolerance-circular-runout {
                 background-image: url($icons + 'tolerance/circular_runout.svg');
             }
+
             .tolerance-circularity {
                 background-image: url($icons + 'tolerance/circularity.svg');
             }
+
             .tolerance-concentricity {
                 background-image: url($icons + 'tolerance/concentricity.svg');
             }
+
             .tolerance-cylindricity {
                 background-image: url($icons + 'tolerance/cylindricity.svg');
             }
+
             .tolerance-flatness {
                 background-image: url($icons + 'tolerance/flatness.svg');
             }
+
             .tolerance-parallelism {
                 background-image: url($icons + 'tolerance/parallelism.svg');
             }
+
             .tolerance-perpendicularity {
                 background-image: url($icons + 'tolerance/perpendicularity.svg');
             }
+
             .tolerance-position {
                 background-image: url($icons + 'tolerance/position.svg');
             }
+
             .tolerance-profile-line {
                 background-image: url($icons + 'tolerance/profile_line.svg');
             }
+
             .tolerance-profile-surface {
                 background-image: url($icons + 'tolerance/profile_surface.svg');
             }
+
             .tolerance-straightness {
                 background-image: url($icons + 'tolerance/straightness.svg');
             }
+
             .tolerance-symmetry {
                 background-image: url($icons + 'tolerance/symmetry.svg');
             }
+
             .tolerance-total-runout {
                 background-image: url($icons + 'tolerance/total_runout.svg');
             }
         }
-
     }
 
     .m-draggable {
@@ -168,7 +182,6 @@ $icons: '../icons/';
         display: inline-block;
         width: 100%;
         padding: 4px 5px;
-
     }
 
     .m-node .node.is-active {
@@ -182,6 +195,7 @@ $icons: '../icons/';
     .running-node {
         background-color: #9BFA9B;
     }
+
     .disabled {
         background-color: #666666;
     }
@@ -246,6 +260,7 @@ $icons: '../icons/';
             &:disabled {
                 opacity: 0.5;
             }
+
             &:hover {
                 cursor: pointer;
                 color: #2BAEE9;
