@@ -31,8 +31,8 @@ $icons: '../icons/';
         user-select: none;
 
         .m-node .collapse:hover {
-            color: #2BAEE9;
-            //background-color: #F00;
+            color: #fff;
+            background-color: #2BAEE9;
         }
 
         .m-node {
@@ -191,7 +191,7 @@ $icons: '../icons/';
 
     .m-node .node span.exp-distance {
         font-size: 10px;
-        color: red;
+        //color: red;
     }
 
     .m-node .caret-right:before {
