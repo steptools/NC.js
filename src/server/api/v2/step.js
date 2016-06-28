@@ -20,7 +20,11 @@ var exeFromId = function(id) {
 			id: find.GetWorkingstepTool(id),
 			type: 'tool'
         };
-		ws.tool.name = find.GetToolPartName(ws.tool.id).replace(/_/g, ' ');
+		ws.tool.name = find.GetToolPartName(ws.tool.id);
+		if (ws.tool.name === undefined)
+			ws.tool.name = '';
+        else
+			ws.tool.name = ws.tool.name.replace(/_/g, ' ');
 		
 		return ws;
 	} else if (find.IsSelective(id)) {

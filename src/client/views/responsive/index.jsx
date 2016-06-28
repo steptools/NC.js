@@ -157,6 +157,21 @@ export default class ResponsiveView extends React.Component {
 
                 _.each(json, (tolerance) => {
                     tolerance.icon = <span className={'icon-tolerance tolerance-'+tolerance.toleranceType} />
+                    
+                    let steps = [];
+                    
+                    _.each(tolerance.workingsteps, (step) => {
+                        let newUrl = '/v2/nc/projects/'+this.props.pid + '/workplan/' + step;
+                        request
+                            .get(newUrl)
+                            .end((err, res) => {
+                                if (!err && res.ok) {
+                                    let tool = JSON.parse(res.text);
+                                    steps.push(tool);
+                                }
+                            });
+                    });
+                    tolerance.workingsteps = steps;
                 });
 
                 this.setState({'toleranceCache': json});
