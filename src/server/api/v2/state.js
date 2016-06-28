@@ -1,5 +1,5 @@
 "use strict";
-var StepNC = require('../../../../../NC.js/build/Release/StepNC');
+var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
 
 var app;
