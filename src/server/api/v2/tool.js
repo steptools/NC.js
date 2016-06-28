@@ -11,7 +11,7 @@ var _getTools = function (req, res) {
     let rtn = []
     for(let id of toolList){
         let name = find.GetToolPartName(id);
-        rtn.push({"id" : id, "name": name})
+        rtn.push({"id" : id, "name": name, "type": 'tool'})
     }
     res.status(200).send(rtn);
   }

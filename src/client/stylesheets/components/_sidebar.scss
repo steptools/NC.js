@@ -77,7 +77,8 @@ $icons: '../icons/';
             }
 
             .icon-tool {
-                background-color: #fff;
+                background-color: rgba(#fff, 0);
+                border: 2px solid #333333;
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tools/tool.svg');
@@ -310,6 +311,14 @@ $icons: '../icons/';
                 padding: 20px;
                 color: #333333;
 
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &.rc-menu-item-disabled {
+                    cursor: inherit;
+                }
+
                 &.goTo {
                     text-align: center;
                     padding: 10px 5px;
@@ -320,7 +329,6 @@ $icons: '../icons/';
 
                     &:hover {
                         color: #35B7FD;
-                        cursor: pointer;
                         border-bottom: 2px solid #35B7FD;
                     }
 
@@ -330,7 +338,6 @@ $icons: '../icons/';
                         &:hover {
                             color: #F8F8F8;
                             border-bottom: 2px solid #AFAFAF;
-                            cursor: inherit;
                         }
                     }
                 }
@@ -419,6 +426,10 @@ $icons: '../icons/';
             background-image: url($icons + 'tolerance/unknown.svg');
             background-size: cover;
             background-position: center;
+
+            &.tool {
+                background-image: url($icons + 'tools/tool.svg');
+            }
 
             &.workingstep, &.workplan, &.selective {
                 background-image: none;

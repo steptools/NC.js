@@ -11,8 +11,8 @@ export default class ToolList extends React.Component {
   }
 
   onObjectTreeNodeClick(node, self){
-      // TODO: do something when we click a tool
-    }
+      this.props.propertyCb(node);
+  }
 
   renderNode(node){
       let cName = 'node';

@@ -21,16 +21,20 @@ export default class PropertiesPane extends React.Component {
         //TODO: collect more information via GET if necessary
     }
 
-    selectWS(event, ws) {
-        if (event.key='goto') {
-            let url = '/v2/nc/projects/' + this.props.pid + '/state/ws/' + ws.id;
+    selectWS(event, entity) {
+        if (event.key === 'goto') {
+            let url = '/v2/nc/projects/' + this.props.pid + '/state/ws/' + entity.id;
             console.log(event);
             request
                 .get(url)
                 .end(function (err, res) {
                     //
                 });
-        } 
+        }
+        else if (event.key === 'tool') {
+            // open properties page for associated tool
+            this.props.propertiesCb(entity.tool);
+        }
         else {
             // some other menu item clicked, no need to do anything
         }
@@ -80,11 +84,13 @@ export default class PropertiesPane extends React.Component {
                 );
                 break;
             case 'workingstep':
-                let selectStep, goToButton;
+                let selectStep, goToButton, toolInfo;
                 
                 goToButton = (<MenuItem
                     disabled={!(entity.enabled && this.props.ws !== entity.id)}
                     className='property goTo'>Go to Workingstep</MenuItem>);
+                
+                toolInfo = (<MenuItem key='tool' className='property toolInfo'>Tool: {entity.tool.name} </MenuItem>);
                 
                 if (this.props.ws === entity.id) {
                     selectStep = <MenuItem disabled className='property'>Status: Active</MenuItem>;
@@ -98,6 +104,7 @@ export default class PropertiesPane extends React.Component {
                 items = (
                     <Menu className='properties' onSelect={(event) => {this.selectWS(event, entity);}}>
                         {selectStep}
+                        {toolInfo}
                         {goToButton}
                     </Menu>
                 );
