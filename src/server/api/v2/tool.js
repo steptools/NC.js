@@ -1,17 +1,45 @@
 "use strict";
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
+var _ = require('lodash');
 var find = file.find;
+
+var _getWorkstepsForTool = function(exe, toolId) {
+    if (find.IsWorkingstep(exe)) {
+        if (find.GetWorkingstepTool(exe) === toolId) {
+            return [exe];
+        }
+        else {
+            return [];
+        }
+    }
+    else if (find.IsWorkplan(exe) || find.IsSelective(exe)) {
+        let rtn = [];
+        let children = find.GetNestedExecutableAll(exe);
+        if (children !== undefined) {
+            _.each(children, (childId) => {
+                rtn = rtn.concat(_getWorkstepsForTool(childId, toolId));
+            });
+        }
+        return rtn;
+    }
+    else {
+        return [];
+    }
+}
 
 var _getTools = function (req, res) {
   if (req.params.ncId) {
     let ncId = req.params.ncId;
     find.OpenProject(file.getPath(ncId));
     let toolList = find.GetToolAll();
-    let rtn = []
+    let rtn = [];
     for(let id of toolList){
-        let name = find.GetToolPartName(id);
-        rtn.push({"id" : id, "name": name, "type": 'tool'})
+        let name = find.GetToolPartName(id).replace(/_/g, ' ');
+
+        let workingsteps = _getWorkstepsForTool(find.GetMainWorkplan(), id);
+
+        rtn.push({"id" : id, "name": name, "type": 'tool', "workingsteps": workingsteps});
     }
     res.status(200).send(rtn);
   }

@@ -14,7 +14,9 @@ let scrolled=false;
 export default class SidebarView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { selectedEntity : null };
+        this.state = {
+            selectedEntity : null,
+        };
 
         let disabledView = (name) => {
           return (() => {
@@ -43,6 +45,20 @@ export default class SidebarView extends React.Component {
     }
     
     openProperties(node) {
+        
+        switch (node.type) {
+            case "workingstep":
+                _.each(this.props.toolCache, (tool) => {
+                    if (tool.id === node.tool.id) {
+                        node.tool = tool;
+                        return false;   // break since we found it
+                    }
+                });
+                break;
+            default:
+                // nothing
+        }
+        
         this.setState({selectedEntity: node});
     }
     
@@ -56,6 +72,7 @@ export default class SidebarView extends React.Component {
               ws={this.props.ws}
               clearEntity={(event) => {this.setState({selectedEntity: null});}}
               propertiesCb = {this.openProperties}
+              tools = {this.props.toolCache}
           />;
         
       const modeMenu = (
@@ -115,6 +132,9 @@ export default class SidebarView extends React.Component {
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
                           propertyCb = {this.openProperties}
+                          toolCb = {(toolList) => {this.setState({tools: toolList});}}
+                          tools = {this.props.toolCache}
+                          curtool = {this.props.curtool}
                       />
                       : null}
                </div>;

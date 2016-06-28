@@ -33,7 +33,9 @@ export default class ResponsiveView extends React.Component {
             resize: false,
             changeSpeed: false,
             playbackSpeed: 50,
-            logtext : "default"
+            logtext : "default",
+            toolCache : [],
+            curtool : ''
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -95,6 +97,54 @@ export default class ResponsiveView extends React.Component {
         requestCB = requestCB.bind(this);
         
         request.get(url).end(requestCB);
+        
+        // get the cache of tools
+        url = "/v2/nc/projects/"+this.props.pid+"/tools/";
+        let resCb = (err,res) => { //Callback function for response
+            if(!err && res.ok){
+                // Node preprocessing
+                let json = JSON.parse(res.text);
+
+                _.each(json, (tool)=> {
+                    tool.icon = <span className='icon-tool' />
+                    
+                    // collect workingstep info
+                    let steps = [];
+                    
+                    _.each(tool.workingsteps, (step) => {
+                        let newUrl = '/v2/nc/projects/'+this.props.pid + '/workplan/' + step;
+                        request
+                            .get(newUrl)
+                            .end((err, res) => {
+                                if (!err && res.ok) {
+                                    let tool = JSON.parse(res.text);
+                                    steps.push(tool);
+                                }
+                            });
+                    });
+                    tool.workingsteps = steps;
+                });
+
+                this.setState({'toolCache': json});
+            }
+            else {
+                console.log(err);
+            }
+        };
+        
+        request
+            .get(url)
+            .end(resCb);
+        
+        url = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.state.ws;
+        request
+            .get(url)
+            .end((err,res) => {
+                if(!err && res.ok){
+                  this.setState({"curtool":res.text});
+                }
+            });
+        
     }
 
     componentWillUnmount() {
@@ -120,6 +170,8 @@ export default class ResponsiveView extends React.Component {
                 if (response.text) {
                     let workingstep = JSON.parse(response.text);
                     this.setState({"ws": workingstep.id, "wstext":workingstep.name.trim()});
+
+                    this.setState({'curtool': workingstep.tool.id});
                 }
                 else
                     this.setState({"ws":ws,"wstxt":"Operation Unknown"});
@@ -245,6 +297,8 @@ export default class ResponsiveView extends React.Component {
                     (newAltMenu) => {this.setState({ svaltmenu: newAltMenu })}
                 }
                 pid={this.props.pid}
+                toolCache={this.state.toolCache}
+                curtool={this.state.curtool}
             />;
         }
         else {

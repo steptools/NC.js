@@ -1,6 +1,7 @@
 import React from 'react';
 import Menu from 'rc-menu';
 import request from 'superagent';
+import _ from 'lodash';
 
 let MenuItem = Menu.Item;
 
@@ -8,6 +9,8 @@ export default class PropertiesPane extends React.Component {
     constructor(props){
         //Create the constructor for the component
         super(props);
+        
+        this.state = {entity: null};
         
         this.selectWS = this.selectWS.bind(this);
         this.renderNode = this.renderNode.bind(this);
@@ -17,14 +20,9 @@ export default class PropertiesPane extends React.Component {
       
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        //TODO: collect more information via GET if necessary
-    }
-
     selectWS(event, entity) {
         if (event.key === 'goto') {
             let url = '/v2/nc/projects/' + this.props.pid + '/state/ws/' + entity.id;
-            console.log(event);
             request
                 .get(url)
                 .end(function (err, res) {
@@ -86,7 +84,7 @@ export default class PropertiesPane extends React.Component {
             case 'workingstep':
                 let selectStep, goToButton, toolInfo;
                 
-                goToButton = (<MenuItem
+                goToButton = (<MenuItem key='goto'
                     disabled={!(entity.enabled && this.props.ws !== entity.id)}
                     className='property goTo'>Go to Workingstep</MenuItem>);
                 
@@ -123,7 +121,17 @@ export default class PropertiesPane extends React.Component {
                 );
                 break;
             case 'tool':
-                // no support yet
+                items = (
+                    <Menu className='properties'>
+                        <MenuItem key='workingsteps' className='property children workingsteps'>
+                            <div className='title'>Used in Workingsteps:</div>
+                            <div className='list'>
+                                {entity.workingsteps.map(this.renderNode)}
+                            </div>
+                        </MenuItem>
+                    </Menu>
+                );
+                break;
             default:
                 items = (
                     <Menu className='properties'>

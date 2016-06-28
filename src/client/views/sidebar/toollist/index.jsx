@@ -5,7 +5,6 @@ export default class ToolList extends React.Component {
   constructor(props){
     //Create the constructor for the component
     super(props);
-    this.state = {tools: [],"curtool":""};
 
     this.renderNode = this.renderNode.bind(this);
   }
@@ -16,7 +15,7 @@ export default class ToolList extends React.Component {
 
   renderNode(node){
       let cName = 'node';
-      if(node.id == this.state.curtool) cName= 'node running-node';
+      if(node.id == this.props.curtool) cName= 'node running-node';
       return <ol
           id={node.id}
           type = {node.name}
@@ -30,54 +29,15 @@ export default class ToolList extends React.Component {
       </ol>;
   }
 
-  componentDidMount(){
-      let url = "/v2/nc/projects/"+this.props.pid+"/tools/";
-      let resCb = function(err,res){ //Callback function for response
-            if(!err && res.ok){
-                // Node preprocessing
-                let json = JSON.parse(res.text);
+  componentWillMount(){
+      
 
-                _.each(json, (tool)=> {
-                    tool.icon = <span className='icon-tool' />
-                })
-
-                this.setState({tools: json});
-            }
-      }
-      resCb = resCb.bind(this); //Needs to bind this in order to have correct this
-      request
-        .get(url)
-        .end(resCb);
-      let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
-      let resCb2 = function(err,res){
-        if(!err && res.ok){
-          this.setState({"curtool":res.text});
-        }
-      }
-      resCb2 = resCb2.bind(this);
-      request
-        .get(url2)
-        .end(resCb2);
-
-  }
-
-  componentWillReceiveProps(){
-    let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
-      let resCb2 = function(err,res){
-        if(!err && res.ok){
-          this.setState({"curtool":res.text});
-        }
-      }
-      resCb2 = resCb2.bind(this);
-      request
-        .get(url2)
-        .end(resCb2);
   }
 
   render(){
     return (
       <div className='m-tree'>
-        {this.state.tools.map((tool, i) => {
+        {this.props.tools.map((tool, i) => {
           return <div className='m-node' key={i}>
             {this.renderNode(tool)}
           </div>;
