@@ -57,12 +57,17 @@ export default class SidebarView extends React.Component {
       );
       if((!scrolled) && (this.props.ws > -1))
       {
-        if(document.getElementById(this.props.ws) != null)
+        let currElem=$('#'+this.props.ws);
+        if((currElem != null) && (typeof currElem != 'undefined'))
         {
-          $('.m-tree').animate({
-          scrollTop: $("#"+this.props.ws).offset().top-$(".m-tree").offset().top
-          }, 1000);
-          scrolled=true;
+          let prevElem=currElem.parent().prev()[0];
+          if(typeof prevElem != 'undefined')//not the first working step
+          {
+            $('.m-tree').animate({
+              scrollTop: currElem.offset().top-$(".m-tree").offset().top
+              }, 1000);
+          }
+          scrolled=true;//dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
         }
       }
         return <div className="sidebar">
