@@ -17,7 +17,9 @@
         right: 0;
         bottom: 0;
         z-index: -1;
+        display: block;
         padding: 6px;
+        border: 2px #333 solid;
         overflow-y: auto;
         text-align: left;
         background-color: rgb(248, 248, 248);
@@ -27,18 +29,21 @@
         user-select: text;
         -o-user-select: text;
         -webkit-transition: -webkit-transform ease 250ms;
+        /*
         -moz-transition: -moz-transform ease 250ms;
         -ms-transition: -ms-transform ease 250ms;
         -o-transition: -o-transform ease 250ms;
         transition: transform ease 250ms;
+        */
 
         &.visible {
-            display: block;
             -webkit-transform: translateY(100%);
-            -moz-transform: translateY(100%);
-            -ms-transform: translateY(100%);
-            -o-transform: translateY(100%);
-            transform: translateY(100%);
+            /*
+            -moz-transform: translateY(calc(100% + 1px));
+            -ms-transform: translateY(calc(100% + 1px));
+            -o-transform: translateY(calc(100% + 1px));
+            transform: translateY(calc(100% + 1px));
+            */
         }
     }
 }
