@@ -109,3 +109,15 @@ Setting up a development environment
   ```
   > npm start
   ```
+  ------------------------------------------------------------------------------
+  12. Webpacking and Starting 
+
+  ```
+  > npm run make
+  ```
+
+  or, to minimize the file sizes
+
+  ```
+  > npm run make-release
+  ```

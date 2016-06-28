@@ -3,6 +3,7 @@ Version 1.2.0
 Features:
 
 - Updated references to reflect new names: STEPNode and NC.js
+- Changed internal build structure
 
 Bugfixes:
 

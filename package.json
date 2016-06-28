@@ -8,7 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server/api_server.js",
     "start-debug": "node-debug -p 8085 src/server/api_server.js",
-    "start-dev": "node src/server/api_server.js -e development"
+    "start-dev": "node src/server/api_server.js -e development",
+    "make" : "webpack --progress && node src/server/api_server.js",
+    "make-release" : "webpack --minimize --progress && node src/server/api_server.js"
   },
   "author": "G. Hemingway",
   "license": "MIT",
@@ -71,6 +73,8 @@
     "node-markdown" : "^0.1.1",
     "sass-loader": "^4.0.0",
     "style-loader": "0.13.1",
+    "uglify-js" : "^2.6.4",
+    "uglify-loader": "^1.3.0",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.1",
     "webpack-config": "^5.1.0",

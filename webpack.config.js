@@ -1,7 +1,7 @@
 var path                =      require("path"),
     webpack             =   require("webpack"),
     ExtractTextPlugin   = require("extract-text-webpack-plugin");
-
+    minimize            = process.argv[2] === "--minimize";
 
 module.exports = {
     cache: true,
@@ -66,5 +66,37 @@ module.exports = {
             "THREE":    "three"
         })
         ,new ExtractTextPlugin("[name].css")
-    ]
+    ],
+    
 };
+if(minimize){
+        module.exports.plugins.push(new webpack.DefinePlugin({
+                'process.env': {
+            
+                'NODE_ENV': JSON.stringify('production'),
+            }
+            }));
+        module.exports.plugins.push(new webpack.optimize.DedupePlugin());
+        module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin({
+                sourceMap: false,
+                compress: {
+                    sequences: true,
+                    dead_code: true,
+                    conditionals: true,
+                    booleans: true,
+                    unused: true,
+                    if_return: true,
+                    warnings: false,
+                    join_vars: true,
+                    drop_console: true
+                },
+                mangle: {
+                    except: ['$super', '$', 'exports', 'require']
+                },
+                output: {
+                    comments: false
+                } 
+            }));
+
+    }
+
