@@ -149,7 +149,8 @@ $icons: '../icons/';
     .m-node .inner {
         position: relative;
         cursor: pointer;
-        padding-left: 10px;
+        padding-left: 30px;
+        margin-bottom: 1px;
     }
 
     .m-node .collapse {
@@ -157,6 +158,10 @@ $icons: '../icons/';
         left: 0;
         cursor: pointer;
         display: inherit;
+        height: 100%;
+        width: 30px;
+        background-color: #fff;
+        text-align: center;
     }
 
     .m-node .node {
