@@ -37,29 +37,29 @@ export default class PropertiesPane extends React.Component {
     }
 
     renderNode(node){
-      var cName = 'node';
-      //node is a generic white node
-      //node running-node is a node that is the current workingstep
-      //node disabled is a node that is part of a selective but isn't
-      //currently enabled
-      if(node.id == this.props.ws) {
-        cName= 'node running-node';
-      }
-      else{
-        if(node.enabled === false)
-          cName = 'node disabled';
-      }
-        
-      let icon = <span className={'icon ' + node.type} />;
-      return (<div key={node.id}>
-              <span
-                  id={node.id}
-                  className={cName}
-                  onClick={(event) => {this.props.propertiesCb(node);}}
-              >
-                  {icon}
-                  <span className='textbox'>{node.name}</span>
-              </span>
+        var cName = 'node';
+        //node is a generic white node
+        //node running-node is a node that is the current workingstep
+        //node disabled is a node that is part of a selective but isn't
+        //currently enabled
+        if(node.id == this.props.ws) {
+            cName= 'node running-node';
+        }
+        else{
+            if(node.enabled === false)
+            cName = 'node disabled';
+        }
+
+        let icon = <span className={'icon ' + node.type} />;
+        return (<div key={node.id}>
+            <span
+                id={node.id}
+                className={cName}
+                onClick={(event) => {this.props.propertiesCb(node);}}
+            >
+                {icon}
+                <span className='textbox'>{node.name}</span>
+            </span>
           </div>);
     }
     
