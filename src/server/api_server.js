@@ -111,7 +111,7 @@ APIServer.prototype._setSite = function() {
     // Serve the root client framework - customized as needed
     var _serveRoot = function (req, res) {
         var appConfig = {
-            title: 'CAD.js',
+            title: 'NC.js',
             source: '/js/main.js',
             services: services,
             config: self.config.client
@@ -130,7 +130,7 @@ APIServer.prototype.run = function() {
     this.server.listen(app.port, function () {
         self.logger.info('CAD.js API Server listening on: ' + app.port);
     });
-    
+
 
     process.openStdin().addListener("data", function(inputData) {
         if((self.server != null) && (self.server != 'undefined'))
