@@ -272,31 +272,26 @@ $icons: '../icons/';
                 color: #fff;
             }
         }
-
-        .rc-menu-item.ws:before {
+        
+        .rc-menu-item:before {
             display: block;
             content: '.';
             color: transparent;
             font-size: 0;
-            border-left: 2px solid #AFAFAF;
-            border-right: 2px solid #AFAFAF;
             position: absolute;
             left: 0;
             right: 0;
             top: -2px;
             bottom: -2px;
         }
+
+        .rc-menu-item.ws:before {
+            border-left: 2px solid #AFAFAF;
+            border-right: 2px solid #AFAFAF;    
+        }
         
         .rc-menu-item.wp:before {
-            display: block;
-            content: '.';
-            color: transparent;
-            font-size: 0;
             border-right: 2px solid #AFAFAF;
-            position: absolute;
-            right: 0;
-            top: -2px;
-            bottom: -2px;
         }
         
         .rc-menu-item.tool {
@@ -304,17 +299,8 @@ $icons: '../icons/';
         }
         
         .rc-menu-item.tool:before {
-            display: block;
-            content: '.';
-            color: transparent;
-            font-size: 0;
             border-left: 2px solid #AFAFAF;
             border-right: 2px solid #AFAFAF;
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: -2px;
         }
         
         .rc-menu-item.tolerance {
@@ -322,15 +308,7 @@ $icons: '../icons/';
         }
         
         .rc-menu-item.tolerance:before {
-            display: block;
-            content: '.';
-            color: transparent;
-            font-size: 0;
             border-right: 2px solid #AFAFAF;
-            position: absolute;
-            right: 0;
-            top: 0px;
-            bottom: -2px;
         }
     }
 
