@@ -2,7 +2,7 @@ $icons: '../icons/';
 
 .sidebar {
     width: $sidebarWidth;
-    background-color: #ddd;
+    background-color: #DDD;
     position: relative;
     z-index: 5;
 
@@ -31,7 +31,8 @@ $icons: '../icons/';
         user-select: none;
 
         .m-node .collapse:hover {
-            background-color: #f00;
+            color: #2BAEE9;
+            //background-color: #F00;
         }
 
         .m-node {
@@ -55,7 +56,7 @@ $icons: '../icons/';
 
             .icon-letter, .icon-tolerance, .icon-tool {
                 background-color: #333;
-                color: #fff;
+                color: #FFF;
                 padding: 5px;
                 border-radius: 5px;
                 width: 30px;
@@ -66,7 +67,7 @@ $icons: '../icons/';
             }
 
             .icon-tolerance{
-                background-color: #fff;
+                background-color: #FFF;
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tolerance/unknown.svg');
@@ -74,7 +75,7 @@ $icons: '../icons/';
             }
 
             .icon-tool {
-                background-color: #fff;
+                background-color: #FFF;
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tools/tool.svg');
@@ -142,7 +143,7 @@ $icons: '../icons/';
     }
 
     .m-node.placeholder {
-        border: 1px dashed #ccc;
+        border: 1px dashed #CCC;
     }
 
     .m-node .inner {
@@ -166,11 +167,11 @@ $icons: '../icons/';
     }
 
     .m-node .node.is-active {
-        background-color: #0000ff;
+        background-color: #0000FF;
     }
 
     .m-node .node.is-hidden {
-        color: #1b6d85;
+        color: #1B6D85;
     }
 
     .running-node {
@@ -207,7 +208,7 @@ $icons: '../icons/';
         top: 4px;
         width: 7px;
         height: 30px;
-        background-color: #fff;
+        background-color: #FFF;
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
     }
@@ -248,12 +249,9 @@ $icons: '../icons/';
         }
 
         .rc-menu-item-selected {
-            color: #333333;
-            &:hover {
-                color: #666666;
-                border-bottom: 2px solid #666666;
-            }
+            color: #2BAEE9;
         }
+        /*
         .rc-menu-item-selected.ws {
             background-color: #97A1FD;
         }
@@ -266,6 +264,7 @@ $icons: '../icons/';
         .rc-menu-item-selected.tolerance {
             background-color: #2AFD8C;
         }
+        */
 
     }
 
