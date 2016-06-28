@@ -44,7 +44,7 @@
 .menu-item-button {
     .button-icon {
         font-size: 32px;
-        opacity: 0.5;
+        color: rgba(102, 102, 102, .5);
         padding-bottom: 11px;
         padding-top: 15px;
         display: block;
@@ -54,6 +54,7 @@
         cursor: pointer;
 
         .button-icon {
+            color: #2baee9;
             opacity: 1;
         }
     }
