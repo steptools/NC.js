@@ -136,12 +136,14 @@ export default class HeaderView extends React.Component {
                 break;
             case "showlog":
                 let changelog = document.getElementById("changes");
-                if(this.props.logstate === false){
-                    changelog.style.display = "inline-block";
+                if(this.props.logstate === false) {
+                    changelog.className = "changelog visible"
+                    //changelog.style.display = "inline-block";
                     this.props.cbLogstate(true);
                 }   
                 else {
-                    changelog.style.display = "none";
+                    changelog.className = "changelog"
+                    //changelog.style.display = "none";
                     this.props.cbLogstate(false);
                 }
             
@@ -150,15 +152,6 @@ export default class HeaderView extends React.Component {
 
 
  render() {
-        let changelog = document.getElementById("changes");
-        let chlog = new XMLHttpRequest();
-        chlog.open("GET","/log");
-        chlog.onreadystatechange = function(){
-            if (chlog.readyState == 4 && chlog.status == 200) {
-                document.getElementById("changes").innerHTML = md(chlog.responseText.toString());
-            }
-        }
-        chlog.send();
         let ppbtntxt;
         let ppbutton = this.props.ppbutton;
         let showlog = this.props.logstate;
