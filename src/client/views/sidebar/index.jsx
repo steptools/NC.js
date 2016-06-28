@@ -58,7 +58,7 @@ export default class SidebarView extends React.Component {
       if((!scrolled) && (this.props.ws > -1))
       {
         let currElem=$('#'+this.props.ws);
-        if((currElem != null) && (currElem != 'undefined'))
+        if((currElem != null) && (typeof currElem != 'undefined'))
         {
           let prevElem=currElem.parent().prev()[0];
           if(typeof prevElem != 'undefined')//not the first working step
