@@ -82,16 +82,6 @@ export default class ResponsiveView extends React.Component {
         requestCB = requestCB.bind(this);
         
         request.get(url).end(requestCB);
-        
-        let changelog = document.getElementById("changes");
-        let chlog = new XMLHttpRequest();
-        chlog.open("GET","/log");
-        chlog.onreadystatechange = function(){
-            if (chlog.readyState == 4 && chlog.status == 200) {
-                document.getElementById("changes").innerHTML = md(chlog.responseText.toString());
-            }
-        }
-        chlog.send();
     }
 
     componentWillUnmount() {
@@ -182,7 +172,6 @@ export default class ResponsiveView extends React.Component {
     }
 
 	changeSpeed(event) {
-
         let speed = event.target.value;
 
         if (!speed) {

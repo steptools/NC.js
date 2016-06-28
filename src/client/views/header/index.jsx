@@ -113,6 +113,18 @@ export default class HeaderView extends React.Component {
         this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
         this.updateSpeed = this.updateSpeed.bind(this);
     }
+    
+    componentDidMount() {
+        let changelog = document.getElementById("changes");
+        let chlog = new XMLHttpRequest();
+        chlog.open("GET","/log");
+        chlog.onreadystatechange = function(){
+            if (chlog.readyState == 4 && chlog.status == 200) {
+                document.getElementById("changes").innerHTML = md(chlog.responseText.toString());
+            }
+        }
+        chlog.send();
+    }
 
     updateSpeed(info) {
         this.props.actionManager.emit("simulate-setspeed", info);

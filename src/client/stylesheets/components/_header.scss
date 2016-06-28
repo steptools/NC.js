@@ -29,21 +29,17 @@
         user-select: text;
         -o-user-select: text;
         -webkit-transition: -webkit-transform ease 250ms;
-        /*
         -moz-transition: -moz-transform ease 250ms;
         -ms-transition: -ms-transform ease 250ms;
         -o-transition: -o-transform ease 250ms;
         transition: transform ease 250ms;
-        */
 
         &.visible {
             -webkit-transform: translateY(100%);
-            /*
-            -moz-transform: translateY(calc(100% + 1px));
-            -ms-transform: translateY(calc(100% + 1px));
-            -o-transform: translateY(calc(100% + 1px));
-            transform: translateY(calc(100% + 1px));
-            */
+            -moz-transform: translateY(100%);
+            -ms-transform: translateY(100%);
+            -o-transform: translateY(100%);
+            transform: translateY(100%);
         }
     }
 }
