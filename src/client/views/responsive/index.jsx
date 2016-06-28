@@ -35,7 +35,8 @@ export default class ResponsiveView extends React.Component {
             playbackSpeed: 50,
             logtext : "default",
             toolCache : [],
-            curtool : ''
+            curtool : '',
+            toleranceCache: []
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -145,6 +146,26 @@ export default class ResponsiveView extends React.Component {
                 }
             });
         
+        
+        // now the same for tolerances
+        
+        url = "/v2/nc/projects/"+this.props.pid+"/tolerances/";
+        let toleranceCb = (err,res) => { //Callback function for response
+            if(!err && res.ok){
+                // Node preprocessing
+                let json = JSON.parse(res.text);
+
+                _.each(json, (tolerance) => {
+                    tolerance.icon = <span className={'icon-tolerance tolerance-'+tolerance.toleranceType} />
+                });
+
+                this.setState({'toleranceCache': json});
+            }
+        };
+        
+        request
+          .get(url)
+          .end(toleranceCb);
     }
 
     componentWillUnmount() {
@@ -299,6 +320,7 @@ export default class ResponsiveView extends React.Component {
                 pid={this.props.pid}
                 toolCache={this.state.toolCache}
                 curtool={this.state.curtool}
+                toleranceCache={this.state.toleranceCache}
             />;
         }
         else {

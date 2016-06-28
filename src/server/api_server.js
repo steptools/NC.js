@@ -89,7 +89,11 @@ APIServer.prototype._setRoutes = function(cb) {
             require('./api/v2/state')(self, function () {
                 require('./api/v2/tool')(self, function (){
                     require('./api/v2/geometry')(self, function (){
-                        require('./api/v2/changelog')(self, function(){if(cb)cb();});
+                        require('./api/v2/changelog')(self, function() {
+                            require('./api/v2/tolerances')(self, function () {
+                                if (cb)cb();
+                            });
+                        });
                     });
                 });
             });

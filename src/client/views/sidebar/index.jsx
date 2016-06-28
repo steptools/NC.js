@@ -128,6 +128,7 @@ export default class SidebarView extends React.Component {
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
                           propertyCb = {this.openProperties}
+                          toleranceCache = {this.props.toleranceCache}
                       />
                       : null}
                   {this.props.mode == 'tools' ?

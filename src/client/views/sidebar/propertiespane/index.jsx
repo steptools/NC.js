@@ -73,11 +73,17 @@ export default class PropertiesPane extends React.Component {
 
         switch (entity.type) {
             case 'tolerance':
-                // TODO: add more tolerance properties
+                console.log(entity.workingsteps);
                 items = (
                     <Menu className='properties'>
                         <MenuItem disabled className='property'>{entity.toleranceType}</MenuItem>
-                        <MenuItem disabled className='property'>Value: {entity.value}</MenuItem>
+                        <MenuItem disabled className='property'>Value: {entity.value} {entity.unit}</MenuItem>
+                        <MenuItem key='workingsteps' className='property children workingsteps'>
+                            <div className='title'>Used in Workingsteps:</div>
+                            <div className='list'>
+                                {entity.workingsteps.map(this.renderNode)}
+                            </div>
+                        </MenuItem>
                     </Menu>
                 );
                 break;
