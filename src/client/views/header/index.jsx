@@ -140,7 +140,7 @@ export default class HeaderView extends React.Component {
                     changelog.style.display = "inline-block";
                     this.props.cbLogstate(true);
                 }   
-                else{
+                else {
                     changelog.style.display = "none";
                     this.props.cbLogstate(false);
                 }
