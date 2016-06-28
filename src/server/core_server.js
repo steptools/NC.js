@@ -8,7 +8,7 @@ var http        = require('http'),
     winston     = require('winston'),
     configurator= require('./configurator');
 
-
+    fileobj          = require('v2/file.js')
 /*****************************************************************************************/
 
 function CoreServer() {
@@ -19,12 +19,19 @@ function CoreServer() {
         .option('-c, --config [file]', 'Configuration File [./config/config.json]', './config/config.json')
         .option('-e, --environment [env]', 'Environment to use [development]', 'development')
         .option('-t, --tool [tool-file]', 'Machine tool file to use [""]', '')
+        .option('-f, --filepath [stp-filepath]', 'Step NC filepath to use [""]', '')
         .parse(process.argv);
     this.config = configurator(opts.config, opts.environment);
     this.port = opts.port || this.config.port || 8080;
 
     // set up machine tool option
     this.machinetool = opts.tool;
+
+    // set up filepath option
+    this.project = opts.filepath;
+    //console.log(this.project);
+    this.nc = new fileobj.NC();
+    console.log(this.nc);
 
     // Establish core
     this.models = {};
