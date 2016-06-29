@@ -20,7 +20,7 @@ function CoreServer() {
         .option('-c, --config [file]', 'Configuration File [./config/config.json]', './config/config.json')
         .option('-e, --environment [env]', 'Environment to use [development]', 'development')
         .option('-t, --tool [tool-file]', 'Machine tool file to use [""]', '')
-        .option('-f, --filepath [stp-filepath]', 'Step NC filepath to use [""]', '')
+        .option('-f, --file [filepath]', 'Step NC filepath to use [""]', '')
         .parse(process.argv);
     this.config = configurator(opts.config, opts.environment);
     this.port = opts.port || this.config.port || 8080;
