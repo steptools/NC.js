@@ -73,16 +73,16 @@ export default class SidebarView extends React.Component {
         return <div className="sidebar">
                   {modeMenu}
                   {this.props.mode == 'ws' ?
-                      <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      <WorkingstepList cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
                       : null}
                   {this.props.mode == 'tree' ?
-                      <WorkplanList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      <WorkplanList cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
                       : null}
                   {this.props.mode == 'tolerance' ?
-                      <ToleranceList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}  />
+                      <ToleranceList cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}  />
                       : null}
                   {this.props.mode == 'tools' ?
-                      <ToolList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      <ToolList cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
                       : null}
                </div>;
     }
@@ -91,4 +91,4 @@ export default class SidebarView extends React.Component {
 SidebarView.propTypes = {cadManager: React.PropTypes.instanceOf(cadManager).isRequired, mode : React.PropTypes.string.isRequired,
                           ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired,
                           cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, cbWS: React.PropTypes.func.isRequired,
-                          cbAltMenu: React.PropTypes.func.isRequired, pid: React.PropTypes.string.isRequired};
+                          cbAltMenu: React.PropTypes.func.isRequired};

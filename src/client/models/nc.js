@@ -282,7 +282,7 @@ export default class NC extends THREE.EventDispatcher {
                     this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
                     // Push the annotation for later completion
                     this._loader._annotations[name] = annotation;
-                    var url = "/v2/nc/projects/";
+                    var url = "/v3/nc/";
                     url = url + this.project;
                     this._loader.addRequest({
                         path: name,
@@ -317,7 +317,7 @@ export default class NC extends THREE.EventDispatcher {
                     let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);
                     this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
                     this._loader._shells[geomData.shell]=shell;
-                    var url = "/v2/nc/projects/";
+                    var url = "/v3/nc/";
                     url = url + this.project;
                     this._loader.addRequest({
                         path: name,

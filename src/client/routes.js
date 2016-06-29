@@ -13,7 +13,7 @@ const queryString =         require('query-string');
 module.exports = Backbone.Router.extend({
     routes: {
         '':                             '_landing',
-        'stepnc/:projectid':            '_stepnc',
+        'stepnc/':                      '_stepnc',
         ':modelID':                     '_model',
         '*path':                        '_default',
     },
@@ -44,51 +44,25 @@ module.exports = Backbone.Router.extend({
         });
     },
 
-    _stepnc: function(pid){
+    _stepnc: function(){
         let self = this;
         
-        let url = "/v2/nc/projects/";
-        
-        let requestCB = function(error, response) {
-            if (!error && response.ok) {
-                let projectList = JSON.parse(response.text);
-                    
-                    if (projectList[pid] !== undefined) {
-                        // project exists, render view
-                        ReactDOM.render(
-                        <div style={{ height:'100%'}}>
-                            <ResponsiveView
-                                app = {self.app }
-                                pid = {pid}
-                                />
-                        </div>
-                        , document.getElementById('primary-view'), function () {
-                            // Dispatch setModel to the CADManager
-                        });
-                         
-                        pid = 'projects/' + pid;
-                        self.app.cadManager.dispatchEvent({
-                            type: 'setModel',
-                            path: pid + '/state/key',
-                            baseURL: self.app.services.api_endpoint + self.app.services.version,
-                            modelType: 'nc'
-                        });
-                        
-                    }
-                    else {
-                        // display an error message
-                        ReactDOM.render(
-                            <div style={{width:'100%'}}>
-                                <h1>Error 404: project '{pid}' not found.</h1>
-                            </div>
-                        , document.getElementById('primary-view'), function() {});            
-                    }
-            }
-        };
-        
-        requestCB = requestCB.bind(this);
-        
-        request.get(url).end(requestCB);
+        ReactDOM.render(
+            <div style={{ height:'100%'}}>
+                <ResponsiveView
+                    app = {self.app}
+                    />
+            </div>
+            , document.getElementById('primary-view'), function () {
+                // Dispatch setModel to the CADManager
+        });
+
+        self.app.cadManager.dispatchEvent({
+            type: 'setModel',
+            path: 'state/key',
+            baseURL: self.app.services.api_endpoint + self.app.services.version,
+            modelType: 'nc'
+        });
 
     },
 

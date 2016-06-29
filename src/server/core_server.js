@@ -8,7 +8,7 @@ var http        = require('http'),
     winston     = require('winston'),
     configurator= require('./configurator'),
 
-    fileobj     = require('./api/v2/file.js');
+    file     = require('./api/v3/file.js');
 /*****************************************************************************************/
 var app;
 //console.log(fileobj);
@@ -30,11 +30,7 @@ function CoreServer() {
 
     // set up filepath option
     this.project = opts.filepath;
-    //console.log("THIS IS MY PROJECT" + this.project);
-    this.nc = fileobj.NC(this);
-    //console.log(fileobj);
-    //console.log(this);
-    //console.log(this.nc);
+    file.init(opts.filepath, opts.tool);
 
     // Establish core
     this.models = {};

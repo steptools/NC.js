@@ -1,11 +1,14 @@
 "use strict";
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
+var find = file.find;
 
 var app;
 var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
+let path = 1;//find.GetProjectName();
+console.log("PATHHH " + path);
 
 var update = (val) => {
   app.ioServer.emit("nc:state", val);
@@ -16,31 +19,26 @@ var _updateSpeed = (speed) => {
 };
 
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
-var _getDelta = function(ncId, ms, key, cb) {
+var _getDelta = function(ms, key, cb) {
   var response = "";
-  var holder;
   if (key) {
-    holder = JSON.parse(ms.GetKeystateJSON()); 
-    holder.project = ncId;
-    response = JSON.stringify(holder);
+    response = ms.GetKeystateJSON()
   }
   else {
-    holder = JSON.parse(ms.GetDeltaJSON()); 
-    holder.project = ncId;
-    response = JSON.stringify(holder);
+    response = ms.GetDeltaJSON()
   }
   //app.logger.debug("got " + response);
   cb(response);
 };
 
-var _getNext = function(ncId, ms, cb) {
+var _getNext = function(ms, cb) {
   ms.NextWS();
   //assume switch was successful
   app.logger.debug("Switched!");
   cb();
 };
 
-var _getPrev = function(ncId, ms, cb) {
+var _getPrev = function(ms, cb) {
   //ms.PrevWS();
   //assume switch was successful
   app.logger.debug("Switched!");
@@ -55,18 +53,18 @@ var _getToWS = function(wsId, ms, cb) {
 };
 
 
-var _loop = function(ncId, ms, key) {
-  if (loopStates[ncId] === true) {
-    //app.logger.debug("Loop step " + ncId);
+var _loop = function(ms, key) {
+  if (loopStates[path] === true) {
+    //app.logger.debug("Loop step " + path);
     let rc = ms.AdvanceState();
     if (rc === 0) {  // OK
       //app.logger.debug("OK...");
-      _getDelta(ncId, ms, key, function(b) {
+      _getDelta(ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
           if (loopTimer !== undefined)
               clearTimeout(loopTimer);
-          loopTimer = setTimeout(function () { _loop(ncId, ms, false); }, 50 / (playbackSpeed / 200));
+          loopTimer = setTimeout(function () { _loop(ms, false); }, 50 / (playbackSpeed / 200));
         }
         else {
           // app.logger.debug("playback speed is zero, no timeout set");
@@ -75,20 +73,17 @@ var _loop = function(ncId, ms, key) {
     }
     else if (rc == 1) {   // SWITCH
       app.logger.debug("SWITCH...");
-      _getNext(ncId, ms, function() {
-        _loop(ncId, ms, true);
+      _getNext(ms, function() {
+        _loop(ms, true);
       });
     }
   }
 };
 
 var _loopInit = function(req, res) {
-  // app.logger.debug("loopstate is " + req.params.loopstate);
-  if (req.params.ncId !== undefined) {
-    let ncId = req.params.ncId;
-    
+  // app.logger.debug("loopstate is " + req.params.loopstate);    
     if (req.params.loopstate === undefined) {
-      if (loopStates[ncId] === true) {
+      if (loopStates[path] === true) {
         res.status(200).send(JSON.stringify({'state': "play", 'speed': playbackSpeed}));
       }
       else {
@@ -98,29 +93,29 @@ var _loopInit = function(req, res) {
     else
     {
       let loopstate = req.params.loopstate;
-      var ms = file.getMachineState(app, ncId);
-      if (typeof(loopStates[ncId]) === 'undefined') {
-        loopStates[ncId] = false;
+      var ms = file.ms;
+      if (typeof(loopStates[path]) === 'undefined') {
+        loopStates[path] = false;
       }
 
       switch (loopstate) {
         case "start":
-          if (loopStates[ncId] === true) {
+          if (loopStates[path] === true) {
             res.status(200).send("Already running");
             return;
           }
-          app.logger.debug("Looping " + ncId);
-          loopStates[ncId] = true;
+          app.logger.debug("Looping " + path);
+          loopStates[path] = true;
           res.status(200).send("OK");
           update("play");
-          _loop(ncId, ms, false);
+          _loop(ms, false);
           break;
         case "stop":
-          if (loopStates[ncId] === false) {
+          if (loopStates[path] === false) {
             res.status(200).send("Already stopped");
             return;
           }
-          loopStates[ncId] = false;
+          loopStates[path] = false;
           update("pause");
           res.status(200).send("OK");
           break;
@@ -133,8 +128,8 @@ var _loopInit = function(req, res) {
               app.logger.debug("Changing speed to " + newSpeed);
             }
             
-            if (loopStates[ncId] === true) {
-              _loop(ncId, ms, false);
+            if (loopStates[path] === true) {
+              _loop(ms, false);
               res.status(200).send(JSON.stringify({"state": "play", "speed": playbackSpeed}));
             }
             else {
@@ -147,57 +142,55 @@ var _loopInit = function(req, res) {
           }
       }
     }
-  }
 };
 
 var _wsInit = function(req, res) {
-  if (req.params.ncId && req.params.command) {
-    let ncId = req.params.ncId;
+  if (req.params.command) {
     let command = req.params.command;
-    var ms = file.getMachineState(app, ncId);
-    if (typeof(loopStates[ncId]) === 'undefined') {
-      loopStates[ncId] = false;
+    var ms = file.ms;
+    if (typeof(loopStates[path]) === 'undefined') {
+      loopStates[path] = false;
     }
 
     // load the machine tool using global options
-    if (app.machinetool !== "")
-      ms.LoadMachine(app.machinetool);
+    /*if (app.machinetool !== "")
+      ms.LoadMachine(app.machinetool);*/
 
     switch(command) {
       case "next":
-        var temp = loopStates[ncId];
-        loopStates[ncId] = true;
+        var temp = loopStates[path];
+        loopStates[path] = true;
         if (temp) {
-        _getNext(ncId, ms, function() {
-        _loop(ncId, ms, true);
+        _getNext(ms, function() {
+        _loop(ms, true);
         });
         }
         else{
-          _loop(ncId,ms,false);
-          _getNext(ncId, ms, function() {
-          _loop(ncId, ms, true);
+          _loop(ms,false);
+          _getNext(ms, function() {
+          _loop(ms, true);
           });
-          loopStates[ncId] = false;
+          loopStates[path] = false;
           update("pause");
         }
         res.status(200).send("OK");
         break;
       case "prev":
-        /*var temp = loopStates[ncId];
-        loopStates[ncId] = true;
+        /*var temp = loopStates[path];
+        loopStates[path] = true;
         if (temp) {
-        _getPrev(ncId, ms, function() {
-        _loop(ncId, ms, true);
+        _getPrev(ms, function() {
+        _loop(ms, true);
         });
-        loopStates[ncId] = false;
+        loopStates[path] = false;
         update("pause");
         }
         else{
-          _loop(ncId,ms,false);
-          _getPrev(ncId, ms, function() {
-          _loop(ncId, ms, true);
+          _loop(ms,false);
+          _getPrev(ms, function() {
+          _loop(ms, true);
           });
-          loopStates[ncId] = false;
+          loopStates[path] = false;
           update("pause");
         }
         res.status(200).send("OK");*/
@@ -205,21 +198,21 @@ var _wsInit = function(req, res) {
         default:
           if (!isNaN(parseFloat(command)) && isFinite(command)) {
             let ws = Number(command);
-            temp = loopStates[ncId];
-            loopStates[ncId] = true;
+            temp = loopStates[path];
+            loopStates[path] = true;
             if (temp) {
             _getToWS(ws, ms, function() {
-            _loop(ncId, ms, true);
+            _loop(ms, true);
             });
-            loopStates[ncId] = false;
+            loopStates[path] = false;
             update("pause");
             }
             else{
-              _loop(ncId,ms,false);
+              _loop(ms,false);
               _getToWS(ws, ms, function() {
-              _loop(ncId, ms, true);
+              _loop(ms, true);
               });
-              loopStates[ncId] = false;
+              loopStates[path] = false;
               update("pause");
             }
             res.status(200).send("OK");
@@ -232,35 +225,29 @@ var _wsInit = function(req, res) {
 };
 
 var _getKeyState = function (req, res) {
-  //app.logger.debug("KEYSTATE");
-  if (req.params.ncId) {
-    var ms = file.getMachineState(app, req.params.ncId);
+    var ms = file.ms;
     if (ms === undefined) {
       res.status(404).send("Machine state could not be found");
       return;
     }
-    //FIXME: Needs to be fixed once set function for project name comes out
-    var holder = JSON.parse(ms.GetKeystateJSON()); 
-    holder.project = req.params.ncId;
-    res.status(200).send(JSON.stringify(holder));
-  }
+    res.status(200).send(ms.GetKeystateJSON());
 };
 
 var _getDeltaState = function (req, res) {
-  if (req.params.ncId) {
-    var ms = file.getMachineState(app, req.params.ncId);
-    var holder = JSON.parse(ms.GetDeltaJSON()); 
-    holder.project = req.params.ncId;
-    res.status(200).send(JSON.stringify(holder));
-  }
+    var ms = file.ms;
+    if (ms === undefined) {
+      res.status(404).send("Machine state could not be found");
+      return;
+    }
+    res.status(200).send(ms.GetDeltaJSON());
 };
 
 module.exports = function(globalApp, cb) {
   app = globalApp;
-  app.router.get('/v2/nc/projects/:ncId/state/key', _getKeyState);
-  app.router.get('/v2/nc/projects/:ncId/state/delta', _getDeltaState);
-  app.router.get('/v2/nc/projects/:ncId/state/loop/:loopstate', _loopInit);
-  app.router.get('/v2/nc/projects/:ncId/state/loop/', _loopInit);
-  app.router.get('/v2/nc/projects/:ncId/state/ws/:command', _wsInit);
+  app.router.get('/v3/nc/state/key', _getKeyState);
+  app.router.get('/v3/nc/state/delta', _getDeltaState);
+  app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
+  app.router.get('/v3/nc/state/loop/', _loopInit);
+  app.router.get('/v3/nc/state/ws/:command', _wsInit);
   if (cb) cb();
 };

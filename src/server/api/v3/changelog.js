@@ -1,8 +1,8 @@
 "use strict";
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
-var file = require('./file');
+//var file = require('./file');
 var fs = require('fs')
-var app;
+//var app;
 
 
 var _getchangelog = function(req,res){
