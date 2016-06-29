@@ -168,37 +168,6 @@ input[type=range] {
         background: #ffffff;
         cursor: pointer;
     }
-
-    &::-ms-track {
-        width: 100%;
-        height: 8px;
-        cursor: pointer;
-        background: transparent;
-        border-color: transparent;
-        color: transparent;
-    }
-
-    &::-ms-fill-lower,
-    &::-ms-fill-upper {
-        background: rgba(102, 102, 102, .75);
-        border-radius: 1px;
-    }
-
-    &::-ms-thumb {
-        border: 1px solid rgba(102, 102, 102, .75);
-        height: 28px;
-        width: 10px;
-        border-radius: 2px;
-        background: #ffffff;
-        cursor: pointer;
-    }
-
-    &:focus {
-        &::-ms-fill-lower,
-        &::-ms-fill-upper {
-            background: rgba(102, 102, 102, .75);
-        }
-    }
 }
 
 .changelog {
