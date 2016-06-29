@@ -22,7 +22,7 @@ export default class PropertiesPane extends React.Component {
 
     selectWS(event, entity) {
         if (event.key === 'goto') {
-            let url = '/v2/nc/projects/' + this.props.pid + '/state/ws/' + entity.id;
+            let url = '/v3/nc/state/ws/' + entity.id;
             request
                 .get(url)
                 .end(function (err, res) {
@@ -99,13 +99,13 @@ export default class PropertiesPane extends React.Component {
                 );
                 
                 break;
-            case 'workingstep':
+          case 'workingstep':
                 let selectStep, goToButton, toolInfo;
                 
                 goToButton = (<MenuItem key='goto'
                     disabled={!(entity.enabled && this.props.ws !== entity.id)}
                     className='property goTo'>Go to Workingstep</MenuItem>);
-                
+
                 toolInfo = (<MenuItem key='tool' className='property toolInfo'>Tool: {this.props.tools[entity.tool].name} </MenuItem>);
                 
                 if (this.props.ws === entity.id) {
@@ -199,7 +199,7 @@ export default class PropertiesPane extends React.Component {
                         <div className='name'>{entityName}</div>
                     </span>
                     <span className="exit glyphicons glyphicons-remove-sign"
-                          onClick={this.props.clearEntity} />
+                          onClick={(event) => {this.props.propertiesCb(null);}} />
                 </div>
                 {this.renderProperties(this.props.entity)}
             </div>

@@ -758,8 +758,8 @@ self.addEventListener("message", function(e) {
     // using arrow function to bind 'this' to the higher-level 'self'
     let loadCb = (res) => {
         //TODO: MAKE THIS LESS HARDCODED
-        if (parts[parts.length - 4] === "projects") {
-            let file = parts[parts.length - 4] + '/' + parts[parts.length - 3] + '/' + parts[parts.length - 2] + '/' + parts[parts.length - 1];
+        if (parts[parts.length - 2] === "state") {
+            let file = parts[parts.length - 2] + '/' + parts[parts.length - 1];
             this.postMessage({type : "loadComplete", file: file });
         }
         else {

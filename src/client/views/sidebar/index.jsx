@@ -56,7 +56,6 @@ export default class SidebarView extends React.Component {
               entity={this.state.selectedEntity}
               pid={this.props.pid}
               ws={this.props.ws}
-              clearEntity={(event) => {this.setState({selectedEntity: null});}}
               propertiesCb = {this.openProperties}
               tools = {this.props.toolCache}
           />;
@@ -92,7 +91,6 @@ export default class SidebarView extends React.Component {
                   {modeMenu}
                   {this.props.mode == 'ws' ?
                       <WorkingstepList
-                          pid = {this.props.pid}
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
@@ -103,7 +101,6 @@ export default class SidebarView extends React.Component {
                       : null}
                   {this.props.mode == 'tree' ?
                       <WorkplanList
-                          pid = {this.props.pid}
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
@@ -113,7 +110,6 @@ export default class SidebarView extends React.Component {
                       : null}
                   {this.props.mode == 'tolerance' ?
                       <ToleranceList 
-                          pid = {this.props.pid}
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
                           propertyCb = {this.openProperties}
@@ -122,7 +118,6 @@ export default class SidebarView extends React.Component {
                       : null}
                   {this.props.mode == 'tools' ?
                       <ToolList
-                          pid = {this.props.pid}
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
@@ -139,4 +134,4 @@ export default class SidebarView extends React.Component {
 SidebarView.propTypes = {cadManager: React.PropTypes.instanceOf(cadManager).isRequired, mode : React.PropTypes.string.isRequired,
                           ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired,
                           cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, cbWS: React.PropTypes.func.isRequired,
-                          cbAltMenu: React.PropTypes.func.isRequired, pid: React.PropTypes.string.isRequired};
+                          cbAltMenu: React.PropTypes.func.isRequired};

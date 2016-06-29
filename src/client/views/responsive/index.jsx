@@ -66,13 +66,76 @@ export default class ResponsiveView extends React.Component {
         
     }
 
-    componentDidMount() {
+    componentWillMount() {
+      let url = "/v3/nc/state/loop/";
+      let requestCB = (error, response) => {
+        if (!error && response.ok) {
+          let stateObj = JSON.parse(response.text);
+
+          if (stateObj.state === "play")
+            this.setState({"ppbutton": "pause"}); //Loop is running, we need a pause button.
+          else
+            this.setState({"ppbutton": "play"});
+
+          this.setState({"playbackSpeed": Number(stateObj.speed)});
+        }
+        else {
+          console.log(error);
+        }
+      };
+
+      request.get(url).end(requestCB);
+
+      
+    }
+  
+  componentDidMount() {
         window.addEventListener("resize", this.handleResize);
-        
+    
+    // set a temp variable for the workingstep cache
+      let workingstepCache = {};
+      let wsList = [];
+
+      // get the workplan
+      let url = "/v3/nc/workplan/";
+      let resCb = (err, res) => { //Callback function for response
+        if (!err && res.ok) {
+          let planNodes = JSON.parse(res.text);
+          let stepNodes = {};
+          let nodeCheck = (node)=> {
+            if (node.type === 'selective' || node.type === 'workplan') {
+              if (node.children.length != 0)
+                node.children.map(nodeCheck);
+              node.leaf = false;
+            }
+            else {
+              node.leaf = true;
+              stepNodes[node.id] = node;
+              if (node.enabled)
+                wsList.push(node.id);
+            }
+          };
+          nodeCheck(planNodes);
+          workingstepCache = stepNodes;
+
+          this.setState({'workplanCache': planNodes});
+          this.setState({'workingstepCache': workingstepCache});
+          this.setState({'workingstepList': wsList});
+
+        }
+        else {
+          console.log(err);
+        }
+      };
+
+      request
+        .get(url)
+        .end(resCb);
+
+              
         // get the project loopstate
-        let url = "/v2/nc/projects/";
-        url = url + this.props.pid + "/state/loop/";
-        let requestCB = (error, response) => {
+        url = "/v3/nc/state/loop/";
+        resCb = (error, response) => {
 
             let chlog_url = "/log";
             let log = "fauile";
@@ -102,51 +165,10 @@ export default class ResponsiveView extends React.Component {
             }
         };
         
-        request.get(url).end(requestCB);
-        
-        // set a temp variable for the workingstep cache
-        let workingstepCache = {};
-        let wsList = [];
-
-        // get the workplan
-        url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
-        let resCb = (err,res) => { //Callback function for response
-            if(!err && res.ok){
-  	            let planNodes = JSON.parse(res.text);
-                let stepNodes = {};
-  	            let nodeCheck = (node)=> {
-                    if(node.type === 'selective' || node.type === 'workplan'){
-                        if(node.children.length != 0)
-                            node.children.map(nodeCheck);
-                        node.leaf = false;
-                    }
-                    else{
-                      node.leaf = true;
-                      stepNodes[node.id] = node;
-                      if (node.enabled)
-                        wsList.push(node.id);
-                    }
-                };
-                nodeCheck(planNodes);
-                workingstepCache = stepNodes;
-                
-                this.setState({'workplanCache': planNodes});
-                this.setState({'workingstepCache': workingstepCache});
-                this.setState({'workingstepList': wsList});
-
-            }
-            else {
-                console.log(err);
-            }
-        };
-
-        request
-          .get(url)
-          .end(resCb);
-        
+        request.get(url).end(resCb);
         
         // get the cache of tools
-        url = "/v2/nc/projects/"+this.props.pid+"/tools/";
+        url = "/v3/nc/tools/";
         resCb = (err,res) => { //Callback function for response
             if(!err && res.ok){
                 // Node preprocessing
@@ -178,7 +200,7 @@ export default class ResponsiveView extends React.Component {
             .get(url)
             .end(resCb);
         
-        url = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.state.ws;
+        url = "/v3/nc/tools/"+this.state.ws;
         request
             .get(url)
             .end((err,res) => {
@@ -190,7 +212,7 @@ export default class ResponsiveView extends React.Component {
         
         // now the same for tolerances
         
-        url = "/v2/nc/projects/"+this.props.pid+"/tolerances/";
+        url = "/v3/nc/tolerances/";
         resCb = (err,res) => { //Callback function for response
             if(!err && res.ok){
                 // Node preprocessing
@@ -232,10 +254,10 @@ export default class ResponsiveView extends React.Component {
     }
 
     updateWorkingstep(ws){
-        let url = "/v2/nc/projects/";
-        url = url + this.props.pid + "/workplan/" + ws;
+        let url = "/v3/nc/";
+        url = url + "workplan/" + ws;
         
-        let requestCB = function(error, response) {
+        let requestCB = (error, response) => {
             if (!error && response.ok) {
                 if (response.text) {
                     let workingstep = JSON.parse(response.text);
@@ -248,14 +270,11 @@ export default class ResponsiveView extends React.Component {
             }
         };
         
-        requestCB = requestCB.bind(this);
-        
         request.get(url).end(requestCB);
     }
 
     playpause(){
-        let url = "/v2/nc/projects/";
-        url = url + this.props.pid + "/state/loop/";
+        let url = "/v3/nc/state/loop/";
         if(this.state.ppbutton ==='play'){
             this.ppstate('play');
             url = url+"start";
@@ -267,13 +286,12 @@ export default class ResponsiveView extends React.Component {
         request.get(url).end((res) => {});
     }
     nextws(){
-        let url = "/v2/nc/projects/"
-        url = url + this.props.pid + "/state/ws/next";
+        let url = "/v3/nc/state/ws/next";
         request.get(url).end((res) => {});
     }
     prevws(){
-        let url = "/v2/nc/projects/"
-        url = url + this.props.pid + "/state/ws/prev";
+        let url = "/v3/nc/"
+        url = url + "state/ws/prev";
         request.get(url).end((res) => {});
     }
     ppstate(state){
@@ -324,7 +342,7 @@ export default class ResponsiveView extends React.Component {
         this.setState({'changeSpeed': true});
 
         // now send a request to the server to change its speed
-        let url = "/v2/nc/projects/" + this.props.pid + "/state/loop/" + Number(speed);
+        let url = "/v3/nc/state/loop/" + Number(speed);
         request.get(url).end(() => {});
     }
 
@@ -344,7 +362,6 @@ export default class ResponsiveView extends React.Component {
                 ppbutton={this.state.ppbutton}
                 logstate={this.state.logstate}
                 speed={this.state.playbackSpeed}
-                pid={this.props.pid}
             />;
             SV = <SidebarView
                 cadManager={this.props.app.cadManager}
@@ -365,7 +382,6 @@ export default class ResponsiveView extends React.Component {
                 cbAltMenu={
                     (newAltMenu) => {this.setState({ svaltmenu: newAltMenu })}
                 }
-                pid={this.props.pid}
                 toolCache={this.state.toolCache}
                 curtool={this.state.curtool}
                 toleranceCache={this.state.toleranceCache}
@@ -386,7 +402,6 @@ export default class ResponsiveView extends React.Component {
                     (newWSText) => {this.setState({ wstext: newWSText })}
                 }
                 ppbutton={this.state.ppbutton}
-                pid={this.props.pid}
             />;
         }
 

@@ -48,5 +48,4 @@ export default class ToolList extends React.Component {
   }
 }
 
-ToolList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired,
-                                pid: React.PropTypes.string.isRequired}
+ToolList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired}

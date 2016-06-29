@@ -251,6 +251,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         
         if (data.type === "shell") {
             data.shellSize = req.shellSize;
+            console.log(req.baseURL);
             let newpath = (req.baseURL).split('state')[0];
             if(newpath[newpath.length - 1] === '/')
                 newpath = newpath.substring(0 , newpath.length - 1);

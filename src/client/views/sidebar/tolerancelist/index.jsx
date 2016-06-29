@@ -41,5 +41,4 @@ export default class ToleranceList extends React.Component {
   }
 }
 
-ToleranceList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired,
-                                pid: React.PropTypes.string.isRequired}
+ToleranceList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired}

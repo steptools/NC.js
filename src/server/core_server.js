@@ -6,11 +6,12 @@ var http        = require('http'),
     _           = require('lodash'),
     opts        = require('commander'),
     winston     = require('winston'),
-    configurator= require('./configurator');
+    configurator= require('./configurator'),
 
-
+    file     = require('./api/v3/file.js');
 /*****************************************************************************************/
-
+var app;
+//console.log(fileobj);
 function CoreServer() {
     var pjson = require('../../package.json');
     opts
@@ -19,12 +20,17 @@ function CoreServer() {
         .option('-c, --config [file]', 'Configuration File [./config/config.json]', './config/config.json')
         .option('-e, --environment [env]', 'Environment to use [development]', 'development')
         .option('-t, --tool [tool-file]', 'Machine tool file to use [""]', '')
+        .option('-f, --filepath [stp-filepath]', 'Step NC filepath to use [""]', '')
         .parse(process.argv);
     this.config = configurator(opts.config, opts.environment);
     this.port = opts.port || this.config.port || 8080;
 
     // set up machine tool option
     this.machinetool = opts.tool;
+
+    // set up filepath option
+    this.project = opts.filepath;
+    file.init(opts.filepath, opts.tool);
 
     // Establish core
     this.models = {};
