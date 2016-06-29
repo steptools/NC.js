@@ -91,7 +91,7 @@ if(minimize){
                     drop_console: true
                 },
                 mangle: {
-                    except: ['$super', '$', 'exports', 'require']
+                    except: ['require']
                 },
                 output: {
                     comments: false
