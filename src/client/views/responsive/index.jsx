@@ -263,7 +263,7 @@ export default class ResponsiveView extends React.Component {
                     let workingstep = JSON.parse(response.text);
                     this.setState({"ws": workingstep.id, "wstext":workingstep.name.trim()});
 
-                    this.setState({'curtool': workingstep.tool.id});
+                    this.setState({'curtool': workingstep.tool});
                 }
                 else
                     this.setState({"ws":ws,"wstxt":"Operation Unknown"});
