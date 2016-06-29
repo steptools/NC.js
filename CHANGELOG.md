@@ -21,5 +21,3 @@ Version 1.1.0
 - Added tools view
 - Replaced references to StepNCNode with NC.js
 - Added Changelog
-
-
