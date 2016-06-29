@@ -1,22 +1,22 @@
 # API Endpoints
 
-/v2/nc is appended to the beginning of all endpoints
+/v3/nc is appended to the beginning of all endpoints
 
 ### *Found in state.js*
 
-> **/projects/{ncId}/state/key**
+> **/state/key**
 
-Returns the current keystate for the project defined by ncId
+Returns the current keystate
 
-> **/projects/{ncId}/state/delta**
+> **/state/delta**
 
-Returns the current delta state for the project defined by ncId\
+Returns the current delta state
 
-> **/projects/{ncId}/state/loop/**
+> **/state/loop/**
 
-Returns the current state for the project (e.g. play or pause) defined by ncId
+Returns the current state (e.g. play or pause)
 
-> **/projects/{ncId}/state/loop/{loopstate}**
+> **/state/loop/{loopstate}**
 
 For loopstate the options are as follows:
 
@@ -24,7 +24,7 @@ For loopstate the options are as follows:
  - stop : stops the simulation
  - {int} : changes the speed of the simulation
 
-> **/projects/{ncId}/state/ws/{command}**
+> **/state/ws/{command}**
 
 For command the options are as follows:
 
@@ -32,38 +32,32 @@ For command the options are as follows:
  - prev : moves the simulation to the previous workingstep
  - {int} : moves the simulation to a specific workingstep defined by the int 
 
-### *Found in projects.js*
-
-> **/projects/**
-
-Returns a list of projects that are in pathmap.json
-
 ### *Found in geometry.js*
 
-> **/projects/{ncId}/geometry**
+> **/geometry**
 
-Returns a list of geometry in JSON format for the given ncId
+Returns a list of geometry in JSON format
 
-> **/projects/{ncId}/geometry/{uuid}/{type}**
+> **/geometry/{uuid}/{type}**
 
-Returns a JSON format geometry information for the given ncId with uuid and type given
+Returns a JSON format geometry information for the given uuid and type
 
 ### *Found in step.js*
 
-> **/projects/{ncId}/workplan/{wsId}**
+> **/workplan/{wsId}**
 
-Returns the workingstep in JSON format for the project specified by ncId and workingstep specified by wsId
+Returns the workingstep in JSON format for the workingstep specified by wsId
 
-> **/projects/{ncId}/workplan**
+> **/workplan**
 
-Returns the main workplan in JSON format for the given project by ncId
+Returns the main workplan in JSON format
 
 ### *Found in tool.js*
 
-> **/projects/{ncId}/tools
+> **/tools
 
-Returns a list of tools for the project specified by ncId
+Returns a list of tools
 
-> **/projects/{ncId}/tools/{toolId}
+> **/tools/{toolId}
 
 Returns the tool information for the tool specified by toolId
