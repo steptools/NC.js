@@ -2,8 +2,6 @@ import React from 'react';
 import request from 'superagent';
 import Tree from 'react-ui-tree';
 
-require('../../../stylesheets/components/_workplanlist');
-
 export default class WorkplanList extends React.Component {
   constructor(props){
     //Create the constructor for the component

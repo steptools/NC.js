@@ -1,4 +1,4 @@
-import React from 'react';
+ import React from 'react';
 import ReactDOM from 'react-dom';
 import Menu from 'rc-menu';
 import _ from 'lodash';
@@ -65,8 +65,6 @@ export default class ResponsiveView extends React.Component {
         
         this.getNodeIcon = this.getNodeIcon.bind(this);
     }
-    
-    
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
@@ -315,7 +313,6 @@ export default class ResponsiveView extends React.Component {
     }
 
 	changeSpeed(event) {
-
         let speed = event.target.value;
 
         if (!speed) {
