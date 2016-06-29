@@ -12,10 +12,7 @@ const queryString =         require('query-string');
 
 module.exports = Backbone.Router.extend({
     routes: {
-        '':                             '_landing',
-        'stepnc/':                      '_stepnc',
-        ':modelID':                     '_model',
-        '*path':                        '_default',
+        '':                            '_stepnc',
     },
     initialize: function(options) {
         this.app = options.app;
