@@ -40,7 +40,7 @@ export default class CADView extends React.Component {
 
     onShellLoad(event) {
         // Get around the fact that viewerControls calls change a bunch at startup
-        this.state.isViewChanging = false;
+        this.setState({'isViewChanging':true});
         this.invalidate(event);
     }
 

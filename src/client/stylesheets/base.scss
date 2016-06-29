@@ -7,6 +7,7 @@ body {
 }
 
 $headerHeight: 90px;
+$sidebarTabsHeight: 103px;
 $sidebarWidth: 390px;
 @import 'components/all';
 
@@ -42,4 +43,4 @@ $sidebarWidth: 390px;
 
 // NOTE: "glyphicon" refers to the font "Glyphicons Halflings"
 //       "glyphicons" refers to the font "Glyphicons Regular"
-@import 'fonts/glyphicons';
+@import '../fonts/glyphicons';
