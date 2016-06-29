@@ -1,4 +1,4 @@
-import React from 'react';
+ import React from 'react';
 import ReactDOM from 'react-dom';
 import Menu from 'rc-menu';
 import _ from 'lodash';
@@ -58,8 +58,6 @@ export default class ResponsiveView extends React.Component {
         this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
-    
-    
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
@@ -69,17 +67,6 @@ export default class ResponsiveView extends React.Component {
         let url = "/v2/nc/projects/";
         url = url + this.props.pid + "/state/loop/";
         let requestCB = function(error, response) {
-
-            let chlog = new XMLHttpRequest();
-            chlog.open("GET","/log");
-            var log = "fauile";
-            chlog.onreadystatechange = function(){
-                if (chlog.readyState == 4 && chlog.status == 200) {
-                    log = md(chlog.responseText.toString());
-                }
-            }
-            chlog.send();
-            this.setState({"logtext" : log});
             if (!error && response.ok) {
                 let stateObj = JSON.parse(response.text);
                 
@@ -185,7 +172,6 @@ export default class ResponsiveView extends React.Component {
     }
 
 	changeSpeed(event) {
-
         let speed = event.target.value;
 
         if (!speed) {

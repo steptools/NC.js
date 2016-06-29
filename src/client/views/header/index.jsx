@@ -113,6 +113,18 @@ export default class HeaderView extends React.Component {
         this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
         this.updateSpeed = this.updateSpeed.bind(this);
     }
+    
+    componentDidMount() {
+        let changelog = document.getElementById("changes");
+        let chlog = new XMLHttpRequest();
+        chlog.open("GET","/log");
+        chlog.onreadystatechange = function(){
+            if (chlog.readyState == 4 && chlog.status == 200) {
+                document.getElementById("changes").innerHTML = md(chlog.responseText.toString());
+            }
+        }
+        chlog.send();
+    }
 
     updateSpeed(info) {
         this.props.actionManager.emit("simulate-setspeed", info);
@@ -136,12 +148,12 @@ export default class HeaderView extends React.Component {
                 break;
             case "showlog":
                 let changelog = document.getElementById("changes");
-                if(this.props.logstate === false){
-                    changelog.style.display = "inline-block";
+                if(this.props.logstate === false) {
+                    changelog.className = "changelog visible"
                     this.props.cbLogstate(true);
                 }   
-                else{
-                    changelog.style.display = "none";
+                else {
+                    changelog.className = "changelog"
                     this.props.cbLogstate(false);
                 }
             
@@ -150,15 +162,6 @@ export default class HeaderView extends React.Component {
 
 
  render() {
-        let changelog = document.getElementById("changes");
-        let chlog = new XMLHttpRequest();
-        chlog.open("GET","/log");
-        chlog.onreadystatechange = function(){
-            if (chlog.readyState == 4 && chlog.status == 200) {
-                document.getElementById("changes").innerHTML = md(chlog.responseText.toString());
-            }
-        }
-        chlog.send();
         let ppbtntxt;
         let ppbutton = this.props.ppbutton;
         let showlog = this.props.logstate;
