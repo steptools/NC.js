@@ -19,7 +19,7 @@ $icons: '../icons/';
     .m-tree {
         position: relative;
         padding: 20px;
-        height: calc(100% - 100px - 90px);
+        height: $sidebarPaneHeight;
         overflow-y: scroll;
 
         .m-node .collapse:hover {
@@ -49,8 +49,12 @@ $icons: '../icons/';
             .icon-letter,
             .icon-tolerance,
             .icon-tool {
-                background-color: #333;
-                color: #FFF;
+                background-color: rgba(#fff, 0);
+                border: 2px solid #333333;
+                padding: 15px;
+                vertical-align: middle;
+                background-size: cover;
+                background-position: center;
                 padding: 5px;
                 border-radius: 5px;
                 width: 30px;
@@ -60,22 +64,18 @@ $icons: '../icons/';
                 margin-right: 8px;
             }
 
-            .icon-tolerance{
-                background-color: rgba(#fff, 0);
-                border: 2px solid #333333;
-                padding: 15px;
-                vertical-align: middle;
+            .icon-letter {
+                background-color: #333;
+                color: #FFF;
+                border: none;
+            }
+
+            .icon-tolerance {
                 background-image: url($icons + 'tolerance/unknown.svg');
-                background-size: cover;
-                background-position: center;
             }
 
             .icon-tool {
-                background-color: #FFF;
-                padding: 15px;
-                vertical-align: middle;
                 background-image: url($icons + 'tools/tool.svg');
-                background-size: contain;
             }
 
             .tolerance-angularity {
@@ -240,7 +240,8 @@ $icons: '../icons/';
         background-color: #666666;
         border-top: none;
         font-size: 20px;
-        height: 102px;
+        height: $sidebarTabsHeight;
+        border-bottom: 1px solid #AFAFAF;
 
         .rc-menu-item {
             text-align: center;
@@ -274,7 +275,7 @@ $icons: '../icons/';
                 color: #fff;
             }
         }
-        
+
         .rc-menu-item:before {
             display: block;
             content: '.';
@@ -289,26 +290,26 @@ $icons: '../icons/';
 
         .rc-menu-item.ws:before {
             border-left: 2px solid #AFAFAF;
-            border-right: 2px solid #AFAFAF;    
+            border-right: 2px solid #AFAFAF;
         }
-        
+
         .rc-menu-item.wp:before {
             border-right: 2px solid #AFAFAF;
         }
-        
+
         .rc-menu-item.tool {
             border-top: none;
         }
-        
+
         .rc-menu-item.tool:before {
             border-left: 2px solid #AFAFAF;
             border-right: 2px solid #AFAFAF;
         }
-        
+
         .rc-menu-item.tolerance {
             border-top: none;
         }
-        
+
         .rc-menu-item.tolerance:before {
             border-right: 2px solid #AFAFAF;
         }

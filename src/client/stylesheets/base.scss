@@ -8,6 +8,8 @@ body {
 
 $headerHeight: 90px;
 $sidebarWidth: 390px;
+$sidebarTabsHeight: 103px;
+$sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
 @import 'components/all';
 
 .primary-view {
@@ -42,4 +44,4 @@ $sidebarWidth: 390px;
 
 // NOTE: "glyphicon" refers to the font "Glyphicons Halflings"
 //       "glyphicons" refers to the font "Glyphicons Regular"
-@import 'fonts/glyphicons';
+@import '../fonts/glyphicons';

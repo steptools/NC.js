@@ -9,8 +9,8 @@
     "start": "node src/server/api_server.js",
     "start-debug": "node-debug -p 8085 src/server/api_server.js",
     "start-dev": "node src/server/api_server.js -e development",
-    "make" : "webpack --progress && node src/server/api_server.js",
-    "make-release" : "webpack --minimize --progress && node src/server/api_server.js"
+    "make" : "./node_modules/.bin/webpack --progress && node src/server/api_server.js",
+    "make-release" : "./node_modules/.bin/webpack --minimize --progress && node src/server/api_server.js"
   },
   "author": "G. Hemingway",
   "license": "MIT",
