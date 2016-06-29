@@ -29,8 +29,8 @@ function CoreServer() {
     this.machinetool = opts.tool;
 
     // set up filepath option
-    this.project = opts.filepath;
-    file.init(opts.filepath, opts.tool);
+    this.project = opts.file;
+    file.init(opts.file, opts.tool);
 
     // Establish core
     this.models = {};
