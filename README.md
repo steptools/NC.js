@@ -102,9 +102,11 @@ Setting up a development environment
   > npm run make-release
   ```
   ------------------------------------------------------------------------------
-  11. Start a server
+ 
 
-  If a server doesn't need to be rebuilt, this will be faster than making. 
+ Start a server
+
+  If a server doesn't need to be rebuilt, this will be faster than making everytime. 
 
   ```
   > npm start
