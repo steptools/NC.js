@@ -6,7 +6,6 @@ require('./stylesheets/base.scss');
 require('bootstrap-webpack');
 let io              = require('socket.io-client'),
     jwtDecode       = require('jwt-decode'),
-    Router          = require('./routes'),
     actionManager   = require('./actionmanager');
 import CADManager from './models/cad_manager';
 import React                from 'react';
