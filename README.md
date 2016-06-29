@@ -78,7 +78,6 @@ Setting up a development environment
   ```
   > cd src/client
   > cp ~Downloads/fonts ./fonts
-  > cp ~Downloads/glyphicons.scss ./stylesheets/fonts
   ```
 
   ------------------------------------------------------------------------------

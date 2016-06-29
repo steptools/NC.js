@@ -19,7 +19,7 @@ $icons: '../icons/';
     .m-tree {
         position: relative;
         padding: 20px;
-        height: calc(100% - $sidebarTabsHeight - $headerHeight);
+        height: $sidebarPaneHeight;
         overflow-y: scroll;
 
         .m-node .collapse:hover {
