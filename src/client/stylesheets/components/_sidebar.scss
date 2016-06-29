@@ -1,23 +1,19 @@
-$sidebarWidth: 390;
 $icons: '../icons/';
 
 .sidebar {
     width: $sidebarWidth;
-    background-color: #ddd;
+    background-color: #DDD;
     position: relative;
     z-index: 5;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
     .model-tree:hover {
         opacity: 0.9;
         left: 0;
-    }
-
-    .f-no-select {
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
     }
 
     .m-tree {
@@ -25,14 +21,10 @@ $icons: '../icons/';
         padding: 20px;
         height: calc(100% - 100px - 90px);
         overflow-y: scroll;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
 
         .m-node .collapse:hover {
-            background-color: #f00;
+            color: #fff;
+            background-color: #2BAEE9;
         }
 
         .m-node {
@@ -41,9 +33,9 @@ $icons: '../icons/';
             cursor: pointer;
 
             .textbox {
-                  vertical-align : middle;
-                  display: inline-block;
-                  width : 285px;
+                vertical-align: middle;
+                display: inline-block;
+                width: 285px;
             }
 
             .textbox-tolerance {
@@ -54,21 +46,28 @@ $icons: '../icons/';
                 //vertical-align: text-top;
             }
 
-            .icon-letter, .icon-tolerance, .icon-tool {
+            .icon-letter,
+            .icon-tolerance,
+            .icon-tool {
                 background-color: #333;
-                color: #fff;
+                color: #FFF;
                 padding: 5px;
                 border-radius: 5px;
                 width: 30px;
-                height:30px;
+                height: 30px;
                 display: inline-block;
                 text-align: center;
                 margin-right: 8px;
             }
 
+<<<<<<< HEAD
+            .icon-tolerance {
+                background-color: #FFF;
+=======
             .icon-tolerance{
                 background-color: rgba(#fff, 0);
                 border: 2px solid #333333;
+>>>>>>> eac6726f148c5542c45529f0df9460171f73d800
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tolerance/unknown.svg');
@@ -77,7 +76,7 @@ $icons: '../icons/';
             }
 
             .icon-tool {
-                background-color: #fff;
+                background-color: #FFF;
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tools/tool.svg');
@@ -87,47 +86,59 @@ $icons: '../icons/';
             .tolerance-angularity {
                 background-image: url($icons + 'tolerance/angularity.svg');
             }
+
             .tolerance-circular-runout {
                 background-image: url($icons + 'tolerance/circular_runout.svg');
             }
+
             .tolerance-circularity {
                 background-image: url($icons + 'tolerance/circularity.svg');
             }
+
             .tolerance-concentricity {
                 background-image: url($icons + 'tolerance/concentricity.svg');
             }
+
             .tolerance-cylindricity {
                 background-image: url($icons + 'tolerance/cylindricity.svg');
             }
+
             .tolerance-flatness {
                 background-image: url($icons + 'tolerance/flatness.svg');
             }
+
             .tolerance-parallelism {
                 background-image: url($icons + 'tolerance/parallelism.svg');
             }
+
             .tolerance-perpendicularity {
                 background-image: url($icons + 'tolerance/perpendicularity.svg');
             }
+
             .tolerance-position {
                 background-image: url($icons + 'tolerance/position.svg');
             }
+
             .tolerance-profile-line {
                 background-image: url($icons + 'tolerance/profile_line.svg');
             }
+
             .tolerance-profile-surface {
                 background-image: url($icons + 'tolerance/profile_surface.svg');
             }
+
             .tolerance-straightness {
                 background-image: url($icons + 'tolerance/straightness.svg');
             }
+
             .tolerance-symmetry {
                 background-image: url($icons + 'tolerance/symmetry.svg');
             }
+
             .tolerance-total-runout {
                 background-image: url($icons + 'tolerance/total_runout.svg');
             }
         }
-
     }
 
     .m-draggable {
@@ -145,13 +156,14 @@ $icons: '../icons/';
     }
 
     .m-node.placeholder {
-        border: 1px dashed #ccc;
+        border: 1px dashed #CCC;
     }
 
     .m-node .inner {
         position: relative;
         cursor: pointer;
-        padding-left: 10px;
+        padding-left: 30px;
+        margin-bottom: 1px;
     }
 
     .m-node .collapse {
@@ -159,27 +171,34 @@ $icons: '../icons/';
         left: 0;
         cursor: pointer;
         display: inherit;
+<<<<<<< HEAD
+        height: 100%;
+        width: 30px;
+        background-color: #fff;
+        text-align: center;
+=======
         width: 10;
+>>>>>>> eac6726f148c5542c45529f0df9460171f73d800
     }
 
     .m-node .node {
         display: inline-block;
         width: 100%;
         padding: 4px 5px;
-
     }
 
     .m-node .node.is-active {
-        background-color: #0000ff;
+        background-color: #0000FF;
     }
 
     .m-node .node.is-hidden {
-        color: #1b6d85;
+        color: #1B6D85;
     }
 
     .running-node {
         background-color: #9BFA9B;
     }
+
     .disabled {
         background-color: #666666;
     }
@@ -194,7 +213,7 @@ $icons: '../icons/';
 
     .m-node .node span.exp-distance {
         font-size: 10px;
-        color: red;
+        //color: red;
     }
 
     .m-node .caret-right:before {
@@ -211,7 +230,7 @@ $icons: '../icons/';
         top: 4px;
         width: 7px;
         height: 30px;
-        background-color: #fff;
+        background-color: #FFF;
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
     }
@@ -228,49 +247,80 @@ $icons: '../icons/';
 
     .sidebar-menu-tabs {
         background-color: #666666;
+        border-top: none;
         font-size: 20px;
         height: 102px;
 
         .rc-menu-item {
             text-align: center;
             color: #F8F8F8;
+            position: relative;
+            border: 2px solid #AFAFAF;
+            border-bottom-color: #AFAFAF;
+            border-left: none;
+            border-right: none;
             padding: 10px 5px;
-            border-right: 2px solid #AFAFAF;
-            border-bottom: 2px solid #AFAFAF;
             width: 50%;
             margin-left: 0;
             background-color: #333333;
+            text-shadow: -1px -1px 0 #333333, 1px -1px 0 #333333, -1px 1px 0 #333333, 1px 1px 0 #333333;
 
             &:disabled {
                 opacity: 0.5;
             }
+
             &:hover {
                 cursor: pointer;
                 color: #2BAEE9;
-                border-bottom: 2px solid #2BAEE9;
+                border-bottom-color: #2BAEE9;
             }
         }
 
         .rc-menu-item-selected {
-            color: #333333;
+            background-color: #2BAEE9;
+
             &:hover {
-                color: #666666;
-                border-bottom: 2px solid #666666;
+                color: #fff;
             }
         }
-        .rc-menu-item-selected.ws {
-            background-color: #97A1FD;
-        }
-        .rc-menu-item-selected.wp {
-            background-color: #FF3900;
-        }
-        .rc-menu-item-selected.tool {
-            background-color: #FFC52A;
-        }
-        .rc-menu-item-selected.tolerance {
-            background-color: #2AFD8C;
+        
+        .rc-menu-item:before {
+            display: block;
+            content: '.';
+            color: transparent;
+            font-size: 0;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -2px;
+            bottom: -2px;
         }
 
+        .rc-menu-item.ws:before {
+            border-left: 2px solid #AFAFAF;
+            border-right: 2px solid #AFAFAF;    
+        }
+        
+        .rc-menu-item.wp:before {
+            border-right: 2px solid #AFAFAF;
+        }
+        
+        .rc-menu-item.tool {
+            border-top: none;
+        }
+        
+        .rc-menu-item.tool:before {
+            border-left: 2px solid #AFAFAF;
+            border-right: 2px solid #AFAFAF;
+        }
+        
+        .rc-menu-item.tolerance {
+            border-top: none;
+        }
+        
+        .rc-menu-item.tolerance:before {
+            border-right: 2px solid #AFAFAF;
+        }
     }
 
     .disabled-view {
