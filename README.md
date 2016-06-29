@@ -87,30 +87,10 @@ Setting up a development environment
   ```
   > npm install
   ```
+ ------------------------------------------------------------------------------
+  10. Making a server
 
-  ------------------------------------------------------------------------------
-  10. Build/compile using webpack
-
-  #### if you installed webpack globally (`npm install -g webpack`)
-
-  ```
-  > webpack
-  ```
-
-  #### if you installed webpack via package dependencies (`npm install`)
-
-  ```
-  > ./node_modules/.bin/webpack
-  ```
-
-  ------------------------------------------------------------------------------
-  11. Start a server
-
-  ```
-  > npm start
-  ```
-  ------------------------------------------------------------------------------
-  12. Webpacking and Starting 
+  Making a server will build and then start the server
 
   ```
   > npm run make
@@ -121,3 +101,12 @@ Setting up a development environment
   ```
   > npm run make-release
   ```
+  ------------------------------------------------------------------------------
+  11. Start a server
+
+  If a server doesn't need to be rebuilt, this will be faster than making. 
+
+  ```
+  > npm start
+  ```
+ 
