@@ -1,6 +1,9 @@
 "use strict";
 var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
 var file = require('./file');
+var request = require("superagent");
+var parseXMLString = require("xml2js");
+
 
 var app;
 var loopTimer;
@@ -15,21 +18,41 @@ var _updateSpeed = (speed) => {
   app.ioServer.emit("nc:speed", speed);
 };
 
+var MTListen = function() {
+  var coords = "";
+  return new Promise(function(resolve, reject) {
+    let mtc = request.get("http://192.168.0.123:5000/current");
+    mtc.end(function (err, res) {
+      parseXMLString.parseString(res.text, function (error, result) {
+        coords = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream[3].Samples[0].PathPosition[0]._.split(" ");
+      });
+      console.log(coords);
+      resolve(coords);
+    });
+  });
+}
+
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
 var _getDelta = function(ncId, ms, key, cb) {
-  var response = "";
+  let holder = "";
   if (key) {
-    var holder = JSON.parse(ms.GetKeystateJSON()); 
+    holder = JSON.parse(ms.GetKeystateJSON());
     holder["project"] = ncId;
-    response = JSON.stringify(holder);
+    //response = JSON.stringify(holder);
   }
   else {
-    var holder = JSON.parse(ms.GetDeltaJSON()); 
+    holder = JSON.parse(ms.GetDeltaJSON());
     holder["project"] = ncId;
-    response = JSON.stringify(holder);
+    //response = JSON.stringify(holder);
   }
-  //app.logger.debug("got " + response);
-  cb(response);
+
+  let theQuestion = MTListen();
+  theQuestion.then(function(result) {
+    holder.mtcoords = result;
+    let response = JSON.stringify(holder);
+    //app.logger.debug("got " + response);
+    cb(response);
+  });
 };
 
 var _getNext = function(ncId, ms, cb) {
