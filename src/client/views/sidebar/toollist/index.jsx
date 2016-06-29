@@ -31,7 +31,7 @@ export default class ToolList extends React.Component {
   }
 
   componentDidMount(){
-      let url = "/v2/nc/projects/"+this.props.pid+"/tools/";
+      let url = "/v3/nc/tools/";
       let resCb = function(err,res){ //Callback function for response
             if(!err && res.ok){
                 // Node preprocessing
@@ -48,7 +48,7 @@ export default class ToolList extends React.Component {
       request
         .get(url)
         .end(resCb);
-      let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
+      let url2 = "/v3/nc/tools/"+this.props.ws;
       let resCb2 = function(err,res){
         if(!err && res.ok){
           this.setState({"curtool":res.text});
@@ -62,7 +62,7 @@ export default class ToolList extends React.Component {
   }
 
   componentWillReceiveProps(){
-    let url2 = "/v2/nc/projects/"+this.props.pid+"/tools/"+this.props.ws;
+    let url2 = "/v3/nc/tools/"+this.props.ws;
       let resCb2 = function(err,res){
         if(!err && res.ok){
           this.setState({"curtool":res.text});
@@ -87,5 +87,4 @@ export default class ToolList extends React.Component {
   }
 }
 
-ToolList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired,
-                                pid: React.PropTypes.string.isRequired}
+ToolList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired}

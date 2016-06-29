@@ -32,7 +32,7 @@ export default class ToleranceList extends React.Component {
   }
 
   componentDidMount(){
-      let url = "/v2/nc/projects/"+this.props.pid+"/tolerances/";
+      let url = "/v3/nc/tolerances/";
       let resCb = function(err,res){ //Callback function for response
             if(!err && res.ok){
                 // Node preprocessing
@@ -65,5 +65,4 @@ export default class ToleranceList extends React.Component {
   }
 }
 
-ToleranceList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired,
-                                pid: React.PropTypes.string.isRequired}
+ToleranceList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired}

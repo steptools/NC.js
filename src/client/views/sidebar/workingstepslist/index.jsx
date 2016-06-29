@@ -21,7 +21,7 @@ export default class WorkingstepList extends React.Component {
   }
 
   onObjectTreeNodeClick(node, self){
-        let url = "/v2/nc/projects/"+this.props.pid+"/state/ws/" + node["id"];
+        let url = "/v3/nc/state/ws/" + node["id"];
         request
           .get(url)
           .end(function(err, res){
@@ -45,7 +45,7 @@ export default class WorkingstepList extends React.Component {
   }
 
   componentDidMount(){
-      let url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
+      let url = "/v3/nc/workplan/";
       let resCb = function(err,res){ //Callback function for response
             if(!err && res.ok){
               // Node preprocessing
@@ -80,5 +80,4 @@ export default class WorkingstepList extends React.Component {
   }
 }
 
-WorkingstepList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, 
-                                pid: React.PropTypes.string.isRequired, ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired};
+WorkingstepList.propTypes = {cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired};

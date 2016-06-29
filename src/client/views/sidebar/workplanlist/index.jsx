@@ -22,7 +22,7 @@ export default class WorkplanList extends React.Component {
   }
 
   onObjectTreeNodeClick(node, self){
-        let url = "/v2/nc/projects/"+this.props.pid+"/state/ws/" + node["id"];
+        let url = "/v3/nc/state/ws/" + node["id"];
         request
           .get(url)
           .end(function(err, res){
@@ -77,7 +77,7 @@ export default class WorkplanList extends React.Component {
   }
 
   componentDidMount(){
-      let url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
+      let url = "/v3/nc/workplan/";
       let resCb = function(err,res){ //Callback function for response
             if(!err && res.ok){
   	          var nodes = {};

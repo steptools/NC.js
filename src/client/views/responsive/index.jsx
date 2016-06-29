@@ -64,8 +64,7 @@ export default class ResponsiveView extends React.Component {
     }
 
     componentWillMount() {
-        let url = "/v2/nc/projects/";
-        url = url + this.props.pid + "/state/loop/";
+        let url = "/v3/nc/state/loop/";
         let requestCB = function(error, response) {
             if (!error && response.ok) {
                 let stateObj = JSON.parse(response.text);
@@ -99,8 +98,8 @@ export default class ResponsiveView extends React.Component {
     }
 
     updateWorkingstep(ws){
-        let url = "/v2/nc/projects/";
-        url = url + this.props.pid + "/workplan/" + ws;
+        let url = "/v3/nc/";
+        url = url + "workplan/" + ws;
         
         let requestCB = function(error, response) {
             if (!error && response.ok) {
@@ -119,8 +118,7 @@ export default class ResponsiveView extends React.Component {
     }
 
     playpause(){
-        let url = "/v2/nc/projects/";
-        url = url + this.props.pid + "/state/loop/";
+        let url = "/v3/nc/state/loop/";
         if(this.state.ppbutton ==='play'){
             this.ppstate('play');
             url = url+"start";
@@ -132,13 +130,12 @@ export default class ResponsiveView extends React.Component {
         request.get(url).end((res) => {});
     }
     nextws(){
-        let url = "/v2/nc/projects/"
-        url = url + this.props.pid + "/state/ws/next";
+        let url = "/v3/nc/state/ws/next";
         request.get(url).end((res) => {});
     }
     prevws(){
-        let url = "/v2/nc/projects/"
-        url = url + this.props.pid + "/state/ws/prev";
+        let url = "/v3/nc/"
+        url = url + "state/ws/prev";
         request.get(url).end((res) => {});
     }
     ppstate(state){
@@ -189,7 +186,7 @@ export default class ResponsiveView extends React.Component {
         this.setState({'changeSpeed': true});
 
         // now send a request to the server to change its speed
-        let url = "/v2/nc/projects/" + this.props.pid + "/state/loop/" + Number(speed);
+        let url = "/v3/nc/state/loop/" + Number(speed);
         request.get(url).end(() => {});
     }
 
@@ -209,7 +206,6 @@ export default class ResponsiveView extends React.Component {
                 ppbutton={this.state.ppbutton}
                 logstate={this.state.logstate}
                 speed={this.state.playbackSpeed}
-                pid={this.props.pid}
             />;
             SV = <SidebarView
                 cadManager={this.props.app.cadManager}
@@ -230,7 +226,6 @@ export default class ResponsiveView extends React.Component {
                 cbAltMenu={
                     (newAltMenu) => {this.setState({ svaltmenu: newAltMenu })}
                 }
-                pid={this.props.pid}
             />;
         }
         else {
@@ -245,7 +240,6 @@ export default class ResponsiveView extends React.Component {
                     (newWSText) => {this.setState({ wstext: newWSText })}
                 }
                 ppbutton={this.state.ppbutton}
-                pid={this.props.pid}
             />;
         }
 
