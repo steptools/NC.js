@@ -6,11 +6,12 @@ var http        = require('http'),
     _           = require('lodash'),
     opts        = require('commander'),
     winston     = require('winston'),
-    configurator= require('./configurator');
+    configurator= require('./configurator'),
 
-    fileobj          = require('v2/file.js')
+    fileobj     = require('./api/v2/file.js');
 /*****************************************************************************************/
-
+var app;
+//console.log(fileobj);
 function CoreServer() {
     var pjson = require('../../package.json');
     opts
@@ -29,9 +30,11 @@ function CoreServer() {
 
     // set up filepath option
     this.project = opts.filepath;
-    //console.log(this.project);
-    this.nc = new fileobj.NC();
-    console.log(this.nc);
+    //console.log("THIS IS MY PROJECT" + this.project);
+    this.nc = fileobj.NC(this);
+    //console.log(fileobj);
+    //console.log(this);
+    //console.log(this.nc);
 
     // Establish core
     this.models = {};
