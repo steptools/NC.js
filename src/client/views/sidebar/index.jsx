@@ -110,6 +110,7 @@ export default class SidebarView extends React.Component {
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
+                          workingstepCache = {this.props.workingstepCache}
                           propertyCb = {this.openProperties}
                       />
                       : null}
@@ -119,6 +120,7 @@ export default class SidebarView extends React.Component {
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
+                          workplanCache = {this.props.workplanCache}
                           propertyCb = {this.openProperties}
                       />
                       : null}

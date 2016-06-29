@@ -308,7 +308,7 @@ $icons: '../icons/';
 
             .property {
 
-                padding: 20px;
+                padding: 5px 20px;
                 color: #333333;
 
                 &:hover {
@@ -354,6 +354,10 @@ $icons: '../icons/';
                             display: inline-block;
                             width: 100%;
                             padding: 4px 5px;
+
+                            &.invalid {
+                                cursor: default;
+                            }
 
                             .textbox {
                                 display: flex;

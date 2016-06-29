@@ -39,6 +39,7 @@ export default class PropertiesPane extends React.Component {
     }
 
     renderNode(node){
+        
         var cName = 'node';
         //node is a generic white node
         //node running-node is a node that is the current workingstep
@@ -60,7 +61,7 @@ export default class PropertiesPane extends React.Component {
                 onClick={(event) => {this.props.propertiesCb(node);}}
             >
                 {icon}
-                <span className='textbox'>{node.name}</span>
+                <span className='textbox' >{node.name}</span>
             </span>
           </div>);
     }
@@ -70,25 +71,33 @@ export default class PropertiesPane extends React.Component {
 
         if (entity === null)
             return null;
-
+        
+        let hasWorkingsteps = true;
+        if (entity.workingsteps === undefined || entity.workingsteps.length <= 0) {
+            hasWorkingsteps = false;
+        }
+        
         switch (entity.type) {
             case 'tolerance':
-                let ws = null;
-                if (entity.workingsteps !== undefined && entity.workingsteps.length > 0) {
-                    ws = (<MenuItem key='workingsteps' className='property children workingsteps'>
-                            <div className='title'>Used in Workingsteps:</div>
-                            <div className='list'>
-                                {entity.workingsteps.map(this.renderNode)}
-                            </div>
-                        </MenuItem>);
-                }
                 items = (
                     <Menu className='properties'>
-                        <MenuItem disabled className='property'>{entity.toleranceType}</MenuItem>
-                        <MenuItem disabled className='property'>Value: {entity.value} {entity.unit}</MenuItem>
-                        {ws}
+                        <MenuItem disabled key='tolType' className='property'>{entity.toleranceType} Tolerance</MenuItem>
+                        <MenuItem disabled key='tolValue' className='property'>Value: {entity.value} {entity.unit}</MenuItem>
+                        {hasWorkingsteps ?
+                            <MenuItem key='workingsteps' className='property children workingsteps'>
+                                <div className='title'>Used in Workingsteps:</div>
+                                <div className='list'>
+                                    {entity.workingsteps.map(this.renderNode)}
+                                </div>
+                            </MenuItem>
+                            :
+                            <MenuItem disabled key='workingsteps' className='property children workingsteps'>
+                                <div className='title'>Not used in any workingsteps.</div>
+                            </MenuItem>
+                        }
                     </Menu>
                 );
+                
                 break;
             case 'workingstep':
                 let selectStep, goToButton, toolInfo;
@@ -132,12 +141,18 @@ export default class PropertiesPane extends React.Component {
             case 'tool':
                 items = (
                     <Menu className='properties'>
-                        <MenuItem key='workingsteps' className='property children workingsteps'>
-                            <div className='title'>Used in Workingsteps:</div>
-                            <div className='list'>
-                                {entity.workingsteps.map(this.renderNode)}
-                            </div>
-                        </MenuItem>
+                        {hasWorkingsteps ?
+                            <MenuItem key='workingsteps' className='property children workingsteps'>
+                                <div className='title'>Used in Workingsteps:</div>
+                                <div className='list'>
+                                    {entity.workingsteps.map(this.renderNode)}
+                                </div>
+                            </MenuItem>
+                            :
+                            <MenuItem key='workingsteps' className='property children workingsteps'>
+                                <div className='title'>Not used in any workingsteps.</div>
+                            </MenuItem>
+                        }
                     </Menu>
                 );
                 break;

@@ -7,7 +7,7 @@ import CADView              from '../cad';
 import HeaderView           from '../header';
 import SidebarView          from '../sidebar';
 import FooterView	    from '../footer';
-var md = require("node-markdown").Markdown;
+import {Markdown as md} from "node-markdown";
 import ReactTooltip from 'react-tooltip';
 
 export default class ResponsiveView extends React.Component {
@@ -36,7 +36,9 @@ export default class ResponsiveView extends React.Component {
             logtext : "default",
             toolCache : [],
             curtool : '',
-            toleranceCache: []
+            toleranceCache: [],
+            workingstepCache: {},
+            workplanCache: []
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -60,29 +62,33 @@ export default class ResponsiveView extends React.Component {
 
         this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
+        
+        this.getNodeIcon = this.getNodeIcon.bind(this);
     }
     
     
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
-    }
-
-    componentWillMount() {
+        
+        // get the project loopstate
         let url = "/v2/nc/projects/";
         url = url + this.props.pid + "/state/loop/";
-        let requestCB = function(error, response) {
+        let requestCB = (error, response) => {
 
-            let chlog = new XMLHttpRequest();
-            chlog.open("GET","/log");
-            var log = "fauile";
-            chlog.onreadystatechange = function(){
-                if (chlog.readyState == 4 && chlog.status == 200) {
-                    log = md(chlog.responseText.toString());
-                }
-            }
-            chlog.send();
+            let chlog_url = "/log";
+            let log = "fauile";
+            request
+                .get(chlog_url)
+                .end((err, res) => {
+                    if (!err && res.ok)
+                        log = md(res.text);
+                    else
+                        console.log(err);
+                });
+            
             this.setState({"logtext" : log});
+            
             if (!error && response.ok) {
                 let stateObj = JSON.parse(response.text);
                 
@@ -93,15 +99,56 @@ export default class ResponsiveView extends React.Component {
 
                 this.setState({"playbackSpeed": Number(stateObj.speed)});
             }
+            else {
+                console.log(error);
+            }
         };
-        
-        requestCB = requestCB.bind(this);
         
         request.get(url).end(requestCB);
         
+        // set a temp variable for the workingstep cache
+        let workingstepCache = {};
+
+        // get the workplan
+        url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
+        let resCb = (err,res) => { //Callback function for response
+            if(!err && res.ok){
+  	            let planNodes = JSON.parse(res.text);
+                let stepNodes = {};
+                let wsCount = 1;
+  	            let nodeCheck = (node)=> {
+    	            node.icon = this.getNodeIcon(node, wsCount);
+                    if(node.type === 'selective' || node.type === 'workplan'){
+                        if(node.children.length != 0)
+                            node.children.map(nodeCheck);
+                        node.leaf = false;
+                    }
+                    else{
+                        node.leaf = true;
+                        stepNodes[node.id] = node;
+                        wsCount = wsCount + 1;
+                    }
+                };
+                nodeCheck(planNodes);
+                workingstepCache = stepNodes;
+                
+                this.setState({'workplanCache': planNodes});
+                this.setState({'workingstepCache': workingstepCache});
+
+            }
+            else {
+                console.log(err);
+            }
+        };
+
+        request
+          .get(url)
+          .end(resCb);
+        
+        
         // get the cache of tools
         url = "/v2/nc/projects/"+this.props.pid+"/tools/";
-        let resCb = (err,res) => { //Callback function for response
+        resCb = (err,res) => { //Callback function for response
             if(!err && res.ok){
                 // Node preprocessing
                 let json = JSON.parse(res.text);
@@ -113,15 +160,7 @@ export default class ResponsiveView extends React.Component {
                     let steps = [];
                     
                     _.each(tool.workingsteps, (step) => {
-                        let newUrl = '/v2/nc/projects/'+this.props.pid + '/workplan/' + step;
-                        request
-                            .get(newUrl)
-                            .end((err, res) => {
-                                if (!err && res.ok) {
-                                    let tool = JSON.parse(res.text);
-                                    steps.push(tool);
-                                }
-                            });
+                        steps.push(workingstepCache[step]);
                     });
                     tool.workingsteps = steps;
                 });
@@ -150,7 +189,7 @@ export default class ResponsiveView extends React.Component {
         // now the same for tolerances
         
         url = "/v2/nc/projects/"+this.props.pid+"/tolerances/";
-        let toleranceCb = (err,res) => { //Callback function for response
+        resCb = (err,res) => { //Callback function for response
             if(!err && res.ok){
                 // Node preprocessing
                 let json = JSON.parse(res.text);
@@ -161,15 +200,7 @@ export default class ResponsiveView extends React.Component {
                     let steps = [];
                     
                     _.each(tolerance.workingsteps, (step) => {
-                        let newUrl = '/v2/nc/projects/'+this.props.pid + '/workplan/' + step;
-                        request
-                            .get(newUrl)
-                            .end((err, res) => {
-                                if (!err && res.ok) {
-                                    let tool = JSON.parse(res.text);
-                                    steps.push(tool);
-                                }
-                            });
+                        steps.push(workingstepCache[step]);
                     });
                     tolerance.workingsteps = steps;
                 });
@@ -180,11 +211,22 @@ export default class ResponsiveView extends React.Component {
         
         request
           .get(url)
-          .end(toleranceCb);
+          .end(resCb);
+
     }
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.handleResize);
+    }
+    
+    getNodeIcon(node,num){
+      if (node.type == "workplan"){
+        return <span className='icon-letter'>W</span>;
+      }else if (node.type == "selective"){
+        return <span className='icon-letter'>S</span>;
+      }else{
+        return <span className='icon-letter'>{num}</span>;
+      }
     }
 
     handleResize() {
@@ -336,6 +378,8 @@ export default class ResponsiveView extends React.Component {
                 toolCache={this.state.toolCache}
                 curtool={this.state.curtool}
                 toleranceCache={this.state.toleranceCache}
+                workplanCache={this.state.workplanCache}
+                workingstepCache={this.state.workingstepCache}
             />;
         }
         else {
