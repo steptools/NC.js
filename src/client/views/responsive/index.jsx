@@ -36,7 +36,7 @@ export default class ResponsiveView extends React.Component {
             logtext : "default",
             toolCache : [],
             curtool : '',
-            toleranceCache: {},
+            toleranceCache: [],
             workingstepCache: {},
             workingstepList: [],
             workplanCache: {}

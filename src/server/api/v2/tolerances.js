@@ -50,7 +50,7 @@ var _getTols = function(req,res) {
             "toleranceType":tolType,
             "value":tol.GetToleranceValue(id),
             "workingsteps": steps,
-            // "unit" : tol.GetToleranceUnit(id) // TODO: implement GetToleranceUnit
+            "unit" : tol.GetToleranceUnit(id)
         });
     }
     res.status(200).send(ret);
