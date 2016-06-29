@@ -64,8 +64,7 @@ export default class ResponsiveView extends React.Component {
     }
 
     componentWillMount() {
-        let url = "/v3/nc/";
-        url = url + "state/loop/";
+        let url = "/v3/nc/state/loop/";
         let requestCB = function(error, response) {
             if (!error && response.ok) {
                 let stateObj = JSON.parse(response.text);
@@ -119,8 +118,7 @@ export default class ResponsiveView extends React.Component {
     }
 
     playpause(){
-        let url = "/v3/nc/";
-        url = url + "state/loop/";
+        let url = "/v3/nc/state/loop/";
         if(this.state.ppbutton ==='play'){
             this.ppstate('play');
             url = url+"start";
@@ -132,8 +130,7 @@ export default class ResponsiveView extends React.Component {
         request.get(url).end((res) => {});
     }
     nextws(){
-        let url = "/v3/nc/"
-        url = url + "state/ws/next";
+        let url = "/v3/nc/state/ws/next";
         request.get(url).end((res) => {});
     }
     prevws(){
@@ -189,7 +186,7 @@ export default class ResponsiveView extends React.Component {
         this.setState({'changeSpeed': true});
 
         // now send a request to the server to change its speed
-        let url = "/v3/nc" + "/state/loop/" + Number(speed);
+        let url = "/v3/nc/state/loop/" + Number(speed);
         request.get(url).end(() => {});
     }
 

@@ -283,7 +283,6 @@ export default class NC extends THREE.EventDispatcher {
                     // Push the annotation for later completion
                     this._loader._annotations[name] = annotation;
                     var url = "/v3/nc/";
-                    url = url + this.project;
                     this._loader.addRequest({
                         path: name,
                         baseURL: url,
@@ -318,7 +317,6 @@ export default class NC extends THREE.EventDispatcher {
                     this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
                     this._loader._shells[geomData.shell]=shell;
                     var url = "/v3/nc/";
-                    url = url + this.project;
                     this._loader.addRequest({
                         path: name,
                         baseURL: url,

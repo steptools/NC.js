@@ -87,7 +87,7 @@ APIServer.prototype._setRoutes = function(cb) {
     require('./api/v3/step')(self, function() {
         require('./api/v3/state')(self, function () {
             require('./api/v3/tool')(self, function (){
-                require('./api/v3/tool')(self, function (){
+                require('./api/v3/tolerances')(self, function (){
                     require('./api/v3/geometry')(self, function (){
                         require('./api/v3/changelog')(self, function(){if(cb)cb();});
                     });

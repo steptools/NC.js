@@ -7,8 +7,7 @@ var app;
 var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
-let path = 1;//find.GetProjectName();
-console.log("PATHHH " + path);
+let path = find.GetProjectName();
 
 var update = (val) => {
   app.ioServer.emit("nc:state", val);

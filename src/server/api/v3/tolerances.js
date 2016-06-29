@@ -14,7 +14,6 @@ var _getTols = function(req,res) {
       ret.push({"id":id,"type":tol.GetToleranceType(id),"value":tol.GetToleranceValue(id)});
     }
     res.status(200).send(ret);
-  }
 };
 
 var _getWsTols = function(req,res) {
@@ -22,11 +21,11 @@ var _getWsTols = function(req,res) {
     let wsId = req.params.wsId;
     res.status(200).send(tol.GetWorkingstepToleranceAll(wsId));
   }
-}
+};
 
 
 module.exports = function(app, cb) {
   app.router.get('/v3/nc/tolerances/:wsId',_getWsTols);
-  app.router.get('/v3/nc/tolerances',_getTols);
+  app.router.get('/v3/nc/tolerances/',_getTols);
   if (cb) cb();
 };
