@@ -23,6 +23,9 @@ export default class WorkplanList extends React.Component {
         if(node.enabled === false)
           cName = 'node disabled';
       }
+    
+    node.icon = this.getNodeIcon(node);
+    
       return <span
           id={node.id}
           className={cName}
@@ -32,7 +35,16 @@ export default class WorkplanList extends React.Component {
           {node.name}
       </span>;
   }
-
+  
+  getNodeIcon(node){
+    if (node.type == "workplan"){
+      return <span className='icon-letter'>W</span>;
+    }else if (node.type == "selective"){
+      return <span className='icon-letter'>S</span>;
+    }else{
+      return <span className='icon-letter'>WS</span>;
+    }
+  }
   componentDidMount(){
       
   }

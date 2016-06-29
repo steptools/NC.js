@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import request from 'superagent';
 
 export default class ToolList extends React.Component {
@@ -37,7 +38,7 @@ export default class ToolList extends React.Component {
   render(){
     return (
       <div className='m-tree'>
-        {this.props.tools.map((tool, i) => {
+        {_.values(this.props.tools).map((tool, i) => {
           return <div className='m-node' key={i}>
             {this.renderNode(tool)}
           </div>;

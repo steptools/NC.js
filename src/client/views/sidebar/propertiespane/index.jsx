@@ -31,7 +31,7 @@ export default class PropertiesPane extends React.Component {
         }
         else if (event.key === 'tool') {
             // open properties page for associated tool
-            this.props.propertiesCb(entity.tool);
+            this.props.propertiesCb(this.props.tools[entity.tool]);
         }
         else {
             // some other menu item clicked, no need to do anything
@@ -106,7 +106,7 @@ export default class PropertiesPane extends React.Component {
                     disabled={!(entity.enabled && this.props.ws !== entity.id)}
                     className='property goTo'>Go to Workingstep</MenuItem>);
                 
-                toolInfo = (<MenuItem key='tool' className='property toolInfo'>Tool: {entity.tool.name} </MenuItem>);
+                toolInfo = (<MenuItem key='tool' className='property toolInfo'>Tool: {this.props.tools[entity.tool].name} </MenuItem>);
                 
                 if (this.props.ws === entity.id) {
                     selectStep = <MenuItem disabled className='property'>Status: Active</MenuItem>;

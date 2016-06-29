@@ -16,16 +16,8 @@ var exeFromId = function(id) {
 		ws.enabled = false;
 	if (find.IsWorkingstep(id)) {
 		ws.type = "workingstep";
-		ws.tool = {
-			id: find.GetWorkingstepTool(id),
-			type: 'tool'
-        };
-		ws.tool.name = find.GetToolPartName(ws.tool.id);
-		if (ws.tool.name === undefined)
-			ws.tool.name = '';
-        else
-			ws.tool.name = ws.tool.name.replace(/_/g, ' ');
-		
+		ws.tool = find.GetWorkingstepTool(id);
+
 		return ws;
 	} else if (find.IsSelective(id)) {
 		ws.type = "selective";

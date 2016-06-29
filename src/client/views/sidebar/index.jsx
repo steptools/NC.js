@@ -45,20 +45,6 @@ export default class SidebarView extends React.Component {
     }
     
     openProperties(node) {
-        
-        switch (node.type) {
-            case "workingstep":
-                _.each(this.props.toolCache, (tool) => {
-                    if (tool.id === node.tool.id) {
-                        node.tool = tool;
-                        return false;   // break since we found it
-                    }
-                });
-                break;
-            default:
-                // nothing
-        }
-        
         this.setState({selectedEntity: node});
     }
     
@@ -111,6 +97,7 @@ export default class SidebarView extends React.Component {
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
                           workingstepCache = {this.props.workingstepCache}
+                          workingstepList = {this.props.workingstepList}
                           propertyCb = {this.openProperties}
                       />
                       : null}

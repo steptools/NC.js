@@ -36,9 +36,10 @@ export default class ResponsiveView extends React.Component {
             logtext : "default",
             toolCache : [],
             curtool : '',
-            toleranceCache: [],
+            toleranceCache: {},
             workingstepCache: {},
-            workplanCache: []
+            workingstepList: [],
+            workplanCache: {}
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -63,7 +64,6 @@ export default class ResponsiveView extends React.Component {
         this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
         
-        this.getNodeIcon = this.getNodeIcon.bind(this);
     }
 
     componentDidMount() {
@@ -106,6 +106,7 @@ export default class ResponsiveView extends React.Component {
         
         // set a temp variable for the workingstep cache
         let workingstepCache = {};
+        let wsList = [];
 
         // get the workplan
         url = "/v2/nc/projects/"+this.props.pid+"/workplan/";
@@ -113,18 +114,17 @@ export default class ResponsiveView extends React.Component {
             if(!err && res.ok){
   	            let planNodes = JSON.parse(res.text);
                 let stepNodes = {};
-                let wsCount = 1;
   	            let nodeCheck = (node)=> {
-    	            node.icon = this.getNodeIcon(node, wsCount);
                     if(node.type === 'selective' || node.type === 'workplan'){
                         if(node.children.length != 0)
                             node.children.map(nodeCheck);
                         node.leaf = false;
                     }
                     else{
-                        node.leaf = true;
-                        stepNodes[node.id] = node;
-                        wsCount = wsCount + 1;
+                      node.leaf = true;
+                      stepNodes[node.id] = node;
+                      if (node.enabled)
+                        wsList.push(node.id);
                     }
                 };
                 nodeCheck(planNodes);
@@ -132,6 +132,7 @@ export default class ResponsiveView extends React.Component {
                 
                 this.setState({'workplanCache': planNodes});
                 this.setState({'workingstepCache': workingstepCache});
+                this.setState({'workingstepList': wsList});
 
             }
             else {
@@ -149,6 +150,7 @@ export default class ResponsiveView extends React.Component {
         resCb = (err,res) => { //Callback function for response
             if(!err && res.ok){
                 // Node preprocessing
+              let tools = {};
                 let json = JSON.parse(res.text);
 
                 _.each(json, (tool)=> {
@@ -161,9 +163,11 @@ export default class ResponsiveView extends React.Component {
                         steps.push(workingstepCache[step]);
                     });
                     tool.workingsteps = steps;
+                  
+                  tools[tool.id] = tool;
                 });
 
-                this.setState({'toolCache': json});
+                this.setState({'toolCache': tools});
             }
             else {
                 console.log(err);
@@ -217,16 +221,6 @@ export default class ResponsiveView extends React.Component {
         window.removeEventListener("resize", this.handleResize);
     }
     
-    getNodeIcon(node,num){
-      if (node.type == "workplan"){
-        return <span className='icon-letter'>W</span>;
-      }else if (node.type == "selective"){
-        return <span className='icon-letter'>S</span>;
-      }else{
-        return <span className='icon-letter'>{num}</span>;
-      }
-    }
-
     handleResize() {
         if((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800))
             this.setState({ guiMode: 0 });
@@ -377,6 +371,7 @@ export default class ResponsiveView extends React.Component {
                 toleranceCache={this.state.toleranceCache}
                 workplanCache={this.state.workplanCache}
                 workingstepCache={this.state.workingstepCache}
+                workingstepList={this.state.workingstepList}
             />;
         }
         else {
