@@ -16,6 +16,8 @@ var exeFromId = function(id) {
 		ws.enabled = false;
 	if (find.IsWorkingstep(id)) {
 		ws.type = "workingstep";
+		ws.tool = find.GetWorkingstepTool(id);
+
 		return ws;
 	} else if (find.IsSelective(id)) {
 		ws.type = "selective";
