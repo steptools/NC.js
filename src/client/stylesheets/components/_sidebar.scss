@@ -322,4 +322,228 @@ $icons: '../icons/';
         color: #888;
         padding: 20px;
     }
+
+    .properties-pane {
+        display: block;
+        width: $sidebarWidth;
+        background-color: #F8F8F8;
+
+        position: absolute;
+        top: 0;
+        z-index: 10;
+
+        height: 100%;
+
+        left: $sidebarWidth*-1;
+
+        -webkit-transition: -webkit-transform ease 250ms;
+        -moz-transition: -moz-transform ease 250ms;
+        -ms-transition: -ms-transform ease 250ms;
+        -o-transition: -o-transform ease 250ms;
+        transition: transform ease 250ms;
+
+        .properties {
+
+            height: calc(100% - 54px);
+            overflow-y: scroll;
+
+            .property {
+
+                padding: 5px 20px;
+                color: #333333;
+
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &.rc-menu-item-disabled {
+                    cursor: inherit;
+                }
+
+                &.goTo {
+                    text-align: center;
+                    padding: 10px 5px;
+                    margin: 0 20%;
+                    background-color: #333333;
+                    color: #F8F8F8;
+                    border-bottom: 2px solid #AFAFAF;
+
+                    &:hover {
+                        color: #35B7FD;
+                        border-bottom: 2px solid #35B7FD;
+                    }
+
+                    &.rc-menu-item-disabled {
+                        opacity: 0.5;
+
+                        &:hover {
+                            color: #F8F8F8;
+                            border-bottom: 2px solid #AFAFAF;
+                        }
+                    }
+                }
+
+                &.children {
+                    white-space: normal;
+
+                    .title {
+                        font-size: 18px;
+                    }
+
+                    .list {
+                        .node {
+                            display: inline-block;
+                            width: 100%;
+                            padding: 4px 5px;
+
+                            &.invalid {
+                                cursor: default;
+                            }
+
+                            .textbox {
+                                display: flex;
+                            }
+
+                            &.is-active {
+                                background-color: #0000ff;
+                            }
+
+                            &.is-hidden {
+                                color: #1b6d85;
+                            }
+
+                            &.running-node {
+                                background-color: #9BFA9B;
+                            }
+
+                            &.disabled {
+                                background-color: #666666;
+                            }
+
+                            &.is-highlighted:not(.is-active) {
+                                background-color: rgba(49, 54, 63, 0.43);
+                            }
+
+                            &:hover:not(.is-active) {
+                                background-color: rgba(49, 54, 63, 0.43);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .titlebar {
+            padding: 5px;
+            display: flex;
+
+            .title {
+                width: 78%;
+                font-size: 14px;
+                font-weight: bold;
+                .type {
+                    border-bottom: 1px solid #666666;
+                }
+            }
+            .exit {
+                margin-left: auto;
+                font-size: 32px;
+
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .icon {
+            background-color: rgba(#fff, 0);
+            padding: 15px;
+            border-radius: 5px;
+            width: 30px;
+            height:30px;
+            float:left;
+            text-align: center;
+            margin-right: 8px;
+            vertical-align: middle;
+
+            border: 2px solid #333333;
+
+            background-image: url($icons + 'tolerance/unknown.svg');
+            background-size: cover;
+            background-position: center;
+
+            &.tool {
+                background-image: url($icons + 'tools/tool.svg');
+            }
+
+            &.workingstep, &.workplan, &.selective {
+                background-image: none;
+                background-color: #333;
+                color: #fff;
+                padding: 3px;
+
+                &.workingstep:after {
+                    content: 'WS';
+                }
+
+                &.workplan:after {
+                    content: 'W';
+                }
+
+                &.selective:after {
+                    content: 'S';
+                }
+            }
+
+            &.tolerance {
+                &.angularity {
+                    background-image: url($icons + 'tolerance/angularity.svg');
+                }
+                &.circularity {
+                    background-image: url($icons + 'tolerance/circularity.svg');
+                }
+                &.concentricity {
+                    background-image: url($icons + 'tolerance/concentricity.svg');
+                }
+                &.cylindricity {
+                    background-image: url($icons + 'tolerance/cylindricity.svg');
+                }
+                &.flatness {
+                    background-image: url($icons + 'tolerance/flatness.svg');
+                }
+                &.parallelism {
+                    background-image: url($icons + 'tolerance/parallelism.svg');
+                }
+                &.perpendicularity {
+                    background-image: url($icons + 'tolerance/perpendicularity.svg');
+                }
+                &.position {
+                    background-image: url($icons + 'tolerance/position.svg');
+                }
+                &.profile-line {
+                    background-image: url($icons + 'tolerance/profile_line.svg');
+                }
+                &.profile-surface {
+                    background-image: url($icons + 'tolerance/profile_surface.svg');
+                }
+                &.straightness {
+                    background-image: url($icons + 'tolerance/straightness.svg');
+                }
+                &.symmetry {
+                    background-image: url($icons + 'tolerance/symmetry.svg');
+                }
+                &.total-runout {
+                    background-image: url($icons + 'tolerance/total_runout.svg');
+                }
+            }
+        }
+
+        &.visible {
+            -webkit-transform: translate3d($sidebarWidth, 0, 0);
+            -moz-transform: translate3d($sidebarWidth, 0, 0);
+            -ms-transform: translate3d($sidebarWidth, 0, 0);
+            -o-transform: translate3d($sidebarWidth, 0, 0);
+            transform: translate3d($sidebarWidth, 0, 0);
+        }
+    }
 }

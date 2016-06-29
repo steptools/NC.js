@@ -5,6 +5,7 @@ import WorkingstepList from './workingstepslist';
 import WorkplanList from './workplanlist';
 import ToolList from './toollist';
 import ToleranceList from './tolerancelist';
+import PropertiesPane from './propertiespane';
 import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager';
 let MenuItem = Menu.Item;
@@ -13,7 +14,9 @@ let scrolled=false;
 export default class SidebarView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { };
+        this.state = {
+            selectedEntity : null,
+        };
 
         let disabledView = (name) => {
           return (() => {
@@ -29,6 +32,7 @@ export default class SidebarView extends React.Component {
         };
 
         this.selectMenuItem = this.selectMenuItem.bind(this);
+        this.openProperties = this.openProperties.bind(this);
 
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
@@ -39,11 +43,23 @@ export default class SidebarView extends React.Component {
     selectMenuItem (info) {
         this.props.cbMode(info.key);
     }
-
+    
+    openProperties(node) {
+        this.setState({selectedEntity: node});
+    }
+    
     render() {
       // TODO currently mode menu can only have two layers
       let nested = this.props.mode != "tree";
-
+        
+      let properties = <PropertiesPane 
+              entity={this.state.selectedEntity}
+              pid={this.props.pid}
+              ws={this.props.ws}
+              propertiesCb = {this.openProperties}
+              tools = {this.props.toolCache}
+          />;
+        
       const modeMenu = (
           <Menu onSelect={this.selectMenuItem}
                 defaultSelectedKeys={[this.props.mode]}
@@ -71,18 +87,45 @@ export default class SidebarView extends React.Component {
         }
       }
         return <div className="sidebar">
+                  {properties}
                   {modeMenu}
                   {this.props.mode == 'ws' ?
-                      <WorkingstepList cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      <WorkingstepList
+                          cbMode = {this.props.cbMode}
+                          cbTree = {this.props.cbTree}
+                          ws = {this.props.ws}
+                          workingstepCache = {this.props.workingstepCache}
+                          workingstepList = {this.props.workingstepList}
+                          propertyCb = {this.openProperties}
+                      />
                       : null}
                   {this.props.mode == 'tree' ?
-                      <WorkplanList cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      <WorkplanList
+                          cbMode = {this.props.cbMode}
+                          cbTree = {this.props.cbTree}
+                          ws = {this.props.ws}
+                          workplanCache = {this.props.workplanCache}
+                          propertyCb = {this.openProperties}
+                      />
                       : null}
                   {this.props.mode == 'tolerance' ?
-                      <ToleranceList cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}  />
+                      <ToleranceList 
+                          cbMode = {this.props.cbMode}
+                          cbTree = {this.props.cbTree}
+                          propertyCb = {this.openProperties}
+                          toleranceCache = {this.props.toleranceCache}
+                      />
                       : null}
                   {this.props.mode == 'tools' ?
-                      <ToolList cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      <ToolList
+                          cbMode = {this.props.cbMode}
+                          cbTree = {this.props.cbTree}
+                          ws = {this.props.ws}
+                          propertyCb = {this.openProperties}
+                          toolCb = {(toolList) => {this.setState({tools: toolList});}}
+                          tools = {this.props.toolCache}
+                          curtool = {this.props.curtool}
+                      />
                       : null}
                </div>;
     }

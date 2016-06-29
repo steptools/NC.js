@@ -7,7 +7,7 @@ import CADView              from '../cad';
 import HeaderView           from '../header';
 import SidebarView          from '../sidebar';
 import FooterView	    from '../footer';
-var md = require("node-markdown").Markdown;
+import {Markdown as md} from "node-markdown";
 import ReactTooltip from 'react-tooltip';
 
 export default class ResponsiveView extends React.Component {
@@ -33,7 +33,13 @@ export default class ResponsiveView extends React.Component {
             resize: false,
             changeSpeed: false,
             playbackSpeed: 50,
-            logtext : "default"
+            logtext : "default",
+            toolCache : [],
+            curtool : '',
+            toleranceCache: [],
+            workingstepCache: {},
+            workingstepList: [],
+            workplanCache: {}
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -57,15 +63,93 @@ export default class ResponsiveView extends React.Component {
 
         this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
-    }
-
-    componentDidMount() {
-        window.addEventListener("resize", this.handleResize);
+        
     }
 
     componentWillMount() {
-        let url = "/v3/nc/state/loop/";
-        let requestCB = function(error, response) {
+      let url = "/v3/nc/state/loop/";
+      let requestCB = (error, response) => {
+        if (!error && response.ok) {
+          let stateObj = JSON.parse(response.text);
+
+          if (stateObj.state === "play")
+            this.setState({"ppbutton": "pause"}); //Loop is running, we need a pause button.
+          else
+            this.setState({"ppbutton": "play"});
+
+          this.setState({"playbackSpeed": Number(stateObj.speed)});
+        }
+        else {
+          console.log(error);
+        }
+      };
+
+      request.get(url).end(requestCB);
+
+      
+    }
+  
+  componentDidMount() {
+        window.addEventListener("resize", this.handleResize);
+    
+    // set a temp variable for the workingstep cache
+      let workingstepCache = {};
+      let wsList = [];
+
+      // get the workplan
+      let url = "/v3/nc/workplan/";
+      let resCb = (err, res) => { //Callback function for response
+        if (!err && res.ok) {
+          let planNodes = JSON.parse(res.text);
+          let stepNodes = {};
+          let nodeCheck = (node)=> {
+            if (node.type === 'selective' || node.type === 'workplan') {
+              if (node.children.length != 0)
+                node.children.map(nodeCheck);
+              node.leaf = false;
+            }
+            else {
+              node.leaf = true;
+              stepNodes[node.id] = node;
+              if (node.enabled)
+                wsList.push(node.id);
+            }
+          };
+          nodeCheck(planNodes);
+          workingstepCache = stepNodes;
+
+          this.setState({'workplanCache': planNodes});
+          this.setState({'workingstepCache': workingstepCache});
+          this.setState({'workingstepList': wsList});
+
+        }
+        else {
+          console.log(err);
+        }
+      };
+
+      request
+        .get(url)
+        .end(resCb);
+
+              
+        // get the project loopstate
+        url = "/v3/nc/state/loop/";
+        resCb = (error, response) => {
+
+            let chlog_url = "/log";
+            let log = "fauile";
+            request
+                .get(chlog_url)
+                .end((err, res) => {
+                    if (!err && res.ok)
+                        log = md(res.text);
+                    else
+                        console.log(err);
+                });
+            
+            this.setState({"logtext" : log});
+            
             if (!error && response.ok) {
                 let stateObj = JSON.parse(response.text);
                 
@@ -76,17 +160,89 @@ export default class ResponsiveView extends React.Component {
 
                 this.setState({"playbackSpeed": Number(stateObj.speed)});
             }
+            else {
+                console.log(error);
+            }
         };
         
-        requestCB = requestCB.bind(this);
+        request.get(url).end(resCb);
         
-        request.get(url).end(requestCB);
+        // get the cache of tools
+        url = "/v3/nc/tools/";
+        resCb = (err,res) => { //Callback function for response
+            if(!err && res.ok){
+                // Node preprocessing
+              let tools = {};
+                let json = JSON.parse(res.text);
+
+                _.each(json, (tool)=> {
+                    tool.icon = <span className='icon-tool' />
+                    
+                    // collect workingstep info
+                    let steps = [];
+                    
+                    _.each(tool.workingsteps, (step) => {
+                        steps.push(workingstepCache[step]);
+                    });
+                    tool.workingsteps = steps;
+                  
+                  tools[tool.id] = tool;
+                });
+
+                this.setState({'toolCache': tools});
+            }
+            else {
+                console.log(err);
+            }
+        };
+        
+        request
+            .get(url)
+            .end(resCb);
+        
+        url = "/v3/nc/tools/"+this.state.ws;
+        request
+            .get(url)
+            .end((err,res) => {
+                if(!err && res.ok){
+                  this.setState({"curtool":res.text});
+                }
+            });
+        
+        
+        // now the same for tolerances
+        
+        url = "/v3/nc/tolerances/";
+        resCb = (err,res) => { //Callback function for response
+            if(!err && res.ok){
+                // Node preprocessing
+                let json = JSON.parse(res.text);
+
+                _.each(json, (tolerance) => {
+                    tolerance.icon = <span className={'icon-tolerance tolerance-'+tolerance.toleranceType} />
+                    
+                    let steps = [];
+                    
+                    _.each(tolerance.workingsteps, (step) => {
+                        steps.push(workingstepCache[step]);
+                    });
+                    tolerance.workingsteps = steps;
+                });
+
+                this.setState({'toleranceCache': json});
+            }
+        };
+        
+        request
+          .get(url)
+          .end(resCb);
+
     }
 
     componentWillUnmount() {
         window.removeEventListener("resize", this.handleResize);
     }
-
+    
     handleResize() {
         if((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800))
             this.setState({ guiMode: 0 });
@@ -101,18 +257,18 @@ export default class ResponsiveView extends React.Component {
         let url = "/v3/nc/";
         url = url + "workplan/" + ws;
         
-        let requestCB = function(error, response) {
+        let requestCB = (error, response) => {
             if (!error && response.ok) {
                 if (response.text) {
                     let workingstep = JSON.parse(response.text);
                     this.setState({"ws": workingstep.id, "wstext":workingstep.name.trim()});
+
+                    this.setState({'curtool': workingstep.tool});
                 }
                 else
                     this.setState({"ws":ws,"wstxt":"Operation Unknown"});
             }
         };
-        
-        requestCB = requestCB.bind(this);
         
         request.get(url).end(requestCB);
     }
@@ -226,6 +382,12 @@ export default class ResponsiveView extends React.Component {
                 cbAltMenu={
                     (newAltMenu) => {this.setState({ svaltmenu: newAltMenu })}
                 }
+                toolCache={this.state.toolCache}
+                curtool={this.state.curtool}
+                toleranceCache={this.state.toleranceCache}
+                workplanCache={this.state.workplanCache}
+                workingstepCache={this.state.workingstepCache}
+                workingstepList={this.state.workingstepList}
             />;
         }
         else {
