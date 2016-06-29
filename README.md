@@ -1,33 +1,33 @@
-StepNCViewer
+NC.js
 
 
 Setting up a development environment
 ====================================
 
-  1. Download and build NC.js
+  1. Download and build STEPNode
 
   ```
-  > git clone https://github.com/steptools/NC.js.git
-  > cd NC.js
+  > git clone https://github.com/steptools/STEPNode.git
+  > cd STEPNode
   > npm install
   ```
 
   ------------------------------------------------------------------------------
-  2. Clone StepNCViewer into the same directory that contains the NC.js
+  2. Clone NC.js into the same directory that contains the STEPNode
       directory, E.G.:
 
   ```
   > cd ..
-  > git clone https://github.com/steptools/StepNCViewer.git
+  > git clone https://github.com/steptools/STEPNode.git
   > ls
-  NC.js     StepNCViewer
+  STEPNode      NC.js
   ```
 
   ------------------------------------------------------------------------------
-  3. create a new directory in StepNCViewer
+  3. create a new directory in NC.js
 
   ```
-  > cd StepNCViewer
+  > cd NC.js
   > mkdir data
   ```
 
@@ -108,4 +108,16 @@ Setting up a development environment
 
   ```
   > npm start
+  ```
+  ------------------------------------------------------------------------------
+  12. Webpacking and Starting 
+
+  ```
+  > npm run make
+  ```
+
+  or, to minimize the file sizes
+
+  ```
+  > npm run make-release
   ```

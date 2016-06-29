@@ -60,12 +60,19 @@ $icons: '../icons/';
                 margin-right: 8px;
             }
 
+<<<<<<< HEAD
             .icon-tolerance {
                 background-color: #FFF;
+=======
+            .icon-tolerance{
+                background-color: rgba(#fff, 0);
+                border: 2px solid #333333;
+>>>>>>> eac6726f148c5542c45529f0df9460171f73d800
                 padding: 15px;
                 vertical-align: middle;
                 background-image: url($icons + 'tolerance/unknown.svg');
-                background-size: contain;
+                background-size: cover;
+                background-position: center;
             }
 
             .icon-tool {
@@ -164,10 +171,14 @@ $icons: '../icons/';
         left: 0;
         cursor: pointer;
         display: inherit;
+<<<<<<< HEAD
         height: 100%;
         width: 30px;
         background-color: #fff;
         text-align: center;
+=======
+        width: 10;
+>>>>>>> eac6726f148c5542c45529f0df9460171f73d800
     }
 
     .m-node .node {
