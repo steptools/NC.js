@@ -57,3 +57,13 @@ Returns the workingstep in JSON format for the project specified by ncId and wor
 > **/projects/{ncId}/workplan**
 
 Returns the main workplan in JSON format for the given project by ncId
+
+### *Found in tool.js*
+
+> **/projects/{ncId}/tools
+
+Returns a list of tools for the project specified by ncId
+
+> **/projects/{ncId}/tools/{toolId}
+
+Returns the tool information for the tool specified by toolId

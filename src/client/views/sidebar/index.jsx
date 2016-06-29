@@ -2,8 +2,11 @@ import React from 'react';
 import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
 import WorkingstepList from './workingstepslist';
+import WorkplanList from './workplanlist';
+import ToolList from './toollist';
+import ToleranceList from './tolerancelist';
 import ReactTooltip from 'react-tooltip';
-import cadManager from '../../models/cad_manager'
+import cadManager from '../../models/cad_manager';
 let MenuItem = Menu.Item;
 let scrolled=false;
 
@@ -11,11 +14,6 @@ export default class SidebarView extends React.Component {
     constructor(props) {
         super(props);
         this.state = { };
-
-        this.openObjectTree = this.openObjectTree.bind(this);
-        this.openLoadProjectMenu = this.openLoadProjectMenu.bind(this);
-        this.onProjectSelected = this.onProjectSelected.bind(this);
-        this.openToleranceTree = this.openToleranceTree.bind(this);
 
         let disabledView = (name) => {
           return (() => {
@@ -30,83 +28,67 @@ export default class SidebarView extends React.Component {
             return;
         };
 
-        this.props.actionManager.on('open-load-project-menu',  this.openLoadProjectMenu);
-        this.props.actionManager.on('open-new-project-menu', disabledView('New Project'));
-        this.props.actionManager.on('open-save-project-menu', disabledView('Save Project'));
-        this.props.actionManager.on('open-tolerance-tree', this.openToleranceTree);
-        this.props.actionManager.on('project-selected', this.onProjectSelected);
+        this.selectMenuItem = this.selectMenuItem.bind(this);
+
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
 
     componentDidMount(){
     }
 
-    openLoadProjectMenu(){
-        this.props.cbMode('load-project');
-        this.props.cbAltMenu('Load Project');
-    }
-
-    openObjectTree(){
-        this.props.cbMode('tree');
-    }
-
-    openToleranceTree(){
-        this.props.cbMode('tolerance-tree');
-      this.props.cbAltMenu('Tolerance Tree');
-    }
-
-    onProjectSelected(projectId){
-      this.props.socket.emit('req:modeltree', projectId);
-      this.openObjectTree();
-      this.props.cbTree({
-          name : 'Loading project...',
-          isLeaf:true
-      });
+    selectMenuItem (info) {
+        this.props.cbMode(info.key);
     }
 
     render() {
       // TODO currently mode menu can only have two layers
       let nested = this.props.mode != "tree";
+
       const modeMenu = (
-        <div className='sidebar-menu-tabs'>
-          <span style={{opacity:nested ?.5:0}} className='glyphicons glyphicons-menu-left back-button'></span>
-          <div style={{opacity:nested?.5:1, left:nested?40:140}} onClick={this.openObjectTree} className='back'>
-            <div>Workingsteps</div>
-          </div>
-          <div style={{left:nested?200:400}} className='current'>
-            {this.props.altmenu}
-          </div>
-        </div>
+          <Menu onSelect={this.selectMenuItem}
+                defaultSelectedKeys={[this.props.mode]}
+                mode='horizontal'
+                className='sidebar-menu-tabs'>
+              <MenuItem key='ws' id='sidebar-menu-ws' className='ws'>Workingsteps</MenuItem>
+              <MenuItem key='tree' id='sidebar-menu-tree' className='wp'>Workplan</MenuItem>
+              <MenuItem key='tools' id='sidebar-menu-tools' className='tool'>Tools</MenuItem>
+              <MenuItem key='tolerance' id='sidebar-menu-tolerance' className='tolerance'>Tolerances</MenuItem>
+          </Menu>
       );
       if((!scrolled) && (this.props.ws > -1))
       {
-        if(document.getElementById(this.props.ws) != null)
+        let currElem=$('#'+this.props.ws);
+        if((currElem != null) && (typeof currElem != 'undefined'))
         {
-          $('.m-tree').animate({
-          scrollTop: $("#"+this.props.ws).offset().top-$(".m-tree").offset().top
-          }, 1000);
-          scrolled=true;
+          let prevElem=currElem.parent().prev()[0];
+          if(typeof prevElem != 'undefined')//not the first working step
+          {
+            $('.m-tree').animate({
+              scrollTop: currElem.offset().top-$(".m-tree").offset().top
+              }, 1000);
+          }
+          scrolled=true;//dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
         }
       }
         return <div className="sidebar">
                   {modeMenu}
+                  {this.props.mode == 'ws' ?
+                      <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      : null}
                   {this.props.mode == 'tree' ?
-                  <WorkingstepList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
-                  : null}
-                  {this.props.mode == 'load-project' ?
-                  <LoadProjectView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
-                  : null}
-                  {this.props.mode == 'tolerance-tree' ?
-                  <ToleranceTreeView socket={this.props.socket} app={this.props.app} actionManager={this.props.actionManager}/>
-                  : null}
-                  {this.props.mode == "disabled" ?
-                  <div className='disabled-view'> {this.props.altmenu} is currently disabled.</div>
-                  : null}
+                      <WorkplanList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      : null}
+                  {this.props.mode == 'tolerance' ?
+                      <ToleranceList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree}  />
+                      : null}
+                  {this.props.mode == 'tools' ?
+                      <ToolList pid = {this.props.pid} cbMode = {this.props.cbMode} cbTree = {this.props.cbTree} ws = {this.props.ws}/>
+                      : null}
                </div>;
     }
 }
 
-SidebarView.propTypes = {cadManager: React.PropTypes.instanceOf(cadManager).isRequired, mode : React.PropTypes.string.isRequired, 
+SidebarView.propTypes = {cadManager: React.PropTypes.instanceOf(cadManager).isRequired, mode : React.PropTypes.string.isRequired,
                           ws: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]).isRequired,
-                          cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, cbWS: React.PropTypes.func.isRequired, 
+                          cbMode: React.PropTypes.func.isRequired, cbTree: React.PropTypes.func.isRequired, cbWS: React.PropTypes.func.isRequired,
                           cbAltMenu: React.PropTypes.func.isRequired, pid: React.PropTypes.string.isRequired};

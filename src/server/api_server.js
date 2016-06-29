@@ -84,12 +84,12 @@ APIServer.prototype._setSocket = function() {
  */
 APIServer.prototype._setRoutes = function(cb) {
     var self = this;
-    require('./api/v1/auth')(this, function() {
-        require('./api/v1/storage')(self, function() {
-            require('./api/v2/projects')(self, function() {
-                require('./api/v2/step')(self, function() {
-                    require('./api/v2/state')(self, function () {
-                        require('./api/v2/geometry')(self, function (){if(cb)cb();});
+    require('./api/v2/projects')(self, function() {
+        require('./api/v2/step')(self, function() {
+            require('./api/v2/state')(self, function () {
+                require('./api/v2/tool')(self, function (){
+                    require('./api/v2/geometry')(self, function (){
+                        require('./api/v2/changelog')(self, function(){if(cb)cb();});
                     });
                 });
             });
@@ -107,13 +107,11 @@ APIServer.prototype._setSite = function() {
         api_endpoint: endpoint,
         socket: "",
         version: '/v2',
-        auth: "/v1/user",
-        model: "/v1/model"
     };
     // Serve the root client framework - customized as needed
     var _serveRoot = function (req, res) {
         var appConfig = {
-            title: 'CAD.js',
+            title: 'NC.js',
             source: '/js/main.js',
             services: services,
             config: self.config.client
@@ -132,7 +130,7 @@ APIServer.prototype.run = function() {
     this.server.listen(app.port, function () {
         self.logger.info('CAD.js API Server listening on: ' + app.port);
     });
-    
+
 
     process.openStdin().addListener("data", function(inputData) {
         if((self.server != null) && (self.server != 'undefined'))

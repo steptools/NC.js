@@ -1,33 +1,33 @@
-StepNCViewer
+NC.js
 
 
 Setting up a development environment
 ====================================
 
-  1. Download and build StepNCNode
+  1. Download and build STEPNode
 
   ```
-  > git clone https://github.com/steptools/StepNCNode.git
-  > cd StepNCNode
+  > git clone https://github.com/steptools/STEPNode.git
+  > cd STEPNode
   > npm install
   ```
 
   ------------------------------------------------------------------------------
-  2. Clone StepNCViewer into the same directory that contains the StepNCNode
+  2. Clone NC.js into the same directory that contains the STEPNode
       directory, E.G.:
 
   ```
   > cd ..
-  > git clone https://github.com/steptools/StepNCViewer.git
+  > git clone https://github.com/steptools/STEPNode.git
   > ls
-  StepNCNode     StepNCViewer
+  STEPNode      NC.js
   ```
 
   ------------------------------------------------------------------------------
-  3. create a new directory in StepNCViewer
+  3. create a new directory in NC.js
 
   ```
-  > cd StepNCViewer
+  > cd NC.js
   > mkdir data
   ```
 
@@ -87,25 +87,28 @@ Setting up a development environment
   ```
   > npm install
   ```
+ ------------------------------------------------------------------------------
+  10. Making a server
 
+  Making a server will build and then start the server
+
+  ```
+  > npm run make
+  ```
+
+  or, to minimize the file sizes
+
+  ```
+  > npm run make-release
+  ```
   ------------------------------------------------------------------------------
-  10. Build/compile using webpack
+ 
 
-  #### if you installed webpack globally (`npm install -g webpack`)
+ Start a server
 
-  ```
-  > webpack
-  ```
-
-  #### if you installed webpack via package dependencies (`npm install`)
-
-  ```
-  > ./node_modules/.bin/webpack
-  ```
-
-  ------------------------------------------------------------------------------
-  11. Start a server
+  If a server doesn't need to be rebuilt, this will be faster than making everytime. 
 
   ```
   > npm start
   ```
+ 

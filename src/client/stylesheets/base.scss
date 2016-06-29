@@ -1,43 +1,46 @@
 body {
-  font: 11px 'Lucida Grande', sans-serif;
-  overflow: hidden;
-  background-color: #fff;
-  width:100%;
-  height:100%;
+    font: 11px 'Lucida Grande', sans-serif;
+    overflow: hidden;
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
 }
 
+$headerHeight: 90px;
+$sidebarTabsHeight: 103px;
+$sidebarWidth: 390px;
 @import 'components/all';
 
-// NOTE: "glyphicon" refers to the font "Glyphicons Halflings"
-//       "glyphicons" refers to the font "Glyphicons Regular"
-@import 'fonts/glyphicons';
-
 .primary-view {
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
 }
 
-#cadjs-container{
-    position:relative;
-    height:100%;
-    width:100%;
+#cadjs-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
 
-    canvas{
-      border:2px #333 solid;
-      width:100%;
-      height:100%;
+    canvas {
+        border: 2px #333 solid;
+        width: 100%;
+        height: 100%;
     }
 }
 
 .non-initialized {
-  background:url(/img/spinner.gif) center center no-repeat;
+    background: url('/img/spinner.gif') center center no-repeat;
 }
 
-#cadview-container{
+#cadview-container {
     z-index: 1;
-    position:absolute;
+    position: absolute;
 }
 
-.model-tree{
-  z-index: 2;
+.model-tree {
+    z-index: 2;
 }
+
+// NOTE: "glyphicon" refers to the font "Glyphicons Halflings"
+//       "glyphicons" refers to the font "Glyphicons Regular"
+@import '../fonts/glyphicons';

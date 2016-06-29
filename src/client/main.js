@@ -1,7 +1,6 @@
 /* Copyright G. Hemingway, 2015 - All rights reserved */
 "use strict";
 
-
 // Necessary modules
 require('./stylesheets/base.scss');
 require('bootstrap-webpack');

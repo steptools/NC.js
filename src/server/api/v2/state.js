@@ -1,5 +1,5 @@
 "use strict";
-var StepNC = require('../../../../../StepNCNode/build/Release/StepNC');
+var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
 var request = require("superagent");
 var parseXMLString = require("xml2js");
@@ -227,7 +227,7 @@ var _wsInit = function(req, res) {
         default:
           if (!isNaN(parseFloat(command)) && isFinite(command)) {
             let ws = Number(command);
-            var temp = loopStates[ncId];
+            temp = loopStates[ncId];
             loopStates[ncId] = true;
             if (temp) {
             _getToWS(ws, ms, function() {
@@ -263,7 +263,7 @@ var _getKeyState = function (req, res) {
     }
     //FIXME: Needs to be fixed once set function for project name comes out
     var holder = JSON.parse(ms.GetKeystateJSON()); 
-    holder["project"] = req.params.ncId;
+    holder.project = req.params.ncId;
     res.status(200).send(JSON.stringify(holder));
   }
 };
@@ -272,7 +272,7 @@ var _getDeltaState = function (req, res) {
   if (req.params.ncId) {
     var ms = file.getMachineState(app, req.params.ncId);
     var holder = JSON.parse(ms.GetDeltaJSON()); 
-    holder["project"] = req.params.ncId;
+    holder.project = req.params.ncId;
     res.status(200).send(JSON.stringify(holder));
   }
 };
@@ -283,6 +283,6 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v2/nc/projects/:ncId/state/delta', _getDeltaState);
   app.router.get('/v2/nc/projects/:ncId/state/loop/:loopstate', _loopInit);
   app.router.get('/v2/nc/projects/:ncId/state/loop/', _loopInit);
-  app.router.get('/v2/nc/projects/:ncId/state/ws/:command', _wsInit)
+  app.router.get('/v2/nc/projects/:ncId/state/ws/:command', _wsInit);
   if (cb) cb();
 };

@@ -1,16 +1,13 @@
-import React from 'react';
+ import React from 'react';
 import ReactDOM from 'react-dom';
 import Menu from 'rc-menu';
 import _ from 'lodash';
 import request from 'superagent';
-import BrowserView          from '../browser';
-import LoginView            from '../user/login';
-import RegisterView         from '../user/register';
 import CADView              from '../cad';
 import HeaderView           from '../header';
 import SidebarView          from '../sidebar';
 import FooterView	    from '../footer';
-
+var md = require("node-markdown").Markdown;
 import ReactTooltip from 'react-tooltip';
 
 export default class ResponsiveView extends React.Component {
@@ -23,7 +20,7 @@ export default class ResponsiveView extends React.Component {
 
         this.state = {
             guiMode: tempGuiMode,
-            svmode: 'tree',
+            svmode: 'ws',
             ws: -1,
             svtree: {
                 "name": "No Project Loaded",
@@ -32,8 +29,11 @@ export default class ResponsiveView extends React.Component {
             svaltmenu: '',
             wstext: '',
             ppbutton: 'play',
+            logstate : false,
             resize: false,
-            changeSpeed: false
+            changeSpeed: false,
+            playbackSpeed: 50,
+            logtext : "default"
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -58,8 +58,6 @@ export default class ResponsiveView extends React.Component {
         this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
     }
-    
-    
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
@@ -68,7 +66,6 @@ export default class ResponsiveView extends React.Component {
     componentWillMount() {
         let url = "/v2/nc/projects/";
         url = url + this.props.pid + "/state/loop/";
-        
         let requestCB = function(error, response) {
             if (!error && response.ok) {
                 let stateObj = JSON.parse(response.text);
@@ -175,7 +172,6 @@ export default class ResponsiveView extends React.Component {
     }
 
 	changeSpeed(event) {
-
         let speed = event.target.value;
 
         if (!speed) {
@@ -207,7 +203,11 @@ export default class ResponsiveView extends React.Component {
                 cbPPButton={
                     (newPPButton) => {this.setState({ ppbutton: newPPButton })}
                 }
+                cbLogstate = {
+                    (newlogstate) => {this.setState({logstate: newlogstate})}
+                }
                 ppbutton={this.state.ppbutton}
+                logstate={this.state.logstate}
                 speed={this.state.playbackSpeed}
                 pid={this.props.pid}
             />;
@@ -265,7 +265,7 @@ export default class ResponsiveView extends React.Component {
             cadview_style =
             {
                 'left': '390px',
-                'top': '94px',
+                'top': '90px',
                 'bottom': '0px',
                 'right': '0px'
             };

@@ -14,8 +14,6 @@ import LoadQueueView    from '../load_queue';
 // Import shaders
 require('./shaders/VelvetyShader');
 
-//Import style sheets
-require('./tree.scss');
 
 /*************************************************************************/
 
@@ -42,7 +40,7 @@ export default class CADView extends React.Component {
 
     onShellLoad(event) {
         // Get around the fact that viewerControls calls change a bunch at startup
-        this.state.isViewChanging = false;
+        this.setState({'isViewChanging':true});
         this.invalidate(event);
     }
 
@@ -144,7 +142,7 @@ export default class CADView extends React.Component {
 
         // CAMERA
         this.camera = new THREE.PerspectiveCamera(
-            75,
+            45,
             this.canvasParent.offsetWidth / this.canvasParent.offsetHeight,
             0.1,
             1000000
@@ -198,7 +196,7 @@ export default class CADView extends React.Component {
         this.props.manager.removeEventListener("annotationLoad", this.invalidate);
         this.props.manager.removeEventListener("invalidate", this.invalidate);
     }
-    
+
     componentDidUpdate() {
         if (this.props.resize)
             this.handleResize();
