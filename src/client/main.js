@@ -21,11 +21,6 @@ class CADApp extends THREE.EventDispatcher {
         let $body = $('body');
         this.services = $body.data('services');
         this.config = $body.data('config');
-        // Establish the global URL router
-        //this._router = new Router({ app: this });
-        /*this.__defineGetter__('router', function() {
-            return this._router;
-        });*/
         // Set state
         this.state = {
             token: window.localStorage.getItem('user:token'),
@@ -56,8 +51,7 @@ class CADApp extends THREE.EventDispatcher {
 
         // Initialize views
         $body.toggleClass('non-initialized');
-        // Begin routing the application
-        //Backbone.history.start({ pushState: true });
+        // Initialize the views and dispatch the event to set the model
         ReactDOM.render(
             <div style={{ height:'100%'}}>
                 <ResponsiveView
