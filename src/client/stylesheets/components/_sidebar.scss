@@ -19,7 +19,7 @@ $icons: '../icons/';
 
     .m-tree {
         position: relative;
-        padding: 5px;
+        padding: 2px;
         height: $sidebarPaneHeight;
         overflow-y: scroll;
 
@@ -62,6 +62,11 @@ $icons: '../icons/';
 
             .icon-tool {
                 background-image: url($icons + 'tools/tool.svg');
+            }
+            
+            .icon-workplan {
+                font-size: 24px;
+                margin-right: 8px;
             }
 
             .tolerance-angularity {

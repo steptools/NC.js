@@ -39,11 +39,11 @@ export default class WorkplanList extends React.Component {
   
   getNodeIcon(node){
     if (node.type == "workplan"){
-      return <span className='icon-letter'>W</span>;
+      return <span className="icon-workplan glyphicons glyphicons-cube-empty"></span>;
     }else if (node.type == "selective"){
-      return <span className='icon-letter'>S</span>;
+      return <span className="icon-workplan glyphicons glyphicons-list-numbered"></span>;
     }else{
-      return <span className='icon-letter'>WS</span>;
+      return <span className="icon-workplan glyphicons glyphicons-blacksmith"></span>;
     }
   }
   componentDidMount(){
