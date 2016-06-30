@@ -26,8 +26,13 @@ var _getDelta = function(ms, key, cb) {
   else {
     response = ms.GetDeltaJSON()
   }
-  //app.logger.debug("got " + response);
-  cb(response);
+  let theQuestion = MTListen();
+  theQuestion.then(function(result) {
+    holder.mtcoords = result;
+    let response = JSON.stringify(holder);
+    //app.logger.debug("got " + response);
+    cb(response);
+  });
 };
 
 var _getNext = function(ms, cb) {
