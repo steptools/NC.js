@@ -23,11 +23,6 @@ $icons: '../icons/';
         height: $sidebarPaneHeight;
         overflow-y: scroll;
 
-        .m-node .collapse:hover {
-            color: #FFF;
-            background-color: #2BAEE9;
-        }
-
         .m-node {
             background-color: rgba(#FFF, .5);
 
@@ -172,6 +167,19 @@ $icons: '../icons/';
             padding-left: 20px;
         }
     }
+    
+    .m-node .caret-right:before {
+        content: '\25B8';
+    }
+
+    .m-node .caret-down:before {
+        content: '\25BE';
+    }
+    
+    .m-node .collapse:hover {
+        color: #FFF;
+        background-color: #2BAEE9;
+    }
 
     .m-node .node.is-active {
         background-color: #0000FF;
@@ -190,21 +198,12 @@ $icons: '../icons/';
     }
 
     .m-node .node:hover:not(.is-active) {
-        opacity: 1;
-        background-color: rgba(#2BAEE9, .5);
+        background-color: #2BAEE9;
     }
 
     .m-node .node span.exp-distance {
         font-size: 10px;
         //color: red;
-    }
-
-    .m-node .caret-right:before {
-        content: '\25B8';
-    }
-
-    .m-node .caret-down:before {
-        content: '\25BE';
     }
 
     .handle {
