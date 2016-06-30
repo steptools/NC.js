@@ -9,7 +9,7 @@ body {
 $headerHeight: 90px;
 $sidebarWidth: 390px;
 $sidebarTabsHeight: 103px;
-$sidebarPaneHeight: #{100%} - $headerHeight - $sidebarTabsHeight;
+$sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
 @import 'components/all';
 
 .primary-view {
