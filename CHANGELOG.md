@@ -9,10 +9,12 @@ Features:
 - Updated endpoint structure to no longer use project ID
 - Updated server to now use the command line to specify model to be loaded
 - Commit 1000
+- Styling overhaul of the sidebar
 
 Bugfixes:
 
 - Sidebar can now be scrolled in Firefox
+- Speed slider is now styled correctly in Edge
 
 Version 1.1.0
 

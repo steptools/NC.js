@@ -163,8 +163,10 @@ $icons: '../icons/';
         display: inherit;
         height: 100%;
         width: 15px;
-        background-color: rgba(#2BAEE9, .25);
+        font-size: 22px;
+        background-color: transparent;
         text-align: center;
+        padding-top: 2px;
 
         & + .node {
             padding-left: 20px;
