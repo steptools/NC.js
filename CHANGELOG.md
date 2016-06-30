@@ -9,8 +9,10 @@ Features:
 - Updated endpoint structure to no longer use project ID
 - Updated server to now use the command line to specify model to be loaded
 - Commit 1000
+
 Bugfixes:
 
+- Sidebar can now be scrolled in Firefox
 
 Version 1.1.0
 
