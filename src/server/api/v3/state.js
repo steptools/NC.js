@@ -2,6 +2,8 @@
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
 var find = file.find;
+var request = require("superagent");
+var parseXMLString = require("xml2js");
 
 var app;
 var loopTimer;
@@ -19,14 +21,21 @@ var _updateSpeed = (speed) => {
 
 var MTListen = function() {
   var coords = "";
+  var sequence = "";
+  var xOffset;
+  var yOffset;
+  var zOffset;
   return new Promise(function(resolve, reject) {
     let mtc = request.get("http://192.168.0.123:5000/current");
     mtc.end(function (err, res) {
       parseXMLString.parseString(res.text, function (error, result) {
         coords = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream[3].Samples[0].PathPosition[0]._.split(" ");
+        xOffset = result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][2]["_"];
+        yOffset = result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][3]["_"];
+        zOffset = result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][4]["_"];
       });
-      console.log(coords);
-      resolve(coords);
+      console.log(sequence);
+      resolve([coords, xOffset, yOffset, zOffset]);
     });
   });
 }
@@ -36,20 +45,20 @@ var _getDelta = function(ms, key, cb) {
   let holder = "";
   if (key) {
     holder = JSON.parse(ms.GetKeystateJSON());
-    holder["project"] = ncId;
     //response = JSON.stringify(holder);
   }
   else {
     holder = JSON.parse(ms.GetDeltaJSON());
-    holder["project"] = ncId;
     //response = JSON.stringify(holder);
   }
 
   let theQuestion = MTListen();
-  theQuestion.then(function(result) {
-    holder.mtcoords = result;
+  theQuestion.then(function(res) {
+    holder.mtcoords = res[0];
+    holder.offset = [res[1], res[2], res[3]];
+    //console.log(sequence);
     let response = JSON.stringify(holder);
-    //app.logger.debug("got " + response);
+    app.logger.debug("got " + response);
     cb(response);
   });
 };
