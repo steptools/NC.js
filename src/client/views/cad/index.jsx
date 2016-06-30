@@ -268,7 +268,6 @@ export default class CADView extends React.Component {
     updateSceneBoundingBox(newBoundingBox) {
         this.sceneCenter.copy(newBoundingBox.center());
         this.sceneRadius = newBoundingBox.size().length() / 2;
-        console.log("new sceneR: " + this.sceneRadius);
     }
 
     // Handle all object selection needs
