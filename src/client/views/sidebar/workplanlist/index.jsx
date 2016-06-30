@@ -30,6 +30,7 @@ export default class WorkplanList extends React.Component {
           id={node.id}
           className={cName}
           onClick={(event) => {this.props.propertyCb(node);}}
+          onMouseDown={function(e){e.stopPropagation()}}
       >
           {node.icon}
           {node.name}
