@@ -33,7 +33,7 @@ export default class WorkplanList extends React.Component {
           onMouseDown={function(e){e.stopPropagation()}}
       >
           {node.icon}
-          {node.name}
+          <span className="textbox">{node.name}</span>
       </span>;
   }
   
@@ -53,7 +53,7 @@ export default class WorkplanList extends React.Component {
   render(){
     return (
         <Tree
-          paddingLeft={12}              // left padding for children nodes in pixels
+          paddingLeft={15}              // left padding for children nodes in pixels
           tree={this.props.workplanCache}        // tree object
           renderNode={this.renderNode}  // renderNode(node) return react element
         />

@@ -19,39 +19,29 @@ $icons: '../icons/';
 
     .m-tree {
         position: relative;
-        padding: 20px;
+        padding: 5px;
         height: $sidebarPaneHeight;
         overflow-y: scroll;
 
         .m-node .collapse:hover {
-            color: #fff;
+            color: #FFF;
             background-color: #2BAEE9;
         }
 
         .m-node {
-            background-color: rgba(255,255,255,.5);
-            margin-bottom: 1px;
-            cursor: pointer;
+            background-color: rgba(#FFF, .5);
 
             .textbox {
                 vertical-align: middle;
                 display: inline-block;
-                width: 285px;
-            }
-
-            .textbox-tolerance {
-                //vertical-align: text-top;
-            }
-
-            .textbox-tool {
-                //vertical-align: text-top;
+                width: calc(100% - 38px);
             }
 
             .icon-letter,
             .icon-tolerance,
             .icon-tool {
-                background-color: rgba(#fff, 0);
-                border: 2px solid #333333;
+                background-color: rgba(#FFF, 0);
+                border: 2px solid #333;
                 padding: 15px;
                 vertical-align: middle;
                 background-size: cover;
@@ -155,28 +145,30 @@ $icons: '../icons/';
         border: 1px dashed #CCC;
     }
 
+    .m-node .node {
+        display: inline-block;
+        width: 100%;
+        padding: 4px 5px;
+    }
+
     .m-node .inner {
         position: relative;
         cursor: pointer;
-        padding-left: 30px;
-        margin-bottom: 1px;
     }
-
+    
     .m-node .collapse {
         position: absolute;
         left: 0;
         cursor: pointer;
         display: inherit;
         height: 100%;
-        width: 30px;
-        background-color: #fff;
+        width: 15px;
+        background-color: rgba(#2BAEE9, .25);
         text-align: center;
-    }
 
-    .m-node .node {
-        display: inline-block;
-        width: 100%;
-        padding: 4px 5px;
+        & + .node {
+            padding-left: 20px;
+        }
     }
 
     .m-node .node.is-active {
@@ -192,15 +184,12 @@ $icons: '../icons/';
     }
 
     .disabled {
-        background-color: #666666;
-    }
-
-    .m-node .node.is-highlighted:not(.is-active) {
-        background-color: rgba(49, 54, 63, 0.43);
+        opacity: 0.5;
     }
 
     .m-node .node:hover:not(.is-active) {
-        background-color: rgba(49, 54, 63, 0.43);
+        opacity: 1;
+        background-color: rgba(#2BAEE9, .5);
     }
 
     .m-node .node span.exp-distance {
@@ -238,7 +227,7 @@ $icons: '../icons/';
     }
 
     .sidebar-menu-tabs {
-        background-color: #666666;
+        background-color: #666;
         border-top: none;
         font-size: 20px;
         height: $sidebarTabsHeight;
@@ -255,8 +244,8 @@ $icons: '../icons/';
             padding: 10px 5px;
             width: 50%;
             margin-left: 0;
-            background-color: #333333;
-            text-shadow: -1px -1px 0 #333333, 1px -1px 0 #333333, -1px 1px 0 #333333, 1px 1px 0 #333333;
+            background-color: #333;
+            text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
 
             &:disabled {
                 opacity: 0.5;
@@ -273,7 +262,7 @@ $icons: '../icons/';
             background-color: #2BAEE9;
 
             &:hover {
-                color: #fff;
+                color: #FFF;
             }
         }
 
@@ -328,15 +317,11 @@ $icons: '../icons/';
         display: block;
         width: $sidebarWidth;
         background-color: #F8F8F8;
-
         position: absolute;
         top: 0;
         z-index: 10;
-
         height: 100%;
-
         left: $sidebarWidth*-1;
-
         -webkit-transition: -webkit-transform ease 250ms;
         -moz-transition: -moz-transform ease 250ms;
         -ms-transition: -ms-transform ease 250ms;
@@ -344,14 +329,12 @@ $icons: '../icons/';
         transition: transform ease 250ms;
 
         .properties {
-
             height: calc(100% - 54px);
             overflow-y: scroll;
 
             .property {
-
                 padding: 5px 20px;
-                color: #333333;
+                color: #333;
 
                 &:hover {
                     cursor: pointer;
@@ -365,7 +348,7 @@ $icons: '../icons/';
                     text-align: center;
                     padding: 10px 5px;
                     margin: 0 20%;
-                    background-color: #333333;
+                    background-color: #333;
                     color: #F8F8F8;
                     border-bottom: 2px solid #AFAFAF;
 
@@ -386,6 +369,7 @@ $icons: '../icons/';
 
                 &.children {
                     white-space: normal;
+                    padding-left: 5px;
 
                     .title {
                         font-size: 18px;
@@ -406,11 +390,11 @@ $icons: '../icons/';
                             }
 
                             &.is-active {
-                                background-color: #0000ff;
+                                background-color: #0000FF;
                             }
 
                             &.is-hidden {
-                                color: #1b6d85;
+                                color: #1B6D85;
                             }
 
                             &.running-node {
@@ -418,15 +402,12 @@ $icons: '../icons/';
                             }
 
                             &.disabled {
-                                background-color: #666666;
-                            }
-
-                            &.is-highlighted:not(.is-active) {
-                                background-color: rgba(49, 54, 63, 0.43);
+                                opacity: 0.5;
                             }
 
                             &:hover:not(.is-active) {
-                                background-color: rgba(49, 54, 63, 0.43);
+                                background-color: rgba(#2BAEE9, .5);
+                                opacity: 1;
                             }
                         }
                     }
@@ -442,10 +423,12 @@ $icons: '../icons/';
                 width: 78%;
                 font-size: 14px;
                 font-weight: bold;
+
                 .type {
-                    border-bottom: 1px solid #666666;
+                    border-bottom: 1px solid #666;
                 }
             }
+
             .exit {
                 margin-left: auto;
                 font-size: 32px;
@@ -461,14 +444,12 @@ $icons: '../icons/';
             padding: 15px;
             border-radius: 5px;
             width: 30px;
-            height:30px;
-            float:left;
+            height: 30px;
+            float: left;
             text-align: center;
             margin-right: 8px;
             vertical-align: middle;
-
             border: 2px solid #333333;
-
             background-image: url($icons + 'tolerance/unknown.svg');
             background-size: cover;
             background-position: center;
@@ -477,7 +458,9 @@ $icons: '../icons/';
                 background-image: url($icons + 'tools/tool.svg');
             }
 
-            &.workingstep, &.workplan, &.selective {
+            &.selective,
+            &.workingstep,
+            &.workplan {
                 background-image: none;
                 background-color: #333;
                 color: #fff;
@@ -500,39 +483,51 @@ $icons: '../icons/';
                 &.angularity {
                     background-image: url($icons + 'tolerance/angularity.svg');
                 }
+
                 &.circularity {
                     background-image: url($icons + 'tolerance/circularity.svg');
                 }
+
                 &.concentricity {
                     background-image: url($icons + 'tolerance/concentricity.svg');
                 }
+
                 &.cylindricity {
                     background-image: url($icons + 'tolerance/cylindricity.svg');
                 }
+
                 &.flatness {
                     background-image: url($icons + 'tolerance/flatness.svg');
                 }
+
                 &.parallelism {
                     background-image: url($icons + 'tolerance/parallelism.svg');
                 }
+
                 &.perpendicularity {
                     background-image: url($icons + 'tolerance/perpendicularity.svg');
                 }
+
                 &.position {
                     background-image: url($icons + 'tolerance/position.svg');
                 }
+
                 &.profile-line {
                     background-image: url($icons + 'tolerance/profile_line.svg');
                 }
+
                 &.profile-surface {
                     background-image: url($icons + 'tolerance/profile_surface.svg');
                 }
+
                 &.straightness {
                     background-image: url($icons + 'tolerance/straightness.svg');
                 }
+
                 &.symmetry {
                     background-image: url($icons + 'tolerance/symmetry.svg');
                 }
+
                 &.total-runout {
                     background-image: url($icons + 'tolerance/total_runout.svg');
                 }
