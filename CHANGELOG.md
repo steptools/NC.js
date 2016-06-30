@@ -13,6 +13,8 @@ Features:
 Bugfixes:
 
 - Sidebar can now be scrolled in Firefox
+- Render radius is properly calculated when workingstep changes
+- Bounding boxes update properly with each workingstep
 
 Version 1.1.0
 
