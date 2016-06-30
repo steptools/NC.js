@@ -7,3 +7,4 @@ config/*
 npm-debug.log
 src/client/fonts/*
 src/client/stylesheets/fonts/*
+*.stpnc

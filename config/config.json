@@ -16,6 +16,12 @@
     "socket": true,
     "upload": true
   },
+  "file" : {
+    "dir": "C:/Users/Nick/Documents/GitHub/NC.js/boxy.stpnc"
+  },
+  "machine" : {
+    "dir" : ""
+  },
   "storage": {
     "module": "s3",
     "options" : {
