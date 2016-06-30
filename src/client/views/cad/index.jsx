@@ -252,10 +252,15 @@ export default class CADView extends React.Component {
     }
 
     invalidate(options) {
-        if (options && options.tree) {
+        if (options) {
+          if (options.tree) {
             // Update the model tree
             let tree = this.props.manager.getTree();
-            this.setState({ modelTree: tree });
+            this.setState({modelTree: tree});
+          }
+          else if (options.boundingBox) {
+            this.updateSceneBoundingBox(options.model.getBoundingBox());
+          }
         }
         this.shouldRender = true;
     }
@@ -263,7 +268,8 @@ export default class CADView extends React.Component {
     updateSceneBoundingBox(newBoundingBox) {
         this.sceneCenter.copy(newBoundingBox.center());
         this.sceneRadius = newBoundingBox.size().length() / 2;
-    };
+        console.log("new sceneR: " + this.sceneRadius);
+    }
 
     // Handle all object selection needs
     handleSelection(obj, event) {
