@@ -17,7 +17,7 @@
     "upload": true
   },
   "file" : {
-    "dir": "C:/Users/Nick/Documents/GitHub/NC.js/boxy.stpnc"
+    "dir": "./data/boxy/model.stpnc"
   },
   "machine" : {
     "dir" : ""

@@ -120,5 +120,5 @@ Setting up a development environment
  "file" : {"dir": "path_to_file"} 
  ```
  
- replace path_to_file with your desired absolute path (relative path isn't currently working)
+ replace path_to_file with your desired path
 
