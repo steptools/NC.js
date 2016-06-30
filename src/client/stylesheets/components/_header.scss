@@ -127,6 +127,8 @@ input[type=range] {
     -webkit-appearance: none;
     width: 100%;
     height: $thumbHeight + 2px;
+    background-color: #f8f8f8;
+    cursor: pointer;
 
     &:focus {
         outline: none;
@@ -186,6 +188,7 @@ input[type=range] {
 
     &::-ms-thumb {
         border: 1px solid rgba(#666, .5);
+        border-width: 1px;
         height: $thumbHeight;
         width: $thumbWidth;
         border-radius: 2px;
