@@ -103,7 +103,7 @@ Setting up a development environment
   ------------------------------------------------------------------------------
  
 
- Start a server
+ #### Start a server
 
   If a server doesn't need to be rebuilt, this will be faster than making everytime. 
 
@@ -111,3 +111,14 @@ Setting up a development environment
   > npm start
   ```
  
+
+#### Setting up which model to use
+
+ In config/config.json, 
+ 
+ ```
+ "file" : {"dir": "path_to_file"} 
+ ```
+ 
+ replace path_to_file with your desired absolute path (relative path isn't currently working)
+
