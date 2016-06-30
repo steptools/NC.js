@@ -80,7 +80,7 @@ var _loop = function(ms, key) {
 };
 
 var _loopInit = function(req, res) {
-  // app.logger.debug("loopstate is " + req.params.loopstate);    
+  // app.logger.debug("loopstate is " + req.params.loopstate);
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {
         res.status(200).send(JSON.stringify({'state': "play", 'speed': playbackSpeed}));
@@ -121,12 +121,12 @@ var _loopInit = function(req, res) {
         default:
           if (!isNaN(parseFloat(loopstate)) && isFinite(loopstate)) {
             let newSpeed = Number(loopstate);
-            
+
             if (Number(playbackSpeed) !== newSpeed) {
               playbackSpeed = newSpeed;
               app.logger.debug("Changing speed to " + newSpeed);
             }
-            
+
             if (loopStates[path] === true) {
               _loop(ms, false);
               res.status(200).send(JSON.stringify({"state": "play", "speed": playbackSpeed}));
@@ -220,6 +220,17 @@ var _wsInit = function(req, res) {
                 // untested case
               }
       }
+      _getDelta(ms, false, function(b) {
+        app.ioServer.emit('nc:delta', JSON.parse(b));
+        if (playbackSpeed > 0) {
+          if (loopTimer !== undefined)
+              clearTimeout(loopTimer);
+          loopTimer = setTimeout(function () { _loop(ms, false); }, 50 / (playbackSpeed / 200));
+        }
+        else {
+          // app.logger.debug("playback speed is zero, no timeout set");
+        }
+      });
   }
 };
 
