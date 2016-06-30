@@ -67,6 +67,7 @@ $icons: '../icons/';
             .icon-workplan {
                 font-size: 24px;
                 margin-right: 8px;
+                vertical-align: middle;
             }
 
             .tolerance-angularity {
@@ -147,8 +148,9 @@ $icons: '../icons/';
 
     .m-node .node {
         display: inline-block;
-        width: 100%;
+        width: calc(100% - 15px);
         padding: 4px 5px;
+        margin-left: 15px;
     }
 
     .m-node .inner {
@@ -156,11 +158,15 @@ $icons: '../icons/';
         cursor: pointer;
     }
     
+    .m-node .inner:only-child {
+        //padding-left: 15px;
+    }
+    
     .m-node .collapse {
         position: absolute;
         left: 0;
         cursor: pointer;
-        display: inherit;
+        display: inline-block;
         height: 100%;
         width: 15px;
         font-size: 22px;
@@ -169,7 +175,7 @@ $icons: '../icons/';
         padding-top: 2px;
 
         & + .node {
-            padding-left: 20px;
+            //padding-left: 20px;
         }
     }
     
