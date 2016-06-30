@@ -1,15 +1,17 @@
 import React from 'react';
+import _ from 'lodash';
 import request from 'superagent';
-import Tree from 'react-ui-tree';
+import {Treebeard} from 'react-treebeard';
 
 export default class WorkplanList extends React.Component {
   constructor(props){
-    //Create the constructor for the component
     super(props);
-
-    this.renderNode = this.renderNode.bind(this);
+    this.state = {};
+    this.onToggle = this.onToggle.bind(this);
+    this.data = this.getNodes();
   }
-
+  
+  /*
   renderNode(node){
       var cName = 'node';
       //node is a generic white node
@@ -23,20 +25,20 @@ export default class WorkplanList extends React.Component {
         if(node.enabled === false)
           cName = 'node disabled';
       }
-    
-    node.icon = this.getNodeIcon(node);
-    
+      
+      node.icon = this.getNodeIcon(node);
+      
       return <span
           id={node.id}
           className={cName}
-          onClick={(event) => {this.props.propertyCb(node);}}
-          onMouseDown={function(e){e.stopPropagation()}}
+          onClick={this.onClickNode.bind(null, node)}
+          onMouseDown={node.undraggable ? function(e){e.stopPropagation()} : undefined}
       >
           {node.icon}
           <span className="textbox">{node.name}</span>
       </span>;
   }
-  
+
   getNodeIcon(node){
     if (node.type == "workplan"){
       return <span className="icon-workplan glyphicons glyphicons-cube-empty"></span>;
@@ -46,17 +48,38 @@ export default class WorkplanList extends React.Component {
       return <span className="icon-workplan glyphicons glyphicons-blacksmith"></span>;
     }
   }
-  componentDidMount(){
-      
+  */
+  
+  onToggle(node, toggled){
+    if(this.state.cursor){this.state.cursor.active = false;}
+    node.active = true;
+    if(node.children){ node.toggled = toggled; }
+    this.setState({ cursor: node });
   }
-
+  
+  toggleNodes(node){
+    for (let i = 0; i < _.size(node.children); i++) {
+      if (node.children[i].children) {
+        node.children[i].toggled = true;
+        this.toggleNodes(node.children[i]);
+      }
+    }
+  }
+  
+  getNodes(){
+    let nodes = this.props.workplanCache;
+    nodes.toggled = true;
+    this.toggleNodes(nodes);
+    console.log(nodes);
+    return nodes;
+  }
+  
   render(){
     return (
-        <Tree
-          paddingLeft={15}              // left padding for children nodes in pixels
-          tree={this.props.workplanCache}        // tree object
-          renderNode={this.renderNode}  // renderNode(node) return react element
-        />
+      <Treebeard
+        data={this.data}
+        onToggle={this.onToggle}
+      />
     );
   }
 }
