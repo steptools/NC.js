@@ -20,6 +20,7 @@ Bugfixes:
 - Bounding boxes update properly with each workingstep
 - Tool Loactions now properly update when workingstep changes
 - View loads properly without errors on Safari / iOS
+- Scrolling happens whenever tab is switched and on all tabs
 
 Version 1.1.0
 
