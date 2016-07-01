@@ -4,6 +4,7 @@ var file = require('./file');
 var find = file.find;
 var request = require("superagent");
 var parseXMLString = require("xml2js");
+var _ = require("lodash");
 
 var app;
 var loopTimer;
@@ -20,7 +21,7 @@ var _updateSpeed = (speed) => {
 };
 
 var MTListen = function() {
-  var coords = "";
+  var resCoords = [];
   var sequence = "";
   var xOffset;
   var yOffset;
@@ -29,12 +30,17 @@ var MTListen = function() {
     let mtc = request.get("http://192.168.0.123:5000/current");
     mtc.end(function (err, res) {
       parseXMLString.parseString(res.text, function (error, result) {
-        coords = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream[3].Samples[0].PathPosition[0]._.split(" ");
-        xOffset = result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][2]["_"];
-        yOffset = result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][3]["_"];
-        zOffset = result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][4]["_"];
+        resCoords = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream[3].Samples[0].PathPosition[0]._.split(" ");
+        xOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][2]["_"]);
+        yOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][3]["_"]);
+        zOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][4]["_"]);
       });
-      console.log(sequence);
+      var coords = [];
+      coords[0] = parseInt(resCoords[0]);
+      coords[1] = parseInt(resCoords[1]);
+      coords[2] = parseInt(resCoords[2]);
+
+      console.log(coords);
       resolve([coords, xOffset, yOffset, zOffset]);
     });
   });
