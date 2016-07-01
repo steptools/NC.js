@@ -6,7 +6,7 @@ var http        = require('http'),
     _           = require('lodash'),
     opts        = require('commander'),
     winston     = require('winston'),
-    configurator= require('./configurator'),
+    configurator= require('../../config'),
 
     file     = require('./api/v3/file.js');
 /*****************************************************************************************/

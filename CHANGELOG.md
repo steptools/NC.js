@@ -8,24 +8,22 @@ Features:
 - Removed Backbone.js dependency
 - Updated endpoint structure to no longer use project ID
 - Updated server to now use the command line to specify model to be loaded
-<<<<<<< HEAD
-- Commit 1000
-- Styling overhaul of the sidebar
-=======
 - Relative pathing can now be used
 - Now supports running only one file
->>>>>>> d4fdf3b814b2e2be0ee93368de060f179c4a6d27
+- Pressing escape will close the properties pane
+- config.json deprecated and moved to configurator.js
+- Styling overhaul of the sidebar
 
 Bugfixes:
 
 - Sidebar can now be scrolled in Firefox
-<<<<<<< HEAD
 - Speed slider is now styled correctly in Edge
-=======
 - Render radius is properly calculated when workingstep changes
 - Bounding boxes update properly with each workingstep
 - Tool Loactions now properly update when workingstep changes
->>>>>>> d4fdf3b814b2e2be0ee93368de060f179c4a6d27
+- View loads properly without errors on Safari / iOS
+- Properties pane has correct height for scrolling
+- Scrolling happens whenever tab is switched and on all tabs
 
 Version 1.1.0
 
