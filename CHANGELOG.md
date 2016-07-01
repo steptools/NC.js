@@ -10,6 +10,7 @@ Features:
 - Updated server to now use the command line to specify model to be loaded
 - Relative pathing can now be used
 - Now supports running only one file
+- Pressing escape will close the properties pane
 
 Bugfixes:
 
@@ -17,6 +18,7 @@ Bugfixes:
 - Render radius is properly calculated when workingstep changes
 - Bounding boxes update properly with each workingstep
 - Tool Loactions now properly update when workingstep changes
+- View loads properly without errors on Safari / iOS
 
 Version 1.1.0
 
