@@ -10,6 +10,7 @@ Features:
 - Updated server to now use the command line to specify model to be loaded
 - Relative pathing can now be used
 - Now supports running only one file
+- Pressing escape will close the properties pane
 
 Bugfixes:
 
