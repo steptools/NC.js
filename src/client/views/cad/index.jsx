@@ -74,6 +74,11 @@ export default class CADView extends React.Component {
 
     onKeypress(event) {
         switch(event.keyCode || event.charCode || event.which) {
+
+            case 27:
+                this.props.openProperties(null);
+                break;
+
             // Go to special viewing postion on 'a'
             case 97:
                 //console.log(this.camera);
@@ -118,7 +123,7 @@ export default class CADView extends React.Component {
         this.props.manager.addEventListener("annotationLoad", this.invalidate);
         this.props.manager.addEventListener("invalidate", this.invalidate);
         // Keybased events
-        window.addEventListener("keypress", this.onKeypress, true);
+        window.addEventListener("keydown", this.onKeypress, true);
     }
 
     componentDidMount() {

@@ -14,9 +14,6 @@ let scrolled=false;
 export default class SidebarView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            selectedEntity : null,
-        };
 
         let disabledView = (name) => {
           return (() => {
@@ -32,7 +29,6 @@ export default class SidebarView extends React.Component {
         };
 
         this.selectMenuItem = this.selectMenuItem.bind(this);
-        this.openProperties = this.openProperties.bind(this);
 
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
@@ -44,19 +40,16 @@ export default class SidebarView extends React.Component {
         this.props.cbMode(info.key);
     }
     
-    openProperties(node) {
-        this.setState({selectedEntity: node});
-    }
     
     render() {
       // TODO currently mode menu can only have two layers
       let nested = this.props.mode != "tree";
         
       let properties = <PropertiesPane 
-              entity={this.state.selectedEntity}
+              entity={this.props.selectedEntity}
               pid={this.props.pid}
               ws={this.props.ws}
-              propertiesCb = {this.openProperties}
+              propertiesCb = {this.props.openProperties}
               tools = {this.props.toolCache}
           />;
         
@@ -96,7 +89,7 @@ export default class SidebarView extends React.Component {
                           ws = {this.props.ws}
                           workingstepCache = {this.props.workingstepCache}
                           workingstepList = {this.props.workingstepList}
-                          propertyCb = {this.openProperties}
+                          propertyCb = {this.props.openProperties}
                       />
                       : null}
                   {this.props.mode == 'tree' ?
@@ -105,14 +98,14 @@ export default class SidebarView extends React.Component {
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
                           workplanCache = {this.props.workplanCache}
-                          propertyCb = {this.openProperties}
+                          propertyCb = {this.props.openProperties}
                       />
                       : null}
                   {this.props.mode == 'tolerance' ?
                       <ToleranceList 
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
-                          propertyCb = {this.openProperties}
+                          propertyCb = {this.props.openProperties}
                           toleranceCache = {this.props.toleranceCache}
                       />
                       : null}
@@ -121,7 +114,7 @@ export default class SidebarView extends React.Component {
                           cbMode = {this.props.cbMode}
                           cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
-                          propertyCb = {this.openProperties}
+                          propertyCb = {this.props.openProperties}
                           toolCb = {(toolList) => {this.setState({tools: toolList});}}
                           tools = {this.props.toolCache}
                           curtool = {this.props.curtool}
