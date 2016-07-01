@@ -73,3 +73,14 @@ Setting up a development environment
   ```
   > npm start
   ```
+ 
+
+#### Setting up which model to use
+
+ In configurator.js, 
+ 
+ ```
+ "file" : {"dir": "path_to_file"} 
+ ```
+ 
+ replace path_to_file with your desired path
