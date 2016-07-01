@@ -24,17 +24,56 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  3. Setting up the default model
+  3. create a new directory in NC.js
 
-  In config/config.json, put the path to the .stpnc file you want to use in the 
-  file object under the dir key
- 
   ```
-  "file" : {"dir": "path_to_file"} 
+  > cd NC.js
+  > mkdir data
   ```
 
   ------------------------------------------------------------------------------
-  4. Install Glyphicons
+  4. create a new directory in data for each project
+
+  ```
+  > cd data
+  > mkdir boxy
+  > mkdir moldy
+  ```
+
+  ------------------------------------------------------------------------------
+  5. Place the projects .stpnc file in the new directory under the name
+      model.stpnc
+
+  ```
+  > cd boxy
+  > cp ~/Downloads/boxy.stpnc ./model.stpnc
+  > cd ../moldy
+  > cp ~/Downloads/moldy.stpnc ./model.stpnc
+  ```
+
+  ------------------------------------------------------------------------------
+  6. Create a file named pathmap.json in the data directory that contains a json
+      object that contains each project name as a key and path as a value.
+
+  ```
+  > cd ..
+  > nano pathmap.json
+  {
+    "boxy" : "c:/.../stepncviewer/data/boxy/model.stpnc",
+    "moldy" : "c:/.../StepNCViewer/data/moldy/model.stpnc"
+  }
+  ```
+
+  ------------------------------------------------------------------------------
+  7. Create a key
+
+  ```
+  > cd ..
+  > ssh-keygen -t rsa -f config/id_rsa
+  ```
+ 
+ ------------------------------------------------------------------------------
+  8. Install Glyphicons
 
   ```
   > cd src/client
@@ -42,14 +81,13 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  5. Install nodejs packages
+  9. Install nodejs packages
 
   ```
   > npm install
   ```
-
  ------------------------------------------------------------------------------
-  6. Making a server
+  10. Making a server
 
   Making a server will build and then start the server
 
@@ -62,7 +100,6 @@ Setting up a development environment
   ```
   > npm run make-release
   ```
-
   ------------------------------------------------------------------------------
  
 
@@ -84,3 +121,4 @@ Setting up a development environment
  ```
  
  replace path_to_file with your desired path
+
