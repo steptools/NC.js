@@ -34,9 +34,6 @@ module.exports = function(environment) {
           "machine" : {
             "dir" : ""
           },
-          "auth": {
-            "module": "permit"
-          },
           "environments": {
             "development": {
               "storage": {
