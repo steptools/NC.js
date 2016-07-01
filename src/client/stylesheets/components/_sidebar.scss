@@ -12,6 +12,85 @@ $icons: '../icons/';
     -ms-user-select: none;
     user-select: none;
 
+    .sidebar-menu-tabs {
+        background-color: #666;
+        border-top: none;
+        font-size: 20px;
+        height: $sidebarTabsHeight;
+        border-bottom: 1px solid #AFAFAF;
+
+        .rc-menu-item {
+            text-align: center;
+            color: #F8F8F8;
+            position: relative;
+            border: 2px solid #AFAFAF;
+            border-bottom-color: #AFAFAF;
+            border-left: none;
+            border-right: none;
+            padding: 10px 5px;
+            width: 50%;
+            margin-left: 0;
+            background-color: #333;
+            text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
+
+            &:disabled {
+                opacity: 0.5;
+            }
+
+            &:hover {
+                cursor: pointer;
+                color: #2BAEE9;
+                border-bottom-color: #2BAEE9;
+            }
+        }
+
+        .rc-menu-item-selected {
+            background-color: #2BAEE9;
+
+            &:hover {
+                color: #FFF;
+            }
+        }
+
+        .rc-menu-item:before {
+            display: block;
+            content: '.';
+            color: transparent;
+            font-size: 0;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -2px;
+            bottom: -2px;
+        }
+
+        .rc-menu-item.ws:before {
+            border-left: 2px solid #AFAFAF;
+            border-right: 2px solid #AFAFAF;
+        }
+
+        .rc-menu-item.wp:before {
+            border-right: 2px solid #AFAFAF;
+        }
+
+        .rc-menu-item.tool {
+            border-top: none;
+        }
+
+        .rc-menu-item.tool:before {
+            border-left: 2px solid #AFAFAF;
+            border-right: 2px solid #AFAFAF;
+        }
+
+        .rc-menu-item.tolerance {
+            border-top: none;
+        }
+
+        .rc-menu-item.tolerance:before {
+            border-right: 2px solid #AFAFAF;
+        }
+    }
+
     .model-tree:hover {
         opacity: 0.9;
         left: 0;
@@ -63,7 +142,7 @@ $icons: '../icons/';
             .icon-tool {
                 background-image: url($icons + 'tools/tool.svg');
             }
-            
+
             .icon-workplan {
                 font-size: 24px;
                 margin-right: 8px;
@@ -157,11 +236,11 @@ $icons: '../icons/';
         position: relative;
         cursor: pointer;
     }
-    
+
     .m-node .inner:only-child {
         //padding-left: 15px;
     }
-    
+
     .m-node .collapse {
         position: absolute;
         left: 0;
@@ -178,7 +257,7 @@ $icons: '../icons/';
             //padding-left: 20px;
         }
     }
-    
+
     .m-node .caret-right:before {
         content: '\25B8';
     }
@@ -186,7 +265,7 @@ $icons: '../icons/';
     .m-node .caret-down:before {
         content: '\25BE';
     }
-    
+
     .m-node .collapse:hover {
         color: #FFF;
         background-color: #2BAEE9;
@@ -236,85 +315,6 @@ $icons: '../icons/';
         height: 20px;
         border-radius: 2px;
         background-color: #111;
-    }
-
-    .sidebar-menu-tabs {
-        background-color: #666;
-        border-top: none;
-        font-size: 20px;
-        height: $sidebarTabsHeight;
-        border-bottom: 1px solid #AFAFAF;
-
-        .rc-menu-item {
-            text-align: center;
-            color: #F8F8F8;
-            position: relative;
-            border: 2px solid #AFAFAF;
-            border-bottom-color: #AFAFAF;
-            border-left: none;
-            border-right: none;
-            padding: 10px 5px;
-            width: 50%;
-            margin-left: 0;
-            background-color: #333;
-            text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
-
-            &:disabled {
-                opacity: 0.5;
-            }
-
-            &:hover {
-                cursor: pointer;
-                color: #2BAEE9;
-                border-bottom-color: #2BAEE9;
-            }
-        }
-
-        .rc-menu-item-selected {
-            background-color: #2BAEE9;
-
-            &:hover {
-                color: #FFF;
-            }
-        }
-
-        .rc-menu-item:before {
-            display: block;
-            content: '.';
-            color: transparent;
-            font-size: 0;
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: -2px;
-            bottom: -2px;
-        }
-
-        .rc-menu-item.ws:before {
-            border-left: 2px solid #AFAFAF;
-            border-right: 2px solid #AFAFAF;
-        }
-
-        .rc-menu-item.wp:before {
-            border-right: 2px solid #AFAFAF;
-        }
-
-        .rc-menu-item.tool {
-            border-top: none;
-        }
-
-        .rc-menu-item.tool:before {
-            border-left: 2px solid #AFAFAF;
-            border-right: 2px solid #AFAFAF;
-        }
-
-        .rc-menu-item.tolerance {
-            border-top: none;
-        }
-
-        .rc-menu-item.tolerance:before {
-            border-right: 2px solid #AFAFAF;
-        }
     }
 
     .disabled-view {
@@ -554,4 +554,10 @@ $icons: '../icons/';
             transform: translate3d($sidebarWidth, 0, 0);
         }
     }
+}
+
+.sidebar {
+    
+    
+    
 }

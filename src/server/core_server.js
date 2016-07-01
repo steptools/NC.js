@@ -26,11 +26,17 @@ function CoreServer() {
     this.port = opts.port || this.config.port || 8080;
 
     // set up machine tool option
-    this.machinetool = opts.tool;
+    if(opts.tool)
+        this.machinetool = opts.tool;
+    else
+        this.machinetool = this.config.machine.dir;
 
     // set up filepath option
-    this.project = opts.file;
-    file.init(opts.file, opts.tool);
+    if(opts.file)
+        this.project = opts.file;
+    else
+        this.project = this.config.file.dir;
+    file.init(this.project, this.machinetool);
 
     // Establish core
     this.models = {};
