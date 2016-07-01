@@ -124,6 +124,7 @@ export default class CADView extends React.Component {
         this.props.manager.addEventListener("invalidate", this.invalidate);
         // Keybased events
         window.addEventListener("keydown", this.onKeypress, true);
+        window.addEventListener("keypress", this.onKeypress, true);
     }
 
     componentDidMount() {
@@ -196,6 +197,7 @@ export default class CADView extends React.Component {
 
     componentWillUnmount() {
         window.removeEventListener("keypress", this.onKeypress);
+        window.removeEventListener("keydown", this.onKeypress);
         this.props.manager.removeEventListener("model:add", this.onModelAdd);
         this.props.manager.removeEventListener("model:remove", this.onModelRemove);
         this.props.manager.removeEventListener("shellLoad", this.invalidate);
@@ -267,7 +269,7 @@ export default class CADView extends React.Component {
           else if (options.boundingBox) {
             // then update the bounding box for the new model
             this.updateSceneBoundingBox(options.model.getBoundingBox());
-            
+
             this.controls.dispatchEvent({type: 'change', 'noInvalidate': true });
           }
         }
