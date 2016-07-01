@@ -332,13 +332,7 @@ $icons: '../icons/';
         position: absolute;
         top: 0;
         z-index: 10;
-<<<<<<< HEAD
-        height: 100%;
-=======
-
         height: calc(100% - #{$headerHeight});
-
->>>>>>> 91de99c7bfa6f27b6b45be0029b3d46eff3c2755
         left: $sidebarWidth*-1;
         -webkit-transition: -webkit-transform ease 250ms;
         -moz-transition: -moz-transform ease 250ms;
