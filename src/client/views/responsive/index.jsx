@@ -39,7 +39,8 @@ export default class ResponsiveView extends React.Component {
             toleranceCache: [],
             workingstepCache: {},
             workingstepList: [],
-            workplanCache: {}
+            workplanCache: {},
+            selectedEntity: null
         };
 
         this.ppstate = this.ppstate.bind(this);
@@ -63,6 +64,7 @@ export default class ResponsiveView extends React.Component {
 
         this.props.app.actionManager.on("simulate-setspeed", this.changeSpeed);
         this.props.app.socket.on("nc:speed",(speed)=>{this.speedChanged(speed);});
+        this.openProperties = this.openProperties.bind(this);
         
     }
 
@@ -253,6 +255,10 @@ export default class ResponsiveView extends React.Component {
         this.setState({resize: false});
     }
 
+    openProperties(node) {
+        this.setState({selectedEntity: node});
+    }
+
     updateWorkingstep(ws){
         let url = "/v3/nc/";
         url = url + "workplan/" + ws;
@@ -388,6 +394,8 @@ export default class ResponsiveView extends React.Component {
                 workplanCache={this.state.workplanCache}
                 workingstepCache={this.state.workingstepCache}
                 workingstepList={this.state.workingstepList}
+                openProperties={this.openProperties}
+                selectedEntity={this.state.selectedEntity}
             />;
         }
         else {
@@ -443,6 +451,7 @@ export default class ResponsiveView extends React.Component {
 		<div id='cadview-container' style={cadview_style}>
 		    <CADView
 			manager={this.props.app.cadManager}
+            openProperties={this.openProperties}
 			viewContainerId='primary-view'
 			root3DObject={this.props.app._root3DObject}
 			guiMode={this.state.guiMode}
