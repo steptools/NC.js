@@ -8,4 +8,4 @@ npm-debug.log
 src/client/fonts/*
 src/client/stylesheets/fonts/*
 *.stpnc
-config/config.json
+!config/config.json
