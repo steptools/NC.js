@@ -8,15 +8,11 @@ Features:
 - Removed Backbone.js dependency
 - Updated endpoint structure to no longer use project ID
 - Updated server to now use the command line to specify model to be loaded
-- Relative pathing can now be used
-- Now supports running only one file
+- Commit 1000
 
 Bugfixes:
 
 - Sidebar can now be scrolled in Firefox
-- Render radius is properly calculated when workingstep changes
-- Bounding boxes update properly with each workingstep
-- Tool Loactions now properly update when workingstep changes
 
 Version 1.1.0
 

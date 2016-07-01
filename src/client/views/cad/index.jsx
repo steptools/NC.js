@@ -160,7 +160,7 @@ export default class CADView extends React.Component {
         });
 
         // CONTROL EVENT HANDLERS
-        this.controls.addEventListener('change', function(options) {
+        this.controls.addEventListener('change', function() {
             self.state.isViewChanging = true;
             let x0 = self.sceneCenter,
                 x1 = self.camera.position,
@@ -172,7 +172,6 @@ export default class CADView extends React.Component {
             self.camera.near = Math.max(0.1, d - self.sceneRadius);
             self.camera.far = d + self.sceneRadius;
             self.camera.updateProjectionMatrix();
-          if (!options.noInvalidate)
             self.invalidate();
         });
         this.controls.addEventListener("start", function() {
@@ -253,18 +252,10 @@ export default class CADView extends React.Component {
     }
 
     invalidate(options) {
-        if (options) {
-          if (options.tree) {
+        if (options && options.tree) {
             // Update the model tree
             let tree = this.props.manager.getTree();
-            this.setState({modelTree: tree});
-          }
-          else if (options.boundingBox) {
-            // then update the bounding box for the new model
-            this.updateSceneBoundingBox(options.model.getBoundingBox());
-            
-            this.controls.dispatchEvent({type: 'change', 'noInvalidate': true });
-          }
+            this.setState({ modelTree: tree });
         }
         this.shouldRender = true;
     }
@@ -272,7 +263,7 @@ export default class CADView extends React.Component {
     updateSceneBoundingBox(newBoundingBox) {
         this.sceneCenter.copy(newBoundingBox.center());
         this.sceneRadius = newBoundingBox.size().length() / 2;
-    }
+    };
 
     // Handle all object selection needs
     handleSelection(obj, event) {

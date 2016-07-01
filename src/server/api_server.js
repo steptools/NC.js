@@ -119,10 +119,7 @@ APIServer.prototype._setSite = function() {
         res.render('base.jade', appConfig);
     };
 
-    this.router.get('/', _serveRoot);
-    this.router.get('*', function(req, res){
-        res.status(404).send('404');
-    });
+    this.router.get('*', _serveRoot);
 };
 
 /*

@@ -167,10 +167,7 @@ export default class NC extends THREE.EventDispatcher {
         _.each(keys, function(key) {
             let object = self._objects[key];
             if (object.rendered !== false && object.type !== 'polyline') {
-                let newBox = new THREE.Box3().setFromObject(object.object3D);
-                if (!newBox.isEmpty()) {
-                    object.bbox = newBox;
-                }
+                object.bbox = new THREE.Box3().setFromObject(object.object3D);
                 self.boundingBox.union(object.bbox);
             }
         });
