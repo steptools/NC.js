@@ -16,6 +16,12 @@
     "socket": true,
     "upload": true
   },
+  "file" : {
+    "dir": "./data/boxy/model.stpnc"
+  },
+  "machine" : {
+    "dir" : ""
+  },
   "storage": {
     "module": "s3",
     "options" : {
