@@ -108,7 +108,8 @@ export default class PropertiesPane extends React.Component {
 
             timeDistance = <MenuItem disabled key='timeDistance' className='property timeDistance'>
               <div className='baseTime'>Base time: {formattedTime}</div>
-              <div className='distance'>Distance: {entity.distance} {entity.distanceUnits}</div>
+              <div className='distance'>Distance: {entity.distance.toFixed(2)} {entity.distanceUnits}
+              </div>
             </MenuItem>;
         }
       
