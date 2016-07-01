@@ -17,6 +17,7 @@ Bugfixes:
 - Render radius is properly calculated when workingstep changes
 - Bounding boxes update properly with each workingstep
 - Tool Loactions now properly update when workingstep changes
+- View loads properly without errors on Safari / iOS
 
 Version 1.1.0
 
