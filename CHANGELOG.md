@@ -11,6 +11,7 @@ Features:
 - Relative pathing can now be used
 - Now supports running only one file
 - Pressing escape will close the properties pane
+- config.json deprecated and moved to configurator.js
 
 Bugfixes:
 
