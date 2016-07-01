@@ -744,7 +744,7 @@ function processBatchTYSON(url, workerID, buffer) {
 /*********************************************************************/
 
 
-self.addEventListener("message", function(e) {
+let messageHandler = function(e) {
     // Get the request URL info
     let url = e.data.url;
     let workerID = e.data.workerID;
@@ -760,10 +760,10 @@ self.addEventListener("message", function(e) {
         //TODO: MAKE THIS LESS HARDCODED
         if (parts[parts.length - 2] === "state") {
             let file = parts[parts.length - 2] + '/' + parts[parts.length - 1];
-            this.postMessage({type : "loadComplete", file: file });
+            self.postMessage({type : "loadComplete", file: file });
         }
         else {
-            this.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
+            self.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
         }
         // What did we get back
         switch(e.data.type) {
@@ -786,7 +786,7 @@ self.addEventListener("message", function(e) {
                         values:         []
                     };
                 }
-                this.postMessage({
+                self.postMessage({
                     type: "parseComplete",
                     file: parts[parts.length - 2]
                 });
@@ -826,7 +826,7 @@ self.addEventListener("message", function(e) {
         if (event.lengthComputable) {
             message.loaded = event.loaded / event.total * 100.0;
         }
-        this.postMessage(message);
+        self.postMessage(message);
     }
 
     // initialize the GET request
@@ -849,7 +849,7 @@ self.addEventListener("message", function(e) {
         
         // check for errors and post message accordingly
         if (res.status === 404 || res.status === 403) {
-            this.postMessage({
+            self.postMessage({
                 type: "loadError",
                 status: res.status,
                 url: url,
@@ -866,4 +866,9 @@ self.addEventListener("message", function(e) {
     // actually send the request
     req.end(handle);
     
-}, false);
+};
+
+messageHandler = messageHandler.bind(self);
+  
+self.addEventListener("message", messageHandler, false);
+
