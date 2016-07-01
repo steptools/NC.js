@@ -333,7 +333,7 @@ $icons: '../icons/';
         top: 0;
         z-index: 10;
 
-        height: 100%;
+        height: calc(100% - #{$headerHeight});
 
         left: $sidebarWidth*-1;
 
