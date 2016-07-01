@@ -3,7 +3,6 @@
 
 
 var path            = require('path'),
-    fs              = require('fs'),
     _               = require('lodash');
 
 /**********************************************************************************/
@@ -33,9 +32,6 @@ module.exports = function(environment) {
           },
           "machine" : {
             "dir" : ""
-          },
-          "auth": {
-            "module": "permit"
           },
           "environments": {
             "development": {
