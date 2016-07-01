@@ -77,7 +77,7 @@ Setting up a development environment
 
 #### Setting up which model to use
 
- In configurator.js, 
+ In config/config.json, 
  
  ```
  "file" : {"dir": "path_to_file"} 
