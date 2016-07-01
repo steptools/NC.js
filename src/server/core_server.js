@@ -22,7 +22,7 @@ function CoreServer() {
         .option('-t, --tool [tool-file]', 'Machine tool file to use [""]', '')
         .option('-f, --file [filepath]', 'Step NC filepath to use [""]', '')
         .parse(process.argv);
-    this.config = configurator(opts.environment);
+    this.config = configurator(opts.config, opts.environment);
     this.port = opts.port || this.config.port || 8080;
 
     // set up machine tool option

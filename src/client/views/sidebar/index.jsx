@@ -9,12 +9,11 @@ import PropertiesPane from './propertiespane';
 import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager';
 let MenuItem = Menu.Item;
+let scrolled=false;
 
 export default class SidebarView extends React.Component {
     constructor(props) {
         super(props);
-      
-        this.state = {scrolled: false};
 
         let disabledView = (name) => {
           return (() => {
@@ -34,29 +33,11 @@ export default class SidebarView extends React.Component {
         this.props.actionManager.on('change-workingstep', updateWorkingstep);
     }
 
-    componentDidUpdate() {
-      if((!this.state.scrolled) && (this.props.ws > -1))
-      {
-        let currElem=$('.running-node');
-        if((currElem != null) && (typeof currElem != 'undefined'))
-        {
-          let prevElem=currElem.parent().prev()[0];
-          if (prevElem === undefined)
-            prevElem = currElem.parent('.inner')[0];
-          if(typeof prevElem != 'undefined')//not the first working step
-          {
-            $('.m-tree').animate({
-              scrollTop: currElem.offset().top-$(".m-tree").offset().top
-              }, 1000);
-          }
-          this.setState({'scrolled': true});//dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
-        }
-      }
+    componentDidMount(){
     }
 
     selectMenuItem (info) {
-      this.props.cbMode(info.key);
-      this.setState({'scrolled': false});
+        this.props.cbMode(info.key);
     }
     
     
@@ -83,7 +64,21 @@ export default class SidebarView extends React.Component {
               <MenuItem key='tolerance' id='sidebar-menu-tolerance' className='tolerance'>Tolerances</MenuItem>
           </Menu>
       );
-
+      if((!scrolled) && (this.props.ws > -1))
+      {
+        let currElem=$('#'+this.props.ws);
+        if((currElem != null) && (typeof currElem != 'undefined'))
+        {
+          let prevElem=currElem.parent().prev()[0];
+          if(typeof prevElem != 'undefined')//not the first working step
+          {
+            $('.m-tree').animate({
+              scrollTop: currElem.offset().top-$(".m-tree").offset().top
+              }, 1000);
+          }
+          scrolled=true;//dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
+        }
+      }
         return <div className="sidebar">
                   {properties}
                   {modeMenu}
