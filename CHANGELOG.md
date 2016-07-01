@@ -19,6 +19,7 @@ Bugfixes:
 - Bounding boxes update properly with each workingstep
 - Tool Loactions now properly update when workingstep changes
 - View loads properly without errors on Safari / iOS
+- Properties pane has correct height for scrolling
 
 Version 1.1.0
 
