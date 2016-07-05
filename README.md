@@ -1,8 +1,7 @@
-NC.js
+# NC.js
 
 
-Setting up a development environment
-====================================
+ ### Setting up a development environment
 
   1. Download and build STEPNode
 
@@ -63,7 +62,7 @@ Setting up a development environment
   ------------------------------------------------------------------------------
  
 
- #### Start a server
+ 7. Start a server
 
   If a server doesn't need to be rebuilt, this will be faster than making everytime. 
 
@@ -71,7 +70,7 @@ Setting up a development environment
   > npm start
   ```
 
-  or to use a specific model
+  or to use a specific model and overload the config.js
   
    ```
   > npm start -- -f "path_to_.stpnc_file"

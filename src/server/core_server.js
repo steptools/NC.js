@@ -1,17 +1,12 @@
 /* Copyright G. Hemingway, 2015 - All rights reserved */
 "use strict";
 
-var http        = require('http'),
-    path        = require('path'),
-    _           = require('lodash'),
-    opts        = require('commander'),
-    winston     = require('winston'),
-    configurator= require('../../config'),
-
-    file     = require('./api/v3/file.js');
+var opts         = require('commander'),
+    winston      = require('winston'),
+    configurator = require('../../config'),
+    file         = require('./api/v3/file.js');
 /*****************************************************************************************/
-var app;
-//console.log(fileobj);
+
 function CoreServer() {
     var pjson = require('../../package.json');
     opts
@@ -46,28 +41,6 @@ function CoreServer() {
             new (winston.transports.Console)({ level: 'debug' })
         ]
     });
-    // Setup the rest of the primary infrastructure connections
 }
-
-CoreServer.prototype._setControllers = function() {
-    this.controllers = {
-//        Attachment:         require('./core/controllers/attachment')(this),
-//        Comment:            require('./core/controllers/comment')(this),
-//        Email:              require('./core/controllers/email')(this),
-//        Group:              require('./core/controllers/group')(this),
-//        Mailbox:            require('./core/controllers/mailbox')(this),
-//        Member:             require('./core/controllers/member')(this),
-//        Notification:       require('./core/controllers/notification')(this),
-//        Permission:         require('./core/controllers/permission')(this),
-//        Project:            require('./core/controllers/Project')(this),
-//        Role:               require('./core/controllers/role')(this),
-//        Search:             require('./core/controllers/search')(this),
-//        Tool:               require('./core/controllers/tool')(this),
-//        ToolInstance:       require('./core/controllers/tool_instance')(this),
-//        User:               require('./core/controllers/user')(this)
-    };
-};
-
-/*****************************************************************************************/
 
 module.exports = CoreServer;
