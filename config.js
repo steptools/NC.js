@@ -32,35 +32,10 @@ module.exports = function(environment) {
           },
           "machine" : {
             "dir" : ""
-          },
-          "environments": {
-            "development": {
-              "storage": {
-                "module": "filesystem",
-                "options": {
-                  "dir": "./data"
-                }
-              }
-            }
-        }
+          }
     };
     try {
         config.env = environment;
-        // Blend in the environment
-        var env = config.environments[environment];
-        delete config.environments;
-        if (env) {
-            _.each(_.keys(config),function(key) {
-                if (typeof env[key] !== 'undefined') {
-                    if (typeof config[key] === 'object') {
-                        _.extend(config[key], env[key]);
-                    } else {
-                        config[key] = env[key];
-                    }
-                }
-            });
-        }
-        // Add root directory into the mix
         config.rootDir = path.join(__dirname, '../../');
     } catch (err) {
         console.log('Error in node-configurator: %s', err);

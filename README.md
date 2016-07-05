@@ -1,8 +1,7 @@
-NC.js
+# NC.js
 
 
-Setting up a development environment
-====================================
+ ### Setting up a development environment
 
   1. Download and build STEPNode
 
@@ -24,16 +23,15 @@ Setting up a development environment
   ```
 
   ------------------------------------------------------------------------------
-  3. Setting up the default model
+  3. Setting up which model to use
 
-  In config/config.json, put the path to the .stpnc file you want to use in the 
-  file object under the dir key
+  In config.js put the path of the .stpnc file you want to use in the file object
+  under the dir key
  
   ```
-  "file" : {"dir": "path_to_file"} 
+  "file" : {"dir": "path_to_.stpnc_file"} 
   ```
-
-  ------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
   4. Install Glyphicons
 
   ```
@@ -47,7 +45,6 @@ Setting up a development environment
   ```
   > npm install
   ```
-
  ------------------------------------------------------------------------------
   6. Making a server
 
@@ -62,25 +59,19 @@ Setting up a development environment
   ```
   > npm run make-release
   ```
-
   ------------------------------------------------------------------------------
  
 
- #### Start a server
+ 7. Start a server
 
   If a server doesn't need to be rebuilt, this will be faster than making everytime. 
 
   ```
   > npm start
   ```
- 
 
-#### Setting up which model to use
-
- In configurator.js, 
- 
- ```
- "file" : {"dir": "path_to_file"} 
- ```
- 
- replace path_to_file with your desired path
+  or to use a specific model and overload the config.js
+  
+   ```
+  > npm start -- -f "path_to_.stpnc_file"
+  ```

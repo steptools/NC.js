@@ -36,7 +36,6 @@ export default class NC extends THREE.EventDispatcher {
     }
 
     addModel(model, usage, type, id, transform, bbox) {
-        let asisOpacity = 0.15;
         console.log('Add Model(' + usage + '): ' + id);
         let self = this;
         // Setup 3D object holder
@@ -69,8 +68,7 @@ export default class NC extends THREE.EventDispatcher {
         this._object3D.add(obj.object3D);
         this._overlay3D.add(obj.overlay3D);
         this._annotation3D.add(obj.annotation3D);
-        // TODO: add selector for displaying asis geometry or not
-        if (type === 'shell' && usage !== 'asis') {
+        if (type === 'shell') {
             model.addEventListener('shellEndLoad', function (event) {
                 let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
                 let mesh = new THREE.Mesh(event.shell.getGeometry(), material, false);
@@ -78,15 +76,10 @@ export default class NC extends THREE.EventDispatcher {
                 mesh.receiveShadow = true;
                 mesh.userData = obj;
                 obj.object3D.add(mesh);
-                // Dim the asis (should never happen as long as asis geometry isn't loaded
-                if (usage === 'asis' && asisOpacity !== 1.0) {
-                    obj.object3D.traverse(function (object) {
-                        if (object.material && object.material.uniforms.opacity) {
-                            object.material.transparent = true;
-                            object.material.depthWrite = false;
-                            object.material.uniforms['opacity'].value = asisOpacity;
-                        }
-                    });
+                if (usage === 'asis') {
+                    // TODO: add selector for displaying asis geometry or not
+                    obj.rendered = false;
+                    obj.setInvisible();
                 }
             });
         } else if (type === 'polyline') {
@@ -306,6 +299,7 @@ export default class NC extends THREE.EventDispatcher {
                     if (!obj.rendered) {
                         self._overlay3D.add(obj.object3D);
                         obj.rendered = true;
+                        obj.setVisible();
                         self._objects[name] = obj;
                     }
                 }
