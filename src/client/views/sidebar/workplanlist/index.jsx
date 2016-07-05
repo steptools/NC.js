@@ -11,7 +11,6 @@ export default class WorkplanList extends React.Component {
         this.data = this.getTreeData();
         this.decorators = ts.decorators;
         this.decorators.propertyCb = this.props.propertyCb;
-        this.decorators.ws = this.props.ws;
     }
     
     onToggle(node, toggled) {
@@ -42,6 +41,9 @@ export default class WorkplanList extends React.Component {
     }
 
     render() {
+        //console.log("Render wpl");
+        //console.log(this);
+        this.decorators.ws = this.props.ws;
         return (<Treebeard data={this.data} onToggle={this.onToggle} style={ts.style} decorators={this.decorators} />);
     }
 }
