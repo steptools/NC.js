@@ -38,7 +38,7 @@ var _getNext = function(ms, cb) {
 };
 
 var _getPrev = function(ms, cb) {
-  //ms.PrevWS();
+  ms.PrevWS();
   //assume switch was successful
   app.logger.debug("Switched!");
   cb();
@@ -175,14 +175,12 @@ var _wsInit = function(req, res) {
         res.status(200).send("OK");
         break;
       case "prev":
-        /*var temp = loopStates[path];
+        var temp = loopStates[path];
         loopStates[path] = true;
         if (temp) {
         _getPrev(ms, function() {
         _loop(ms, true);
         });
-        loopStates[path] = false;
-        update("pause");
         }
         else{
           _loop(ms,false);
@@ -192,7 +190,7 @@ var _wsInit = function(req, res) {
           loopStates[path] = false;
           update("pause");
         }
-        res.status(200).send("OK");*/
+        res.status(200).send("OK");
         break;
         default:
           if (!isNaN(parseFloat(command)) && isFinite(command)) {
