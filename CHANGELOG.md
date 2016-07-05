@@ -24,6 +24,7 @@ Bugfixes:
 - View loads properly without errors on Safari / iOS
 - Properties pane has correct height for scrolling
 - Scrolling happens whenever tab is switched and on all tabs
+- Contents of the Workplan tab can no longer be dragged
 
 Version 1.1.0
 
