@@ -16,7 +16,7 @@ const Container = (props) => {
     console.log(props);
     let node = props.node;
     node.icon = getNodeIcon(node);
-    let nodeName = "node";
+    let nodeName = "inner";
     if (node.id === props.decorators.ws) {
         nodeName += " running-node";
     } else if (node.enabled === false) {
@@ -35,15 +35,14 @@ const Container = (props) => {
     return (
         <div
             id={node.id}
-            className={nodeName}
+            className="node"
         >
             <div 
                 className={toggleName}
                 onClick={props.onClick}
             />
             <div
-                className="node inner"
-                onClick={(event)=>{props.decorators.propertyCb(node)}}
+                className={nodeName}                onClick={(event)=>{props.decorators.propertyCb(node)}}
             >
                 {node.icon}
                 <span className="node-text">

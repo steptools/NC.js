@@ -579,51 +579,26 @@ $icons: '../icons/';
 }
 
 .sidebar ul.sidebar-menu-tabs + ul {
-    padding: 2px;
+    padding: 6px 7px;
     height: $sidebarPaneHeight;
     overflow-y: scroll;
 
     .node {
         display: inline-block;
-        width: calc(100% - 15px);
-        padding: 4px 5px;
-        margin-left: 15px;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 38px;
     }
 
-    .node .node-text {
-        vertical-align: middle;
-        display: inline-block;
-        width: calc(100% - 38px);
-        cursor: pointer;
-    }
-
-    .node .tree-icon {
-        font-size: 24px;
-        margin-right: 8px;
-        vertical-align: middle;
-    }
-
-    .node .inner {
-        display: inline-block;
-
-        &:hover {
-            cursor: pointer;
-            background-color: rgba(#2BAEE9, .5);
-        }
-    }
-    
     .node .toggle-hidden {
         display: none;
-        visibility: hidden;
     }
 
     .node .toggle {
-        position: absolute;
         cursor: pointer;
         display: inline-block;
-        height: auto;
         width: 15px;
-        height: 100%;
+        min-height: inherit;
         font-size: 22px;
         background-color: transparent;
         text-align: center;
@@ -641,12 +616,38 @@ $icons: '../icons/';
     .node .caret-down:before {
         content: '\25BE';
     }
+    
+    .node .inner {
+        display: inline-block;
+        width: calc(100% - 15px);
+        min-height: inherit;
+        vertical-align: middle;
+        
+        &:hover {
+            cursor: pointer;
+            background-color: rgba(#2BAEE9, .5);
+        }
+    }
 
-    .running-node .inner {
+    .node .tree-icon {
+        position: absolute;
+        display: inline-block;
+        margin-right: 8px;
+        text-align: center;
+        font-size: 24px;
+    }
+    
+    .node .node-text {
+        display: inline-block;
+        vertical-align: middle;
+        width: calc(100% - 38px);
+    }
+    
+    .node .running-node .inner {
         background-color: #9BFA9B;
     }
 
-    .disabled {
+    .node .disabled {
         opacity: 0.5;
     }
 }
