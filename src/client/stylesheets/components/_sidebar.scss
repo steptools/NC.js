@@ -602,6 +602,12 @@ $icons: '../icons/';
         cursor: pointer;
         font-size: 10px;
         background-color: transparent;
+        
+        &:before {
+            position: absolute;
+            left: 2.5px;
+            top: 14px;
+        }
 
         &:hover {
             color: #FFF;
