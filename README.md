@@ -26,12 +26,12 @@ Setting up a development environment
   ------------------------------------------------------------------------------
   3. Setting up which model to use
 
-  In config.js put the path of the .stpnc in the file object under the dir key
+  In config.js put the path of the .stpnc file you want to use in the file object
+  under the dir key
  
   ```
-   "file" : {"dir": "path_to_file"} 
+  "file" : {"dir": "path_to_.stpnc_file"} 
   ```
- 
  ------------------------------------------------------------------------------
   4. Install Glyphicons
 
@@ -71,3 +71,8 @@ Setting up a development environment
   > npm start
   ```
 
+  or to use a specific model
+  
+   ```
+  > npm start -- -f "path_to_.stpnc_file"
+  ```
