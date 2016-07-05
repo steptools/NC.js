@@ -287,7 +287,6 @@ export default class DataLoader extends THREE.EventDispatcher {
         let nc = new NC(doc.project, doc.workingstep, doc.time_in_workingstep, this);
         _.each(doc.geom, function(geomData) {
             let color = DataLoader.parseColor("7d7d7d");
-            console.log(geomData);
             let transform = DataLoader.parseXform(geomData.xform, true);
             // Is this a shell
             if (_.has(geomData, 'shell')) {
@@ -406,7 +405,6 @@ export default class DataLoader extends THREE.EventDispatcher {
         let shellJSON = _.find(doc.shells, {id: id});
         // Do we have to load the shell
         if (shellJSON.href) {
-            console.log(shellJSON);
             let color = DataLoader.parseColor("7d7d7d");
             let boundingBox = DataLoader.parseBoundingBox(shellJSON.bbox);
             let shell = new Shell(id, assembly, parent, shellJSON.size, color, boundingBox);
