@@ -4,35 +4,53 @@ import React from 'react';
 
 function getNodeIcon(node) {
     if (node.type === "workplan") {
-        return <span className="icon-workplan glyphicons glyphicons-cube-empty"/>
+        return <span className="tree-icon glyphicons glyphicons-cube-empty"/>
     } else if (node.type === "selective") {
-        return <span className="icon-workplan glyphicons glyphicons-list-numbered"/>
+        return <span className="tree-icon glyphicons glyphicons-list-numbered"/>
     } else {
-        return <span className="icon-workplan glyphicons glyphicons-blacksmith"/>
+        return <span className="tree-icon glyphicons glyphicons-blacksmith"/>
     }
 }
 
 const Container = (props) => {
+    console.log(props);
     let node = props.node;
     node.icon = getNodeIcon(node);
-    let cName = "node";
+    let nodeName = "node";
     if (node.id === props.decorators.ws) {
-        cName = "node running-node";
+        nodeName += " running-node";
     } else if (node.enabled === false) {
-        cName = "node disabled";
+        nodeName += " disabled";
+    }
+    let toggleName = "toggle";
+    if (node.leaf === true) {
+        toggleName = "toggle-hidden";
+    }
+    if (node.toggled === true) {
+        toggleName += " caret-down";
+    } else {
+        toggleName += " caret-right";
     }
     
     return (
-        <span
+        <div
             id={node.id}
-            className={cName}
-            onClick={(event)=>{props.decorators.propertyCb(node)}}
+            className={nodeName}
         >
-            {node.icon}
-            <span className="node-text">
-                {node.name}
-            </span>
-        </span>
+            <div 
+                className={toggleName}
+                onClick={props.onClick}
+            />
+            <div
+                className="node inner"
+                onClick={(event)=>{props.decorators.propertyCb(node)}}
+            >
+                {node.icon}
+                <span className="node-text">
+                    {node.name}
+                </span>
+            </div>
+        </div>
     );
 }
 
@@ -121,11 +139,11 @@ const style_default = {
 const style = {
     tree: {
         base: {
-            //listStyle: 'none'
+            listStyle: 'none'
         },
         node: {
             base: {
-                
+                listStyle: 'none'
             }
         }
     }

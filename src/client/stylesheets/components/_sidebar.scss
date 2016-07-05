@@ -354,11 +354,16 @@ $icons: '../icons/';
 
                 &.rc-menu-item-disabled {
                     cursor: inherit;
-                    -webkit-touch-callout: auto; /* iOS Safari */
-                    -webkit-user-select: auto;   /* Chrome/Safari/Opera */
-                    -khtml-user-select: auto;    /* Konqueror */
-                    -moz-user-select: auto;      /* Firefox */
-                    -ms-user-select: auto;       /* Internet Explorer/Edge */
+                    -webkit-touch-callout: auto;
+                    /* iOS Safari */
+                    -webkit-user-select: auto;
+                    /* Chrome/Safari/Opera */
+                    -khtml-user-select: auto;
+                    /* Konqueror */
+                    -moz-user-select: auto;
+                    /* Firefox */
+                    -ms-user-select: auto;
+                    /* Internet Explorer/Edge */
                     user-select: auto;
                 }
 
@@ -369,12 +374,16 @@ $icons: '../icons/';
                     background-color: #333;
                     color: #F8F8F8;
                     border-bottom: 2px solid #AFAFAF;
-
-                    -webkit-touch-callout: none; /* iOS Safari */
-                    -webkit-user-select: none;   /* Chrome/Safari/Opera */
-                    -khtml-user-select: none;    /* Konqueror */
-                    -moz-user-select: none;      /* Firefox */
-                    -ms-user-select: none;       /* Internet Explorer/Edge */
+                    -webkit-touch-callout: none;
+                    /* iOS Safari */
+                    -webkit-user-select: none;
+                    /* Chrome/Safari/Opera */
+                    -khtml-user-select: none;
+                    /* Konqueror */
+                    -moz-user-select: none;
+                    /* Firefox */
+                    -ms-user-select: none;
+                    /* Internet Explorer/Edge */
                     user-select: none;
 
                     &:hover {
@@ -569,6 +578,75 @@ $icons: '../icons/';
     }
 }
 
-.sidebar {
+.sidebar ul.sidebar-menu-tabs + ul {
+    padding: 2px;
+    height: $sidebarPaneHeight;
+    overflow-y: scroll;
+
+    .node {
+        display: inline-block;
+        width: calc(100% - 15px);
+        padding: 4px 5px;
+        margin-left: 15px;
+    }
+
+    .node .node-text {
+        vertical-align: middle;
+        display: inline-block;
+        width: calc(100% - 38px);
+        cursor: pointer;
+    }
+
+    .node .tree-icon {
+        font-size: 24px;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    .node .inner {
+        display: inline-block;
+
+        &:hover {
+            cursor: pointer;
+            background-color: rgba(#2BAEE9, .5);
+        }
+    }
     
+    .node .toggle-hidden {
+        display: none;
+        visibility: hidden;
+    }
+
+    .node .toggle {
+        position: absolute;
+        cursor: pointer;
+        display: inline-block;
+        height: auto;
+        width: 15px;
+        height: 100%;
+        font-size: 22px;
+        background-color: transparent;
+        text-align: center;
+
+        &:hover {
+            color: #FFF;
+            background-color: #2BAEE9;
+        }
+    }
+
+    .node .caret-right:before {
+        content: '\25B8';
+    }
+
+    .node .caret-down:before {
+        content: '\25BE';
+    }
+
+    .running-node .inner {
+        background-color: #9BFA9B;
+    }
+
+    .disabled {
+        opacity: 0.5;
+    }
 }
