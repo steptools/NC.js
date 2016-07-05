@@ -13,7 +13,6 @@ function getNodeIcon(node) {
 }
 
 const Container = (props) => {
-    console.log(props);
     let node = props.node;
     node.icon = getNodeIcon(node);
     let nodeName = "inner";
