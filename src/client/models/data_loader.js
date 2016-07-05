@@ -203,20 +203,11 @@ export default class DataLoader extends THREE.EventDispatcher {
                     console.log('DataLoader.ShellLoad: invalid shell ID' + event.data.id);
                 } else {
                     data = event.data.data;
-                    for(var i =0;i<data.colors.length;i++)
-                    {
-                        if (data.colors[i] < 0) {
-                            if (i% 3 === 0)
-                                data.colors[i] = shell._color.r;
-                            else if (i % 3 === 1)
-                                data.colors[i] = shell._color.g;
-                            else if (i % 3 === 2)
-                                data.colors[i] = shell._color.b;
-                        }
-                    }
                     // Remove the reference to the shell
                     delete this._shells[event.data.id+".json"];
-                    shell.addGeometry(data.position, data.normals, data.colors);
+
+                    //Data.color is passed from the buffers.color.buffer from webworker.js 695
+                    shell.addGeometry(data.position, data.normals, data.color);
                     this.dispatchEvent({ type: "shellLoad", file: event.data.file });
                 }
                 break;
@@ -296,6 +287,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         let nc = new NC(doc.project, doc.workingstep, doc.time_in_workingstep, this);
         _.each(doc.geom, function(geomData) {
             let color = DataLoader.parseColor("7d7d7d");
+            console.log(geomData);
             let transform = DataLoader.parseXform(geomData.xform, true);
             // Is this a shell
             if (_.has(geomData, 'shell')) {
@@ -414,6 +406,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         let shellJSON = _.find(doc.shells, {id: id});
         // Do we have to load the shell
         if (shellJSON.href) {
+            console.log(shellJSON);
             let color = DataLoader.parseColor("7d7d7d");
             let boundingBox = DataLoader.parseBoundingBox(shellJSON.bbox);
             let shell = new Shell(id, assembly, parent, shellJSON.size, color, boundingBox);
