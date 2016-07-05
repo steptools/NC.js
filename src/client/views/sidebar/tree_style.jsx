@@ -25,11 +25,10 @@ const Container = (props) => {
     let toggleName = "toggle";
     if (node.leaf === true) {
         toggleName = "toggle-hidden";
-    }
-    if (node.toggled === true) {
-        toggleName += " caret-down";
+    } else if (node.toggled === true) {
+        toggleName += " glyphicon glyphicon-chevron-down";
     } else {
-        toggleName += " caret-right";
+        toggleName += " glyphicon glyphicon-chevron-right";
     }
     
     return (

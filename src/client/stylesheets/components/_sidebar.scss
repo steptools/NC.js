@@ -584,24 +584,30 @@ $icons: '../icons/';
     overflow-y: scroll;
 
     .node {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
         box-sizing: border-box;
         width: 100%;
         min-height: 38px;
     }
 
     .node .toggle-hidden {
-        display: none;
+        //visibility: hidden;
+        width: 15px;
     }
 
     .node .toggle {
-        cursor: pointer;
-        display: inline-block;
         width: 15px;
         min-height: inherit;
-        font-size: 22px;
+        cursor: pointer;
+        font-size: 10px;
         background-color: transparent;
-        text-align: center;
+        
+        &:before {
+            position: absolute;
+            left: 2.5px;
+            top: 14px;
+        }
 
         &:hover {
             color: #FFF;
@@ -618,10 +624,10 @@ $icons: '../icons/';
     }
     
     .node .inner {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
         width: calc(100% - 15px);
         min-height: inherit;
-        vertical-align: middle;
         
         &:hover {
             cursor: pointer;
@@ -630,16 +636,13 @@ $icons: '../icons/';
     }
 
     .node .tree-icon {
-        position: absolute;
-        display: inline-block;
+        width: 30px;
         margin-right: 8px;
         text-align: center;
         font-size: 24px;
     }
     
     .node .node-text {
-        display: inline-block;
-        vertical-align: middle;
         width: calc(100% - 38px);
     }
     
@@ -649,5 +652,9 @@ $icons: '../icons/';
 
     .node .disabled {
         opacity: 0.5;
+    }
+    
+    ul {
+        padding-left: 15px;
     }
 }

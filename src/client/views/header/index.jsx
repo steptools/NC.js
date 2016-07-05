@@ -33,7 +33,7 @@ class MenuItem extends React.Component {
                 </PlainMenuItem>
             );
         }
-        
+
     }
 }
 
@@ -81,7 +81,7 @@ class Slider extends React.Component {
             // TODO:Remove onMouseUp / onKeyUp if/when bug is fixed with onChange
             return (
                 <div className='slider sliderWithIcons'>
-                    <input className={"range-" + this.props.id} onChange={this.changed} 
+                    <input className={"range-" + this.props.id} onChange={this.changed}
                         onMouseUp={this.changed} onKeyUp={this.changed} value={this.props.val} type='range' min='0' max='200' step='1'/>
                     <div className='sliderData'>
                         <div className={"slider-icon slider-left-icon " + prefix + " " + left} onMouseUp={this.changed} onKeyUp={this.changed} value='0'/>
@@ -113,7 +113,7 @@ export default class HeaderView extends React.Component {
         this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
         this.updateSpeed = this.updateSpeed.bind(this);
     }
-    
+
     componentDidMount() {
         let changelog = document.getElementById("changes");
         let chlog = new XMLHttpRequest();
@@ -154,12 +154,12 @@ export default class HeaderView extends React.Component {
                 if(this.props.logstate === false) {
                     changelog.className = "changelog visible"
                     this.props.cbLogstate(true);
-                }   
+                }
                 else {
                     changelog.className = "changelog"
                     this.props.cbLogstate(false);
                 }
-            
+
         }
     }
 
@@ -176,20 +176,20 @@ export default class HeaderView extends React.Component {
         }
         const headerMenu = (
             <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='header-menu'>
-                <MenuItem tooltip='Backward function is currently disabled' key='backward'><ButtonImage prefix='glyphicon' icon='step-backward'/>Prev</MenuItem>
+                <MenuItem key='backward'><ButtonImage prefix='glyphicon' icon='step-backward'/>Prev</MenuItem>
                 <MenuItem key='play'><ButtonImage prefix='glyphicon' icon={ppbutton}/>{ppbtntxt}</MenuItem>
                 <MenuItem key='forward'><ButtonImage prefix='glyphicon' icon='step-forward'/>Next</MenuItem>
                 <SliderMenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed} prefix='glyphicons' left='turtle' right='rabbit'/></SliderMenuItem>
                 <MenuItem key='showlog' id="logbutton"><ButtonImage prefix='glyphicon' icon='book'/><div className="version" id="logbutton">v1.1.0</div></MenuItem>
             </Menu>
-            
+
         );
 
         return <div className="header">
         {headerMenu}
         <div className="changelog" id="changes"></div>
         </div>;
-    }  
+    }
 }
 
 HeaderView.propTypes = {cadManager: React.PropTypes.object.isRequired,
