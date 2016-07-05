@@ -13,22 +13,20 @@ function getNodeIcon(node) {
 }
 
 const Container = (props) => {
-    console.log(props);
     let node = props.node;
     node.icon = getNodeIcon(node);
     let cName = "node";
-    if (node.id === node.ws) {
+    if (node.id === props.decorators.ws) {
         cName = "node running-node";
     } else if (node.enabled === false) {
         cName = "node disabled";
     }
     
-    console.log(props);
     return (
         <span
             id={node.id}
             className={cName}
-            onClick={node.propertyCb(node)}
+            onClick={(event)=>{props.decorators.propertyCb(node)}}
         >
             {node.icon}
             <span className="node-text">
@@ -123,7 +121,7 @@ const style_default = {
 const style = {
     tree: {
         base: {
-            listStyle: 'none'
+            //listStyle: 'none'
         },
         node: {
             base: {

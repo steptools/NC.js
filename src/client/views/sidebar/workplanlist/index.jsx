@@ -9,6 +9,9 @@ export default class WorkplanList extends React.Component {
         this.state = {};
         this.onToggle = this.onToggle.bind(this);
         this.data = this.getTreeData();
+        this.decorators = ts.decorators;
+        this.decorators.propertyCb = this.props.propertyCb;
+        this.decorators.ws = this.props.ws;
     }
     
     onToggle(node, toggled) {
@@ -32,19 +35,13 @@ export default class WorkplanList extends React.Component {
     }
 
     getTreeData() {
-        let treeData = {
-            nodes: this.props.workplanCache,
-            ws: this.props.ws,
-            propertyCb: this.props.propertyCb
-        }
-        treeData.nodes.toggled = true;
-        this.toggleNodes(treeData.nodes);
-        console.log("TREE DATA:");
-        console.log(treeData);
+        let treeData = this.props.workplanCache;
+        treeData.toggled = true;
+        this.toggleNodes(treeData);
         return treeData;
     }
 
     render() {
-        return (<Treebeard data={this.data} onToggle={this.onToggle} style={ts.style} decorators={ts.decorators} />);
+        return (<Treebeard data={this.data} onToggle={this.onToggle} style={ts.style} decorators={this.decorators} />);
     }
 }
