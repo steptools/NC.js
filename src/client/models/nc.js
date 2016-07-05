@@ -9,6 +9,8 @@ import Annotation          from './annotation';
 import DataLoader from './data_loader'
 import Shell from './shell'
 
+let fs = require("fs");
+
 /*************************************************************************/
 
 export default class NC extends THREE.EventDispatcher {
@@ -18,6 +20,7 @@ export default class NC extends THREE.EventDispatcher {
         this.project = project;
         this._workingstep = workingstep;
         this._timeIn = timeIn;
+        this.MTCworkingsteps = this.getMTCworkingsteps();
         this._loader = loader;
         this._objects = [];
         this.type = 'nc';
@@ -33,6 +36,11 @@ export default class NC extends THREE.EventDispatcher {
             explodeDistance: 0,
             collapsed:      false
         }
+    }
+
+    getMTCworkingsteps() {
+        let datboi = FileReader();
+
     }
 
     addModel(model, usage, type, id, transform, bbox) {

@@ -11,6 +11,7 @@ Features:
 - Relative pathing can now be used
 - Now supports running only one file
 - Pressing escape will close the properties pane
+- config.json deprecated and moved to configurator.js
 
 Bugfixes:
 
@@ -19,6 +20,8 @@ Bugfixes:
 - Bounding boxes update properly with each workingstep
 - Tool Loactions now properly update when workingstep changes
 - View loads properly without errors on Safari / iOS
+- Properties pane has correct height for scrolling
+- Scrolling happens whenever tab is switched and on all tabs
 
 Version 1.1.0
 
