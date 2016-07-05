@@ -653,16 +653,20 @@ function unindexValues(data, buffers) {
     }
 }
 
-function uncompressColors(data, colorsBuffer) {
+function colorLoad(data, buffers) {
     let index = 0;
-    let numBlocks = data.colorsData.length;
-    for (let i = 0; i < numBlocks; i++) {
-        let block = data.colorsData[i];
-        for (let j = 0; j < block.duration; j++) {
-            let bdnull = (block.data ===null);
-            colorsBuffer[index++] = bdnull?-1:block.data[0];
-            colorsBuffer[index++] = bdnull?-1:block.data[1];
-            colorsBuffer[index++] = bdnull?-1:block.data[2];
+    for (let i = 0; i < data.faces.length; i++) {
+        for(let j = 0; j < (data.faces[i]).count; j++){
+            if(data.faces[i].color != null){
+                buffers.color[index++] = data.faces[i].color[0];
+                buffers.color[index++] = data.faces[i].color[1];
+                buffers.color[index++] = data.faces[i].color[2];
+            }
+            else{
+                buffers.color[index++] = -1;
+                buffers.color[index++] = -1;
+                buffers.color[index++] = -1;
+            }
         }
     }
 }
@@ -672,7 +676,7 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
     let buffers = {
         position: new Float32Array(dataJSON.pointsIndex.length),
         normals: new Float32Array(dataJSON.pointsIndex.length),
-        colors: new Float32Array(dataJSON.pointsIndex.length)
+        color: new Float32Array(dataJSON.pointsIndex.length)
     };
 
     if (dataJSON.values) {
@@ -685,17 +689,15 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
         }
         unindexValues(dataJSON, buffers);
     }
-    if (dataJSON.colorsData) {
-        uncompressColors(dataJSON, buffers.colors);
-    }
-
+    if (dataJSON.faces)
+        colorLoad(dataJSON, buffers);
     let parts = url.split("/");
     self.postMessage({
         type: "shellLoad",
         data: buffers,
         id: dataJSON.id,
-        workerID: workerID
-    }, [buffers.position.buffer, buffers.normals.buffer, buffers.colors.buffer]);
+        workerID: workerID                             //This buffer is passed to data loader to represent color values of the facets
+    }, [buffers.position.buffer, buffers.normals.buffer, buffers.color.buffer]);
     // Do we signal that we are all done
     if (signalFinish) {
         self.postMessage({

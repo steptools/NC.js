@@ -54,11 +54,20 @@ export default class Shell extends THREE.EventDispatcher {
             };
             this._geometry.groups.push(offset);
         }
-
         // Now load the rest of the data
         this._geometry.attributes.position.array = position;
         this._geometry.attributes.normal.array = normals;
+
+        var self = this;
+        if(colors[0] === -1){ //This checks if a color was set by the data or default should be used
+            for(let i = 0; i <colors.length; i = i + 3){
+                colors[i] = self._color.r;
+                colors[i+1] = self._color.g;
+                colors[i+2] = self._color.b;
+            }
+        }
         this._geometry.attributes.color.array = colors;
+
         // Compute bbox
         this._geometry.computeBoundingBox();
         this._boundingBox = this._geometry.boundingBox.clone();

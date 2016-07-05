@@ -50,7 +50,6 @@ export default class Annotation extends THREE.EventDispatcher {
             return ar;
         };
         // Decompress the colors data
-        console.log("colorsData", data.colorsData)
         let colorArrays = decompressColors(data.lines, data.colorsData);
 
         // Create geometry for each linestrip

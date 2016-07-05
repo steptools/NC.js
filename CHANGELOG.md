@@ -11,7 +11,7 @@ Features:
 - Relative pathing can now be used
 - Now supports running only one file
 - Pressing escape will close the properties pane
-- config.json deprecated and moved to configurator.js
+- config.json deprecated and moved to config.js
 
 Bugfixes:
 
@@ -22,6 +22,7 @@ Bugfixes:
 - View loads properly without errors on Safari / iOS
 - Properties pane has correct height for scrolling
 - Scrolling happens whenever tab is switched and on all tabs
+- Colors stopped working after code refactor but are now fixed
 
 Version 1.1.0
 
