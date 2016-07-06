@@ -37,11 +37,6 @@ const Container = (props) => {
         toggleName += " glyphicon glyphicon-chevron-right";
     }
     
-    if (node.hidden === true) {
-        outerName = "node-hidden-root";
-        toggleName = "toggle-hidden";
-    }
-    
     return (
         <div
             id={node.id}

@@ -33,8 +33,6 @@ export default class WorkplanList extends React.Component {
     }
     
     toggleToCurrentWS(node) {
-        console.log(node);
-        console.log(this.props.ws);
         if (node.id === this.props.ws) {
             node.toggled = true;
             return true;
@@ -51,7 +49,7 @@ export default class WorkplanList extends React.Component {
     }
 
     render() {
-        console.log("Rendering workplan view");
+        //console.log("Rendering workplan view");
         this.decorators.ws = this.props.ws;
         return (
             <Treebeard data={this.props.workplanCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>

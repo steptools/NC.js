@@ -657,27 +657,4 @@ $icons: '../icons/';
     .node .disabled {
         opacity: 0.5;
     }
-    
-    .node-hidden-root {
-        display: none;
-        height: 0px;
-    }
-    
-    .node-hidden-root + span {
-        ul {
-            padding: 0px;
-        }
-        
-        .node-text {
-            width: calc(100% - 38px);
-        }
-        
-        .toggle-hidden {
-            width: 0px;
-        }
-        
-        .inner {
-            width: 100%;
-        }
-    }
 }
