@@ -33,27 +33,17 @@ export default class Shell extends THREE.EventDispatcher {
         return this._id;
     }
 
-    addGeometry(position, normals, colors) {
+    addGeometry(position, normals, colors, faces) {
         this.dispatchEvent({type: "shellStartLoad", shell: this});
         // Create the geometry to hold the data
+        // Can also create a new buffergeometry per face and then geometry will be an array of buffergeom
         this._geometry = new THREE.BufferGeometry();
+
         this._geometry.addAttribute('position', new THREE.BufferAttribute(this._size * 3, 3));
         this._geometry.addAttribute('normal',   new THREE.BufferAttribute(this._size * 3, 3));
         this._geometry.addAttribute('color',    new THREE.BufferAttribute(this._size * 3, 3));
+        this._geometry.addAttribute('faces',    new THREE.BufferAttribute(this._size * 3, 3));
 
-        // Setup the offsets
-        let chunkSize = 21845;
-        let i;
-        this._geometry.groups = [];
-        let offsets = this._size / chunkSize;
-        for (i = 0; i < offsets; i++) {
-            let offset = {
-                start: i * chunkSize * 3,
-                index: i * chunkSize * 3,
-                count: Math.min(this._size - ( i * chunkSize ), chunkSize) * 3
-            };
-            this._geometry.groups.push(offset);
-        }
         // Now load the rest of the data
         this._geometry.attributes.position.array = position;
         this._geometry.attributes.normal.array = normals;
@@ -67,6 +57,7 @@ export default class Shell extends THREE.EventDispatcher {
             }
         }
         this._geometry.attributes.color.array = colors;
+        this._geometry.attributes.faces.array = faces;
 
         // Compute bbox
         this._geometry.computeBoundingBox();
