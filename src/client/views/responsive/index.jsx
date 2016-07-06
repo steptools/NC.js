@@ -96,7 +96,12 @@ export default class ResponsiveView extends React.Component {
     
     // set a temp variable for the workingstep cache
       let workingstepCache = {};
-      let wsList = [];
+      let wsList = {
+        name: "root",
+        hidden: true,
+        toggled: true,
+        children: []
+      };
 
       // get the workplan
       let url = "/v3/nc/workplan/";
@@ -105,6 +110,7 @@ export default class ResponsiveView extends React.Component {
           let planNodes = JSON.parse(res.text);
           let stepNodes = {};
           let nodeCheck = (node)=> {
+            node.toggled = true;
             if (node.type === 'selective' || node.type === 'workplan') {
               if (node.children.length != 0)
                 node.children.map(nodeCheck);
@@ -114,7 +120,7 @@ export default class ResponsiveView extends React.Component {
               node.leaf = true;
               stepNodes[node.id] = node;
               if (node.enabled)
-                wsList.push(node.id);
+                wsList.children.push(node);
             }
           };
           nodeCheck(planNodes);
