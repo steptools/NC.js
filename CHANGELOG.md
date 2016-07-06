@@ -16,6 +16,7 @@ Features:
 
 Bugfixes:
 
+- Sidebar now renders only when needed
 - Sidebar can now be scrolled in Firefox
 - Render radius is properly calculated when workingstep changes
 - Bounding boxes update properly with each workingstep
