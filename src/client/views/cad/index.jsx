@@ -465,8 +465,11 @@ export default class CADView extends React.Component {
             dispatcher={this.props.manager}
             guiMode={this.props.guiMode}
         /> : undefined;
+
         return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
+            <span className="resetview glyphicon glyphicon-eye-open"
+                  onClick={()=>{this.alignToolView(this.props.manager.getSelected());}}/>
             {compass}
             <LoadQueueView dispatcher={this.props.manager} guiMode={this.props.guiMode} />
         </div>;
