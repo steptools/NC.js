@@ -34,7 +34,7 @@ Version 1.1.0
 - Changed perspective to be less wacky
 - Fixed all assertion errors by making finder,apt, and tol global in file.js
 - Stopped showing ids in tolerance view
-- Removed useles code
+- Removed useless code
 - Added tools view
 - Replaced references to StepNCNode with NC.js
 - Added Changelog
