@@ -28,6 +28,8 @@ Bugfixes:
 - Scrolling happens whenever tab is switched and on all tabs
 - Contents of the Workplan tab can no longer be dragged
 - Colors stopped working after code refactor but are now fixed
+- Nodes in the Workplan tree can no longer be dragged and reordered
+- Transitioned to React 15.2.0
 
 Version 1.1.0
 

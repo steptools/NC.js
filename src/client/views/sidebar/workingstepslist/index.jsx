@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-import request from 'superagent';
 
 export default class WorkingstepList extends React.Component {
   constructor(props){
@@ -25,7 +24,6 @@ export default class WorkingstepList extends React.Component {
 }
 
   renderNode(nodeId, num){
-
     let node = this.props.workingstepCache[nodeId];
     node.icon = this.getNodeIcon(node, num);
     let cName = 'node';
