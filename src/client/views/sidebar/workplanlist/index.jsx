@@ -31,12 +31,12 @@ export default class WorkplanList extends React.Component {
         }
         return this.props.ws !== nextProps.ws;
     }
-    
+
     toggleToCurrentWS(node) {
         if (node.id === this.props.ws) {
             node.toggled = true;
             return true;
-        } 
+        }
         if (node.enabled && !node.leaf) {
             for (let i = 0; i < node.children.length; i++) {
                 if (this.toggleToCurrentWS(node.children[i])) {
@@ -47,10 +47,8 @@ export default class WorkplanList extends React.Component {
         }
         node.toggled = false;
     }
-  }
 
     render() {
-        //console.log("Rendering workplan view");
         this.decorators.ws = this.props.ws;
         return (
             <Treebeard data={this.props.workplanCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
