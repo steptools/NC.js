@@ -22,6 +22,10 @@ export default class WorkplanList extends React.Component {
         }
         this.setState({cursor: node});
     }
+    
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.props.ws !== nextProps.ws;
+    }
 
     render() {
         console.log("Rendering workplan view");
