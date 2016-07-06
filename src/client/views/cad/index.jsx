@@ -82,8 +82,7 @@ export default class CADView extends React.Component {
             // Go to special viewing postion on 'a'
             case 97:
                 //console.log(this.camera);
-                this.camera.position.set(-6.997719433230415, 7.055664289079229, 10.589898666998387);
-                this.camera.up.set(0.31370902211057955, -0.32595607647788327, 0.891817966657745);
+                this.alignToolView(this.props.manager.getSelected());
                 break;
             // Explode on 'x' key pressed
             case 120:
@@ -236,6 +235,98 @@ export default class CADView extends React.Component {
             .add(newTargetPosition);
         this.controls.target.copy(newTargetPosition);
         this.invalidate();
+    }
+
+    alignToolView(objects) {
+        
+        // find the orientation of the referenced object
+        let tool = _.find(_.values(objects[0]._objects), {'usage': 'cutter', 'rendered': true});
+        let part = _.find(_.values(objects[0]._objects), {'usage': 'tobe', 'rendered': true});
+
+        // get a tool-to-part vector to align properly
+        let toolMax = tool.bbox.max.clone();
+        let toolMin = tool.bbox.min.clone();
+        let partPos = new THREE.Vector3().setFromMatrixPosition(part.object3D.matrixWorld);
+      
+        let toolPos = toolMin;
+        if (toolMax.sub(partPos).length() > toolMin.sub(partPos).length())
+          toolPos = toolMax;
+
+        let newUp = toolPos.clone().sub(partPos);
+
+        // get the unit vector corresponding to this view
+        newUp = CADView.getAxisVector(newUp);
+
+        // now calculate which side we want to view from
+        let fixture = _.find(_.values(objects[0]._objects), {'usage': 'fixture', 'rendered': true});
+        let fixtureMax = fixture.bbox.max.clone();
+        let fixtureMin = fixture.bbox.min.clone();
+        let fixtureDiag = fixtureMax.clone().sub(fixtureMin);
+      
+        let fixturePos = fixture.object3D.position.clone();
+
+        let fixLen = CADView.getAxisVector(fixtureDiag);
+
+        let newPos = new THREE.Vector3();
+        newPos.crossVectors(fixLen, newUp);
+        if (newPos.length() === 0) {
+          if (newUp.x === 0)
+            newPos.x = 1;
+          else
+            newPos.y = 1;
+        }
+
+        // make sure the fixture is facing away from us if it would block view of the part
+        if (fixturePos.dot(newPos) < 0)
+          newPos.negate();
+
+        // zoom to fit just the part and the tool
+        let boundingBox = new THREE.Box3().union(part.bbox).union(tool.bbox);
+        let radius = boundingBox.size().length() * 0.5;
+        let horizontalFOV = 2 * Math.atan(THREE.Math.degToRad(this.camera.fov * 0.5) * this.camera.aspect),
+            fov = Math.min(THREE.Math.degToRad(this.camera.fov), horizontalFOV),
+            dist = radius / Math.sin(fov * 0.5),
+            newTargetPosition = boundingBox.max.clone().
+            lerp(boundingBox.min, 0.5).
+            applyMatrix4(part.object3D.matrixWorld);
+      
+        // adjust the camera position based on the new target
+        this.camera.position
+            .sub(this.controls.target)
+            .setLength(dist)
+            .add(newTargetPosition);
+        this.controls.target.copy(newTargetPosition);
+      
+        this.controls.alignTop(newUp, newPos);
+
+        this.invalidate();
+    }
+  
+    static getAxisVector(vec) {
+      // Find the closest axis-aligned unit vector to the given vector
+      let absVec = new THREE.Vector3(Math.abs(vec.x), Math.abs(vec.y), Math.abs(vec.z));
+      let rtn = new THREE.Vector3(0, 0, 0);
+
+      if (absVec.x >= absVec.y && absVec.x >= absVec.z) {
+        if (vec.x > 0)
+          rtn.x = 1;
+        else
+          rtn.x = -1;
+      }
+      else if (absVec.y >= absVec.x && absVec.y >= absVec.z) {
+        if (vec.y > 0)
+          rtn.y = 1;
+        else
+          rtn.y = -1;
+      }
+      else if (absVec.z >= absVec.x && absVec.z >= absVec.y) {
+        if (vec.z > 0)
+          rtn.z = 1;
+        else
+          rtn.z = -1;
+      }  
+      
+      return rtn;
     }
 
     drawScene() {
