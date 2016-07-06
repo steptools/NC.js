@@ -258,26 +258,34 @@ export default class CADView extends React.Component {
         // now calculate which side we want to view from
         // TODO: make sure fixtures work properly with changes to underlying stuff, and with machines loaded
         let fixture = _.find(_.values(objects[0]._objects), {'usage': 'fixture', 'rendered': true});
-        let fixtureMax = fixture.bbox.max.clone();
-        let fixtureMin = fixture.bbox.min.clone();
-        let fixtureDiag = fixtureMax.clone().sub(fixtureMin);
-      
-        let fixturePos = fixture.object3D.position.clone();
-
-        let fixLen = CADView.getAxisVector(fixtureDiag);
-
         let newPos = new THREE.Vector3();
-        newPos.crossVectors(fixLen, newUp);
-        if (newPos.length() === 0) {
-          if (newUp.x === 0)
-            newPos.x = 1;
-          else
-            newPos.y = 1;
-        }
+        if (fixture !== undefined) {
+          let fixtureMax = fixture.bbox.max.clone();
+          let fixtureMin = fixture.bbox.min.clone();
+          let fixtureDiag = fixtureMax.clone().sub(fixtureMin);
 
-        // make sure the fixture is facing away from us if it would block view of the part
-        if (fixturePos.dot(newPos) < 0)
-          newPos.negate();
+          let fixturePos = fixture.object3D.position.clone();
+
+          let fixLen = CADView.getAxisVector(fixtureDiag);
+
+          newPos.crossVectors(fixLen, newUp);
+          if (newPos.length() === 0) {
+            if (newUp.x === 0)
+              newPos.x = 1;
+            else
+              newPos.y = 1;
+          }
+
+          // make sure the fixture is facing away from us if it would block view of the part
+          if (fixturePos.dot(newPos) < 0)
+            newPos.negate();
+        }
+        // we have no fixture
+        else {
+          newPos.crossVectors(newUp, new THREE.Vector3(1, 0, 0));
+          if (newPos.length() === 0)
+            newPos.crossVectors(newUp, new THREE.Vector3(0, 1, 0));
+        }
 
         // TODO: See if we can actually use the tool in calculations
         // zoom to fit just the part
