@@ -20,13 +20,12 @@ export default class WorkplanList extends React.Component {
         if (node.children) {
             node.toggled = toggled;
         }
-        this.setState({cursor: node, gazorpazorp: true});
+        this.setState({cursor: node, gazorpazorp: !this.state.gazorpazorp});
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        if (this.state.gazorpazorp)
+        if (this.state.gazorpazorp !== nextState.gazorpazorp)
         {
-          this.setState({gazorpazorp: false});
           return true;
         }
         return this.props.ws !== nextProps.ws;
