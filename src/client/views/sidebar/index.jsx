@@ -1,5 +1,4 @@
 import React from 'react';
-import Tree from 'react-ui-tree';
 import Menu from 'rc-menu';
 import WorkingstepList from './workingstepslist';
 import WorkplanList from './workplanlist';
@@ -99,6 +98,8 @@ export default class SidebarView extends React.Component {
                       : null}
                   {this.props.mode == 'tree' ?
                       <WorkplanList
+                          cbMode = {this.props.cbMode}
+                          cbTree = {this.props.cbTree}
                           ws = {this.props.ws}
                           workplanCache = {this.props.workplanCache}
                           propertyCb = {this.props.openProperties}

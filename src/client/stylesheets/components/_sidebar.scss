@@ -582,6 +582,10 @@ $icons: '../icons/';
     padding: 6px 7px;
     height: $sidebarPaneHeight;
     overflow-y: scroll;
+    
+    ul {
+        padding-left: 15px;
+    }
 
     .node {
         display: inline-flex;
@@ -592,11 +596,11 @@ $icons: '../icons/';
     }
 
     .node .toggle-hidden {
-        //visibility: hidden;
         width: 15px;
     }
 
     .node .toggle {
+        top: 0;
         width: 15px;
         min-height: inherit;
         cursor: pointer;
@@ -652,9 +656,5 @@ $icons: '../icons/';
 
     .node .disabled {
         opacity: 0.5;
-    }
-    
-    ul {
-        padding-left: 15px;
     }
 }

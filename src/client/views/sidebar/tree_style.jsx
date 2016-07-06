@@ -7,20 +7,27 @@ function getNodeIcon(node) {
         return <span className="tree-icon glyphicons glyphicons-cube-empty"/>
     } else if (node.type === "selective") {
         return <span className="tree-icon glyphicons glyphicons-list-numbered"/>
-    } else {
+    } else if (node.type === "workingstep") {
         return <span className="tree-icon glyphicons glyphicons-blacksmith"/>
+    } else {
+        return <span className="tree-icon glyphicons glyphicons-question-sign"/>
     }
 }
 
 const Container = (props) => {
+    //console.log("CONTAINER");
+    //console.log(props);
     let node = props.node;
     node.icon = getNodeIcon(node);
-    let nodeName = "inner";
+    
+    let innerName = "inner";
+    let outerName = "node";
     if (node.id === props.decorators.ws) {
-        nodeName += " running-node";
+        innerName += " running-node";
     } else if (node.enabled === false) {
-        nodeName += " disabled";
+        innerName += " disabled";
     }
+    
     let toggleName = "toggle";
     if (node.leaf === true) {
         toggleName = "toggle-hidden";
@@ -33,14 +40,14 @@ const Container = (props) => {
     return (
         <div
             id={node.id}
-            className="node"
+            className={outerName}
         >
             <div 
                 className={toggleName}
                 onClick={props.onClick}
             />
             <div
-                className={nodeName}                onClick={(event)=>{props.decorators.propertyCb(node)}}
+                className={innerName} onClick={(event)=>{props.decorators.propertyCb(node)}}
             >
                 {node.icon}
                 <span className="node-text">
