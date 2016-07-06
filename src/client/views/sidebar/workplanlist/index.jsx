@@ -8,6 +8,7 @@ export default class WorkplanList extends React.Component {
         super(props);
         this.state = {gazorpazorp: false};
         this.onToggle = this.onToggle.bind(this);
+        this.toggleToCurrentWS(this.props.workplanCache);
         this.decorators = ts.decorators;
         this.decorators.propertyCb = this.props.propertyCb;
     }
@@ -29,6 +30,24 @@ export default class WorkplanList extends React.Component {
           return true;
         }
         return this.props.ws !== nextProps.ws;
+    }
+    
+    toggleToCurrentWS(node) {
+        console.log(node);
+        console.log(this.props.ws);
+        if (node.id === this.props.ws) {
+            node.toggled = true;
+            return true;
+        } 
+        if (node.enabled && !node.leaf) {
+            for (let i = 0; i < node.children.length; i++) {
+                if (this.toggleToCurrentWS(node.children[i])) {
+                    node.toggled = true;
+                    return true;
+                }
+            }
+        }
+        node.toggled = false;
     }
 
     render() {

@@ -8,6 +8,8 @@ import ReactTooltip from 'react-tooltip';
 
 class MenuItem extends React.Component {
     render() {
+        //console.log("RENDER MENU ITEM");
+        //console.log(this);
         let name = "header-menu-item menu-item-button";
         if (this.props.tooltip) {
             let id = _.uniqueId("tooltip_");
@@ -187,10 +189,12 @@ export default class HeaderView extends React.Component {
             </Menu>
 
         );
-
+        
+        //console.log("RENDER HEADER VIEW");
+        //console.log(this);
         return <div className="header">
             {headerMenu}
-            <div className="changelog" id="changes"></div>
+            <div className="changelog" id="changes"/>
         </div>;
     }
 }
