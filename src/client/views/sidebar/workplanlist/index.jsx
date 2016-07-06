@@ -41,8 +41,6 @@ export default class WorkplanList extends React.Component {
     }
 
     render() {
-        //console.log("Render wpl");
-        //console.log(this);
         this.decorators.ws = this.props.ws;
         return (<Treebeard data={this.data} onToggle={this.onToggle} style={ts.style} decorators={this.decorators} />);
     }
