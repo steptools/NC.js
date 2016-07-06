@@ -45,6 +45,7 @@ export default class CADView extends React.Component {
     }
 
     onModelAdd(event) {
+        //This is where the NC model is being loaded into the CADview
         let model = this.props.manager._models[event.path];
         // Add the model to the scene
         this.annotationScene.add(   model.getAnnotation3D());
