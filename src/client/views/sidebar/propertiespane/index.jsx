@@ -9,15 +9,15 @@ export default class PropertiesPane extends React.Component {
     constructor(props){
         //Create the constructor for the component
         super(props);
-        
+
         this.state = {entity: null};
-        
+
         this.selectWS = this.selectWS.bind(this);
         this.renderNode = this.renderNode.bind(this);
     }
 
     componentDidMount(){
-      
+
     }
 
     selectWS(event, entity) {
@@ -39,7 +39,7 @@ export default class PropertiesPane extends React.Component {
     }
 
     renderNode(node){
-        
+
         var cName = 'node';
         //node is a generic white node
         //node running-node is a node that is the current workingstep
@@ -65,23 +65,23 @@ export default class PropertiesPane extends React.Component {
             </span>
           </div>);
     }
-    
+
     renderProperties(entity) {
         let items=null;
 
         if (entity === null)
             return null;
-        
+
         let hasWorkingsteps = true;
         if (entity.workingsteps === undefined || entity.workingsteps.length <= 0) {
             hasWorkingsteps = false;
         }
-      
+
         let timeDistance = null;
         if (entity.type === 'workingstep' || entity.type === 'selective' || entity.type === 'workplan') {
-          
+
           let formattedTime = '';
-          
+
           if (entity.timeUnits !== 'second')
             formattedTime = entity.baseTime + ' ' + entity.timeUnits;
           else {
@@ -112,7 +112,7 @@ export default class PropertiesPane extends React.Component {
               </div>
             </MenuItem>;
         }
-      
+
         switch (entity.type) {
             case 'tolerance':
                 items = (
@@ -133,11 +133,11 @@ export default class PropertiesPane extends React.Component {
                         }
                     </Menu>
                 );
-                
+
                 break;
           case 'workingstep':
             let selectStep, goToButton, toolInfo;
-            
+
 
                 goToButton = (<MenuItem key='goto'
                     disabled={!(entity.enabled && this.props.ws !== entity.id)}
@@ -155,7 +155,7 @@ export default class PropertiesPane extends React.Component {
                     selectStep = <MenuItem disabled className='property'>Status: Disabled</MenuItem>
                 }
                 items = (
-                    <Menu className='properties' onSelect={(event) => {this.selectWS(event, entity);}}>
+                    <Menu className='properties' onClick={(event) => {this.selectWS(event, entity);}}>
                         {selectStep}
                         {timeDistance}
                         {toolInfo}
@@ -202,7 +202,7 @@ export default class PropertiesPane extends React.Component {
                     </Menu>
                 );
         }
-        
+
         return items;
     }
 
@@ -210,12 +210,12 @@ export default class PropertiesPane extends React.Component {
         let entityName = null;
         let visible = false;
         // TODO: get real icons for workingstep/workplan/tool
-        
+
         let tolType = '';
-        
+
         if (this.props.entity !== null) {
             visible = true;
-            
+
             if (this.props.entity.type === 'tolerance') {
                 entityName = this.props.entity.toleranceType[0].toUpperCase() + this.props.entity.toleranceType.slice(1);
                 tolType = 'tolerance ' + this.props.entity.toleranceType;
@@ -224,7 +224,7 @@ export default class PropertiesPane extends React.Component {
                 entityName = this.props.entity.name;
             }
         }
-        
+
         return (
             <div className={'properties-pane' + (visible ? ' visible' : '')}>
                 <div className='titlebar'>
