@@ -242,6 +242,8 @@ export default class CADView extends React.Component {
         // find the orientation of the referenced object
         let tool = _.find(_.values(objects[0]._objects), {'usage': 'cutter', 'rendered': true});
         let part = _.find(_.values(objects[0]._objects), {'usage': 'tobe', 'rendered': true});
+        if (part === undefined)
+          part = _.find(_.values(objects[0]._objects), {'usage': 'asis', 'rendered': true});
 
         // get a tool-to-part vector to align properly
         let toolMax = tool.bbox.max.clone();
