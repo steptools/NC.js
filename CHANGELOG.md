@@ -1,3 +1,13 @@
+Version 1.3.0
+
+Features:
+
+- Faces now associated with corresponding geometry
+
+Bugfixes:
+
+- New Changelog! (Remove this when we get an actual bugfix)
+
 Version 1.2.0
 
 Features:
