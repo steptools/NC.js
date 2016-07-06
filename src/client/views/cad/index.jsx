@@ -255,6 +255,7 @@ export default class CADView extends React.Component {
         newUp = CADView.getAxisVector(newUp);
 
         // now calculate which side we want to view from
+        // TODO: make sure fixtures work properly with changes to underlying stuff, and with machines loaded
         let fixture = _.find(_.values(objects[0]._objects), {'usage': 'fixture', 'rendered': true});
         let fixtureMax = fixture.bbox.max.clone();
         let fixtureMin = fixture.bbox.min.clone();
@@ -277,15 +278,15 @@ export default class CADView extends React.Component {
         if (fixturePos.dot(newPos) < 0)
           newPos.negate();
 
-        // zoom to fit just the part and the tool
-        let boundingBox = new THREE.Box3().union(part.bbox).union(tool.bbox);
+        // TODO: See if we can actually use the tool in calculations
+        // zoom to fit just the part
+        let boundingBox = new THREE.Box3().union(part.bbox);// .union(tool.bbox);
         let radius = boundingBox.size().length() * 0.5;
         let horizontalFOV = 2 * Math.atan(THREE.Math.degToRad(this.camera.fov * 0.5) * this.camera.aspect),
             fov = Math.min(THREE.Math.degToRad(this.camera.fov), horizontalFOV),
-            dist = radius / Math.sin(fov * 0.5),
+            dist = radius / Math.sin(fov * 0.5) * 1.25, // zoom out slightly to include the tool a bit
             newTargetPosition = boundingBox.max.clone().
-            lerp(boundingBox.min, 0.5).
-            applyMatrix4(part.object3D.matrixWorld);
+            lerp(boundingBox.min, 0.5);
       
         // adjust the camera position based on the new target
         this.camera.position
