@@ -4,21 +4,23 @@ Features:
 
 - Updated references to reflect new names: STEPNode and NC.js
 - Changed internal build structure
-- Added properties pane with detailed information about selecting workingstep, tool, tolerance, etc.
+- Added properties pane with detailed information about selected workingstep, tool, tolerance, etc.
 - Removed Backbone.js dependency
+- Previous workingstep button enabled
 - Updated endpoint structure to no longer use project ID
 - Updated server to now use the command line to specify model to be loaded
 - Relative pathing can now be used
-- Now supports running only one file
+- Now supports only running one file
 - Pressing escape will close the properties pane
 - config.json deprecated and moved to config.js
 
 Bugfixes:
 
+- Sidebar now renders only when needed
 - Sidebar can now be scrolled in Firefox
 - Render radius is properly calculated when workingstep changes
 - Bounding boxes update properly with each workingstep
-- Tool Loactions now properly update when workingstep changes
+- Tool Locations now properly update when workingstep changes
 - View loads properly without errors on Safari / iOS
 - Properties pane has correct height for scrolling
 - Scrolling happens whenever tab is switched and on all tabs
@@ -33,7 +35,7 @@ Version 1.1.0
 - Changed perspective to be less wacky
 - Fixed all assertion errors by making finder,apt, and tol global in file.js
 - Stopped showing ids in tolerance view
-- removed useles code
+- Removed useless code
 - Added tools view
 - Replaced references to StepNCNode with NC.js
 - Added Changelog

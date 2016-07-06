@@ -9,7 +9,7 @@ export default class WorkingstepList extends React.Component {
 
     this.renderNode = this.renderNode.bind(this);
   }
-  
+
   getNodeIcon(node, num){
     if (node.type == "workplan"){
       return <span className='icon-letter'>W</span>;
@@ -18,10 +18,14 @@ export default class WorkingstepList extends React.Component {
     }else{
       return <span className='icon-letter'>{num+1}</span>;
     }
-  } 
-  
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+  return this.props.ws !== nextProps.ws;
+}
+
   renderNode(nodeId, num){
-    
+
     let node = this.props.workingstepCache[nodeId];
     node.icon = this.getNodeIcon(node, num);
     let cName = 'node';
@@ -39,7 +43,7 @@ export default class WorkingstepList extends React.Component {
   }
 
   componentDidMount(){
-      
+
   }
 
   render(){
