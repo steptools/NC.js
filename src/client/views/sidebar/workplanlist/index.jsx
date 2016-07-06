@@ -6,7 +6,7 @@ import ts from '../tree_style.jsx';
 export default class WorkplanList extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {gazorpazorp: false};
         this.onToggle = this.onToggle.bind(this);
         this.decorators = ts.decorators;
         this.decorators.propertyCb = this.props.propertyCb;
@@ -20,10 +20,15 @@ export default class WorkplanList extends React.Component {
         if (node.children) {
             node.toggled = toggled;
         }
-        this.setState({cursor: node});
+        this.setState({cursor: node, gazorpazorp: true});
     }
-    
+
     shouldComponentUpdate(nextProps, nextState) {
+        if (this.state.gazorpazorp)
+        {
+          this.setState({gazorpazorp: false});
+          return true;
+        }
         return this.props.ws !== nextProps.ws;
     }
 
