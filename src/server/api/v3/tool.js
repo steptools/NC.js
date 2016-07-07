@@ -34,10 +34,8 @@ var _getTools = function (req, res) {
   for(let id of toolList){
       let name = find.GetToolPartName(id).replace(/_/g, ' ');
       let toolType = find.GetToolType(id);
-
       let workingsteps = _getWorkstepsForTool(find.GetMainWorkplan(), id);
-
-      rtn.push({
+            rtn.push({
         "id" : id,
         "name": name,
         "type": 'tool',
@@ -56,8 +54,19 @@ var _getWsTool = function (req, res) {
   }
 };
 
+var _getToolEnabled = function (req, res) {
+  let ret = false;
+  let toolID = req.params.toolId;
+  let workingsteps = _getWorkstepsForTool(find.GetMainWorkplan(), parseInt(toolID));
+  for(let ws in workingsteps){
+    if(find.IsEnabled(workingsteps[ws])) ret = true;
+  }
+  res.status(200).send(ret);
+}
+
 module.exports = function(app, cb) {
   app.router.get("/v3/nc/tools", _getTools);
   app.router.get("/v3/nc/tools/:wsId", _getWsTool);
+  app.router.get("/v3/nc/tool/:toolId", _getToolEnabled);
   if (cb) cb();
 };
