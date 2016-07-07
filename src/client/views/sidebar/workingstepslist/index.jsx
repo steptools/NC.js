@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import request from 'superagent';
 
 export default class WorkingstepList extends React.Component {
   constructor(props){
@@ -7,6 +8,15 @@ export default class WorkingstepList extends React.Component {
     super(props);
 
     this.renderNode = this.renderNode.bind(this);
+    this.setWS = this.setWS.bind(this);
+  }
+
+  setWS(node,self){
+    let url = '/v3/nc/state/ws/' + node["id"];
+    request
+        .get(url)
+        .end(function (err, res) {
+        });
   }
 
   getNodeIcon(node, num){
@@ -31,7 +41,7 @@ export default class WorkingstepList extends React.Component {
     return <ol
         id={node.id}
         className={cName}
-        onClick={(event) => {this.props.propertyCb(node);}}
+        onClick={this.setWS.bind(this, node)}
         onMouseDown={function(e){e.stopPropagation()}}
         style={{"paddingLeft" : "5px"}}
         key={node.id}>

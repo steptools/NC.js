@@ -7,7 +7,11 @@ Features:
 
 Bugfixes:
 
-- New Changelog! (Remove this when we get an actual bugfix)
+- Fixed workplan view not scrolling on tab switch
+
+Reverted:
+
+-Workingstep list no longer supports property pane. Functionality reverted to v1.1.0
 
 Version 1.2.0
 
