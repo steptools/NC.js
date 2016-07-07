@@ -8,6 +8,7 @@ Features:
 Bugfixes:
 
 - Fixed workplan view not scrolling on tab switch
+- Fixed the fixture not moving with the machine tool
 
 Reverted:
 
