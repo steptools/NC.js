@@ -56,26 +56,17 @@ var _getTols = function(req,res) {
 
 var _getWps = function(req,res) {
   let wp_list = find.GetWorkpieceAll();
-  let ret = {};
+  let ret = [];
   for (let id of wp_list){
-      let name = find.GetWorkpieceName(id);
-      let type = find.GetWorkpieceType(id);
-      if(ret[type])
-        ret[type].push({
-          "id":id,
-          "type":"workpiece",
-          "name": name,
-          "wpType": type,
+    let type = find.GetWorkpieceType(id);
+    let name = find.GetWorkpieceName(id);
+    if(type === 'workpiece')
+      ret.push({
+        "id":id,
+        "type":"workpiece",
+        "name": name,
+        "wpType": type,
         });
-      else{
-        ret[type] = new Array();
-        ret[type].push({
-            "id":id,
-            "type":"workpiece",
-            "name": name,
-            "wpType": type,
-        });
-      }
   }
   res.status(200).send(ret);
 };
