@@ -35,12 +35,17 @@ var _getTools = function (req, res) {
       let name = find.GetToolPartName(id).replace(/_/g, ' ');
       let toolType = find.GetToolType(id);
       let workingsteps = _getWorkstepsForTool(find.GetMainWorkplan(), id);
+      let enable = false;
+      for (let ws of workingsteps){
+        if (find.IsEnabled(ws)) enable = true;
+      }
             rtn.push({
         "id" : id,
         "name": name,
         "type": 'tool',
         'toolType': toolType,
-        "workingsteps": workingsteps
+        "workingsteps": workingsteps,
+        "enabled" : enable
       });
   }
   res.status(200).send(rtn);
