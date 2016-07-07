@@ -256,7 +256,7 @@ export default class NC extends THREE.EventDispatcher {
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
-            var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"));
+            var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture"));
             _.each(oldgeom,(geom)=> {
                 self._object3D.remove(geom.object3D);
                 self._overlay3D.remove(geom.object3D);
@@ -270,7 +270,7 @@ export default class NC extends THREE.EventDispatcher {
 
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
-            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || (geom.usage =="tobe" && _.has(geom, 'shell')) || geom.usage =="asis"||geom.usage=='machine'));
+            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || (geom.usage =="tobe" && _.has(geom, 'shell')) || geom.usage =="asis"||geom.usage=='machine' || geom.usage=='fixture'));
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
@@ -339,7 +339,7 @@ export default class NC extends THREE.EventDispatcher {
                 }
                 let obj = self._objects[geom.id];
                 if(obj !== undefined) {
-                    if (obj.rendered !== false && obj.usage === 'cutter' || obj.usage === 'machine') {
+                    if (obj.rendered !== false && obj.usage === 'cutter' || obj.usage === 'machine' || obj.usage === 'fixture') {
                         let transform = new THREE.Matrix4();
                         if (!geom.xform) return;
                         transform.fromArray(geom.xform);
