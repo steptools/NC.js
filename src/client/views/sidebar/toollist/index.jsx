@@ -17,6 +17,7 @@ export default class ToolList extends React.Component {
   renderNode(node){
       let cName = 'node';
       if(node.id == this.props.curtool) cName= 'node running-node';
+      console.log(node);
       return <ol
           id={node.id}
           type = {node.name}
