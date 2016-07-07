@@ -7,7 +7,8 @@ Features:
 
 Bugfixes:
 
-- New Changelog! (Remove this when we get an actual bugfix)
+- Fixed workplan view not scrolling on tab switch
+- Fixed the fixture not moving with the machine tool
 
 Reverted:
 
