@@ -37,8 +37,9 @@ export default class SidebarView extends React.Component {
       if((!this.state.scrolled) && (this.props.ws > -1))
       {
         let currElem=$('.running-node');
-        if((currElem != null) && (typeof currElem != 'undefined'))
+        if((currElem !== null) && (typeof currElem !== 'undefined') && (this.props.mode !== 'tolerance'))
         {
+          console.log(currElem);
           let tree = $('.m-tree,.sidebar ul.sidebar-menu-tabs + ul');
           tree.animate({
             scrollTop: currElem.offset().top-tree.offset().top

@@ -1,5 +1,6 @@
 import React from 'react';
 import request from 'superagent';
+import _ from 'lodash';
 
 export default class ToleranceList extends React.Component {
   constructor(props){
@@ -12,15 +13,14 @@ export default class ToleranceList extends React.Component {
   renderNode(node){
       return <ol
           id={node.id}
-          value = {node.value}
-          type = {node.toleranceType}
+          type = {node.wpType}
           className="node"
           onClick={(event) => {this.props.propertyCb(node)}}
           onMouseDown={function(e){e.stopPropagation()}}
           style={{"paddingLeft" : "5px"}}
           key={node.id} >
-          {node.icon}
-          <span className="textbox-tolerance">{node.toleranceType} {node.value}</span>
+          <span className='icon-workpiece' />
+          <span className="textbox-tolerance">{node.name}</span>
       </ol>;
   }
 
@@ -29,13 +29,21 @@ export default class ToleranceList extends React.Component {
   }
 
   render(){
+    console.log(this.props.toleranceCache);
     return (
       <div className='m-tree'>
-        {this.props.toleranceCache.map((tolerance, i) => {
-          return <div className='m-node' key={i}>
-            {this.renderNode(tolerance)}
-          </div>;
-        })}
+        {
+          _.map(this.props.toleranceCache, (tolGroup, i) =>{
+              return <div className='m-group' key ={i}>
+                  {_.map(tolGroup, (tolerance, i) => {
+                        return <div className='m-node' key={i}>
+                          {this.renderNode(tolerance)}
+                         </div>;
+                        })
+                  }
+                </div>
+          })
+        }
       </div>
     );
   }
