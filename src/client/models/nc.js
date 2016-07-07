@@ -20,7 +20,6 @@ export default class NC extends THREE.EventDispatcher {
         this.project = project;
         this._workingstep = workingstep;
         this._timeIn = timeIn;
-        this.MTCworkingsteps = this.getMTCworkingsteps();
         this._loader = loader;
         this._objects = [];
         this.type = 'nc';
@@ -38,10 +37,6 @@ export default class NC extends THREE.EventDispatcher {
         }
     }
 
-    getMTCworkingsteps() {
-        let datboi = FileReader();
-
-    }
 
     addModel(model, usage, type, id, transform, bbox) {
         let asisOpacity = 0.15;
@@ -263,7 +258,8 @@ export default class NC extends THREE.EventDispatcher {
         let alter = false;
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
-        if (!delta.hasOwnProperty('prev')){
+        console.log(delta.next);
+        if (delta.next){
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
             console.log("Keyframe recieved");

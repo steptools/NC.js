@@ -5,12 +5,16 @@ var find = file.find;
 var request = require("superagent");
 var parseXMLString = require("xml2js");
 var _ = require("lodash");
+var fs = require("fs");
 
 var app;
 var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
 let path = find.GetProjectName();
+
+var WSGCodeIndex = 0;
+var WSGCode = [];
 
 var update = (val) => {
   app.ioServer.emit("nc:state", val);
@@ -26,6 +30,9 @@ var MTListen = function() {
   var xOffset;
   var yOffset;
   var zOffset;
+  var currentgcode;
+  console.log(find.GetProjectName());
+
   return new Promise(function(resolve, reject) {
     let mtc = request.get("http://192.168.0.123:5000/current");
     mtc.end(function (err, res) {
@@ -34,21 +41,49 @@ var MTListen = function() {
         xOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][2]["_"]);
         yOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][3]["_"]);
         zOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][4]["_"]);
+        currentgcode = result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:BlockNumber"][0]["_"];
       });
       var coords = [];
       coords[0] = parseInt(resCoords[0]);
       coords[1] = parseInt(resCoords[1]);
       coords[2] = parseInt(resCoords[2]);
 
-      console.log(coords);
-      resolve([coords, xOffset, yOffset, zOffset]);
+      console.log(currentgcode);
+      resolve([coords, xOffset, yOffset, zOffset, currentgcode]);
     });
   });
 }
 
+var findWS = function(current) {
+  console.log("Current indexed: " + WSGCode["worksteps"][WSGCodeIndex]);
+  console.log("Current feed: " + current);
+  console.log("Current index: " + WSGCodeIndex);
+
+  if (current > WSGCode["worksteps"][WSGCodeIndex]) {
+    if (WSGCodeIndex >= WSGCode["worksteps"].length) {2
+      WSGCodeIndex = 0;
+    }
+    else {
+      WSGCodeIndex = WSGCodeIndex + 1;
+    }
+    console.log("GCODE Switched!");
+    return true;
+  }
+  else if (current < WSGCode["worksteps"][WSGCodeIndex - 1]){
+    WSGCodeIndex = WSGCodeIndex + 1;
+    return true;
+    console.log("GCODE Switched!");
+  }
+  else {
+    return false;
+  }
+}
+
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
-var _getDelta = function(ms, key, cb) {
+var _getDelta = function(ms, key, wsgcode, cb) {
   let holder = "";
+
+
   if (key) {
     holder = JSON.parse(ms.GetKeystateJSON());
     //response = JSON.stringify(holder);
@@ -59,15 +94,24 @@ var _getDelta = function(ms, key, cb) {
   }
 
   let theQuestion = MTListen();
+
   theQuestion.then(function(res) {
+    //console.log(findWS(res[4], wsgcode));
+    if (findWS(res[4], wsgcode) ) {
+      ms.NextWS();
+      holder.next = true;
+    }
+    else {
+      holder.next = false;
+    }
     holder.mtcoords = res[0];
     holder.offset = [res[1], res[2], res[3]];
-    //console.log(sequence);
     let response = JSON.stringify(holder);
-    app.logger.debug("got " + response);
+    //app.logger.debug("got " + response);
     cb(response);
   });
 };
+
 
 var _getNext = function(ms, cb) {
   ms.NextWS();
@@ -86,18 +130,18 @@ var _getPrev = function(ms, cb) {
 var _getToWS = function(wsId, ms, cb) {
   ms.GoToWS(wsId);
   //assume switch was successful
-  app.logger.debug("Switched!");
+  app.logger.debug("Switched! " + wsId);
   cb();
 };
 
-
-var _loop = function(ms, key) {
+//Machine state, key, workingstep g-code
+var _loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
-    //app.logger.debug("Loop step " + path);
+    app.logger.debug("Loop step " + path);
     let rc = ms.AdvanceState();
-    if (rc === 0) {  // OK
+    //if (rc === 0) {  // OK
       //app.logger.debug("OK...");
-      _getDelta(ms, key, function(b) {
+      _getDelta(ms, key, wsgcode, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
           if (loopTimer !== undefined)
@@ -108,18 +152,21 @@ var _loop = function(ms, key) {
           // app.logger.debug("playback speed is zero, no timeout set");
         }
       });
-    }
+    /*}
     else if (rc == 1) {   // SWITCH
       app.logger.debug("SWITCH...");
       _getNext(ms, function() {
         _loop(ms, true);
       });
-    }
+    }*/
   }
 };
 
 var _loopInit = function(req, res) {
   // app.logger.debug("loopstate is " + req.params.loopstate);
+
+  fs.readFile("/Users/UuqV/StepNCViewer/data/boxy/boxy.mtc", function(err, data) {
+    WSGCode = JSON.parse(data.toString());
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {
         res.status(200).send(JSON.stringify({'state': "play", 'speed': playbackSpeed}));
@@ -146,7 +193,7 @@ var _loopInit = function(req, res) {
           loopStates[path] = true;
           res.status(200).send("OK");
           update("play");
-          _loop(ms, false);
+          _loop(ms, false, JSON.parse(data.toString()));
           break;
         case "stop":
           if (loopStates[path] === false) {
@@ -167,7 +214,7 @@ var _loopInit = function(req, res) {
             }
 
             if (loopStates[path] === true) {
-              _loop(ms, false);
+              _loop(ms, false, JSON.parse(data.toString()));
               res.status(200).send(JSON.stringify({"state": "play", "speed": playbackSpeed}));
             }
             else {
@@ -180,6 +227,8 @@ var _loopInit = function(req, res) {
           }
       }
     }
+  });
+
 };
 
 var _wsInit = function(req, res) {
