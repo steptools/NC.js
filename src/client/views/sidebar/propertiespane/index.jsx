@@ -114,11 +114,10 @@ export default class PropertiesPane extends React.Component {
         }
 
         switch (entity.type) {
-            case 'tolerance':
+            case 'workpiece':
                 items = (
                     <Menu className='properties'>
-                        <MenuItem disabled key='tolType' className='property'>{entity.toleranceType} Tolerance</MenuItem>
-                        <MenuItem disabled key='tolValue' className='property'>Value: {entity.value} {entity.unit}</MenuItem>
+                        <MenuItem disabled key='wpType' className='property'>{entity.wpType} Workpiece</MenuItem>
                         {hasWorkingsteps ?
                             <MenuItem key='workingsteps' className='property children workingsteps'>
                                 <div className='title'>Used in Workingsteps:</div>
@@ -211,14 +210,16 @@ export default class PropertiesPane extends React.Component {
         let visible = false;
         // TODO: get real icons for workingstep/workplan/tool
 
-        let tolType = '';
+        let wpType = '';
 
         if (this.props.entity !== null) {
             visible = true;
 
-            if (this.props.entity.type === 'tolerance') {
-                entityName = this.props.entity.toleranceType[0].toUpperCase() + this.props.entity.toleranceType.slice(1);
-                tolType = 'tolerance ' + this.props.entity.toleranceType;
+            if (this.props.entity.type === 'workpiece') {
+                entityName = this.props.entity.name;
+                //Right now all workpieces have same image
+                //TODO: add images for workpiece-tool workpiece and workpiece-fixture
+                wpType = 'workpiece';
             }
             else {
                 entityName = this.props.entity.name;
@@ -228,7 +229,7 @@ export default class PropertiesPane extends React.Component {
         return (
             <div className={'properties-pane' + (visible ? ' visible' : '')}>
                 <div className='titlebar'>
-                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + tolType : '')} />
+                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + wpType : '')} />
                     <span className='title'>
                         <div className='type'>
                         {visible?

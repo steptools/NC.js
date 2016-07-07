@@ -116,6 +116,7 @@ $icons: '../icons/';
             }
 
             .icon-letter,
+            .icon-workpiece,
             .icon-tolerance,
             .icon-tool {
                 background-color: rgba(#FFF, 0);
@@ -137,6 +138,10 @@ $icons: '../icons/';
                 background-color: #333;
                 color: #FFF;
                 border: none;
+            }
+
+            .icon-workpiece{
+                background-image: url($icons + 'tolerance/unknown.svg');
             }
 
             .icon-tolerance {
