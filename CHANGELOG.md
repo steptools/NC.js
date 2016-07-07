@@ -3,6 +3,7 @@ Version 1.3.0
 Features:
 
 - Faces now associated with corresponding geometry
+- Added button and keyboard shortcut for aligning view to part (also now default view on startup)
 
 Bugfixes:
 
