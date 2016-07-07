@@ -229,6 +229,12 @@ export default class CADView extends React.Component {
         this.props.manager.removeEventListener("annotationLoad", this.invalidate);
         this.props.manager.removeEventListener("invalidate", this.invalidate);
     }
+    
+    componentWillUpdate(nextProps, nextState) {
+        if (!this.state.lockedView && nextState.lockedView) {
+            this.invalidate();
+        }
+    }
 
     componentDidUpdate() {
         if (this.props.resize)

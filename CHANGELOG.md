@@ -11,6 +11,7 @@ Bugfixes:
 
 - Fixed workplan view not scrolling on tab switch
 - Fixed the fixture not moving with the machine tool
+- Fixed problem with locking view not rendering immediately
 - Fixed view alignment problems with some models and with machine tools
 
 Reverted:
