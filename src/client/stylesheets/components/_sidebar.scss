@@ -105,6 +105,10 @@ $icons: '../icons/';
         .m-node {
             background-color: rgba(#FFF, .5);
 
+            &:hover {
+                cursor: pointer;
+            }
+
             .textbox {
                 vertical-align: middle;
                 display: inline-block;
