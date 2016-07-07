@@ -47,7 +47,6 @@ export default class WorkplanList extends React.Component {
         }
         node.toggled = false;
     }
-  }
 
     render() {
         //console.log("Rendering workplan view");
