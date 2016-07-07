@@ -208,6 +208,42 @@ $icons: '../icons/';
             .tolerance-total-runout {
                 background-image: url($icons + 'tolerance/total_runout.svg');
             }
+
+            .tolerance-directed {
+                background-image: url($icons + 'dimension/linear_distance.svg');
+            }
+
+            .tolerance-radial {
+                background-image: url($icons + 'dimension/radial.svg');
+            }
+
+            .tolerance-width {
+                background-image: url($icons + 'dimension/width.svg');
+            }
+
+            .tolerance-height {
+                background-image: url($icons + 'dimension/height.svg');
+            }
+
+            .tolerance-diameter {
+                background-image: url($icons + 'dimension/diameter.svg');
+            }
+
+            .tolerance-angle-size {
+                background-image: url($icons + 'dimension/angle_size.svg');
+            }
+
+            .tolerance-datum {
+                background-image: url($icons + 'tolerance/datum.svg');
+            }
+
+            .tolerance-datum-target {
+                background-image: url($icons + 'tolerance/datum_target.svg');
+            }
+
+            .tolerance-texture {
+                background-image: url($icons + 'tolerance/texture.svg');
+            }
         }
     }
 
