@@ -4,6 +4,7 @@ Features:
 
 - Faces now associated with corresponding geometry
 - Added button and keyboard shortcut for aligning view to part (also now default view on startup)
+- Added lock to align view button
 
 Bugfixes:
 
