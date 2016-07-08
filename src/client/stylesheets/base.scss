@@ -36,24 +36,12 @@ $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
         margin: 15px;
         top: 25px;
         color: #999999;
+        transform: scaleY(0.8);
         z-index: 10;
-        padding: 7px;
-        text-shadow:
-                -1px -1px 0 #333,
-                1px -1px 0 #333,
-                -1px 1px 0 #333,
-                1px 1px 0 #333;
 
-        span:hover,.locked {
+        &:hover {
             color: #F8F8F8;
             cursor: pointer;
-        }
-
-        .lock {
-            font-size: 16;
-            position: absolute;
-            right: 0;
-            top: 0;
         }
     }
 }
