@@ -1,10 +1,12 @@
 $icons: '../icons/';
 
+// TODO: Combine sidebar styles
+
 // Tabs, Workingsteps, Tools, and Tolerances
 .sidebar {
     width: $sidebarWidth;
     height: 100%;
-    background-color: #DDD;
+    background-color: #DDDDDD;
     position: relative;
     z-index: 5;
     -webkit-user-select: none;
@@ -12,84 +14,6 @@ $icons: '../icons/';
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-
-    .sidebar-menu-tabs {
-        background-color: #666;
-        border-top: none;
-        font-size: 20px;
-        height: $sidebarTabsHeight;
-
-        .rc-menu-item {
-            text-align: center;
-            color: #F8F8F8;
-            position: relative;
-            border: 2px solid #AFAFAF;
-            border-bottom-color: #AFAFAF;
-            border-left: none;
-            border-right: none;
-            padding: 10px 5px;
-            width: 50%;
-            margin-left: 0;
-            background-color: #333;
-            text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
-
-            &:disabled {
-                opacity: 0.5;
-            }
-
-            &:hover {
-                cursor: pointer;
-                color: #2BAEE9;
-                border-bottom-color: #2BAEE9;
-            }
-        }
-
-        .rc-menu-item-selected {
-            background-color: #2BAEE9;
-
-            &:hover {
-                color: #FFFFFF;
-            }
-        }
-
-        .rc-menu-item:before {
-            display: block;
-            content: '.';
-            color: transparent;
-            font-size: 0;
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: -2px;
-            bottom: -2px;
-        }
-
-        .rc-menu-item.ws:before {
-            border-left: 2px solid #AFAFAF;
-            border-right: 2px solid #AFAFAF;
-        }
-
-        .rc-menu-item.wp:before {
-            border-right: 2px solid #AFAFAF;
-        }
-
-        .rc-menu-item.tool {
-            border-top: none;
-        }
-
-        .rc-menu-item.tool:before {
-            border-left: 2px solid #AFAFAF;
-            border-right: 2px solid #AFAFAF;
-        }
-
-        .rc-menu-item.tolerance {
-            border-top: none;
-        }
-
-        .rc-menu-item.tolerance:before {
-            border-right: 2px solid #AFAFAF;
-        }
-    }
 
     .m-tree {
         position: relative;
@@ -112,8 +36,8 @@ $icons: '../icons/';
             .icon-letter,
             .icon-tolerance,
             .icon-tool {
-                background-color: rgba(#FFF, 0);
-                border: 2px solid #333;
+                background-color: rgba(#FFFFFF, 0);
+                border: 2px solid #333333;
                 padding: 15px;
                 vertical-align: middle;
                 background-size: cover;
@@ -128,8 +52,8 @@ $icons: '../icons/';
             }
 
             .icon-letter {
-                background-color: #333;
-                color: #FFF;
+                background-color: #333333;
+                color: #FFFFFF;
                 border: none;
             }
 
@@ -399,7 +323,7 @@ $icons: '../icons/';
                 font-weight: bold;
 
                 .type {
-                    border-bottom: 1px solid #666;
+                    border-bottom: 1px solid #666666;
                 }
             }
 
@@ -436,8 +360,8 @@ $icons: '../icons/';
             &.workingstep,
             &.workplan {
                 background-image: none;
-                background-color: #333;
-                color: #fff;
+                background-color: #333333;
+                color: #FFFFFF;
                 padding: 3px;
 
                 &.workingstep:after {
@@ -516,6 +440,87 @@ $icons: '../icons/';
             transform: translate3d($sidebarWidth, 0, 0);
         }
     }
+}
+
+.sidebar .sidebar-menu-tabs {
+    background-color: #666666;
+    border: 2px #333 solid;
+    border-right: none;
+    border-radius: 0px;
+    font-size: 20px;
+    height: $sidebarTabsHeight;
+
+    .rc-menu-item {
+        text-align: center;
+        color: #F8F8F8;
+        position: relative;
+        border: 2px solid #AFAFAF;
+        //border-left: none;
+        //border-right: none;
+        padding: 10px 5px;
+        width: 50%;
+        margin-left: 0;
+        background-color: #333333;
+        text-shadow: -1px -1px 0 #333333, 1px -1px 0 #333333, -1px 1px 0 #333333, 1px 1px 0 #333333;
+
+        &:disabled {
+            opacity: 0.5;
+        }
+
+        &:hover {
+            cursor: pointer;
+            color: #2BAEE9;
+            border-bottom-color: #2BAEE9;
+        }
+    }
+
+    .rc-menu-item-selected {
+        background-color: #2BAEE9;
+
+        &:hover {
+            color: #FFFFFF;
+        }
+    }
+
+    /*
+    .rc-menu-item:before {
+        display: block;
+        content: '.';
+        color: transparent;
+        font-size: 0;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -2px;
+        bottom: -2px;
+    }
+
+    .rc-menu-item.ws:before {
+        border-left: 2px solid #AFAFAF;
+        border-right: 2px solid #AFAFAF;
+    }
+
+    .rc-menu-item.wp:before {
+        border-right: 2px solid #AFAFAF;
+    }
+
+    .rc-menu-item.tool {
+        border-top: none;
+    }
+
+    .rc-menu-item.tool:before {
+        border-left: 2px solid #AFAFAF;
+        border-right: 2px solid #AFAFAF;
+    }
+
+    .rc-menu-item.tolerance {
+        border-top: none;
+    }
+
+    .rc-menu-item.tolerance:before {
+        border-right: 2px solid #AFAFAF;
+    }
+    */
 }
 
 // Workplan
