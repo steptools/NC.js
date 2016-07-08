@@ -1,5 +1,5 @@
 import React from 'react';
-import Menu from 'rc-menu';
+import Menu, {Item as MenuItem} from 'rc-menu';
 import WorkingstepList from './workingstepslist';
 import WorkplanList from './workplanlist';
 import ToolList from './toollist';
@@ -7,7 +7,6 @@ import ToleranceList from './tolerancelist';
 import PropertiesPane from './propertiespane';
 import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager';
-let MenuItem = Menu.Item;
 
 export default class SidebarView extends React.Component {
     constructor(props) {
