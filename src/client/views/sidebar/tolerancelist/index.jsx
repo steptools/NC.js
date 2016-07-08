@@ -1,42 +1,33 @@
 import React from 'react';
 import request from 'superagent';
+import _ from 'lodash';
+import {Treebeard} from 'react-treebeard';
+import ts from '../tree_style.jsx';
 
 export default class ToleranceList extends React.Component {
   constructor(props){
     //Create the constructor for the component
     super(props);
-
-    this.renderNode = this.renderNode.bind(this);
+    this.onToggle = this.onToggle.bind(this);
+    this.state = {curr: false};
+    this.decorators = ts.decorators;
+    this.decorators.propertyCb = this.props.propertyCb;
   }
 
-  renderNode(node){
-      return <ol
-          id={node.id}
-          value = {node.value}
-          type = {node.toleranceType}
-          className="node"
-          onClick={(event) => {this.props.propertyCb(node)}}
-          onMouseDown={function(e){e.stopPropagation()}}
-          style={{"paddingLeft" : "5px"}}
-          key={node.id} >
-          {node.icon}
-          <span className="textbox-tolerance">{node.toleranceType} {node.value}</span>
-      </ol>;
-  }
-
-  componentDidMount(){
-      
+  onToggle(node, toggled) {
+    if (this.state.cursor) {
+        this.state.cursor.active = false;
+    }
+    node.active = true;
+    if (node.children) {
+        node.toggled = toggled;
+    }
+    this.setState({cursor: node, curr: !this.state.curr});
   }
 
   render(){
     return (
-      <div className='m-tree'>
-        {this.props.toleranceCache.map((tolerance, i) => {
-          return <div className='m-node' key={i}>
-            {this.renderNode(tolerance)}
-          </div>;
-        })}
-      </div>
+      <Treebeard data={this.props.toleranceCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
     );
   }
 }

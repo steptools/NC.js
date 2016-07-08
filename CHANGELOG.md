@@ -11,10 +11,13 @@ Bugfixes:
 
 - Fixed workplan view not scrolling on tab switch
 - Fixed the fixture not moving with the machine tool
+- Fixed problem with locking view not rendering immediately
+- Fixed view alignment problems with some models and with machine tools
+- Fixed broken mobile view / responsiveness after adding locked view
 
 Reverted:
 
--Workingstep list no longer supports property pane. Functionality reverted to v1.1.0
+- Workingstep list no longer supports property pane. Functionality reverted to v1.1.0
 
 Version 1.2.0
 

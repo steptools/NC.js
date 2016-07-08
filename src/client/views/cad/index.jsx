@@ -80,8 +80,11 @@ export default class CADView extends React.Component {
         this.overlayScene.add(      model.getOverlay3D());
         // calculate the scene's radius for draw distance calculations
         this.updateSceneBoundingBox(model.getBoundingBox());
-        // center the view
+        
+        // set the default view
         this.alignToolView([model]);
+        this.invalidate();
+        
         // Update the model tree
         let tree = this.props.manager.getTree();
         this.setState({ modelTree:tree });
@@ -106,6 +109,7 @@ export default class CADView extends React.Component {
             case 97:
                 //console.log(this.camera);
                 this.alignToolView(this.props.manager.getSelected());
+                this.invalidate();
                 break;
             // Explode on 'x' key pressed
             case 120:
@@ -189,7 +193,7 @@ export default class CADView extends React.Component {
 
         // CONTROL EVENT HANDLERS
         this.controls.addEventListener('change', function(options) {
-            self.setState({'isViewChanging': true});
+            self.state.isViewChanging = true;
             let x0 = self.sceneCenter,
                 x1 = self.camera.position,
                 x2 = self.controls.target,
@@ -210,7 +214,7 @@ export default class CADView extends React.Component {
         this.controls.addEventListener("end", function() {
             self.invalidate();
             self.continuousRendering = false;
-            self.setState({'isViewChanging': false});
+            self.state.isViewChanging = false;
         });
 
         // SCREEN RESIZE
@@ -226,6 +230,13 @@ export default class CADView extends React.Component {
         this.props.manager.removeEventListener("shellLoad", this.invalidate);
         this.props.manager.removeEventListener("annotationLoad", this.invalidate);
         this.props.manager.removeEventListener("invalidate", this.invalidate);
+    }
+    
+    componentWillUpdate(nextProps, nextState) {
+        if (!this.state.lockedView && nextState.lockedView) {
+            this.alignToolView(this.props.manager.getSelected());
+            this.invalidate();
+        }
     }
 
     componentDidUpdate() {
@@ -269,17 +280,18 @@ export default class CADView extends React.Component {
         if (part === undefined)
           part = _.find(_.values(objects[0]._objects), {'usage': 'asis', 'rendered': true});
 
-        // get a tool-to-part vector to align properly
-        let toolMax = tool.bbox.max.clone();
-        let toolMin = tool.bbox.min.clone();
         let partPos = new THREE.Vector3().setFromMatrixPosition(part.object3D.matrixWorld);
+        let toolBox = tool.model.getBoundingBox().clone();
+          
+        let toolMax = toolBox.max.clone().applyMatrix4(tool.object3D.matrixWorld);
+        let toolMin = toolBox.min.clone().applyMatrix4(tool.object3D.matrixWorld);
       
-        let toolPos = toolMin;
-        if (toolMax.sub(partPos).length() > toolMin.sub(partPos).length())
-          toolPos = toolMax;
+        let toolAxis = CADView.getAxisVector(toolMax.clone().sub(toolMin));
+        
+        let toolPos = tool.object3D.position.clone().sub(partPos);
 
-        let newUp = toolPos.clone().sub(partPos);
-
+        let newUp = toolAxis.clone()
+      
         // get the unit vector corresponding to this view
         newUp = CADView.getAxisVector(newUp);
 
@@ -317,11 +329,11 @@ export default class CADView extends React.Component {
 
         // TODO: See if we can actually use the tool in calculations
         // zoom to fit just the part
-        let boundingBox = new THREE.Box3().union(part.bbox);// .union(tool.bbox);
+        let boundingBox = new THREE.Box3().union(part.bbox).union(toolBox.applyMatrix4(tool.object3D.matrixWorld));
         let radius = boundingBox.size().length() * 0.5;
         let horizontalFOV = 2 * Math.atan(THREE.Math.degToRad(this.camera.fov * 0.5) * this.camera.aspect),
             fov = Math.min(THREE.Math.degToRad(this.camera.fov), horizontalFOV),
-            dist = radius / Math.sin(fov * 0.5) * 1.25, // zoom out slightly to include the tool a bit
+            dist = radius / Math.sin(fov * 0.5),
             newTargetPosition = boundingBox.max.clone().
             lerp(boundingBox.min, 0.5);
       
@@ -331,10 +343,9 @@ export default class CADView extends React.Component {
             .setLength(dist)
             .add(newTargetPosition);
         this.controls.target.copy(newTargetPosition);
-      
+
         this.controls.alignTop(newUp, newPos);
 
-        this.invalidate();
     }
   
     static getAxisVector(vec) {
@@ -481,7 +492,7 @@ export default class CADView extends React.Component {
             this.setState({ modelTree: tree });
             this.invalidate();
         }
-        this.setState({'lastHovered': obj});
+        this.state.lastHovered = obj;
     }
 
     // Handle mouse movements in the model view for highlighting
@@ -509,7 +520,10 @@ export default class CADView extends React.Component {
         return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
             <ViewButton
-              alignCb={() => {this.alignToolView(this.props.manager.getSelected());}}
+              alignCb={() => {
+                this.alignToolView(this.props.manager.getSelected());
+                this.invalidate();
+              }}
               toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
               locked = {this.state.lockedView}
             />
