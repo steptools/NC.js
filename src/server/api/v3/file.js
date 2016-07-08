@@ -11,6 +11,9 @@ let tol;
 let ms;
 
 function init(path, machinetool){
+	fs.accessSync(path, fs.R_OK , (err) => {
+  		process.exit();
+	});
 	this.find = new StepNC.Finder();
 	this.apt = new StepNC.AptStepMaker();
 	this.tol = new StepNC.Tolerance();

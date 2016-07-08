@@ -60,7 +60,6 @@ export default class NC extends THREE.EventDispatcher {
 
 
     addModel(model, usage, type, id, transform, bbox) {
-        let asisOpacity = 0.15;
         console.log('Add Model(' + usage + '): ' + id);
         let self = this;
         // Setup 3D object holder
@@ -93,24 +92,19 @@ export default class NC extends THREE.EventDispatcher {
         this._object3D.add(obj.object3D);
         this._overlay3D.add(obj.overlay3D);
         this._annotation3D.add(obj.annotation3D);
-        // TODO: add selector for displaying asis geometry or not
-        if (type === 'shell' && usage !== 'asis') {
+        if (type === 'shell') {
             model.addEventListener('shellEndLoad', function (event) {
+                //This is where the shell gets sent when its loaded so that the full mesh can be added to the 3D objects
                 let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
                 let mesh = new THREE.Mesh(event.shell.getGeometry(), material, false);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 mesh.userData = obj;
                 obj.object3D.add(mesh);
-                // Dim the asis (should never happen as long as asis geometry isn't loaded
-                if (usage === 'asis' && asisOpacity !== 1.0) {
-                    obj.object3D.traverse(function (object) {
-                        if (object.material && object.material.uniforms.opacity) {
-                            object.material.transparent = true;
-                            object.material.depthWrite = false;
-                            object.material.uniforms['opacity'].value = asisOpacity;
-                        }
-                    });
+                if (usage === 'asis') {
+                    // TODO: add selector for displaying asis geometry or not
+                    obj.rendered = false;
+                    obj.setInvisible();
                 }
             });
         } else if (type === 'polyline') {
@@ -287,7 +281,7 @@ export default class NC extends THREE.EventDispatcher {
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
-            var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine"));
+            var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture"));
             _.each(oldgeom,(geom)=> {
                 self._object3D.remove(geom.object3D);
                 self._overlay3D.remove(geom.object3D);
@@ -301,7 +295,7 @@ export default class NC extends THREE.EventDispatcher {
 
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
-            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || (geom.usage =="tobe" && _.has(geom, 'shell')) || geom.usage =="asis"||geom.usage=='machine'));
+            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || (geom.usage =="tobe" && _.has(geom, 'shell')) || geom.usage =="asis"||geom.usage=='machine' || geom.usage=='fixture'));
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
@@ -331,6 +325,7 @@ export default class NC extends THREE.EventDispatcher {
                     if (!obj.rendered) {
                         self._overlay3D.add(obj.object3D);
                         obj.rendered = true;
+                        obj.setVisible();
                         self._objects[name] = obj;
                     }
                 }
@@ -369,7 +364,7 @@ export default class NC extends THREE.EventDispatcher {
                 }
                 let obj = self._objects[geom.id];
                 if(obj !== undefined) {
-                    if (obj.rendered !== false && obj.usage === 'cutter' || obj.usage === 'machine') {
+                    if (obj.rendered !== false && obj.usage === 'cutter' || obj.usage === 'machine' || obj.usage === 'fixture') {
                         let transform = new THREE.Matrix4();
                         if (!geom.xform) return;
                         transform.fromArray(geom.xform);

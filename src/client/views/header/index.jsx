@@ -8,6 +8,8 @@ import ReactTooltip from 'react-tooltip';
 
 class MenuItem extends React.Component {
     render() {
+        //console.log("RENDER MENU ITEM");
+        //console.log(this);
         let name = "header-menu-item menu-item-button";
         if (this.props.tooltip) {
             let id = _.uniqueId("tooltip_");
@@ -23,8 +25,7 @@ class MenuItem extends React.Component {
                     </div>
                 </PlainMenuItem>
             );
-        }
-        else {
+        } else {
             return (
                 <PlainMenuItem {...this.props}>
                     <div className={name}>
@@ -33,7 +34,7 @@ class MenuItem extends React.Component {
                 </PlainMenuItem>
             );
         }
-        
+
     }
 }
 
@@ -60,7 +61,9 @@ class ButtonImage extends React.Component {
     }
 }
 
-ButtonImage.propTypes = {icon: React.PropTypes.string.isRequired};
+ButtonImage.propTypes = {
+    icon: React.PropTypes.string.isRequired
+};
 
 class Slider extends React.Component {
     constructor(props) {
@@ -81,8 +84,7 @@ class Slider extends React.Component {
             // TODO:Remove onMouseUp / onKeyUp if/when bug is fixed with onChange
             return (
                 <div className='slider sliderWithIcons'>
-                    <input className={"range-" + this.props.id} onChange={this.changed} 
-                        onMouseUp={this.changed} onKeyUp={this.changed} value={this.props.val} type='range' min='0' max='200' step='1'/>
+                    <input className={"range-" + this.props.id} onChange={this.changed} onMouseUp={this.changed} onKeyUp={this.changed} value={this.props.val} type='range' min='0' max='200' step='1'/>
                     <div className='sliderData'>
                         <div className={"slider-icon slider-left-icon " + prefix + " " + left} onMouseUp={this.changed} onKeyUp={this.changed} value='0'/>
                         <div className={"slider-text text-" + this.props.id}>{name}</div>
@@ -103,8 +105,13 @@ class Slider extends React.Component {
     }
 }
 
-Slider.propTypes = {changed: React.PropTypes.func.isRequired, id: React.PropTypes.string.isRequired, val: React.PropTypes.number.isRequired,
-                    left: React.PropTypes.string.isRequired, right: React.PropTypes.string.isRequired};
+Slider.propTypes = {
+    changed: React.PropTypes.func.isRequired,
+    id: React.PropTypes.string.isRequired,
+    val: React.PropTypes.number.isRequired,
+    left: React.PropTypes.string.isRequired,
+    right: React.PropTypes.string.isRequired
+};
 
 export default class HeaderView extends React.Component {
     constructor(props) {
@@ -113,16 +120,15 @@ export default class HeaderView extends React.Component {
         this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
         this.updateSpeed = this.updateSpeed.bind(this);
     }
-    
+
     componentDidMount() {
         let changelog = document.getElementById("changes");
         let chlog = new XMLHttpRequest();
-        chlog.open("GET","/log");
-        chlog.onreadystatechange = function(){
+        chlog.open("GET", "/log");
+        chlog.onreadystatechange = function() {
             if (chlog.readyState == 4 && chlog.status == 200) {
                 document.getElementById("changes").innerHTML = md(chlog.responseText.toString());
-                document.getElementById("logbutton").innerHTML = "v"+md(chlog.responseText.toString()).split("\n")[0].split(" ")[1];
-
+                document.getElementById("logbutton").innerHTML = "v" + md(chlog.responseText.toString()).split("\n")[0].split(" ")[1];
 
             }
         }
@@ -151,46 +157,50 @@ export default class HeaderView extends React.Component {
                 break;
             case "showlog":
                 let changelog = document.getElementById("changes");
-                if(this.props.logstate === false) {
+                if (this.props.logstate === false) {
                     changelog.className = "changelog visible"
                     this.props.cbLogstate(true);
-                }   
-                else {
+                } else {
                     changelog.className = "changelog"
                     this.props.cbLogstate(false);
                 }
-            
+
         }
     }
 
-
- render() {
+    render() {
         let ppbtntxt;
         let ppbutton = this.props.ppbutton;
         let showlog = this.props.logstate;
         if (this.props.ppbutton === "play") {
             ppbtntxt = "Play";
-        }
-        else {
+        } else {
             ppbtntxt = "Pause";
         }
         const headerMenu = (
             <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='header-menu'>
-                <MenuItem tooltip='Backward function is currently disabled' key='backward'><ButtonImage prefix='glyphicon' icon='step-backward'/>Prev</MenuItem>
+                <MenuItem key='backward'><ButtonImage prefix='glyphicon' icon='step-backward'/>Prev</MenuItem>
                 <MenuItem key='play'><ButtonImage prefix='glyphicon' icon={ppbutton}/>{ppbtntxt}</MenuItem>
                 <MenuItem key='forward'><ButtonImage prefix='glyphicon' icon='step-forward'/>Next</MenuItem>
                 <SliderMenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed} prefix='glyphicons' left='turtle' right='rabbit'/></SliderMenuItem>
-                <MenuItem key='showlog' id="logbutton"><ButtonImage prefix='glyphicon' icon='book'/><div className="version" id="logbutton">v1.1.0</div></MenuItem>
+                <MenuItem key='showlog' id="logbutton"><ButtonImage prefix='glyphicon' icon='book'/>
+                    <div className="version" id="logbutton">v1.1.0</div>
+                </MenuItem>
             </Menu>
-            
-        );
 
+        );
+        
+        //console.log("RENDER HEADER VIEW");
+        //console.log(this);
         return <div className="header">
-        {headerMenu}
-        <div className="changelog" id="changes"></div>
+            {headerMenu}
+            <div className="changelog" id="changes"/>
         </div>;
-    }  
+    }
 }
 
-HeaderView.propTypes = {cadManager: React.PropTypes.object.isRequired,
-                          cbPPButton: React.PropTypes.func.isRequired, ppbutton: React.PropTypes.string.isRequired};
+HeaderView.propTypes = {
+    cadManager: React.PropTypes.object.isRequired,
+    cbPPButton: React.PropTypes.func.isRequired,
+    ppbutton: React.PropTypes.string.isRequired
+};

@@ -653,26 +653,44 @@ function unindexValues(data, buffers) {
     }
 }
 
-function uncompressColors(data, colorsBuffer) {
+function faceLoad(data, buffers) {
     let index = 0;
-    let numBlocks = data.colorsData.length;
-    for (let i = 0; i < numBlocks; i++) {
-        let block = data.colorsData[i];
-        for (let j = 0; j < block.duration; j++) {
-            let bdnull = (block.data ===null);
-            colorsBuffer[index++] = bdnull?-1:block.data[0];
-            colorsBuffer[index++] = bdnull?-1:block.data[1];
-            colorsBuffer[index++] = bdnull?-1:block.data[2];
+    let index2 = 0;
+    for(let i = 0; i < data.faces.length ; i++){
+        let face = {
+            start: 0,
+            end: 0
+        }
+        let pIndex = data.faces[i].count * 3
+        face.start = index2;
+        face.end = index2 + pIndex;
+        buffers.faces[data.faces[i].id] = face;
+        index2 = index2 + pIndex;
+    }
+    for (let i = 0; i < data.faces.length; i++) {
+        for(let j = 0; j < (data.faces[i]).count; j++){
+            if(data.faces[i].color != null){
+                buffers.color[index++] = data.faces[i].color[0];
+                buffers.color[index++] = data.faces[i].color[1];
+                buffers.color[index++] = data.faces[i].color[2];
+            }
+            else{
+                buffers.color[index++] = -1;
+                buffers.color[index++] = -1;
+                buffers.color[index++] = -1;
+            }
         }
     }
 }
 
+//This is the data that is getting passed to the data_loader.js line 201
 function processShellJSON(url, workerID, dataJSON, signalFinish) {
     // Just copy the data into arrays
     let buffers = {
         position: new Float32Array(dataJSON.pointsIndex.length),
         normals: new Float32Array(dataJSON.pointsIndex.length),
-        colors: new Float32Array(dataJSON.pointsIndex.length)
+        color: new Float32Array(dataJSON.pointsIndex.length),
+        faces: new Object()
     };
 
     if (dataJSON.values) {
@@ -685,17 +703,15 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
         }
         unindexValues(dataJSON, buffers);
     }
-    if (dataJSON.colorsData) {
-        uncompressColors(dataJSON, buffers.colors);
-    }
-
+    if (dataJSON.faces)
+        faceLoad(dataJSON, buffers);
     let parts = url.split("/");
     self.postMessage({
         type: "shellLoad",
         data: buffers,
         id: dataJSON.id,
         workerID: workerID
-    }, [buffers.position.buffer, buffers.normals.buffer, buffers.colors.buffer]);
+    });
     // Do we signal that we are all done
     if (signalFinish) {
         self.postMessage({
@@ -830,6 +846,8 @@ let messageHandler = function(e) {
     }
 
     // initialize the GET request
+    // This makes all the shell requests and the res is sent to handle
+    // handle then sends it to the loadCb for processing
     let req = request.get(url);
 
     // set the proper request headers for TYSON if needed
@@ -841,9 +859,9 @@ let messageHandler = function(e) {
     // now define a handler callback for the response on the request
     // we use arrow functions here to properly bind 'this'
     let handle = (err, res) => {
-        
         // we need to use the response's underlying xhr because events are dispatched to it
         // again using an arrow function to bind 'this' since loadCb needs access to the response
+        // any load event that comes in is sent to the loadCb 
         res.xhr.addEventListener("load", () => {loadCb(res);});
         res.xhr.addEventListener("progress", progressCb);
         
