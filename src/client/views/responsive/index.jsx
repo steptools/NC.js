@@ -116,6 +116,7 @@ export default class ResponsiveView extends React.Component {
               if (node.enabled)
                 wsList.push(node.id);
             }
+            node.toggled = false;
           };
           nodeCheck(planNodes);
           workingstepCache = stepNodes;
