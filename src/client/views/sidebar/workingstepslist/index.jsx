@@ -2,6 +2,27 @@ import React from 'react';
 import _ from 'lodash';
 import request from 'superagent';
 
+function searchChildren(node, id){
+    if(node.id === id){
+      return true;
+    }
+    else if(!node.leaf){
+      //console.log("Not aleaf");
+      for(let i = 0; i < node.children.length; i++){
+        let test = searchChildren(node.children[i]);
+      //  console.log("ooopin");
+        if(test=== true){
+          //console.log("WHAAAAAAAAAAT");
+          return true;
+        }
+      }
+    }
+    else{
+      return false;
+    }
+
+  }
+
 export default class WorkingstepList extends React.Component {
   constructor(props){
     //Create the constructor for the component
@@ -37,7 +58,10 @@ export default class WorkingstepList extends React.Component {
     let node = this.props.workingstepCache[nodeId];
     node.icon = this.getNodeIcon(node, num);
     let cName = 'node';
-    if (node.id == this.props.ws) cName = 'node running-node';
+
+    if (searchChildren(node, this.props.ws) === true) {    
+      cName = 'node running-node'
+    };
     return <ol
         id={node.id}
         className={cName}
