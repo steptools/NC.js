@@ -58,7 +58,7 @@ var findWS = function(current) {
   var change = false;
 
   if (current >= WSGCode["worksteps"][WSGCodeIndex]) {
-    if (WSGCodeIndex >= WSGCode["worksteps"].length) {2
+    if (WSGCodeIndex >= WSGCode["worksteps"].length) {
       WSGCodeIndex = 0;
     }
     else {
@@ -68,7 +68,7 @@ var findWS = function(current) {
     return true;
   }
   while (current < WSGCode["worksteps"][WSGCodeIndex - 1]){
-    if (WSGCodeIndex >= WSGCode["worksteps"].length) {2
+    if (WSGCodeIndex >= WSGCode["worksteps"].length) {
       WSGCodeIndex = 0;
     }
     else {
@@ -84,27 +84,19 @@ var _getDelta = function(ms, key, wsgcode, cb) {
   let holder = "";
 
 
-  if (key) {
-    console.log("KEYSTATE");
-    holder = JSON.parse(ms.GetKeystateJSON());
-    //response = JSON.stringify(holder);
-  }
-  else {
-    console.log("DELTA");
-    holder = JSON.parse(ms.GetDeltaJSON());
-    //response = JSON.stringify(holder);
-  }
-
   let theQuestion = MTListen();
 
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
-    holder.next = true;
     if (findWS(res[4], wsgcode) ) {
+      console.log("keystate");
       ms.NextWS();
-      //holder.next = true;
+      holder = JSON.parse(ms.GetKeystateJSON());
+      holder.next = true;
     }
     else {
+      console.log("delta");
+      holder = JSON.parse(ms.GetDeltaJSON());
       holder.next = false;
     }
     holder.mtcoords = res[0];
@@ -141,7 +133,7 @@ var _getToWS = function(wsId, ms, cb) {
 var _loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
     app.logger.debug("Loop step " + path);
-    //let rc = ms.AdvanceState();
+    let rc = ms.AdvanceState();
     //if (rc === 0) {  // OK
       //app.logger.debug("OK...");
       _getDelta(ms, key, wsgcode, function(b) {
