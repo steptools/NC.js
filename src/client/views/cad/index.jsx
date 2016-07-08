@@ -17,13 +17,39 @@ require('./shaders/VelvetyShader');
 
 /*************************************************************************/
 
+class ViewButton extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  
+  render() {
+    let icon = "unlock";
+    if (this.props.locked)
+      icon = "lock";
+    
+    return <div className="resetview">
+      <span
+        className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
+        onClick={this.props.alignCb}
+      />
+      <span
+        className={"lock glyphicons glyphicons-" + icon + (this.props.locked ? ' locked' : '')}
+        onClick = {this.props.toggleLock}
+      />
+    </div>;
+  }
+}
+
+/*************************************************************************/
+
 export default class CADView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             modelTree: {},
             isViewChanging: false,
-            lastHovered: undefined
+            lastHovered: undefined,
+            lockedView: false
         };
         this.handleResize   = this.handleResize.bind(this);
         this.onShellLoad    = this.onShellLoad.bind(this);
@@ -36,6 +62,7 @@ export default class CADView extends React.Component {
         this.onTreeClick    = this.onTreeClick.bind(this);
         this.onTreeChange   = this.onTreeChange.bind(this);
         this.onTreeNodeEnterExit = this.onTreeNodeEnterExit.bind(this);
+        this.alignToolView = this.alignToolView.bind(this);
     }
 
     onShellLoad(event) {
@@ -56,6 +83,7 @@ export default class CADView extends React.Component {
         
         // set the default view
         this.alignToolView([model]);
+        this.invalidate();
         
         // Update the model tree
         let tree = this.props.manager.getTree();
@@ -81,6 +109,7 @@ export default class CADView extends React.Component {
             case 97:
                 //console.log(this.camera);
                 this.alignToolView(this.props.manager.getSelected());
+                this.invalidate();
                 break;
             // Explode on 'x' key pressed
             case 120:
@@ -180,6 +209,7 @@ export default class CADView extends React.Component {
         });
         this.controls.addEventListener("start", function() {
             self.continuousRendering = true;
+            self.setState({'lockedView': false});
         });
         this.controls.addEventListener("end", function() {
             self.invalidate();
@@ -204,6 +234,7 @@ export default class CADView extends React.Component {
     
     componentWillUpdate(nextProps, nextState) {
         if (!this.state.lockedView && nextState.lockedView) {
+            this.alignToolView(this.props.manager.getSelected());
             this.invalidate();
         }
     }
@@ -315,7 +346,6 @@ export default class CADView extends React.Component {
 
         this.controls.alignTop(newUp, newPos);
 
-        this.invalidate();
     }
   
     static getAxisVector(vec) {
@@ -358,6 +388,8 @@ export default class CADView extends React.Component {
             self.animate(false);
         });
         if (this.continuousRendering === true || this.shouldRender === true || forceRendering === true) {
+            if (this.state.lockedView)
+              this.alignToolView(this.props.manager.getSelected());
             this.shouldRender = false;
             this.drawScene();
             this.controls.update();
@@ -487,8 +519,14 @@ export default class CADView extends React.Component {
 
         return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
-            <span className="resetview glyphicon glyphicon-eye-open"
-                  onClick={()=>{this.alignToolView(this.props.manager.getSelected());}}/>
+            <ViewButton
+              alignCb={() => {
+                this.alignToolView(this.props.manager.getSelected());
+                this.invalidate();
+              }}
+              toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
+              locked = {this.state.lockedView}
+            />
             {compass}
             <LoadQueueView dispatcher={this.props.manager} guiMode={this.props.guiMode} />
         </div>;

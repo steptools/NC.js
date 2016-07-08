@@ -5,6 +5,7 @@ Features:
 - Faces now associated with corresponding geometry
 - Added button and keyboard shortcut for aligning view to part (also now default view on startup)
 - Tools not used in enabled workingsteps are now dimmed
+- Added lock to align view button
 
 Bugfixes:
 
@@ -12,6 +13,7 @@ Bugfixes:
 - Fixed the fixture not moving with the machine tool
 - Fixed problem with locking view not rendering immediately
 - Fixed view alignment problems with some models and with machine tools
+- Fixed broken mobile view / responsiveness after adding locked view
 
 Reverted:
 
