@@ -48,7 +48,7 @@ $icons: '../icons/';
             background-color: #2BAEE9;
 
             &:hover {
-                color: #FFF;
+                color: #FFFFFF;
             }
         }
 
@@ -93,15 +93,14 @@ $icons: '../icons/';
 
     .m-tree {
         position: relative;
-        padding: 2px;
+        padding: 5px;
         height: $sidebarPaneHeight;
         overflow-y: scroll;
-        background-color: rgba(#FFF, .5);
+        background-color: rgba(#FFFFFF, 0.5);
 
         .m-node {
             &:hover {
                 cursor: pointer;
-                background-color: rgba(#2BAEE9, .5);
             }
 
             .textbox {
@@ -244,9 +243,13 @@ $icons: '../icons/';
 
     .m-node .node {
         display: inline-block;
-        width: calc(100% - 10px);
+        width: calc(100%);
         padding: 4px 5px;
         margin: 0px 0px;
+        
+        &:hover {
+            background-color: rgba(#2BAEE9, 0.5);
+        }
     }
 
     .m-node .inner {
@@ -258,7 +261,7 @@ $icons: '../icons/';
         background-color: #9BFA9B;
     }
 
-    .disabled {
+    .disabled span {
         opacity: 0.5;
     }
 
@@ -377,7 +380,7 @@ $icons: '../icons/';
                             }
 
                             &:hover:not(.is-active) {
-                                background-color: rgba(#2BAEE9, .5);
+                                background-color: rgba(#2BAEE9, 0.5);
                                 opacity: 1;
                             }
                         }
@@ -517,10 +520,10 @@ $icons: '../icons/';
 
 // Workplan
 .sidebar ul.sidebar-menu-tabs + ul {
-    padding: 6px 7px;
+    padding: 5px;
     height: $sidebarPaneHeight;
     overflow-y: scroll;
-    background-color: rgba(#FFF, .5);
+    background-color: rgba(#FFFFFF, 0.5);
     
     ul {
         padding-left: 15px;
@@ -532,6 +535,7 @@ $icons: '../icons/';
         box-sizing: border-box;
         width: 100%;
         min-height: 38px;
+        margin: 1px 0px;
     }
 
     .node .toggle-hidden {
@@ -553,7 +557,7 @@ $icons: '../icons/';
         }
 
         &:hover {
-            color: #FFF;
+            color: #FFFFFF;
             background-color: #2BAEE9;
         }
     }
@@ -574,7 +578,7 @@ $icons: '../icons/';
         
         &:hover {
             cursor: pointer;
-            background-color: rgba(#2BAEE9, .5);
+            background-color: rgba(#2BAEE9, 0.5);
         }
     }
 
@@ -593,7 +597,7 @@ $icons: '../icons/';
         background-color: #9BFA9B;
     }
 
-    .node .disabled {
+    .node .disabled span {
         opacity: 0.5;
     }
 }
