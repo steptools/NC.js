@@ -5,6 +5,7 @@ Features:
 - Faces now associated with corresponding geometry
 - Added button and keyboard shortcut for aligning view to part (also now default view on startup)
 - Tools not used in enabled workingsteps are now dimmed
+- Added lock to align view button
 
 Bugfixes:
 
