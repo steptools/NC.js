@@ -101,6 +101,7 @@ $icons: '../icons/';
         .m-node {
             &:hover {
                 cursor: pointer;
+                background-color: rgba(#2BAEE9, .5);
             }
 
             .textbox {
@@ -245,7 +246,7 @@ $icons: '../icons/';
         display: inline-block;
         width: calc(100% - 10px);
         padding: 4px 5px;
-        margin: 0px 5px;
+        margin: 0px 0px;
     }
 
     .m-node .inner {
@@ -259,10 +260,6 @@ $icons: '../icons/';
 
     .disabled {
         opacity: 0.5;
-    }
-
-    .m-node .node:hover:not(.is-active) {
-        background-color: #2BAEE9;
     }
 
     .properties-pane {
