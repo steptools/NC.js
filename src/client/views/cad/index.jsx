@@ -17,39 +17,13 @@ require('./shaders/VelvetyShader');
 
 /*************************************************************************/
 
-class ViewButton extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  
-  render() {
-    let icon = "unlock";
-    if (this.props.locked)
-      icon = "lock";
-    
-    return <div className="resetview">
-      <span
-        className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
-        onClick={this.props.alignCb}
-      />
-      <span
-        className={"lock glyphicons glyphicons-" + icon + (this.props.locked ? ' locked' : '')}
-        onClick = {this.props.toggleLock}
-      />
-    </div>;
-  }
-}
-
-/*************************************************************************/
-
 export default class CADView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             modelTree: {},
             isViewChanging: false,
-            lastHovered: undefined,
-            lockedView: false
+            lastHovered: undefined
         };
         this.handleResize   = this.handleResize.bind(this);
         this.onShellLoad    = this.onShellLoad.bind(this);
@@ -62,7 +36,6 @@ export default class CADView extends React.Component {
         this.onTreeClick    = this.onTreeClick.bind(this);
         this.onTreeChange   = this.onTreeChange.bind(this);
         this.onTreeNodeEnterExit = this.onTreeNodeEnterExit.bind(this);
-        this.alignToolView = this.alignToolView.bind(this);
     }
 
     onShellLoad(event) {
@@ -191,7 +164,7 @@ export default class CADView extends React.Component {
 
         // CONTROL EVENT HANDLERS
         this.controls.addEventListener('change', function(options) {
-            self.setState({'isViewChanging': true});
+            self.state.isViewChanging = true;
             let x0 = self.sceneCenter,
                 x1 = self.camera.position,
                 x2 = self.controls.target,
@@ -207,12 +180,11 @@ export default class CADView extends React.Component {
         });
         this.controls.addEventListener("start", function() {
             self.continuousRendering = true;
-            self.setState({'lockedView': false});
         });
         this.controls.addEventListener("end", function() {
             self.invalidate();
             self.continuousRendering = false;
-            self.setState({'isViewChanging': false});
+            self.state.isViewChanging = false;
         });
 
         // SCREEN RESIZE
@@ -386,8 +358,6 @@ export default class CADView extends React.Component {
             self.animate(false);
         });
         if (this.continuousRendering === true || this.shouldRender === true || forceRendering === true) {
-            if (this.state.lockedView)
-              this.alignToolView(this.props.manager.getSelected());
             this.shouldRender = false;
             this.drawScene();
             this.controls.update();
@@ -490,7 +460,7 @@ export default class CADView extends React.Component {
             this.setState({ modelTree: tree });
             this.invalidate();
         }
-        this.setState({'lastHovered': obj});
+        this.state.lastHovered = obj;
     }
 
     // Handle mouse movements in the model view for highlighting
@@ -517,11 +487,8 @@ export default class CADView extends React.Component {
 
         return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
-            <ViewButton
-              alignCb={() => {this.alignToolView(this.props.manager.getSelected());}}
-              toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
-              locked = {this.state.lockedView}
-            />
+            <span className="resetview glyphicon glyphicon-eye-open"
+                  onClick={()=>{this.alignToolView(this.props.manager.getSelected());}}/>
             {compass}
             <LoadQueueView dispatcher={this.props.manager} guiMode={this.props.guiMode} />
         </div>;
