@@ -23,9 +23,21 @@ export default class NC extends THREE.EventDispatcher {
         this._loader = loader;
         this._objects = [];
         this.type = 'nc';
+
+        this.traceNum = 1;
+        var trace = new THREE.BufferGeometry();
+        this.tracePoint = new Float32Array(this.traceNum * 3);
+        trace.addAttribute('position', new THREE.BufferAttribute(this.tracePoint, 3));
+        this.traceLine = new THREE.Line(trace, new THREE.LineBasicMaterial({
+            color: 0xffa07a,
+            linewidth: 2
+        }));
+
+
         this.raycaster = new THREE.Raycaster();
         this._object3D = new THREE.Object3D();
         this._overlay3D = new THREE.Object3D();
+
         this._annotation3D = new THREE.Object3D();
         this.state = {
             selected:       false,
@@ -35,6 +47,15 @@ export default class NC extends THREE.EventDispatcher {
             explodeDistance: 0,
             collapsed:      false
         }
+    }
+
+    getPathTrace(x, y, z) {
+        var self = this;
+        self.traceLine.geometry.attributes.position[self.traceNum * 3 + 0] = x;
+        self.traceLine.geometry.attributes.position[self.traceNum * 3 + 1] = x;
+        self.traceLine.geometry.attributes.position[self.traceNum * 3 + 2] = x;
+        self.traceNum++;
+        self.traceLine.geometry.attributes.position.needsUpdate = true;
     }
 
 
@@ -360,6 +381,11 @@ export default class NC extends THREE.EventDispatcher {
                         obj.object3D.position.copy(mtposition);
                         obj.object3D.quaternion.copy(quaternion);
                         console.log(obj.object3D.position);
+
+
+                        self._overlay3D.add(self.traceLine);
+                        self.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
+
                         alter = true;
                     }
                 }

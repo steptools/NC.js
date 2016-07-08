@@ -55,11 +55,9 @@ var MTListen = function() {
 }
 
 var findWS = function(current) {
-  console.log("Current indexed: " + WSGCode["worksteps"][WSGCodeIndex]);
-  console.log("Current feed: " + current);
-  console.log("Current index: " + WSGCodeIndex);
+  var change = false;
 
-  if (current > WSGCode["worksteps"][WSGCodeIndex]) {
+  if (current >= WSGCode["worksteps"][WSGCodeIndex]) {
     if (WSGCodeIndex >= WSGCode["worksteps"].length) {2
       WSGCodeIndex = 0;
     }
@@ -69,14 +67,16 @@ var findWS = function(current) {
     console.log("GCODE Switched!");
     return true;
   }
-  else if (current < WSGCode["worksteps"][WSGCodeIndex - 1]){
-    WSGCodeIndex = WSGCodeIndex + 1;
-    return true;
-    console.log("GCODE Switched!");
+  while (current < WSGCode["worksteps"][WSGCodeIndex - 1]){
+    if (WSGCodeIndex >= WSGCode["worksteps"].length) {2
+      WSGCodeIndex = 0;
+    }
+    else {
+      WSGCodeIndex = WSGCodeIndex + 1;
+    }
+    change = true;
   }
-  else {
-    return false;
-  }
+  return change;
 }
 
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
@@ -85,10 +85,12 @@ var _getDelta = function(ms, key, wsgcode, cb) {
 
 
   if (key) {
+    console.log("KEYSTATE");
     holder = JSON.parse(ms.GetKeystateJSON());
     //response = JSON.stringify(holder);
   }
   else {
+    console.log("DELTA");
     holder = JSON.parse(ms.GetDeltaJSON());
     //response = JSON.stringify(holder);
   }
@@ -97,9 +99,10 @@ var _getDelta = function(ms, key, wsgcode, cb) {
 
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
+    holder.next = true;
     if (findWS(res[4], wsgcode) ) {
       ms.NextWS();
-      holder.next = true;
+      //holder.next = true;
     }
     else {
       holder.next = false;
@@ -138,7 +141,7 @@ var _getToWS = function(wsId, ms, cb) {
 var _loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
     app.logger.debug("Loop step " + path);
-    let rc = ms.AdvanceState();
+    //let rc = ms.AdvanceState();
     //if (rc === 0) {  // OK
       //app.logger.debug("OK...");
       _getDelta(ms, key, wsgcode, function(b) {
