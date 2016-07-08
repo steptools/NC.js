@@ -17,39 +17,13 @@ require('./shaders/VelvetyShader');
 
 /*************************************************************************/
 
-class ViewButton extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  
-  render() {
-    let icon = "unlock";
-    if (this.props.locked)
-      icon = "lock";
-    
-    return <div className="resetview">
-      <span
-        className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
-        onClick={this.props.alignCb}
-      />
-      <span
-        className={"lock glyphicons glyphicons-" + icon + (this.props.locked ? ' locked' : '')}
-        onClick = {this.props.toggleLock}
-      />
-    </div>;
-  }
-}
-
-/*************************************************************************/
-
 export default class CADView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             modelTree: {},
             isViewChanging: false,
-            lastHovered: undefined,
-            lockedView: false
+            lastHovered: undefined
         };
         this.handleResize   = this.handleResize.bind(this);
         this.onShellLoad    = this.onShellLoad.bind(this);
@@ -62,7 +36,6 @@ export default class CADView extends React.Component {
         this.onTreeClick    = this.onTreeClick.bind(this);
         this.onTreeChange   = this.onTreeChange.bind(this);
         this.onTreeNodeEnterExit = this.onTreeNodeEnterExit.bind(this);
-        this.alignToolView = this.alignToolView.bind(this);
     }
 
     onShellLoad(event) {
@@ -72,7 +45,6 @@ export default class CADView extends React.Component {
     }
 
     onModelAdd(event) {
-        //This is where the NC model is being loaded into the CADview
         let model = this.props.manager._models[event.path];
         // Add the model to the scene
         this.annotationScene.add(   model.getAnnotation3D());
@@ -80,10 +52,13 @@ export default class CADView extends React.Component {
         this.overlayScene.add(      model.getOverlay3D());
         // calculate the scene's radius for draw distance calculations
         this.updateSceneBoundingBox(model.getBoundingBox());
-        
-        // set the default view
-        this.alignToolView([model]);
-        
+        // Go to preset view for NC models
+        if(model.type === 'nc') {
+            //this.camera.position.set(-6.997719433230415, 7.055664289079229, 10.589898666998387);
+            //this.camera.up.set(0.31370902211057955, -0.32595607647788327, 0.891817966657745);
+        }
+        // center the view
+        this.zoomToFit([model]);
         // Update the model tree
         let tree = this.props.manager.getTree();
         this.setState({ modelTree:tree });
@@ -107,7 +82,8 @@ export default class CADView extends React.Component {
             // Go to special viewing postion on 'a'
             case 97:
                 //console.log(this.camera);
-                this.alignToolView(this.props.manager.getSelected());
+                this.camera.position.set(-6.997719433230415, 7.055664289079229, 10.589898666998387);
+                this.camera.up.set(0.31370902211057955, -0.32595607647788327, 0.891817966657745);
                 break;
             // Explode on 'x' key pressed
             case 120:
@@ -191,7 +167,7 @@ export default class CADView extends React.Component {
 
         // CONTROL EVENT HANDLERS
         this.controls.addEventListener('change', function(options) {
-            self.setState({'isViewChanging': true});
+            self.state.isViewChanging = true;
             let x0 = self.sceneCenter,
                 x1 = self.camera.position,
                 x2 = self.controls.target,
@@ -207,12 +183,11 @@ export default class CADView extends React.Component {
         });
         this.controls.addEventListener("start", function() {
             self.continuousRendering = true;
-            self.setState({'lockedView': false});
         });
         this.controls.addEventListener("end", function() {
             self.invalidate();
             self.continuousRendering = false;
-            self.setState({'isViewChanging': false});
+            self.state.isViewChanging = false;
         });
 
         // SCREEN RESIZE
@@ -228,12 +203,6 @@ export default class CADView extends React.Component {
         this.props.manager.removeEventListener("shellLoad", this.invalidate);
         this.props.manager.removeEventListener("annotationLoad", this.invalidate);
         this.props.manager.removeEventListener("invalidate", this.invalidate);
-    }
-    
-    componentWillUpdate(nextProps, nextState) {
-        if (!this.state.lockedView && nextState.lockedView) {
-            this.invalidate();
-        }
     }
 
     componentDidUpdate() {
@@ -269,110 +238,6 @@ export default class CADView extends React.Component {
         this.invalidate();
     }
 
-    alignToolView(objects) {
-        
-        // find the orientation of the referenced object
-        let tool = _.find(_.values(objects[0]._objects), {'usage': 'cutter', 'rendered': true});
-        let part = _.find(_.values(objects[0]._objects), {'usage': 'tobe', 'rendered': true});
-        if (part === undefined)
-          part = _.find(_.values(objects[0]._objects), {'usage': 'asis', 'rendered': true});
-
-        let partPos = new THREE.Vector3().setFromMatrixPosition(part.object3D.matrixWorld);
-        let toolBox = tool.model.getBoundingBox().clone();
-          
-        let toolMax = toolBox.max.clone().applyMatrix4(tool.object3D.matrixWorld);
-        let toolMin = toolBox.min.clone().applyMatrix4(tool.object3D.matrixWorld);
-      
-        let toolAxis = CADView.getAxisVector(toolMax.clone().sub(toolMin));
-        
-        let toolPos = tool.object3D.position.clone().sub(partPos);
-
-        let newUp = toolAxis.clone()
-      
-        // get the unit vector corresponding to this view
-        newUp = CADView.getAxisVector(newUp);
-
-        // now calculate which side we want to view from
-        // TODO: make sure fixtures work properly with changes to underlying stuff, and with machines loaded
-        let fixture = _.find(_.values(objects[0]._objects), {'usage': 'fixture', 'rendered': true});
-        let newPos = new THREE.Vector3();
-        if (fixture !== undefined) {
-          let fixtureMax = fixture.bbox.max.clone();
-          let fixtureMin = fixture.bbox.min.clone();
-          let fixtureDiag = fixtureMax.clone().sub(fixtureMin);
-
-          let fixturePos = fixture.object3D.position.clone();
-
-          let fixLen = CADView.getAxisVector(fixtureDiag);
-
-          newPos.crossVectors(fixLen, newUp);
-          if (newPos.length() === 0) {
-            if (newUp.x === 0)
-              newPos.x = 1;
-            else
-              newPos.y = 1;
-          }
-
-          // make sure the fixture is facing away from us if it would block view of the part
-          if (fixturePos.dot(newPos) < 0)
-            newPos.negate();
-        }
-        // we have no fixture
-        else {
-          newPos.crossVectors(newUp, new THREE.Vector3(1, 0, 0));
-          if (newPos.length() === 0)
-            newPos.crossVectors(newUp, new THREE.Vector3(0, 1, 0));
-        }
-
-        // TODO: See if we can actually use the tool in calculations
-        // zoom to fit just the part
-        let boundingBox = new THREE.Box3().union(part.bbox).union(toolBox.applyMatrix4(tool.object3D.matrixWorld));
-        let radius = boundingBox.size().length() * 0.5;
-        let horizontalFOV = 2 * Math.atan(THREE.Math.degToRad(this.camera.fov * 0.5) * this.camera.aspect),
-            fov = Math.min(THREE.Math.degToRad(this.camera.fov), horizontalFOV),
-            dist = radius / Math.sin(fov * 0.5),
-            newTargetPosition = boundingBox.max.clone().
-            lerp(boundingBox.min, 0.5);
-      
-        // adjust the camera position based on the new target
-        this.camera.position
-            .sub(this.controls.target)
-            .setLength(dist)
-            .add(newTargetPosition);
-        this.controls.target.copy(newTargetPosition);
-
-        this.controls.alignTop(newUp, newPos);
-
-        this.invalidate();
-    }
-  
-    static getAxisVector(vec) {
-      // Find the closest axis-aligned unit vector to the given vector
-      let absVec = new THREE.Vector3(Math.abs(vec.x), Math.abs(vec.y), Math.abs(vec.z));
-      let rtn = new THREE.Vector3(0, 0, 0);
-
-      if (absVec.x >= absVec.y && absVec.x >= absVec.z) {
-        if (vec.x > 0)
-          rtn.x = 1;
-        else
-          rtn.x = -1;
-      }
-      else if (absVec.y >= absVec.x && absVec.y >= absVec.z) {
-        if (vec.y > 0)
-          rtn.y = 1;
-        else
-          rtn.y = -1;
-      }
-      else if (absVec.z >= absVec.x && absVec.z >= absVec.y) {
-        if (vec.z > 0)
-          rtn.z = 1;
-        else
-          rtn.z = -1;
-      }  
-      
-      return rtn;
-    }
-
     drawScene() {
         this.renderer.clear();
         this.renderer.render(this.geometryScene, this.camera);
@@ -386,8 +251,6 @@ export default class CADView extends React.Component {
             self.animate(false);
         });
         if (this.continuousRendering === true || this.shouldRender === true || forceRendering === true) {
-            if (this.state.lockedView)
-              this.alignToolView(this.props.manager.getSelected());
             this.shouldRender = false;
             this.drawScene();
             this.controls.update();
@@ -490,7 +353,7 @@ export default class CADView extends React.Component {
             this.setState({ modelTree: tree });
             this.invalidate();
         }
-        this.setState({'lastHovered': obj});
+        this.state.lastHovered = obj;
     }
 
     // Handle mouse movements in the model view for highlighting
@@ -514,14 +377,8 @@ export default class CADView extends React.Component {
             dispatcher={this.props.manager}
             guiMode={this.props.guiMode}
         /> : undefined;
-
         return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
-            <ViewButton
-              alignCb={() => {this.alignToolView(this.props.manager.getSelected());}}
-              toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
-              locked = {this.state.lockedView}
-            />
             {compass}
             <LoadQueueView dispatcher={this.props.manager} guiMode={this.props.guiMode} />
         </div>;

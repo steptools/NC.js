@@ -164,7 +164,6 @@ export default class DataLoader extends THREE.EventDispatcher {
     }
 
     workerMessage(event) {
-        //This gets any postMessage requests
         let req, shell, anno;
         console.log("Worker Data: " + event.data.file);
         // Find the request this message corresponds to
@@ -199,17 +198,25 @@ export default class DataLoader extends THREE.EventDispatcher {
                 }
                 break;
             case "shellLoad":
-            //This is the case where the shell comes in with position, normals and colors vector after ProcessShellJSON
                 shell = this._shells[event.data.id+".json"];
                 if (!shell) {
                     console.log('DataLoader.ShellLoad: invalid shell ID' + event.data.id);
                 } else {
                     data = event.data.data;
+                    for(var i =0;i<data.colors.length;i++)
+                    {
+                        if (data.colors[i] < 0) {
+                            if (i% 3 === 0)
+                                data.colors[i] = shell._color.r;
+                            else if (i % 3 === 1)
+                                data.colors[i] = shell._color.g;
+                            else if (i % 3 === 2)
+                                data.colors[i] = shell._color.b;
+                        }
+                    }
                     // Remove the reference to the shell
                     delete this._shells[event.data.id+".json"];
-
-                    //Data.color is passed from the buffers.color from webworker.js 695
-                    shell.addGeometry(data.position, data.normals, data.color, data.faces);
+                    shell.addGeometry(data.position, data.normals, data.colors);
                     this.dispatchEvent({ type: "shellLoad", file: event.data.file });
                 }
                 break;
@@ -281,7 +288,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         }
         req.callback(undefined, assembly);
     }
-    //This is the initial load that then loads all shells below it
+
     buildNCStateJSON(jsonText, req) {
         let self = this;
         let doc = JSON.parse(jsonText);
