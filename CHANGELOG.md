@@ -6,6 +6,7 @@ Features:
 - Added button and keyboard shortcut for aligning view to part (also now default view on startup)
 - Tools not used in enabled workingsteps are now dimmed
 - Added lock to align view button
+- Parent nodes are now highlighted if a child is active and hidden
 
 Bugfixes:
 
