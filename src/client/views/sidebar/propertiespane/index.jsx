@@ -1,17 +1,14 @@
 import React from 'react';
-import Menu,{Item as MenuItem} from 'rc-menu';
 import request from 'superagent';
-import _ from 'lodash';
 
 
 export default class PropertiesPane extends React.Component {
     constructor(props) {
         //Create the constructor for the component
         super(props);
-        
-        this.state = {entity: null
-        };
-        
+
+        this.state = {entity: null};
+
         this.selectWS = this.selectWS.bind(this);
         this.renderNode = this.renderNode.bind(this);
     }
@@ -246,18 +243,12 @@ export default class PropertiesPane extends React.Component {
         }
 
         return (
-            <div className={'properties-pane' + (visible
-                ? ' visible'
-            : '')}>
+            <div className={'properties-pane' + (visible ? ' visible' : '')}>
                 <div className='titlebar'>
-                    <span className={'icon' + (visible
-                        ? ' ' + this.props.entity.type + ' ' + tolType
-                    : '')}/>
+                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + tolType : '')}/>
                     <span className='title'>
                         <div className='type'>
-                            {visible
-                                ? this.props.entity.type[0].toUpperCase() + this.props.entity.type.slice(1)
-                            : null}
+                            {visible ? this.props.entity.type[0].toUpperCase() + this.props.entity.type.slice(1) : null}
                         </div>
                         <div className='name'>
                             {entityName}

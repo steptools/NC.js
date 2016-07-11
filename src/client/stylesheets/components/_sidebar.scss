@@ -23,6 +23,8 @@ $icons: '../icons/';
         background-color: rgba(#FFFFFF, 0.5);
 
         .m-node {
+            padding: 1px 0px;
+            
             &:hover {
                 cursor: pointer;
             }
@@ -193,258 +195,6 @@ $icons: '../icons/';
     .disabled span {
         opacity: 0.5;
     }
-
-    .properties-pane {
-        display: block;
-        width: $sidebarWidth;
-        background-color: #F8F8F8;
-        position: absolute;
-        top: 0;
-        z-index: 10;
-        height: calc(100% - #{$headerHeight});
-        left: $sidebarWidth*-1;
-        -webkit-transition: -webkit-transform ease 250ms;
-        -moz-transition: -moz-transform ease 250ms;
-        -ms-transition: -ms-transform ease 250ms;
-        -o-transition: -o-transform ease 250ms;
-        transition: transform ease 250ms;
-
-        .properties {
-            height: calc(100% - 54px);
-            overflow-y: scroll;
-
-            .property {
-                padding: 5px 20px;
-                color: #333;
-
-                &:hover {
-                    cursor: pointer;
-                }
-
-                &.rc-menu-item-disabled {
-                    cursor: inherit;
-                    -webkit-touch-callout: auto;
-                    /* iOS Safari */
-                    -webkit-user-select: auto;
-                    /* Chrome/Safari/Opera */
-                    -khtml-user-select: auto;
-                    /* Konqueror */
-                    -moz-user-select: auto;
-                    /* Firefox */
-                    -ms-user-select: auto;
-                    /* Internet Explorer/Edge */
-                    user-select: auto;
-                }
-
-                &.goTo {
-                    text-align: center;
-                    padding: 10px 5px;
-                    margin: 0 20%;
-                    background-color: #333;
-                    color: #F8F8F8;
-                    border-bottom: 2px solid #AFAFAF;
-                    -webkit-touch-callout: none;
-                    /* iOS Safari */
-                    -webkit-user-select: none;
-                    /* Chrome/Safari/Opera */
-                    -khtml-user-select: none;
-                    /* Konqueror */
-                    -moz-user-select: none;
-                    /* Firefox */
-                    -ms-user-select: none;
-                    /* Internet Explorer/Edge */
-                    user-select: none;
-
-                    &:hover {
-                        color: #35B7FD;
-                        border-bottom: 2px solid #35B7FD;
-                    }
-
-                    &.rc-menu-item-disabled {
-                        opacity: 0.5;
-
-                        &:hover {
-                            color: #F8F8F8;
-                            border-bottom: 2px solid #AFAFAF;
-                        }
-                    }
-                }
-
-                &.children {
-                    white-space: normal;
-                    padding-left: 5px;
-
-                    .title {
-                        font-size: 18px;
-                    }
-
-                    .list {
-                        .node {
-                            display: inline-block;
-                            width: 100%;
-                            padding: 4px 5px;
-
-                            &.invalid {
-                                cursor: default;
-                            }
-
-                            .textbox {
-                                display: flex;
-                            }
-
-                            &.is-active {
-                                background-color: #0000FF;
-                            }
-
-                            &.is-hidden {
-                                color: #1B6D85;
-                            }
-
-                            &.running-node {
-                                background-color: #9BFA9B;
-                            }
-
-                            &.disabled {
-                                opacity: 0.5;
-                            }
-
-                            &:hover:not(.is-active) {
-                                background-color: rgba(#2BAEE9, 0.5);
-                                opacity: 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        .titlebar {
-            padding: 5px;
-            display: flex;
-
-            .title {
-                width: 78%;
-                font-size: 14px;
-                font-weight: bold;
-
-                .type {
-                    border-bottom: 1px solid #666666;
-                }
-            }
-
-            .exit {
-                margin-left: auto;
-                font-size: 32px;
-
-                &:hover {
-                    cursor: pointer;
-                }
-            }
-        }
-
-        .icon {
-            background-color: rgba(#fff, 0);
-            padding: 15px;
-            border-radius: 5px;
-            width: 30px;
-            height: 30px;
-            float: left;
-            text-align: center;
-            margin-right: 8px;
-            vertical-align: middle;
-            border: 2px solid #333333;
-            background-image: url($icons + 'tolerance/unknown.svg');
-            background-size: cover;
-            background-position: center;
-
-            &.tool {
-                background-image: url($icons + 'tools/tool.svg');
-            }
-
-            &.selective,
-            &.workingstep,
-            &.workplan {
-                background-image: none;
-                background-color: #333333;
-                color: #FFFFFF;
-                padding: 3px;
-
-                &.workingstep:after {
-                    content: 'WS';
-                }
-
-                &.workplan:after {
-                    content: 'W';
-                }
-
-                &.selective:after {
-                    content: 'S';
-                }
-            }
-
-            &.tolerance {
-                &.angularity {
-                    background-image: url($icons + 'tolerance/angularity.svg');
-                }
-
-                &.circularity {
-                    background-image: url($icons + 'tolerance/circularity.svg');
-                }
-
-                &.concentricity {
-                    background-image: url($icons + 'tolerance/concentricity.svg');
-                }
-
-                &.cylindricity {
-                    background-image: url($icons + 'tolerance/cylindricity.svg');
-                }
-
-                &.flatness {
-                    background-image: url($icons + 'tolerance/flatness.svg');
-                }
-
-                &.parallelism {
-                    background-image: url($icons + 'tolerance/parallelism.svg');
-                }
-
-                &.perpendicularity {
-                    background-image: url($icons + 'tolerance/perpendicularity.svg');
-                }
-
-                &.position {
-                    background-image: url($icons + 'tolerance/position.svg');
-                }
-
-                &.profile-line {
-                    background-image: url($icons + 'tolerance/profile_line.svg');
-                }
-
-                &.profile-surface {
-                    background-image: url($icons + 'tolerance/profile_surface.svg');
-                }
-
-                &.straightness {
-                    background-image: url($icons + 'tolerance/straightness.svg');
-                }
-
-                &.symmetry {
-                    background-image: url($icons + 'tolerance/symmetry.svg');
-                }
-
-                &.total-runout {
-                    background-image: url($icons + 'tolerance/total_runout.svg');
-                }
-            }
-        }
-
-        &.visible {
-            -webkit-transform: translate3d($sidebarWidth, 0, 0);
-            -moz-transform: translate3d($sidebarWidth, 0, 0);
-            -ms-transform: translate3d($sidebarWidth, 0, 0);
-            -o-transform: translate3d($sidebarWidth, 0, 0);
-            transform: translate3d($sidebarWidth, 0, 0);
-        }
-    }
 }
 
 .sidebar .sidebar-menu-tabs {
@@ -528,6 +278,259 @@ $icons: '../icons/';
         border-right: 2px solid #AFAFAF;
     }
 }
+
+.sidebar .properties-pane {
+    display: block;
+    width: $sidebarWidth;
+    background-color: #F8F8F8;
+    position: absolute;
+    top: 0;
+    z-index: 10;
+    height: calc(100% - #{$headerHeight});
+    left: $sidebarWidth*-1;
+    -webkit-transition: -webkit-transform ease 250ms;
+    -moz-transition: -moz-transform ease 250ms;
+    -ms-transition: -ms-transform ease 250ms;
+    -o-transition: -o-transform ease 250ms;
+    transition: transform ease 250ms;
+
+    .properties {
+        height: calc(100% - 54px);
+        overflow-y: scroll;
+
+        .property {
+            padding: 5px 20px;
+            color: #333;
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            &.rc-menu-item-disabled {
+                cursor: inherit;
+                -webkit-touch-callout: auto;
+                /* iOS Safari */
+                -webkit-user-select: auto;
+                /* Chrome/Safari/Opera */
+                -khtml-user-select: auto;
+                /* Konqueror */
+                -moz-user-select: auto;
+                /* Firefox */
+                -ms-user-select: auto;
+                /* Internet Explorer/Edge */
+                user-select: auto;
+            }
+
+            &.goTo {
+                text-align: center;
+                padding: 10px 5px;
+                margin: 0 20%;
+                background-color: #333;
+                color: #F8F8F8;
+                border-bottom: 2px solid #AFAFAF;
+                -webkit-touch-callout: none;
+                /* iOS Safari */
+                -webkit-user-select: none;
+                /* Chrome/Safari/Opera */
+                -khtml-user-select: none;
+                /* Konqueror */
+                -moz-user-select: none;
+                /* Firefox */
+                -ms-user-select: none;
+                /* Internet Explorer/Edge */
+                user-select: none;
+
+                &:hover {
+                    color: #35B7FD;
+                    border-bottom: 2px solid #35B7FD;
+                }
+
+                &.rc-menu-item-disabled {
+                    opacity: 0.5;
+
+                    &:hover {
+                        color: #F8F8F8;
+                        border-bottom: 2px solid #AFAFAF;
+                    }
+                }
+            }
+
+            &.children {
+                white-space: normal;
+                padding-left: 5px;
+
+                .title {
+                    font-size: 18px;
+                }
+
+                .list {
+                    .node {
+                        display: inline-block;
+                        width: 100%;
+                        padding: 4px 5px;
+
+                        &.invalid {
+                            cursor: default;
+                        }
+
+                        .textbox {
+                            display: flex;
+                        }
+
+                        &.is-active {
+                            background-color: #0000FF;
+                        }
+
+                        &.is-hidden {
+                            color: #1B6D85;
+                        }
+
+                        &.running-node {
+                            background-color: #9BFA9B;
+                        }
+
+                        &.disabled {
+                            opacity: 0.5;
+                        }
+
+                        &:hover:not(.is-active) {
+                            background-color: rgba(#2BAEE9, 0.5);
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .titlebar {
+        padding: 5px;
+        display: flex;
+
+        .title {
+            width: 78%;
+            font-size: 14px;
+            font-weight: bold;
+
+            .type {
+                border-bottom: 1px solid #666666;
+            }
+        }
+
+        .exit {
+            margin-left: auto;
+            font-size: 32px;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .icon {
+        background-color: rgba(#fff, 0);
+        padding: 15px;
+        border-radius: 5px;
+        width: 30px;
+        height: 30px;
+        float: left;
+        text-align: center;
+        margin-right: 8px;
+        vertical-align: middle;
+        border: 2px solid #333333;
+        background-image: url($icons + 'tolerance/unknown.svg');
+        background-size: cover;
+        background-position: center;
+
+        &.tool {
+            background-image: url($icons + 'tools/tool.svg');
+        }
+
+        &.selective,
+        &.workingstep,
+        &.workplan {
+            background-image: none;
+            background-color: #333333;
+            color: #FFFFFF;
+            padding: 3px;
+
+            &.workingstep:after {
+                content: 'WS';
+            }
+
+            &.workplan:after {
+                content: 'W';
+            }
+
+            &.selective:after {
+                content: 'S';
+            }
+        }
+
+        &.tolerance {
+            &.angularity {
+                background-image: url($icons + 'tolerance/angularity.svg');
+            }
+
+            &.circularity {
+                background-image: url($icons + 'tolerance/circularity.svg');
+            }
+
+            &.concentricity {
+                background-image: url($icons + 'tolerance/concentricity.svg');
+            }
+
+            &.cylindricity {
+                background-image: url($icons + 'tolerance/cylindricity.svg');
+            }
+
+            &.flatness {
+                background-image: url($icons + 'tolerance/flatness.svg');
+            }
+
+            &.parallelism {
+                background-image: url($icons + 'tolerance/parallelism.svg');
+            }
+
+            &.perpendicularity {
+                background-image: url($icons + 'tolerance/perpendicularity.svg');
+            }
+
+            &.position {
+                background-image: url($icons + 'tolerance/position.svg');
+            }
+
+            &.profile-line {
+                background-image: url($icons + 'tolerance/profile_line.svg');
+            }
+
+            &.profile-surface {
+                background-image: url($icons + 'tolerance/profile_surface.svg');
+            }
+
+            &.straightness {
+                background-image: url($icons + 'tolerance/straightness.svg');
+            }
+
+            &.symmetry {
+                background-image: url($icons + 'tolerance/symmetry.svg');
+            }
+
+            &.total-runout {
+                background-image: url($icons + 'tolerance/total_runout.svg');
+            }
+        }
+    }
+
+    &.visible {
+        -webkit-transform: translate3d($sidebarWidth, 0, 0);
+        -moz-transform: translate3d($sidebarWidth, 0, 0);
+        -ms-transform: translate3d($sidebarWidth, 0, 0);
+        -o-transform: translate3d($sidebarWidth, 0, 0);
+        transform: translate3d($sidebarWidth, 0, 0);
+    }
+}
+
 
 // Workplan
 .sidebar ul.sidebar-menu-tabs + ul {
