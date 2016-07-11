@@ -44,7 +44,8 @@ var _getTolerance = function(id) {
       "toleranceType": tolType,
       "value": tol.GetToleranceValue(id),
       "workingsteps": steps,
-      "unit" : tol.GetToleranceUnit(id)
+      "unit" : tol.GetToleranceUnit(id),
+      "workpiece": tol.GetWorkpieceOfTolerance(id),
   };
 };
 
@@ -80,7 +81,7 @@ var _getWps = function(req,res) {
 var _getWsTols = function(req,res) {
   if (req.params.wsId){
     let wsId = req.params.wsId;
-    if (find.IsWorkingstep(wsId)) {
+    if (find.IsWorkingstep(wsId)) { // this may be able to be factored out later
       let tolerances = JSON.stringify(tol.GetWorkingstepToleranceAll(wsId));
       console.log("tolerances" + tolerances);
       res.status(200).send(tolerances);
