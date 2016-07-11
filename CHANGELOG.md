@@ -16,6 +16,7 @@ Bugfixes:
 - Fixed view alignment problems with some models and with machine tools
 - Fixed broken mobile view / responsiveness after adding locked view
 - Part and toolpath geometry move with fixture when needed
+- Clicking on workingstep/workplan works with properties pane again
 
 Reverted:
 
