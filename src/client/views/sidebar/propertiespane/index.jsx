@@ -238,21 +238,10 @@ export default class PropertiesPane extends React.Component {
 
         if (this.props.entity !== null) {
             visible = true;
-
-<<<<<<< HEAD
             if (this.props.entity.type === 'tolerance') {
                 entityName = this.props.entity.toleranceType[0].toUpperCase() + this.props.entity.toleranceType.slice(1);
                 tolType = 'tolerance ' + this.props.entity.toleranceType;
             } else {
-=======
-            if (this.props.entity.type === 'workpiece') {
-                entityName = this.props.entity.name;
-                //Right now all workpieces have same image
-                //TODO: add images for workpiece-tool workpiece and workpiece-fixture
-                wpType = 'workpiece';
-            }
-            else {
->>>>>>> f3b7b8d13e84b371418d89f8f6daf95f23630177
                 entityName = this.props.entity.name;
             }
         }
@@ -262,13 +251,9 @@ export default class PropertiesPane extends React.Component {
                 ? ' visible'
             : '')}>
                 <div className='titlebar'>
-<<<<<<< HEAD
                     <span className={'icon' + (visible
                         ? ' ' + this.props.entity.type + ' ' + tolType
                     : '')}/>
-=======
-                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + wpType : '')} />
->>>>>>> f3b7b8d13e84b371418d89f8f6daf95f23630177
                     <span className='title'>
                         <div className='type'>
                             {visible
