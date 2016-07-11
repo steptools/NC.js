@@ -1,9 +1,8 @@
 import React from 'react';
-import Menu from 'rc-menu';
+import Menu,{Item as MenuItem} from 'rc-menu';
 import request from 'superagent';
 import _ from 'lodash';
 
-let MenuItem = Menu.Item;
 
 export default class PropertiesPane extends React.Component {
     constructor(props) {
