@@ -17,6 +17,7 @@ Bugfixes:
 - Fixed broken mobile view / responsiveness after adding locked view
 - Part and toolpath geometry move with fixture when needed
 - Clicking on workingstep/workplan works with properties pane again
+- Workplan will now close correctly nodes that were open before moving to a previous workingstep
 
 Reverted:
 
