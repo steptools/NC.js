@@ -27,8 +27,8 @@ export default class WorkingstepList extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log(nextProps);
-        console.log(this.props);
+        //console.log(nextProps);
+        //console.log(this.props);
         return this.props.ws !== nextProps.ws;
     }
 

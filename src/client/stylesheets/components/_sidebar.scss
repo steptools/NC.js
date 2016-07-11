@@ -453,19 +453,22 @@ $icons: '../icons/';
     border-right: none;
     border-radius: 0px;
     font-size: 20px;
-    height: $sidebarTabsHeight;
+    height: $sidebarTabBarHeight;
 
     .rc-menu-item {
-        text-align: center;
-        color: #F8F8F8;
         position: relative;
-        border: 2px solid #AFAFAF;
-        //border-left: none;
-        //border-right: none;
-        padding: 10px 5px;
+        box-sizing: content-box;
+        height: $sidebarTabHeight;
         width: 50%;
-        margin-left: 0;
+        padding: 0px;
+        border: 2px solid #AFAFAF;
+        border-left: none;
+        border-right: none;
+        margin: 0px;
         background-color: #333333;
+        color: #F8F8F8;
+        line-height: $sidebarTabHeight;
+        text-align: center;
         text-shadow: -1px -1px 0 #333333, 1px -1px 0 #333333, -1px 1px 0 #333333, 1px 1px 0 #333333;
 
         &:disabled {
@@ -487,7 +490,6 @@ $icons: '../icons/';
         }
     }
 
-    /*
     .rc-menu-item:before {
         display: block;
         content: '.';
@@ -525,7 +527,6 @@ $icons: '../icons/';
     .rc-menu-item.tolerance:before {
         border-right: 2px solid #AFAFAF;
     }
-    */
 }
 
 // Workplan
