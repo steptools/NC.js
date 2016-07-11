@@ -220,6 +220,10 @@ export default class ResponsiveView extends React.Component {
             if(!err && res.ok){
                 // Node preprocessing
                 let json = JSON.parse(res.text);
+                _.each(json, (tol) => {
+                  tol.leaf = true;
+                  tol.children =[];
+                });
                 this.setState({'toleranceCache': json});
             }
         };
