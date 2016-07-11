@@ -213,13 +213,33 @@ export default class ResponsiveView extends React.Component {
             });
         
         
-        // now the same for tolerances
+        // now the same for workpiece/tolerance view
         
-        url = "/v3/nc/tolerances/";
+        url = "/v3/nc/workpieces/";
         resCb = (err,res) => { //Callback function for response
             if(!err && res.ok){
                 // Node preprocessing
                 let json = JSON.parse(res.text);
+                _.each(json, (workpiece) => {
+                  if (workpiece.tolerances.length > 0) {
+                    workpiece.leaf = false;
+                    workpiece.children = [];
+                    console.log(workpiece);
+                    _.each(workpiece.tolerances, (tol) => {
+                      let tolUrl = "/v3/nc/tolerances/" + tol;
+                      request.get(tolUrl).end((error, response) => {
+                        if (!error && response.ok) {
+                          let tolerance = JSON.parse(response.text);
+                          tolerance.leaf = true;
+                          workpiece.children.push(tolerance);
+                        }
+                      });
+                    });
+                  }
+                  else {
+                    workpiece.leaf = true;
+                  }
+                });
                 this.setState({'toleranceCache': json});
             }
         };
