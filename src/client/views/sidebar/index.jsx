@@ -38,12 +38,16 @@ export default class SidebarView extends React.Component {
         let currElem=$('.running-node');
         if((currElem !== null) && (typeof currElem !== 'undefined') && (this.props.mode !== 'tolerance'))
         {
-          console.log(currElem);
           let tree = $('.m-tree,.sidebar ul.sidebar-menu-tabs + ul');
-          tree.animate({
-            scrollTop: currElem.offset().top-tree.offset().top
+
+          if (tree.offset().top + tree.innerHeight() < currElem.offset().top + currElem.outerHeight()) {
+            tree.animate({
+              scrollTop: (currElem.offset().top + currElem.outerHeight())
+                  - (tree.offset().top + tree.innerHeight())
             }, 1000);
-          this.setState({'scrolled': true});//dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
+          }
+          //dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
+          this.setState({'scrolled': true});
         }
       }
     }
