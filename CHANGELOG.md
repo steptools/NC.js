@@ -7,6 +7,7 @@ Features:
 - Tools not used in enabled workingsteps are now dimmed
 - Added lock to align view button
 - Parent nodes are now highlighted if a child is active and hidden
+- Scrolling in sidebar only happens when necessary / only as much as necessary
 
 Bugfixes:
 
