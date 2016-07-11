@@ -33,10 +33,10 @@ export default class SidebarView extends React.Component {
     }
 
     componentDidUpdate() {
-      if((!this.state.scrolled) && (this.props.ws > -1))
+      if((!this.state.scrolled) && (this.props.mode !== 'tolerance') && (this.props.ws > -1))
       {
         let currElem=$('.running-node');
-        if((currElem !== null) && (typeof currElem !== 'undefined') && (this.props.mode !== 'tolerance'))
+        if((currElem.length > 0) && (typeof currElem !== 'undefined'))
         {
           //console.log(currElem);
           let tree = $('.m-tree,.sidebar ul.sidebar-menu-tabs + ul');
