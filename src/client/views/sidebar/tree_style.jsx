@@ -1,16 +1,16 @@
-"use-strict";
+'use-strict';
 
 import React from 'react';
 
 function getNodeIcon(node) {
-    if (node.type === "workplan") {
-        return <span className="tree-icon glyphicons glyphicons-cube-empty"/>
-    } else if (node.type === "selective") {
-        return <span className="tree-icon glyphicons glyphicons-list-numbered"/>
-    } else if (node.type === "workingstep") {
-        return <span className="tree-icon glyphicons glyphicons-blacksmith"/>
+    if (node.type === 'workplan') {
+        return <span className='tree-icon glyphicons glyphicons-cube-empty'/>
+    } else if (node.type === 'selective') {
+        return <span className='tree-icon glyphicons glyphicons-list-numbered'/>
+    } else if (node.type === 'workingstep') {
+        return <span className='tree-icon glyphicons glyphicons-blacksmith'/>
     } else {
-        return <span className="tree-icon glyphicons glyphicons-question-sign"/>
+        return <span className='tree-icon glyphicons glyphicons-question-sign'/>
     }
 }
 
@@ -32,25 +32,25 @@ function hasActiveChildren(node, id){
 }
 
 const Container = (props) => {
-    //console.log("CONTAINER");
+    //console.log('CONTAINER');
     //console.log(props);
     let node = props.node;
     node.icon = getNodeIcon(node);
-    
-    let innerName = "inner";
-    let outerName = "node";
+
+    let innerName = 'inner';
+    let outerName = 'node';
     if (hasActiveChildren(node, props.decorators.ws) === true) {
-        innerName += " running-node";
+        innerName += ' running-node';
     } else if (node.enabled === false) {
-        innerName += " disabled";
+        innerName += ' disabled';
     }
-    let toggleName = "toggle";
+    let toggleName = 'toggle';
     if (node.leaf === true) {
-        toggleName = "toggle-hidden";
+        toggleName = 'toggle-hidden';
     } else if (node.toggled === true) {
-        toggleName += " glyphicon glyphicon-chevron-down";
+        toggleName += ' glyphicon glyphicon-chevron-down';
     } else {
-        toggleName += " glyphicon glyphicon-chevron-right";
+        toggleName += ' glyphicon glyphicon-chevron-right';
     }
     
     return (
@@ -66,7 +66,7 @@ const Container = (props) => {
                 className={innerName} onClick={(event)=>{props.decorators.propertyCb(node)}}
             >
                 {node.icon}
-                <span className="node-text">
+                <span className='node-text'>
                     {node.name}
                 </span>
             </div>

@@ -1,14 +1,16 @@
 import React from 'react';
+import Menu,{Item as MenuItem} from 'rc-menu';
 import request from 'superagent';
+import _ from 'lodash';
 
 
 export default class PropertiesPane extends React.Component {
     constructor(props) {
         //Create the constructor for the component
         super(props);
-
+        
         this.state = {entity: null};
-
+        
         this.selectWS = this.selectWS.bind(this);
         this.renderNode = this.renderNode.bind(this);
     }
@@ -225,7 +227,7 @@ export default class PropertiesPane extends React.Component {
         return items;
     }
 
-    render() {
+    render(){
         let entityName = null;
         let visible = false;
         // TODO: get real icons for workingstep/workplan/tool
@@ -234,10 +236,14 @@ export default class PropertiesPane extends React.Component {
 
         if (this.props.entity !== null) {
             visible = true;
-            if (this.props.entity.type === 'tolerance') {
-                entityName = this.props.entity.toleranceType[0].toUpperCase() + this.props.entity.toleranceType.slice(1);
-                tolType = 'tolerance ' + this.props.entity.toleranceType;
-            } else {
+
+            if (this.props.entity.type === 'workpiece') {
+                entityName = this.props.entity.name;
+                //Right now all workpieces have same image
+                //TODO: add images for workpiece-tool workpiece and workpiece-fixture
+                wpType = 'workpiece';
+            }
+            else {
                 entityName = this.props.entity.name;
             }
         }
@@ -245,18 +251,17 @@ export default class PropertiesPane extends React.Component {
         return (
             <div className={'properties-pane' + (visible ? ' visible' : '')}>
                 <div className='titlebar'>
-                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + tolType : '')}/>
+                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + wpType : '')} />
                     <span className='title'>
                         <div className='type'>
-                            {visible ? this.props.entity.type[0].toUpperCase() + this.props.entity.type.slice(1) : null}
+                        {visible?
+                            this.props.entity.type[0].toUpperCase() + this.props.entity.type.slice(1)
+                            : null}
                         </div>
-                        <div className='name'>
-                            {entityName}
-                        </div>
+                        <div className='name'>{entityName}</div>
                     </span>
-                    <span className="exit glyphicons glyphicons-remove-sign" onClick={(event) => {
-                        this.props.propertiesCb(null);
-                    }}/>
+                    <span className="exit glyphicons glyphicons-remove-sign"
+                          onClick={(event) => {this.props.propertiesCb(null);}} />
                 </div>
                 {this.renderProperties(this.props.entity)}
             </div>

@@ -2,7 +2,6 @@ $icons: '../icons/';
 
 // TODO: Combine sidebar styles
 
-// Tabs, Workingsteps, Tools, and Tolerances
 .sidebar {
     width: $sidebarWidth;
     height: 100%;
@@ -531,9 +530,8 @@ $icons: '../icons/';
     }
 }
 
-
 // Workplan
-.sidebar ul.sidebar-menu-tabs + ul {
+.sidebar .treebeard {
     padding: 5px;
     height: $sidebarPaneHeight;
     overflow-y: scroll;

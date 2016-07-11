@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import {Treebeard} from 'react-treebeard';
 import ts from '../tree_style.jsx';
 
@@ -25,11 +24,14 @@ export default class WorkplanList extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        if (this.state.current !== nextState.current)
-        {
-          return true;
+        if (this.state.current !== nextState.current) {
+            return true;
         }
         return this.props.ws !== nextProps.ws;
+    }
+
+    componentDidMount() {
+        $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
     }
 
     toggleToCurrentWS(node) {
@@ -51,7 +53,7 @@ export default class WorkplanList extends React.Component {
     render() {
         this.decorators.ws = this.props.ws;
         return (
-            <Treebeard data={this.props.workplanCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
+            <Treebeard id='TEST' data={this.props.workplanCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
         );
     }
 }
