@@ -23,6 +23,32 @@ function getIcon(type, prefix) {
     }
 }
 
+function getFormattedTime(entity) {
+    let time = ''
+
+    if (entity.timeUnits !== 'second') {
+        time = entity.baseTime + ' ' + entity.timeUnits;
+        return time;
+    }
+    
+    let stepTime = new Date(entity.baseTime * 1000);
+    let h = stepTime.getUTCHours();
+    let mm = stepTime.getUTCMinutes();
+    let ss = stepTime.getUTCSeconds();
+    
+    if (h === 1) {
+        time = h + ' hr ' + mm + ' min ' + ss + ' sec';
+    } else if (h > 0) {
+        time = h + ' hrs ' + mm + ' min ' + ss + ' sec';
+    } else if (mm > 0) {
+        time = mm + ' min ' + ss + ' sec';
+    } else {
+        time = ss + ' sec';
+    }
+    
+    return time;
+}
+
 export default class PropertiesPane extends React.Component {
     constructor(props) {
         //Create the constructor for the component
@@ -77,11 +103,11 @@ export default class PropertiesPane extends React.Component {
     }
 
     renderProperties(entity) {
-        let items = null;
-
         if (entity === null) {
             return null;
         }
+        
+        let items = null;
         
         let hasWorkingsteps = true;
         if (entity.workingsteps === undefined || entity.workingsteps.length <= 0) {
@@ -90,31 +116,7 @@ export default class PropertiesPane extends React.Component {
 
         let timeDistance = null;
         if (entity.type === 'workingstep' || entity.type === 'selective' || entity.type === 'workplan') {
-
-            let formattedTime = '';
-
-            if (entity.timeUnits !== 'second') 
-                formattedTime = entity.baseTime + ' ' + entity.timeUnits;
-            else {
-
-                // format the time for display
-                let stepTime = new Date(entity.baseTime * 1000);
-                let h = stepTime.getUTCHours();
-                let mm = stepTime.getUTCMinutes();
-                let ss = stepTime.getUTCSeconds();
-
-                if (h > 0) {
-                    if (h === 1) 
-                        formattedTime = h + ' hr ' + mm + ' min ' + ss + ' sec';
-                    else 
-                        formattedTime = h + ' hrs ' + mm + ' min ' + ss + ' sec';
-                    }
-                else if (mm > 0) {
-                    formattedTime = mm + ' min ' + ss + ' sec';
-                } else {
-                    formattedTime = ss + ' sec';
-                }
-            }
+            let formattedTime = getFormattedTime(entity);
 
             timeDistance = <MenuItem disabled key='timeDistance' className='property timeDistance'>
                 <div className='baseTime'>
