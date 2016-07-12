@@ -10,6 +10,7 @@ Features:
 - Scrolling in sidebar only happens when necessary / only as much as necessary
 - Workingsteplist now has setup breakpoints
 - WorkplanList now has different color icons for setups
+- Tolerance View now displays workpieces and all subcomponents of those workpieces as well as tolerances associated with any of these workpieces
 - 404 error page improved 404%!
 
 Bugfixes:
