@@ -10,6 +10,7 @@ Features:
 - Scrolling in sidebar only happens when necessary / only as much as necessary
 - Workingsteplist now has setup breakpoints
 - WorkplanList now has different color icons for setups
+- Tolerance View now displays workpieces and all subcomponents of those workpieces as well as tolerances associated with any of these workpieces
 - 404 error page improved 404%!
 - Styling overhaul of the sidebar
 
@@ -25,6 +26,8 @@ Bugfixes:
 - Workplan will now close correctly nodes that were open before moving to a previous workingstep
 - Fixed toggled parent nodes to always highlight if they have an active child regardless 
 of the state of the child
+- Remove warning on load queue when loading machine tool
+
 Reverted:
 
 - Workingstep list no longer supports property pane. Functionality reverted to v1.1.0

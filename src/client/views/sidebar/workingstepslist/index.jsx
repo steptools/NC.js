@@ -7,14 +7,17 @@ export default class WorkingstepList extends React.Component {
         //Create the constructor for the component
         super(props);
 
-        this.renderNode = this.renderNode.bind(this);
-        this.setWS = this.setWS.bind(this);
-    }
-    
-    setWS(node, self) {
-        let url = '/v3/nc/state/ws/' + node["id"];
-        request.get(url).end(function(err, res) {});
-    }
+    this.renderNode = this.renderNode.bind(this);
+    this.setWS = this.setWS.bind(this);
+  }
+
+  setWS(node){
+    let url = '/v3/nc/state/ws/' + node["id"];
+    request
+        .get(url)
+        .end(function (err, res) {
+        });
+  }
 
     getNodeIcon(node) {
         if (isNaN(node.number)) {
@@ -40,7 +43,7 @@ export default class WorkingstepList extends React.Component {
         return (<ol 
             id={node.id} 
             className={cName} 
-            onClick={this.setWS.bind(this, node)} 
+            onClick={this.setWS(node)} 
             onMouseDown={function(e) {e.stopPropagation()}} 
             style={{"paddingLeft": "5px"}} 
             key={node.id}

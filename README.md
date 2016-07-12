@@ -1,7 +1,7 @@
 # NC.js
 
 
- ### Setting up a development environment
+### Setting up a development environment
 
   1. Download and build STEPNode
 

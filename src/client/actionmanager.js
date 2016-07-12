@@ -4,7 +4,7 @@
   For example, "open-sidebar", "load-file"
 */
 
-let LOG_ALL_ACTIONS = true;
+let LOG_ALL_ACTIONS = false;
 
 if (LOG_ALL_ACTIONS){
   console.info(`
@@ -21,7 +21,8 @@ class ActionManager extends EventEmitter {
   constructor(){
     super();
     this.on("newListener", (event)=>{
-      console.log("ActionManager : New Listener : " + event);
+      if (LOG_ALL_ACTIONS)
+        console.log("ActionManager : New Listener : " + event);
     });
   }
 }
