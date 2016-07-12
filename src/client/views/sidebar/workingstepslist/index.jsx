@@ -20,18 +20,15 @@ export default class WorkingstepList extends React.Component {
   }
 
   getNodeIcon(node, num){
-    if (node.type == "workplan"){
-      return <span className='icon-letter'>W</span>;
-    }else if (node.type == "selective"){
-      return <span className='icon-letter'>S</span>;
-    }else{
-      return <span className='icon-letter'>{num+1}</span>;
+    if(node.id === undefined){
+      return;
     }
+    return <span className='icon-letter'>{num}</span>;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-  return this.props.ws !== nextProps.ws;
-}
+    return this.props.ws !== nextProps.ws;
+  }
 
   renderNode(nodeId, num){
     let node = this.props.workingstepCache[nodeId];
@@ -46,12 +43,8 @@ export default class WorkingstepList extends React.Component {
         style={{"paddingLeft" : "5px"}}
         key={node.id}>
         {node.icon}
-        <span className="textbox">{node.name}</span>
+        {node.id === undefined ? <span className="textbox">SETUP BREAKPOINT</span> : <span className="textbox">{node.name}</span>}
     </ol>;
-  }
-
-  componentDidMount(){
-
   }
 
   render(){

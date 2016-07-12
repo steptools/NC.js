@@ -104,8 +104,18 @@ export default class ResponsiveView extends React.Component {
         if (!err && res.ok) {
           let planNodes = JSON.parse(res.text);
           let stepNodes = {};
+          let notFirst = false;
           let nodeCheck = (node)=> {
-            if (node.type === 'selective' || node.type === 'workplan') {
+            if (node.type === 'selective' || node.type === 'workplan' || node.type === 'workplan-setup') {
+                if(node.type === 'workplan-setup'){
+                    if(notFirst){
+                        console.log("I MADE IT HERE MOM");
+                        wsList.push(-1);
+                        stepNodes[-1] = {};
+                    }
+                    else
+                        notFirst = true;
+                }
               if (node.children.length != 0)
                 node.children.map(nodeCheck);
               node.leaf = false;
