@@ -13,6 +13,10 @@ export default class ToleranceList extends React.Component {
     this.decorators = ts.decorators;
     this.decorators.propertyCb = this.props.propertyCb;
   }
+  
+  componentDidMount() {
+    $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
+  }
 
   onToggle(node, toggled) {
     if (this.state.cursor) {
