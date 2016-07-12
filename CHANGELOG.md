@@ -11,6 +11,7 @@ Features:
 - Workingsteplist now has setup breakpoints
 - WorkplanList now has different color icons for setups
 - 404 error page improved 404%!
+- Styling overhaul of the sidebar
 
 Bugfixes:
 
