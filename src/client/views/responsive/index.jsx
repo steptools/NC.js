@@ -49,7 +49,7 @@ export default class ResponsiveView extends React.Component {
         this.props.app.socket.on("nc:state",(state)=>{this.ppstate(state)});
 
         this.props.app.actionManager.on('sim-pp', this.ppBtnClicked);
-        this.props.app.actionManager.on('sim-f',(info) => {console.log(this); this.nextws()});
+        this.props.app.actionManager.on('sim-f',(info) => {this.nextws()});
         this.props.app.actionManager.on('sim-b',(info) => {this.prevws()});
 
         this.updateWorkingstep = this.updateWorkingstep.bind(this);

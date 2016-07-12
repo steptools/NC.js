@@ -166,7 +166,7 @@ export default class DataLoader extends THREE.EventDispatcher {
     workerMessage(event) {
         //This gets any postMessage requests
         let req, shell, anno;
-        console.log("Worker Data: " + event.data.file);
+        // console.log("Worker Data: " + event.data.file);
         // Find the request this message corresponds to
         if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError"], event.data.type) != -1) {
             req = this._loading[event.data.workerID];
