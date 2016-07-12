@@ -11,7 +11,7 @@ export default class WorkingstepList extends React.Component {
         this.setWS = this.setWS.bind(this);
     }
     
-    setWS(node, self) {
+    setWS(node) {
         let url = '/v3/nc/state/ws/' + node["id"];
         request.get(url).end(function(err, res) {});
     }
@@ -39,8 +39,8 @@ export default class WorkingstepList extends React.Component {
         }
         return (<ol 
             id={node.id} 
-            className={cName} 
-            onClick={this.setWS.bind(this, node)} 
+            className={cName}
+            onClick={() => {this.setWS(node);}}
             onMouseDown={function(e) {e.stopPropagation()}} 
             style={{"paddingLeft": "5px"}} 
             key={node.id}

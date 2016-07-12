@@ -33,21 +33,21 @@ var _getDelta = function(ms, key, cb) {
 var _getNext = function(ms, cb) {
   ms.NextWS();
   //assume switch was successful
-  app.logger.debug("Switched!");
+  // app.logger.debug("Switched!");
   cb();
 };
 
 var _getPrev = function(ms, cb) {
   ms.PrevWS();
   //assume switch was successful
-  app.logger.debug("Switched!");
+  // app.logger.debug("Switched!");
   cb();
 };
 
 var _getToWS = function(wsId, ms, cb) {
   ms.GoToWS(wsId);
   //assume switch was successful
-  app.logger.debug("Switched!");
+  // app.logger.debug("Switched!");
   cb();
 };
 
@@ -71,7 +71,7 @@ var _loop = function(ms, key) {
       });
     }
     else if (rc == 1) {   // SWITCH
-      app.logger.debug("SWITCH...");
+      // app.logger.debug("SWITCH...");
       _getNext(ms, function() {
         _loop(ms, true);
       });
@@ -103,7 +103,7 @@ var _loopInit = function(req, res) {
             res.status(200).send("Already running");
             return;
           }
-          app.logger.debug("Looping " + path);
+          // app.logger.debug("Looping " + path);
           loopStates[path] = true;
           res.status(200).send("OK");
           update("play");
@@ -124,7 +124,7 @@ var _loopInit = function(req, res) {
 
             if (Number(playbackSpeed) !== newSpeed) {
               playbackSpeed = newSpeed;
-              app.logger.debug("Changing speed to " + newSpeed);
+              // app.logger.debug("Changing speed to " + newSpeed);
             }
 
             if (loopStates[path] === true) {

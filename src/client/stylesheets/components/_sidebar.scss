@@ -78,97 +78,7 @@ $icons: '../icons/';
                 vertical-align: middle;
             }
 
-            .tolerance-angularity {
-                background-image: url($icons + 'tolerance/angularity.svg');
-            }
 
-            .tolerance-circular-runout {
-                background-image: url($icons + 'tolerance/circular_runout.svg');
-            }
-
-            .tolerance-circularity {
-                background-image: url($icons + 'tolerance/circularity.svg');
-            }
-
-            .tolerance-concentricity {
-                background-image: url($icons + 'tolerance/concentricity.svg');
-            }
-
-            .tolerance-cylindricity {
-                background-image: url($icons + 'tolerance/cylindricity.svg');
-            }
-
-            .tolerance-flatness {
-                background-image: url($icons + 'tolerance/flatness.svg');
-            }
-
-            .tolerance-parallelism {
-                background-image: url($icons + 'tolerance/parallelism.svg');
-            }
-
-            .tolerance-perpendicularity {
-                background-image: url($icons + 'tolerance/perpendicularity.svg');
-            }
-
-            .tolerance-position {
-                background-image: url($icons + 'tolerance/position.svg');
-            }
-
-            .tolerance-profile-line {
-                background-image: url($icons + 'tolerance/profile_line.svg');
-            }
-
-            .tolerance-profile-surface {
-                background-image: url($icons + 'tolerance/profile_surface.svg');
-            }
-
-            .tolerance-straightness {
-                background-image: url($icons + 'tolerance/straightness.svg');
-            }
-
-            .tolerance-symmetry {
-                background-image: url($icons + 'tolerance/symmetry.svg');
-            }
-
-            .tolerance-total-runout {
-                background-image: url($icons + 'tolerance/total_runout.svg');
-            }
-
-            .tolerance-directed {
-                background-image: url($icons + 'dimension/linear_distance.svg');
-            }
-
-            .tolerance-radial {
-                background-image: url($icons + 'dimension/radial.svg');
-            }
-
-            .tolerance-width {
-                background-image: url($icons + 'dimension/width.svg');
-            }
-
-            .tolerance-height {
-                background-image: url($icons + 'dimension/height.svg');
-            }
-
-            .tolerance-diameter {
-                background-image: url($icons + 'dimension/diameter.svg');
-            }
-
-            .tolerance-angle-size {
-                background-image: url($icons + 'dimension/angle_size.svg');
-            }
-
-            .tolerance-datum {
-                background-image: url($icons + 'tolerance/datum.svg');
-            }
-
-            .tolerance-datum-target {
-                background-image: url($icons + 'tolerance/datum_target.svg');
-            }
-
-            .tolerance-texture {
-                background-image: url($icons + 'tolerance/texture.svg');
-            }
         }
     }
 
@@ -601,8 +511,120 @@ $icons: '../icons/';
         margin-right: 8px;
         text-align: center;
         font-size: 24px;
+
+        &.tolerance,&.workpiece {
+            background-color: rgba(#FFF, 0);
+            // border: 2px solid #333;
+            padding: 15px;
+            vertical-align: middle;
+            background-size: cover;
+            background-position: center;
+            padding: 5px;
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            text-align: center;
+            margin-right: 8px;
+        }
+
+        &.workpiece {
+            background-image: url($icons + 'workpiece.svg');
+        }
+
+        &.angularity {
+            background-image: url($icons + 'tolerance/angularity.svg');
+        }
+
+        &.circular-runout {
+            background-image: url($icons + 'tolerance/circular_runout.svg');
+        }
+
+        &.circularity {
+            background-image: url($icons + 'tolerance/circularity.svg');
+        }
+
+        &.concentricity {
+            background-image: url($icons + 'tolerance/concentricity.svg');
+        }
+
+        &.cylindricity {
+            background-image: url($icons + 'tolerance/cylindricity.svg');
+        }
+
+        &.flatness {
+            background-image: url($icons + 'tolerance/flatness.svg');
+        }
+
+        &.parallelism {
+            background-image: url($icons + 'tolerance/parallelism.svg');
+        }
+
+        &.perpendicularity {
+            background-image: url($icons + 'tolerance/perpendicularity.svg');
+        }
+
+        &.position {
+            background-image: url($icons + 'tolerance/position.svg');
+        }
+
+        &.profile-line {
+            background-image: url($icons + 'tolerance/profile_line.svg');
+        }
+
+        &.profile-surface {
+            background-image: url($icons + 'tolerance/profile_surface.svg');
+        }
+
+        &.straightness {
+            background-image: url($icons + 'tolerance/straightness.svg');
+        }
+
+        &.symmetry {
+            background-image: url($icons + 'tolerance/symmetry.svg');
+        }
+
+        &.total-runout {
+            background-image: url($icons + 'tolerance/total_runout.svg');
+        }
+
+        &.directed {
+            background-image: url($icons + 'dimension/linear_distance.svg');
+        }
+
+        &.radial {
+            background-image: url($icons + 'dimension/radial.svg');
+        }
+
+        &.width {
+            background-image: url($icons + 'dimension/width.svg');
+        }
+
+        &.height {
+            background-image: url($icons + 'dimension/height.svg');
+        }
+
+        &.diameter {
+            background-image: url($icons + 'dimension/diameter.svg');
+        }
+
+        &.angle-size {
+            background-image: url($icons + 'dimension/angle_size.svg');
+        }
+
+        &.datum {
+            background-image: url($icons + 'tolerance/datum.svg');
+        }
+
+        &.datum-target {
+            background-image: url($icons + 'tolerance/datum_target.svg');
+        }
+
+        &.texture {
+            background-image: url($icons + 'tolerance/texture.svg');
+        }
     }
-    
+
     .node .node-text {
         width: calc(100% - 38px);
     }
