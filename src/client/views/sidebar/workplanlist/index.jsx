@@ -33,6 +33,7 @@ export default class WorkplanList extends React.Component {
     }
 
     toggleToCurrentWS(node) {
+        let childtag = false; // 
         if (node.id === this.props.ws) {
             node.toggled = true;
             return true;
@@ -41,9 +42,12 @@ export default class WorkplanList extends React.Component {
             for (let i = 0; i < node.children.length; i++) {
                 if (this.toggleToCurrentWS(node.children[i])) {
                     node.toggled = true;
-                    return true;
+                    childtag = true;
                 }
             }
+        }
+        if(childtag === true){
+            return true;
         }
         node.toggled = false;
     }
