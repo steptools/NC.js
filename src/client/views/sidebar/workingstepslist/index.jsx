@@ -39,8 +39,8 @@ export default class WorkingstepList extends React.Component {
         }
         return (<ol 
             id={node.id} 
-            className={cName}
-            onClick={() => {this.setWS(node);}}
+            className={cName} 
+            onClick={this.setWS(node)} 
             onMouseDown={function(e) {e.stopPropagation()}} 
             style={{"paddingLeft": "5px"}} 
             key={node.id}
