@@ -3,12 +3,14 @@
 import React from 'react';
 
 function getNodeIcon(node) {
-    if (node.type === 'workplan') {
-        return <span className='tree-icon glyphicons glyphicons-cube-empty'/>
-    } else if (node.type === 'selective') {
-        return <span className='tree-icon glyphicons glyphicons-list-numbered'/>
-    } else if (node.type === 'workingstep') {
-        return <span className='tree-icon glyphicons glyphicons-blacksmith'/>
+    if (node.type === "workplan") {
+        return <span className="tree-icon glyphicons glyphicons-cube-empty"/>
+    } else if (node.type === "selective") {
+        return <span className="tree-icon glyphicons glyphicons-list-numbered"/>
+    } else if (node.type === "workplan-setup") {
+        return <span className="tree-icon glyphicons glyphicons-cube-black"/>
+    }else if (node.type === "workingstep") {
+        return <span className="tree-icon glyphicons glyphicons-blacksmith"/>
     } else {
         return <span className='tree-icon glyphicons glyphicons-question-sign'/>
     }
