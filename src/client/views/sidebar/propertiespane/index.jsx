@@ -125,10 +125,11 @@ export default class PropertiesPane extends React.Component {
             let formattedTime = getFormattedTime(entity);
 
             timeDistance = <MenuItem disabled key='timeDistance' className='property timeDistance'>
-                <span className='glyphicons glyphicons-clock'/>
                 <div className='baseTime'>
+                    <div className='icon glyphicons glyphicons-clock'/>
                     Base time: {formattedTime}
                 </div>
+                <div class='property-icon glyphicons glyphicons-ruler'/>
                 <div className='distance'>
                     Distance: {entity.distance.toFixed(2)}
                     {entity.distanceUnits}
