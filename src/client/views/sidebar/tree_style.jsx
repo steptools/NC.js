@@ -7,11 +7,30 @@ function getNodeIcon(node) {
         return <span className="tree-icon glyphicons glyphicons-cube-empty"/>
     } else if (node.type === "selective") {
         return <span className="tree-icon glyphicons glyphicons-list-numbered"/>
-    } else if (node.type === "workingstep") {
+    } else if (node.type === "workplan-setup") {
+        return <span className="tree-icon glyphicons glyphicons-cube-black"/>
+    }else if (node.type === "workingstep") {
         return <span className="tree-icon glyphicons glyphicons-blacksmith"/>
     } else {
         return <span className="tree-icon glyphicons glyphicons-question-sign"/>
     }
+}
+
+function hasActiveChildren(node, id){
+    if(node.id === id){
+      return true;
+    }
+    else if(!node.leaf){
+      for(let i = 0; i < node.children.length; i++){
+        if(hasActiveChildren(node.children[i],id) === true && node.toggled === false){
+          return true;
+        }
+      }
+    }
+ else{
+      return false;
+ }
+
 }
 
 const Container = (props) => {
@@ -22,12 +41,11 @@ const Container = (props) => {
     
     let innerName = "inner";
     let outerName = "node";
-    if (node.id === props.decorators.ws) {
+    if (hasActiveChildren(node, props.decorators.ws) === true) {
         innerName += " running-node";
     } else if (node.enabled === false) {
         innerName += " disabled";
     }
-    
     let toggleName = "toggle";
     if (node.leaf === true) {
         toggleName = "toggle-hidden";

@@ -6,6 +6,10 @@ Features:
 - Added button and keyboard shortcut for aligning view to part (also now default view on startup)
 - Tools not used in enabled workingsteps are now dimmed
 - Added lock to align view button
+- Parent nodes are now highlighted if a child is active and hidden
+- Scrolling in sidebar only happens when necessary / only as much as necessary
+- Workingsteplist now has setup breakpoints
+- WorkplanList now has different color icons for setups
 
 Bugfixes:
 
@@ -14,6 +18,9 @@ Bugfixes:
 - Fixed problem with locking view not rendering immediately
 - Fixed view alignment problems with some models and with machine tools
 - Fixed broken mobile view / responsiveness after adding locked view
+- Part and toolpath geometry move with fixture when needed
+- Clicking on workingstep/workplan works with properties pane again
+- Workplan will now close correctly nodes that were open before moving to a previous workingstep
 
 Reverted:
 
