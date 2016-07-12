@@ -11,6 +11,10 @@ function getNodeIcon(node) {
         return <span className="tree-icon glyphicons glyphicons-cube-black"/>
     }else if (node.type === "workingstep") {
         return <span className="tree-icon glyphicons glyphicons-blacksmith"/>
+    } else if (node.type === 'tolerance') {
+        return <span className={'tree-icon tolerance '+node.toleranceType} />
+    } else if (node.type === 'workpiece') {
+        return <span className="tree-icon workpiece" />
     } else {
         return <span className="tree-icon glyphicons glyphicons-question-sign"/>
     }
