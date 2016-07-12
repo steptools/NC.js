@@ -403,9 +403,11 @@ $icons: '../icons/';
     }
 
     .titlebar {
+        display: inline-flex;
+        align-items: center;
         padding: 5px;
-        display: flex;
-
+        border-bottom: 1px solid #DDDDDD;
+        
         .title {
             width: 78%;
             font-size: 14px;
@@ -417,53 +419,24 @@ $icons: '../icons/';
         }
 
         .exit {
-            margin-left: auto;
-            font-size: 32px;
+            margin-right: 0px;
+            margin-left: 8px;
+            float: right;
 
             &:hover {
                 cursor: pointer;
+                color: #2BAEE9;
             }
         }
     }
 
     .icon {
-        background-color: rgba(#fff, 0);
-        padding: 15px;
-        border-radius: 5px;
-        width: 30px;
-        height: 30px;
+        font-size: 32px;
         float: left;
-        text-align: center;
         margin-right: 8px;
-        vertical-align: middle;
-        border: 2px solid #333333;
-        background-image: url($icons + 'tolerance/unknown.svg');
-        background-size: cover;
-        background-position: center;
 
         &.tool {
             background-image: url($icons + 'tools/tool.svg');
-        }
-
-        &.selective,
-        &.workingstep,
-        &.workplan {
-            background-image: none;
-            background-color: #333333;
-            color: #FFFFFF;
-            padding: 3px;
-
-            &.workingstep:after {
-                content: 'WS';
-            }
-
-            &.workplan:after {
-                content: 'W';
-            }
-
-            &.selective:after {
-                content: 'S';
-            }
         }
 
         &.tolerance {
@@ -530,7 +503,6 @@ $icons: '../icons/';
     }
 }
 
-// Workplan
 .sidebar .treebeard {
     padding: 5px;
     height: $sidebarPaneHeight;
@@ -572,14 +544,6 @@ $icons: '../icons/';
             color: #FFFFFF;
             background-color: #2BAEE9;
         }
-    }
-
-    .node .caret-right:before {
-        content: '\25B8';
-    }
-
-    .node .caret-down:before {
-        content: '\25BE';
     }
     
     .node .inner {

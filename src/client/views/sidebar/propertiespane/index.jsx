@@ -3,6 +3,25 @@ import Menu,{Item as MenuItem} from 'rc-menu';
 import request from 'superagent';
 import _ from 'lodash';
 
+function getIcon(type, prefix) {
+    if (!prefix) {
+        prefix = '';
+    }
+    
+    if (type === 'workplan') {
+        return prefix + 'icon glyphicons glyphicons-cube-empty';
+    } else if (type === 'selective') {
+        return prefix + 'icon glyphicons glyphicons-list-numbered';
+    } else if (type === 'workingstep') {
+        return prefix + 'icon glyphicons glyphicons-blacksmith';
+    } else if (type === 'tool') {
+        return 'tool icon';
+    } else if (type === 'exit') {
+        return 'exit icon glyphicons glyphicons-remove-sign';
+    } else {
+        return prefix + 'icon glyphicons glyphicons-question-sign';
+    }
+}
 
 export default class PropertiesPane extends React.Component {
     constructor(props) {
@@ -60,8 +79,9 @@ export default class PropertiesPane extends React.Component {
     renderProperties(entity) {
         let items = null;
 
-        if (entity === null) 
+        if (entity === null) {
             return null;
+        }
         
         let hasWorkingsteps = true;
         if (entity.workingsteps === undefined || entity.workingsteps.length <= 0) {
@@ -162,11 +182,11 @@ export default class PropertiesPane extends React.Component {
                 } else if (entity.enabled) {
                     selectStep = <MenuItem disabled className='property'>
                         Status: Inactive
-                    </MenuItem>
+                    </MenuItem>;
                 } else {
                     selectStep = <MenuItem disabled className='property'>
                         Status: Disabled
-                    </MenuItem>
+                    </MenuItem>;
                 }
                 items = (
                     <Menu className='properties' onClick={(event) => {
@@ -227,41 +247,31 @@ export default class PropertiesPane extends React.Component {
         return items;
     }
 
-    render(){
-        let entityName = null;
-        let visible = false;
-        // TODO: get real icons for workingstep/workplan/tool
-
-        let wpType = '';
-
+    render() {
+        let entityName = ''
+        let entityType = '';
+        let paneName = 'properties-pane';
+        let titleIcon = '';
+        
         if (this.props.entity !== null) {
-            visible = true;
-
-            if (this.props.entity.type === 'workpiece') {
-                entityName = this.props.entity.name;
-                //Right now all workpieces have same image
-                //TODO: add images for workpiece-tool workpiece and workpiece-fixture
-                wpType = 'workpiece';
-            }
-            else {
-                entityName = this.props.entity.name;
-            }
+            entityName = this.props.entity.name;
+            entityType = this.props.entity.type[0].toUpperCase() + this.props.entity.type.slice(1);
+            paneName += ' visible';
+            titleIcon = getIcon(this.props.entity.type);
         }
 
         return (
-            <div className={'properties-pane' + (visible ? ' visible' : '')}>
+            <div className={paneName}>
                 <div className='titlebar'>
-                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + wpType : '')} />
+                    <span className={titleIcon} />
                     <span className='title'>
-                        <div className='type'>
-                        {visible?
-                            this.props.entity.type[0].toUpperCase() + this.props.entity.type.slice(1)
-                            : null}
-                        </div>
+                        <div className='type'>{entityType}</div>
                         <div className='name'>{entityName}</div>
                     </span>
-                    <span className="exit glyphicons glyphicons-remove-sign"
-                          onClick={(event) => {this.props.propertiesCb(null);}} />
+                    <span 
+                        className={getIcon('exit')}
+                        onClick={(event) => {this.props.propertiesCb(null);}}
+                    />
                 </div>
                 {this.renderProperties(this.props.entity)}
             </div>
