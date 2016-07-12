@@ -18,19 +18,31 @@ function getNodeIcon(node) {
 
 function hasActiveChildren(node, id){
     if(node.id === id){
-      return true;
+      return "active";
     }
     else if(!node.leaf){
       for(let i = 0; i < node.children.length; i++){
-        if(hasActiveChildren(node.children[i],id) === true && node.toggled === false){
-          return true;
+        if(hasActiveChildren(node.children[i],id) === "active"){
+            if(node.toggled === false){
+                return "active";  
+            }
+            else{
+                return "child-active";
+            }
+       
+        }
+        else if(hasActiveChildren(node.children[i],id) ==="child-active"){
+            if (node.toggled === false){
+                 return "active";
+            }
+            else{
+                return "child-active";
+            }
         }
       }
-    }
- else{
-      return false;
- }
 
+    }
+    return "inactive";    
 }
 
 const Container = (props) => {
@@ -38,11 +50,10 @@ const Container = (props) => {
     //console.log(props);
     let node = props.node;
     node.icon = getNodeIcon(node);
-
-    let innerName = 'inner';
-    let outerName = 'node';
-    if (hasActiveChildren(node, props.decorators.ws) === true) {
-        innerName += ' running-node';
+    let innerName = "inner";
+    let outerName = "node";
+    if (hasActiveChildren(node, props.decorators.ws) === "active") {
+        innerName += " running-node";
     } else if (node.enabled === false) {
         innerName += ' disabled';
     }
