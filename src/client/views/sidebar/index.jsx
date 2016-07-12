@@ -1,5 +1,5 @@
 import React from 'react';
-import Menu from 'rc-menu';
+import Menu, {Item as MenuItem} from 'rc-menu';
 import WorkingstepList from './workingstepslist';
 import WorkplanList from './workplanlist';
 import ToolList from './toollist';
@@ -7,7 +7,6 @@ import ToleranceList from './tolerancelist';
 import PropertiesPane from './propertiespane';
 import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager';
-let MenuItem = Menu.Item;
 
 export default class SidebarView extends React.Component {
     constructor(props) {
@@ -39,12 +38,16 @@ export default class SidebarView extends React.Component {
         let currElem=$('.running-node');
         if((currElem !== null) && (typeof currElem !== 'undefined') && (this.props.mode !== 'tolerance'))
         {
-          console.log(currElem);
           let tree = $('.m-tree,.sidebar ul.sidebar-menu-tabs + ul');
-          tree.animate({
-            scrollTop: currElem.offset().top-tree.offset().top
+
+          if (tree.offset().top + tree.innerHeight() < currElem.offset().top + currElem.outerHeight()) {
+            tree.animate({
+              scrollTop: (currElem.offset().top + currElem.outerHeight())
+                  - (tree.offset().top + tree.innerHeight())
             }, 1000);
-          this.setState({'scrolled': true});//dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
+          }
+          //dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
+          this.setState({'scrolled': true});
         }
       }
     }
