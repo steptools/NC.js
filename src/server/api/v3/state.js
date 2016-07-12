@@ -34,7 +34,7 @@ var MTListen = function() {
   console.log(find.GetProjectName());
 
   return new Promise(function(resolve, reject) {
-    let mtc = request.get("http://127.0.0.1:5000/current");
+    let mtc = request.get("http://192.168.0.123:5000/current");
     mtc.end(function (err, res) {
       parseXMLString.parseString(res.text, function (error, result) {
 
