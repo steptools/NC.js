@@ -39,10 +39,12 @@ export default class SidebarView extends React.Component {
             let currElem = $('.running-node');
             if (currElem.length > 0) {
                 let tree = $('.m-tree,.treebeard');
-                tree.animate({
-                    scrollTop: currElem.offset().top - tree.offset().top
-                }, 1000);
-                this.setState({'scrolled': true}); //dont want to scroll for the first working step but keep it here so we dont scroll on a rerender
+                let tOffset = tree.offset().top + tree.innerHeight();
+                let cOffset = currElem.offset().top + currElem.outerHeight();
+                if (tOffset < cOffset) {
+                    tree.animate({scrollTop: (cOffset - tOffset)}, 1000);
+                }
+                this.setState({'scrolled': true}); 
             }
         }
     }

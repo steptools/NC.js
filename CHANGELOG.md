@@ -7,6 +7,7 @@ Features:
 - Tools not used in enabled workingsteps are now dimmed
 - Added lock to align view button
 - Parent nodes are now highlighted if a child is active and hidden
+- Scrolling in sidebar only happens when necessary / only as much as necessary
 
 Bugfixes:
 
@@ -17,6 +18,7 @@ Bugfixes:
 - Fixed broken mobile view / responsiveness after adding locked view
 - Part and toolpath geometry move with fixture when needed
 - Clicking on workingstep/workplan works with properties pane again
+- Workplan will now close correctly nodes that were open before moving to a previous workingstep
 
 Reverted:
 
