@@ -25,6 +25,8 @@ Bugfixes:
 - Workplan will now close correctly nodes that were open before moving to a previous workingstep
 - Fixed toggled parent nodes to always highlight if they have an active child regardless 
 of the state of the child
+- Remove warning on load queue when loading machine tool
+
 Reverted:
 
 - Workingstep list no longer supports property pane. Functionality reverted to v1.1.0
