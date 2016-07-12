@@ -32,7 +32,7 @@ var GetWorkingstepsForTolerance = function(exe, tolId) {
     }
 };
 
-var _getTolerance = function(id) {
+var getTolerance = function(id) {
   let steps = GetWorkingstepsForTolerance(find.GetMainWorkplan(), id);
   let name = tol.GetToleranceType(id);
   let tolType;
@@ -57,12 +57,12 @@ var _getTols = function(req,res) {
   let tol_list = tol.GetToleranceAll();
   let ret = [];
   for (let id of tol_list){
-      ret.push(_getTolerance(id));
+      ret.push(getTolerance(id));
   }
   res.status(200).send(ret);
 };
 
-var _getWp = function(id) {
+var getWp = function(id) {
   let type = find.GetWorkpieceType(id);
   let name = find.GetWorkpieceName(id);
   let tolerances = tol.GetWorkpieceToleranceAll(id);
@@ -95,7 +95,7 @@ var _getWps = function(req,res) {
   let wps = find.GetWorkpieceAll();
   let ret = [];
   for (let id of wps) {
-    let wp = _getWp(id);
+    let wp = getWp(id);
     if (wp.wpType === 'workpiece')
       ret.push(wp);
   }
