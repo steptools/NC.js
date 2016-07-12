@@ -1,12 +1,11 @@
 import React from 'react';
-import _ from 'lodash';
 import {Treebeard} from 'react-treebeard';
 import ts from '../tree_style.jsx';
 
 export default class WorkplanList extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {gazorpazorp: false};
+        this.state = {current: false};
         this.onToggle = this.onToggle.bind(this);
         this.toggleToCurrentWS(this.props.workplanCache);
         this.decorators = ts.decorators;
@@ -21,15 +20,18 @@ export default class WorkplanList extends React.Component {
         if (node.children) {
             node.toggled = toggled;
         }
-        this.setState({cursor: node, gazorpazorp: !this.state.gazorpazorp});
+        this.setState({cursor: node, current: !this.state.current});
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        if (this.state.gazorpazorp !== nextState.gazorpazorp)
-        {
-          return true;
+        if (this.state.current !== nextState.current) {
+            return true;
         }
         return this.props.ws !== nextProps.ws;
+    }
+
+    componentDidMount() {
+        $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
     }
 
     toggleToCurrentWS(node) {
@@ -55,7 +57,7 @@ export default class WorkplanList extends React.Component {
     render() {
         this.decorators.ws = this.props.ws;
         return (
-            <Treebeard data={this.props.workplanCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
+            <Treebeard id='TEST' data={this.props.workplanCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
         );
     }
 }

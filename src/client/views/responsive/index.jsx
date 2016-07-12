@@ -260,7 +260,6 @@ export default class ResponsiveView extends React.Component {
               };
 
               json = _.map(json, nodeCheck);
-              console.log(json);
             
               this.setState({'toleranceCache': json});
             }
