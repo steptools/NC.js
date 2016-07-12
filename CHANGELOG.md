@@ -1,4 +1,22 @@
-Version 1.2.0
+
+Version 1.3.0
+
+Features:
+
+- Faces now associated with corresponding geometry
+- Added button and keyboard shortcut for aligning view to part (also now default view on startup)
+- Tools not used in enabled workingsteps are now dimmed
+
+Bugfixes:
+
+- Fixed workplan view not scrolling on tab switch
+- Fixed the fixture not moving with the machine tool
+- Fixed problem with locking view not rendering immediately
+- Fixed view alignment problems with some models and with machine tools
+
+Reverted:
+
+- Workingstep list no longer supports property pane. Functionality reverted to v1.1.0
 
 Features:
 
