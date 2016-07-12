@@ -18,6 +18,8 @@ function getIcon(type, prefix) {
         return 'tool icon';
     } else if (type === 'exit') {
         return 'exit icon glyphicons glyphicons-remove-sign';
+    } else if (type === 'time') {
+        return 'time icon glyphicons glyphicons-clock';
     } else {
         return prefix + 'icon glyphicons glyphicons-question-sign';
     }
@@ -119,6 +121,7 @@ export default class PropertiesPane extends React.Component {
             let formattedTime = getFormattedTime(entity);
 
             timeDistance = <MenuItem disabled key='timeDistance' className='property timeDistance'>
+                <span className='glyphicons glyphicons-clock'/>
                 <div className='baseTime'>
                     Base time: {formattedTime}
                 </div>
