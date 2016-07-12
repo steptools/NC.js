@@ -10,6 +10,8 @@ function getIcon(type, prefix) {
     
     if (type === 'workplan') {
         return prefix + 'icon glyphicons glyphicons-cube-empty';
+    } else if (type === "workplan-setup") {
+        return prefix + 'icon glyphicons glyphicons-cube-black';
     } else if (type === 'selective') {
         return prefix + 'icon glyphicons glyphicons-list-numbered';
     } else if (type === 'workingstep') {
@@ -20,6 +22,8 @@ function getIcon(type, prefix) {
         return 'exit icon glyphicons glyphicons-remove-sign';
     } else if (type === 'time') {
         return 'time icon glyphicons glyphicons-clock';
+    } else if (type === 'distance') {
+        return 'distance icon glyphicons glyphicons-ruler';
     } else {
         return prefix + 'icon glyphicons glyphicons-question-sign';
     }

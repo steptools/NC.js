@@ -10,58 +10,54 @@ export default class WorkingstepList extends React.Component {
         this.renderNode = this.renderNode.bind(this);
         this.setWS = this.setWS.bind(this);
     }
-
+    
     setWS(node, self) {
         let url = '/v3/nc/state/ws/' + node["id"];
         request.get(url).end(function(err, res) {});
     }
 
-    getNodeIcon(node, num) {
-        if (node.type == "workplan") {
-            return <span className='icon-letter'>W</span>;
-        } else if (node.type == "selective") {
-            return <span className='icon-letter'>S</span>;
-        } else {
-            return <span className='icon-letter'>{num + 1}</span>;
+    getNodeIcon(node) {
+        if (isNaN(node.number)) {
+            return;
         }
+        return <span className='icon-letter'>{node.number}</span>;
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        //console.log(nextProps);
-        //console.log(this.props);
         return this.props.ws !== nextProps.ws;
     }
 
-    renderNode(nodeId, num) {
+    renderNode(nodeId) {
         let node = this.props.workingstepCache[nodeId];
-        node.icon = this.getNodeIcon(node, num);
+        node.icon = this.getNodeIcon(node);
         let cName = 'node';
-        if (node.id === this.props.ws) {
-            cName += ' running-node';
+        if (node.id == this.props.ws) {
+            cName += ' running-node';    
         }
-        return (
-            <ol 
-                id={node.id} 
-                className={cName} 
-                onClick={this.setWS.bind(this, node)} 
-                onMouseDown={function(e) { e.stopPropagation() }} 
-                style={{ "paddingLeft": "5px" }} 
-                key={node.id}
-            >
-                {node.icon}
-                <span className="textbox">{node.name}</span>
-            </ol>
-        );
+        if (node.id === undefined) {
+            cName += ' setup';
+        }
+        return (<ol 
+            id={node.id} 
+            className={cName} 
+            onClick={this.setWS.bind(this, node)} 
+            onMouseDown={function(e) {e.stopPropagation()}} 
+            style={{"paddingLeft": "5px"}} 
+            key={node.id}
+        >
+            {node.icon}
+            {node.id === undefined
+                ? <span className="setup-textbox">{node.name}</span>
+                : <span className="textbox">{node.name}</span>}
+        </ol>);
     }
-
-    componentDidMount() {}
 
     render() {
         return (
             <div className='m-tree'>
                 {this.props.workingstepList.map((workingstep, i) => {
                     return <div className='m-node' key={i}>
-                        {this.renderNode(workingstep, i)}
+                        {this.renderNode(workingstep)}
                     </div>;
                 })}
             </div>

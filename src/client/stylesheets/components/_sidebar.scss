@@ -33,9 +33,10 @@ $icons: '../icons/';
                 display: inline-block;
                 width: calc(100% - 38px);
             }
+            
             .setup-textbox{
                 display: table;
-                margin: 0 auto;
+                margin: 0px auto;
             }
 
             .icon-letter,
@@ -184,6 +185,11 @@ $icons: '../icons/';
         &:hover {
             background-color: rgba(#2BAEE9, 0.5);
         }
+    }
+    
+    .node.setup {
+        border-top: 1px solid #666666;
+        border-bottom: 1px solid #666666;
     }
 
     .m-node .inner {
