@@ -16,7 +16,8 @@ export default class ToolList extends React.Component {
 
   renderNode(node){
       let cName = 'node';
-      if(node.id == this.props.curtool) cName= 'node running-node';
+      if(node.id == this.props.curtool) cName += ' running-node';
+      if(node.enabled === false) cName += ' disabled';
       return <ol
           id={node.id}
           type = {node.name}
@@ -31,7 +32,7 @@ export default class ToolList extends React.Component {
   }
 
   componentWillMount(){
-      
+
 
   }
 

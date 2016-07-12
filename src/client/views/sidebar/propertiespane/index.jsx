@@ -9,15 +9,15 @@ export default class PropertiesPane extends React.Component {
     constructor(props){
         //Create the constructor for the component
         super(props);
-        
+
         this.state = {entity: null};
-        
+
         this.selectWS = this.selectWS.bind(this);
         this.renderNode = this.renderNode.bind(this);
     }
 
     componentDidMount(){
-      
+
     }
 
     selectWS(event, entity) {
@@ -39,7 +39,7 @@ export default class PropertiesPane extends React.Component {
     }
 
     renderNode(node){
-        
+
         var cName = 'node';
         //node is a generic white node
         //node running-node is a node that is the current workingstep
@@ -65,23 +65,23 @@ export default class PropertiesPane extends React.Component {
             </span>
           </div>);
     }
-    
+
     renderProperties(entity) {
         let items=null;
 
         if (entity === null)
             return null;
-        
+
         let hasWorkingsteps = true;
         if (entity.workingsteps === undefined || entity.workingsteps.length <= 0) {
             hasWorkingsteps = false;
         }
-      
+
         let timeDistance = null;
         if (entity.type === 'workingstep' || entity.type === 'selective' || entity.type === 'workplan') {
-          
+
           let formattedTime = '';
-          
+
           if (entity.timeUnits !== 'second')
             formattedTime = entity.baseTime + ' ' + entity.timeUnits;
           else {
@@ -112,13 +112,12 @@ export default class PropertiesPane extends React.Component {
               </div>
             </MenuItem>;
         }
-      
+
         switch (entity.type) {
-            case 'tolerance':
+            case 'workpiece':
                 items = (
                     <Menu className='properties'>
-                        <MenuItem disabled key='tolType' className='property'>{entity.toleranceType} Tolerance</MenuItem>
-                        <MenuItem disabled key='tolValue' className='property'>Value: {entity.value} {entity.unit}</MenuItem>
+                        <MenuItem disabled key='wpType' className='property'>{entity.wpType} Workpiece</MenuItem>
                         {hasWorkingsteps ?
                             <MenuItem key='workingsteps' className='property children workingsteps'>
                                 <div className='title'>Used in Workingsteps:</div>
@@ -133,11 +132,11 @@ export default class PropertiesPane extends React.Component {
                         }
                     </Menu>
                 );
-                
+
                 break;
           case 'workingstep':
             let selectStep, goToButton, toolInfo;
-            
+
 
                 goToButton = (<MenuItem key='goto'
                     disabled={!(entity.enabled && this.props.ws !== entity.id)}
@@ -155,7 +154,7 @@ export default class PropertiesPane extends React.Component {
                     selectStep = <MenuItem disabled className='property'>Status: Disabled</MenuItem>
                 }
                 items = (
-                    <Menu className='properties' onSelect={(event) => {this.selectWS(event, entity);}}>
+                    <Menu className='properties' onClick={(event) => {this.selectWS(event, entity);}}>
                         {selectStep}
                         {timeDistance}
                         {toolInfo}
@@ -202,7 +201,7 @@ export default class PropertiesPane extends React.Component {
                     </Menu>
                 );
         }
-        
+
         return items;
     }
 
@@ -210,25 +209,27 @@ export default class PropertiesPane extends React.Component {
         let entityName = null;
         let visible = false;
         // TODO: get real icons for workingstep/workplan/tool
-        
-        let tolType = '';
-        
+
+        let wpType = '';
+
         if (this.props.entity !== null) {
             visible = true;
-            
-            if (this.props.entity.type === 'tolerance') {
-                entityName = this.props.entity.toleranceType[0].toUpperCase() + this.props.entity.toleranceType.slice(1);
-                tolType = 'tolerance ' + this.props.entity.toleranceType;
+
+            if (this.props.entity.type === 'workpiece') {
+                entityName = this.props.entity.name;
+                //Right now all workpieces have same image
+                //TODO: add images for workpiece-tool workpiece and workpiece-fixture
+                wpType = 'workpiece';
             }
             else {
                 entityName = this.props.entity.name;
             }
         }
-        
+
         return (
             <div className={'properties-pane' + (visible ? ' visible' : '')}>
                 <div className='titlebar'>
-                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + tolType : '')} />
+                    <span className={'icon' + (visible ? ' ' + this.props.entity.type + ' ' + wpType : '')} />
                     <span className='title'>
                         <div className='type'>
                         {visible?

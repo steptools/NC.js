@@ -347,6 +347,27 @@ THREE.TrackballControls = function ( object, domElement ) {
         lastPosition.copy( _this.object.position );
 
     };
+    
+    // given two vectors, align the view to use one as its 'up'
+    // and the other as the direction to view from
+    this.alignTop = function(upVec, sideVec) {
+
+        let dist = 
+          _this.object.position.clone()
+          .sub(_this.target)
+          .length();
+        
+        sideVec.setLength(dist);
+        
+        _this.object.position
+          .copy(sideVec)
+          .add(_this.target);
+        
+        _this.object.up.copy(upVec);
+        _this.object.lookAt( _this.target );
+        
+        _this.dispatchEvent(changeEvent);
+    };
 
     // listeners
 

@@ -33,32 +33,32 @@ export default class Shell extends THREE.EventDispatcher {
         return this._id;
     }
 
-    addGeometry(position, normals, colors) {
+    addGeometry(position, normals, colors, faces) {
         this.dispatchEvent({type: "shellStartLoad", shell: this});
         // Create the geometry to hold the data
+        // Can also create a new buffergeometry per face and then geometry will be an array of buffergeom
         this._geometry = new THREE.BufferGeometry();
+
         this._geometry.addAttribute('position', new THREE.BufferAttribute(this._size * 3, 3));
         this._geometry.addAttribute('normal',   new THREE.BufferAttribute(this._size * 3, 3));
         this._geometry.addAttribute('color',    new THREE.BufferAttribute(this._size * 3, 3));
-
-        // Setup the offsets
-        let chunkSize = 21845;
-        let i;
-        this._geometry.groups = [];
-        let offsets = this._size / chunkSize;
-        for (i = 0; i < offsets; i++) {
-            let offset = {
-                start: i * chunkSize * 3,
-                index: i * chunkSize * 3,
-                count: Math.min(this._size - ( i * chunkSize ), chunkSize) * 3
-            };
-            this._geometry.groups.push(offset);
-        }
+        this._geometry.addAttribute('faces',    new THREE.BufferAttribute(this._size * 3, 3));
 
         // Now load the rest of the data
         this._geometry.attributes.position.array = position;
         this._geometry.attributes.normal.array = normals;
+
+        var self = this;
+        if(colors[0] === -1){ //This checks if a color was set by the data or default should be used
+            for(let i = 0; i <colors.length; i = i + 3){
+                colors[i] = self._color.r;
+                colors[i+1] = self._color.g;
+                colors[i+2] = self._color.b;
+            }
+        }
         this._geometry.attributes.color.array = colors;
+        this._geometry.attributes.faces.array = faces;
+
         // Compute bbox
         this._geometry.computeBoundingBox();
         this._boundingBox = this._geometry.boundingBox.clone();

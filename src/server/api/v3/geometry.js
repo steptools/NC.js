@@ -1,7 +1,6 @@
 "use strict";
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
-//var app;
 
 let _getGeometry = function(req , res){
   let ms = file.ms;

@@ -26,6 +26,35 @@ $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
         border: 2px #333 solid;
         width: 100%;
         height: 100%;
+
+
+    }
+    .resetview {
+        font-size: 40px;
+        position: absolute;
+        right: 110px;
+        margin: 15px;
+        top: 25px;
+        color: #999999;
+        z-index: 10;
+        padding: 7px;
+        text-shadow:
+                -1px -1px 0 #333,
+                1px -1px 0 #333,
+                -1px 1px 0 #333,
+                1px 1px 0 #333;
+
+        span:hover,.locked {
+            color: #F8F8F8;
+            cursor: pointer;
+        }
+
+        .lock {
+            font-size: 16;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
     }
     .resetview {
         font-size: 40px;
