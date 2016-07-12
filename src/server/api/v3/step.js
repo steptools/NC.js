@@ -25,6 +25,8 @@ var exeFromId = function(id) {
 		return ws;
 	} else if (find.IsSelective(id)) {
 		ws.type = "selective";
+	} else if(find.IsWorkplanWithSetup(id)){
+		ws.type = "workplan-setup";
 	} else if (find.IsWorkplan(id)) {
 		ws.type = "workplan";
 	}

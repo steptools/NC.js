@@ -104,17 +104,27 @@ export default class ResponsiveView extends React.Component {
         if (!err && res.ok) {
           let planNodes = JSON.parse(res.text);
           let stepNodes = {};
+          let index = 1;
+          let negIndex = -1;
           let nodeCheck = (node)=> {
-            if (node.type === 'selective' || node.type === 'workplan') {
+            if (node.type === 'selective' || node.type === 'workplan' || node.type === 'workplan-setup') {
+                if(node.type === 'workplan-setup'){
+                    wsList.push(negIndex);
+                    stepNodes[negIndex] = {name: node.name};
+                    negIndex = negIndex - 1;
+                }
               if (node.children.length != 0)
                 node.children.map(nodeCheck);
               node.leaf = false;
             }
             else {
+                node.number = index;
               node.leaf = true;
               stepNodes[node.id] = node;
-              if (node.enabled)
+              if (node.enabled){
                 wsList.push(node.id);
+                index = index + 1;
+                }
             }
             node.toggled = false;
           };

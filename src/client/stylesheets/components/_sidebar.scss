@@ -114,6 +114,10 @@ $icons: '../icons/';
                 display: inline-block;
                 width: calc(100% - 38px);
             }
+            .setup-textbox{
+                display: table;
+                margin: 0 auto;
+            }
 
             .icon-letter,
             .icon-workpiece,
