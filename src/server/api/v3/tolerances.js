@@ -81,7 +81,7 @@ var getWp = function(id) {
 
     for (let sub_id of asm_list) {
       if (id !== sub_id) {
-        subs.push(_getWp(sub_id));
+        subs.push(getWp(sub_id));
       }
     }
 
