@@ -24,10 +24,6 @@ $icons: '../icons/';
         .m-node {
             padding: 1px 0px;
             
-            &:hover {
-                cursor: pointer;
-            }
-
             .textbox {
                 vertical-align: middle;
                 display: inline-block;
@@ -178,18 +174,20 @@ $icons: '../icons/';
 
     .m-node .node {
         display: inline-block;
+        cursor: pointer;
         width: calc(100%);
         padding: 4px 5px;
         margin: 0px 0px;
         
-        &:hover {
+        &:hover:not(.setup) {
             background-color: rgba(#2BAEE9, 0.5);
         }
     }
     
     .node.setup {
-        border-top: 1px solid #666666;
-        border-bottom: 1px solid #666666;
+        cursor: default;
+        border-top: 2px solid #666666;
+        border-bottom: 2px solid #666666;
     }
 
     .m-node .inner {
@@ -305,14 +303,19 @@ $icons: '../icons/';
 
     .properties {
         height: calc(100% - 54px);
+        width: $sidebarWidth;
         overflow-y: scroll;
 
         .property {
-            padding: 5px 20px;
+            padding: 5px;
             color: #333333;
-
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            white-space: normal;
+            
             .property-icon {
-                margin-right: 8px;    
+                margin-right: 5px;    
             } 
 
             &:hover {
@@ -330,12 +333,15 @@ $icons: '../icons/';
             }
 
             &.goTo {
+                display: inline-block;
+                width: 50%;
                 text-align: center;
-                padding: 10px 5px;
-                margin: 0 20%;
+                padding: 10px 0px;
+                margin: 0px 25%;
                 background-color: #333333;
                 color: #F8F8F8;
-                border-bottom: 2px solid #AFAFAF;
+                border-bottom: 2px solid transparent;
+                cursor: default;
                 -webkit-touch-callout: none;
                 -webkit-user-select: none;
                 -khtml-user-select: none;
@@ -343,33 +349,34 @@ $icons: '../icons/';
                 -ms-user-select: none;
                 user-select: none;
 
-                &:hover {
-                    color: #35B7FD;
-                    border-bottom: 2px solid #35B7FD;
+                &:hover:not(.rc-menu-item-disabled) {
+                    cursor: pointer;
+                    color: #2BAEE9;
+                    border-bottom-color: #2BAEE9;
                 }
 
                 &.rc-menu-item-disabled {
                     opacity: 0.5;
-
-                    &:hover {
-                        color: #F8F8F8;
-                        border-bottom: 2px solid #AFAFAF;
-                    }
                 }
             }
-
+            
             &.children {
-                white-space: normal;
-                padding-left: 5px;
-
+                display: inherit;
+                
                 .title {
+                    border-top: 2px solid #666666;
+                    border-bottom: 2px solid #666666;
                     font-size: 18px;
+                    text-align: center;
+                    cursor: default;
+                    margin-bottom: 5px;
                 }
-
+                
                 .list {
                     .node {
-                        display: inline-block;
                         width: 100%;
+                        display: inline-flex;
+                        align-items: center;
                         padding: 4px 5px;
 
                         &.invalid {
@@ -440,14 +447,25 @@ $icons: '../icons/';
         }
     }
 
-    .icon {
-        font-size: 32px;
-        float: left;
-        margin-right: 8px;
+    .icon-tool {
+        background-image: url($icons + 'tools/tool.svg');
+        background-color: rgba(#FFFFFF, 0);
+        border: 2px solid #333333;
+        padding: 7px;
+        vertical-align: middle;
+        background-size: cover;
+        background-position: center;
+        padding: 5px;
+        border-radius: 5px;
+        width: 14px;
+        height: 14px;
+        display: inline-block;
+        text-align: center;
+    }
 
-        &.tool {
-            background-image: url($icons + 'tools/tool.svg');
-        }
+    .icon {
+        font-size: 24px;
+        margin-right: 8px;
 
         &.tolerance {
             &.angularity {

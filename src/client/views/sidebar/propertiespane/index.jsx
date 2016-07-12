@@ -17,13 +17,13 @@ function getIcon(type, prefix) {
     } else if (type === 'workingstep') {
         return prefix + 'icon glyphicons glyphicons-blacksmith';
     } else if (type === 'tool') {
-        return 'tool icon';
+        return prefix + 'icon icon-tool';
     } else if (type === 'exit') {
         return 'exit icon glyphicons glyphicons-remove-sign';
     } else if (type === 'time') {
-        return 'time icon glyphicons glyphicons-clock';
+        return prefix + 'icon glyphicons glyphicons-clock';
     } else if (type === 'distance') {
-        return 'distance icon glyphicons glyphicons-ruler';
+        return prefix + 'icon glyphicons glyphicons-ruler';
     } else {
         return prefix + 'icon glyphicons glyphicons-question-sign';
     }
@@ -89,11 +89,12 @@ export default class PropertiesPane extends React.Component {
         if (node.id == this.props.ws) {
             cName = 'node running-node';
         } else {
-            if (node.enabled === false) 
-                cName = 'node disabled';
+            if (node.enabled === false) {
+                cName = 'node disabled';    
             }
+        }
         
-        let icon = <span className={'icon ' + node.type}/>;
+        let icon = <span className={getIcon(node.type)}/>;
         return (
             <div key={node.id}>
                 <span id={node.id} className={cName} onClick={(event) => {
@@ -120,21 +121,21 @@ export default class PropertiesPane extends React.Component {
             hasWorkingsteps = false;
         }
 
-        let timeDistance = null;
+        let time = null;
+        let distance = null;
         if (entity.type === 'workingstep' || entity.type === 'selective' || entity.type === 'workplan') {
             let formattedTime = getFormattedTime(entity);
 
-            timeDistance = <MenuItem disabled key='timeDistance' className='property timeDistance'>
-                <div className='baseTime'>
-                    <div className='icon glyphicons glyphicons-clock'/>
-                    Base time: {formattedTime}
-                </div>
-                <div class='property-icon glyphicons glyphicons-ruler'/>
-                <div className='distance'>
-                    Distance: {entity.distance.toFixed(2)}
-                    {entity.distanceUnits}
-                </div>
-            </MenuItem>;
+            time = <MenuItem disabled key='time' className='property time'>
+                <div className='property-icon glyphicons glyphicons-clock'/>
+                Base time: {formattedTime}
+            </MenuItem>
+            
+            distance = <MenuItem disabled key='distance' className='property distance'>
+                <div className='property-icon glyphicons glyphicons-ruler'/>
+                Distance: {entity.distance.toFixed(2)}
+                {entity.distanceUnits}
+            </MenuItem>
         }
 
         switch (entity.type) {
@@ -181,6 +182,7 @@ export default class PropertiesPane extends React.Component {
 
                 toolInfo = (
                     <MenuItem key='tool' className='property toolInfo'>
+                        <div className={getIcon('tool', 'property-')}/>
                         Tool: {this.props.tools[entity.tool].name}
                     </MenuItem>
                 );
@@ -203,17 +205,20 @@ export default class PropertiesPane extends React.Component {
                         this.selectWS(event, entity);
                     }}>
                         {selectStep}
-                        {timeDistance}
+                        {time}
+                        {distance}
                         {toolInfo}
                         {goToButton}
                     </Menu>
                 );
                 break;
             case 'workplan':
+            case 'workplan-setup':
             case 'selective':
                 items = (
                     <Menu className='properties'>
-                        {timeDistance}
+                        {time}
+                        {distance}
                         <MenuItem key='children' className='property children'>
                             <div className='title'>Children:</div>
                             <div className='list'>
