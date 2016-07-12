@@ -104,7 +104,6 @@ export default class ResponsiveView extends React.Component {
         if (!err && res.ok) {
           let planNodes = JSON.parse(res.text);
           let stepNodes = {};
-          let notFirst = false;
           let index = 1;
           let negIndex = -1;
           let nodeCheck = (node)=> {
