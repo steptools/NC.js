@@ -448,21 +448,29 @@ $icons: '../icons/';
             }
         }
     }
-
+    
     .icon-tool {
         background-image: url($icons + 'tools/tool.svg');
         background-color: rgba(#FFFFFF, 0);
-        border: 2px solid #333333;
-        padding: 7px;
         vertical-align: middle;
         background-size: cover;
         background-position: center;
-        padding: 5px;
-        border-radius: 5px;
-        width: 14px;
-        height: 14px;
         display: inline-block;
         text-align: center;
+    }
+    
+    .title .icon-tool {
+        border: 2px solid #333333;
+        padding: 5px;
+        border-radius: 5px;
+        width: 24px;
+        height: 24px;
+    }
+    
+    .properties .icon-tool {
+        border: none;
+        width: 14px;
+        height: 14px;
     }
 
     .icon {
