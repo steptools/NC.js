@@ -19,23 +19,20 @@ export default class WorkingstepList extends React.Component {
         });
   }
 
-  getNodeIcon(node, num){
-    if (node.type == "workplan"){
-      return <span className='icon-letter'>W</span>;
-    }else if (node.type == "selective"){
-      return <span className='icon-letter'>S</span>;
-    }else{
-      return <span className='icon-letter'>{num+1}</span>;
+  getNodeIcon(node){
+    if(isNaN(node.number)){
+      return;
     }
+    return <span className='icon-letter'>{node.number}</span>;
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-  return this.props.ws !== nextProps.ws;
-}
+    return this.props.ws !== nextProps.ws;
+  }
 
-  renderNode(nodeId, num){
+  renderNode(nodeId){
     let node = this.props.workingstepCache[nodeId];
-    node.icon = this.getNodeIcon(node, num);
+    node.icon = this.getNodeIcon(node);
     let cName = 'node';
     if (node.id == this.props.ws) cName = 'node running-node';
     return <ol
@@ -46,12 +43,8 @@ export default class WorkingstepList extends React.Component {
         style={{"paddingLeft" : "5px"}}
         key={node.id}>
         {node.icon}
-        <span className="textbox">{node.name}</span>
+        {node.id === undefined ? <span className="setup-textbox">{node.name}</span> : <span className="textbox">{node.name}</span>}
     </ol>;
-  }
-
-  componentDidMount(){
-
   }
 
   render(){
@@ -59,7 +52,7 @@ export default class WorkingstepList extends React.Component {
       <div className='m-tree'>
         {this.props.workingstepList.map((workingstep, i) => {
           return <div className='m-node' key={i}>
-            {this.renderNode(workingstep, i)}
+            {this.renderNode(workingstep)}
           </div>;
         })}
       </div>
