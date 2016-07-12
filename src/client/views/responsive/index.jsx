@@ -228,30 +228,45 @@ export default class ResponsiveView extends React.Component {
         url = "/v3/nc/workpieces/";
         resCb = (err,res) => { //Callback function for response
             if(!err && res.ok){
-                // Node preprocessing
-                let json = JSON.parse(res.text);
-                _.each(json, (workpiece) => {
-                  if (workpiece.tolerances.length > 0) {
-                    workpiece.leaf = false;
-                    workpiece.children = [];
-                    console.log(workpiece);
-                    _.each(workpiece.tolerances, (tol) => {
-                      let tolUrl = "/v3/nc/tolerances/" + tol;
-                      request.get(tolUrl).end((error, response) => {
-                        if (!error && response.ok) {
-                          let tolerance = JSON.parse(response.text);
-                          tolerance.leaf = true;
-                          workpiece.children.push(tolerance);
-                        }
-                      });
+              // Node preprocessing
+              let json = JSON.parse(res.text);
+              
+              let nodeCheck = (n) => {
+                let node = n;
+                
+                if (node.children === undefined)
+                  node.children = [];
+                
+                if (node.children.length > 0)
+                  node.children.map(nodeCheck);
+                
+                if (node.tolerances.length > 0 || node.children.length > 0) {
+                  node.leaf = false;
+                  _.each(node.tolerances, (tol) => {
+                    let tolUrl = "/v3/nc/tolerances/" + tol;
+                    request.get(tolUrl).end((error, response) => {
+                      if (!error && response.ok) {
+                        let tolerance = JSON.parse(response.text);
+                        tolerance.leaf = true;
+                        node.children.push(tolerance);
+                      }
                     });
-                  }
-                  else {
-                    workpiece.leaf = true;
-                  }
-                });
-                this.setState({'toleranceCache': json});
+                  });
+                }
+                else {
+                  node.leaf = true;
+                }
+                return node;
+              };
+
+              json = _.map(json, nodeCheck);
+              console.log(json);
+            
+              this.setState({'toleranceCache': json});
             }
+          else {
+              console.log(err);
+          }
         };
         
         request

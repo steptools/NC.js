@@ -34,8 +34,12 @@ var GetWorkingstepsForTolerance = function(exe, tolId) {
 
 var _getTolerance = function(id) {
   let steps = GetWorkingstepsForTolerance(find.GetMainWorkplan(), id);
-  let name = tol.GetToleranceType(id).replace(/_/g, ' ').toLowerCase();
-  let tolType = name.split(' ')[0];
+  let name = tol.GetToleranceType(id);
+  let tolType;
+  if (name) {
+    name = name.replace(/_/g, ' ').toLowerCase();
+    tolType = name.split(' ')[0];
+  }
   
   return {
       "id":id,
@@ -58,22 +62,42 @@ var _getTols = function(req,res) {
   res.status(200).send(ret);
 };
 
-var _getWps = function(req,res) {
-  let wp_list = find.GetWorkpieceAll();
-  let ret = [];
-  for (let id of wp_list){
-    let type = find.GetWorkpieceType(id);
-    let name = find.GetWorkpieceName(id);
-    if(type === 'workpiece') {
-      let tolerances = tol.GetWorkpieceToleranceAll(id);
-      ret.push({
-        "id": id,
-        "type": "workpiece",
-        "name": name,
-        "wpType": type,
-        "tolerances": tolerances,
-      });
+var _getWp = function(id) {
+  let type = find.GetWorkpieceType(id);
+  let name = find.GetWorkpieceName(id);
+  let tolerances = tol.GetWorkpieceToleranceAll(id);
+  let ret = {
+    "id": id,
+    "name": name,
+    "wpType": type,
+    "tolerances": tolerances
+  };
+  if (type)
+    ret.type = "workpiece";
+  
+  if (type === 'workpiece') {
+    let asm_list = find.GetWorkpieceImmediateSubAssemblyAll(id);
+    let subs = [];
+
+    for (let sub_id of asm_list) {
+      if (id !== sub_id) {
+        subs.push(_getWp(sub_id));
+      }
     }
+
+    ret.children = subs;
+  }
+  
+  return ret;
+};
+
+var _getWps = function(req,res) {
+  let wps = find.GetWorkpieceAll();
+  let ret = [];
+  for (let id of wps) {
+    let wp = _getWp(id);
+    if (wp.wpType === 'workpiece')
+      ret.push(wp);
   }
   res.status(200).send(ret);
 };
