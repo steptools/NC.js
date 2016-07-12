@@ -8,6 +8,8 @@ Features:
 - Added lock to align view button
 - Parent nodes are now highlighted if a child is active and hidden
 - Scrolling in sidebar only happens when necessary / only as much as necessary
+- Workingsteplist now has setup breakpoints
+- WorkplanList now has different color icons for setups
 
 Bugfixes:
 
