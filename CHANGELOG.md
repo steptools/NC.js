@@ -10,6 +10,7 @@ Features:
 - Scrolling in sidebar only happens when necessary / only as much as necessary
 - Workingsteplist now has setup breakpoints
 - WorkplanList now has different color icons for setups
+- 404 error page improved 404%!
 
 Bugfixes:
 
