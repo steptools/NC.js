@@ -34,15 +34,64 @@ var MTListen = function() {
   console.log(find.GetProjectName());
 
   return new Promise(function(resolve, reject) {
-    let mtc = request.get("http://192.168.0.123:5000/current");
+    let mtc = request.get("http://127.0.0.1:5000/current");
     mtc.end(function (err, res) {
       parseXMLString.parseString(res.text, function (error, result) {
-        resCoords = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream[3].Samples[0].PathPosition[0]._.split(" ");
-        xOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][2]["_"]);
-        yOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][3]["_"]);
-        zOffset = parseInt(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:Variables"][4]["_"]);
-        currentgcode = result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"][3]["Events"][0]["e:BlockNumber"][0]["_"];
+
+
+        let pathtag = _.find(result["MTConnectStreams"]["Streams"][0]["DeviceStream"][0]["ComponentStream"], function(tag) {
+          if (tag["$"]["name"] === "path") {
+            return true;
+          }
+          else {
+            return false;
+          }
+        });
+        resCoords = pathtag.Samples[0].PathPosition[0]._.split(" ");
+
+
+        if (pathtag["Events"][0]["Block"]) {
+          currentgcode = pathtag["Events"][0]["Block"][0]["_"];
+        }
+        else {
+          currentgcode = pathtag["Events"][0]["e:BlockNumber"][0]["_"];
+        }
       });
+
+      let xTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
+        if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
+          return true;
+        }
+        else {
+          return false;
+        }
+      });
+      xOffset = parseInt(xTag["_"]);
+
+      let yTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
+        if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
+          return true;
+        }
+        else {
+          return false;
+        }
+      });
+
+      yOffset = parseInt(yTag["_"]);
+
+      let zTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
+        if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
+          return true;
+        }
+        else {
+          return false;
+        }
+      });
+      zOffset = parseInt(zTag["_"]);
+
+      currentgcode = pathtag["Events"][0]["e:BlockNumber"][0]["_"];
+
+
       var coords = [];
       coords[0] = parseInt(resCoords[0]);
       coords[1] = parseInt(resCoords[1]);

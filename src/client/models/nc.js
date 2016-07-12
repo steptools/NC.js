@@ -52,8 +52,8 @@ export default class NC extends THREE.EventDispatcher {
     getPathTrace(x, y, z) {
         var self = this;
         self.traceLine.geometry.attributes.position[self.traceNum * 3 + 0] = x;
-        self.traceLine.geometry.attributes.position[self.traceNum * 3 + 1] = x;
-        self.traceLine.geometry.attributes.position[self.traceNum * 3 + 2] = x;
+        self.traceLine.geometry.attributes.position[self.traceNum * 3 + 1] = y;
+        self.traceLine.geometry.attributes.position[self.traceNum * 3 + 2] = z;
         self.traceNum++;
         self.traceLine.geometry.attributes.position.needsUpdate = true;
     }
