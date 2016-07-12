@@ -62,8 +62,7 @@ var _getTols = function(req,res) {
   res.status(200).send(ret);
 };
 
-var getWp = function(id) {
-  let type = find.GetWorkpieceType(id);
+var getWp = function(id, type) {
   let name = find.GetWorkpieceName(id);
   let tolerances = tol.GetWorkpieceToleranceAll(id);
   let ret = {
@@ -80,7 +79,7 @@ var getWp = function(id) {
 
   for (let sub_id of asm_list) {
     if (id !== sub_id) {
-      subs.push(getWp(sub_id));
+      subs.push(getWp(sub_id, type));
     }
   }
   
@@ -94,7 +93,8 @@ var _getWps = function(req,res) {
   let wps = find.GetWorkpieceAll();
   let ret = [];
   for (let id of wps) {
-    let wp = getWp(id);
+    let type = find.GetWorkpieceType(id);
+    let wp = getWp(id, type);
     if (wp.wpType === 'workpiece')
       ret.push(wp);
   }
