@@ -237,21 +237,9 @@ export default class ResponsiveView extends React.Component {
                 if (node.children === undefined)
                   node.children = [];
                 
-                if (node.children.length > 0)
-                  node.children.map(nodeCheck);
-                
-                if (node.tolerances.length > 0 || node.children.length > 0) {
+                if (node.children.length > 0){
                   node.leaf = false;
-                  _.each(node.tolerances, (tol) => {
-                    let tolUrl = "/v3/nc/tolerances/" + tol;
-                    request.get(tolUrl).end((error, response) => {
-                      if (!error && response.ok) {
-                        let tolerance = JSON.parse(response.text);
-                        tolerance.leaf = true;
-                        node.children.push(tolerance);
-                      }
-                    });
-                  });
+                  node.children.map(nodeCheck);
                 }
                 else {
                   node.leaf = true;
