@@ -28,6 +28,7 @@ Bugfixes:
 - Fixed toggled parent nodes to always highlight if they have an active child regardless 
 of the state of the child
 - Remove warning on load queue when loading machine tool
+- View no longer starts upside down on initial load
 
 Reverted:
 
