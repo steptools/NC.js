@@ -1,15 +1,18 @@
 Version 1.4.0
 
 Features:
+
 - Keeps entire tool in view when machine is loaded
 - Lowlighted Workpieces if no Tolerances are present
 - Simulation pauses when moving between setups (Ignored when using skip-forward)
 
 Bugfixes:
+
 - View no longer starts upside down on initial load
 - Proper icons display on profile tolerances
 
 Reverted:
+
 
 Version 1.3.0
 
