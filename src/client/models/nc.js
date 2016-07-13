@@ -363,7 +363,7 @@ export default class NC extends THREE.EventDispatcher {
                 }
                 let obj = self._objects[geom.id];
                 if(obj !== undefined) {
-                    if (obj.rendered !== false && obj.usage === 'cutter' || obj.usage === 'machine' || obj.usage === 'fixture') {
+                    if (obj.rendered !== false && obj.usage === 'cutter') {
                         let transform = new THREE.Matrix4();
                         if (!geom.xform) return;
                         transform.fromArray(geom.xform);
