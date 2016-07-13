@@ -49,7 +49,7 @@ export default class CADView extends React.Component {
             modelTree: {},
             isViewChanging: false,
             lastHovered: undefined,
-            lockedView: false
+            lockedView: true
         };
         this.handleResize   = this.handleResize.bind(this);
         this.onShellLoad    = this.onShellLoad.bind(this);
@@ -70,7 +70,7 @@ export default class CADView extends React.Component {
         this.setState({'isViewChanging':true});
         this.invalidate(event);
     }
-
+    
     onModelAdd(event) {
         //This is where the NC model is being loaded into the CADview
         let model = this.props.manager._models[event.path];
@@ -82,7 +82,7 @@ export default class CADView extends React.Component {
         this.updateSceneBoundingBox(model.getBoundingBox());
         
         // set the default view
-        this.alignToolView([model]);
+        this.alignToolView(this.props.manager.getSelected());
         this.invalidate();
         
         // Update the model tree
@@ -232,16 +232,14 @@ export default class CADView extends React.Component {
         this.props.manager.removeEventListener("invalidate", this.invalidate);
     }
     
-    componentWillUpdate(nextProps, nextState) {
-        if (!this.state.lockedView && nextState.lockedView) {
-            this.alignToolView(this.props.manager.getSelected());
-            this.invalidate();
-        }
-    }
-
     componentDidUpdate() {
         if (this.props.resize)
             this.handleResize();
+
+        if (this.state.lockedView) {
+            this.alignToolView(this.props.manager.getSelected());
+            this.invalidate();
+        }
     }
 
     handleResize() {
@@ -274,6 +272,8 @@ export default class CADView extends React.Component {
 
     alignToolView(objects) {
         
+        if (objects[0] === undefined) return;
+
         // find the orientation of the referenced object
         let tool = _.find(_.values(objects[0]._objects), {'usage': 'cutter', 'rendered': true});
         let part = _.find(_.values(objects[0]._objects), {'usage': 'tobe', 'rendered': true});
