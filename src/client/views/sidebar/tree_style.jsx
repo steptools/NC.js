@@ -11,6 +11,10 @@ function getNodeIcon(node) {
         return <span className="tree-icon glyphicons glyphicons-cube-black"/>
     }else if (node.type === "workingstep") {
         return <span className="tree-icon glyphicons glyphicons-blacksmith"/>
+    } else if (node.type === 'tolerance') {
+        return <span className={'tree-icon tolerance '+node.toleranceType} />
+    } else if (node.type === 'workpiece') {
+        return <span className="tree-icon workpiece" />
     } else {
         return <span className="tree-icon glyphicons glyphicons-question-sign"/>
     }
@@ -18,19 +22,31 @@ function getNodeIcon(node) {
 
 function hasActiveChildren(node, id){
     if(node.id === id){
-      return true;
+      return "active";
     }
     else if(!node.leaf){
       for(let i = 0; i < node.children.length; i++){
-        if(hasActiveChildren(node.children[i],id) === true && node.toggled === false){
-          return true;
+        if(hasActiveChildren(node.children[i],id) === "active"){
+            if(node.toggled === false){
+                return "active";  
+            }
+            else{
+                return "child-active";
+            }
+       
+        }
+        else if(hasActiveChildren(node.children[i],id) ==="child-active"){
+            if (node.toggled === false){
+                 return "active";
+            }
+            else{
+                return "child-active";
+            }
         }
       }
-    }
- else{
-      return false;
- }
 
+    }
+    return "inactive";    
 }
 
 const Container = (props) => {
@@ -41,7 +57,7 @@ const Container = (props) => {
     
     let innerName = "inner";
     let outerName = "node";
-    if (hasActiveChildren(node, props.decorators.ws) === true) {
+    if (hasActiveChildren(node, props.decorators.ws) === "active") {
         innerName += " running-node";
     } else if (node.enabled === false) {
         innerName += " disabled";

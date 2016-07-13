@@ -36,7 +36,7 @@ export default class NC extends THREE.EventDispatcher {
     }
 
     addModel(model, usage, type, id, transform, bbox) {
-        console.log('Add Model(' + usage + '): ' + id);
+        // console.log('Add Model(' + usage + '): ' + id);
         let self = this;
         // Setup 3D object holder
         let obj = {
@@ -252,7 +252,7 @@ export default class NC extends THREE.EventDispatcher {
         if (!delta.hasOwnProperty('prev')){
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
-            console.log("Keyframe recieved");
+            // console.log("Keyframe recieved");
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
