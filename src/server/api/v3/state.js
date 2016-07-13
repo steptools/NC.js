@@ -99,18 +99,12 @@ var loop = function(ms, key) {
 
 var _getWorkingstep = function() {
   var ms = file.ms;
-  let jason = ms.GetKeystateJSON();
-  let keyjson = JSON.parse(jason);
-
+  let keyjson = JSON.parse(ms.GetKeystateJSON());
   return keyjson.workingstep;
 };
 
-var _sameSetup = function (knew, old) {
-  let id1 = step._getSetupFromId(knew);
-  let id2 = step._getSetupFromId(old);
-  console.log(id1);
-  console.log(id2);
-  return (step._getSetupFromId(knew) === step._getSetupFromId(old));
+var _sameSetup = function (newid, oldid) {
+  return (step._getSetupFromId(newid) === step._getSetupFromId(oldid));
 };
 
 ///*******************************************************************\
