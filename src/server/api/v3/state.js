@@ -56,40 +56,40 @@ var MTListen = function() {
         else {
           currentgcode = pathtag["Events"][0]["e:BlockNumber"][0]["_"];
         }
+
+        let xTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
+          if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
+            return true;
+          }
+          else {
+            return false;
+          }
+        });
+        xOffset = parseInt(xTag["_"]);
+
+        let yTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
+          if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
+            return true;
+          }
+          else {
+            return false;
+          }
+        });
+
+        yOffset = parseInt(yTag["_"]);
+
+        let zTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
+          if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
+            return true;
+          }
+          else {
+            return false;
+          }
+        });
+        zOffset = parseInt(zTag["_"]);
+
+        currentgcode = pathtag["Events"][0]["e:BlockNumber"][0]["_"];
       });
-
-      let xTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
-        if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
-          return true;
-        }
-        else {
-          return false;
-        }
-      });
-      xOffset = parseInt(xTag["_"]);
-
-      let yTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
-        if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
-          return true;
-        }
-        else {
-          return false;
-        }
-      });
-
-      yOffset = parseInt(yTag["_"]);
-
-      let zTag = _.find(pathtag["Events"][0]["e:Variables"], function(tag) {
-        if (tag["$"]["subType"] === "x:WORKOFFSET_X_AXIS") {
-          return true;
-        }
-        else {
-          return false;
-        }
-      });
-      zOffset = parseInt(zTag["_"]);
-
-      currentgcode = pathtag["Events"][0]["e:BlockNumber"][0]["_"];
 
 
       var coords = [];
