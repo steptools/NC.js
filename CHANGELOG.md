@@ -1,3 +1,14 @@
+Version 1.4.0
+
+Features:
+- Keeps entire tool in view when machine is loaded
+- Lowlighted Workpieces if no Tolerances are present
+
+Bugfixes:
+- View no longer starts upside down on initial load
+
+Reverted:
+
 Version 1.3.0
 
 Features:
@@ -13,7 +24,6 @@ Features:
 - Tolerance View now displays workpieces and all subcomponents of those workpieces as well as tolerances associated with any of these workpieces
 - 404 error page improved 404%!
 - Styling overhaul of the sidebar
-- Keeps entire tool in view when machine is loaded
 
 Bugfixes:
 
@@ -28,7 +38,6 @@ Bugfixes:
 - Fixed toggled parent nodes to always highlight if they have an active child regardless 
 of the state of the child
 - Remove warning on load queue when loading machine tool
-- View no longer starts upside down on initial load
 
 Reverted:
 
