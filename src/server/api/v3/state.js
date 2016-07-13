@@ -1,6 +1,7 @@
 "use strict";
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
+var step = require('./step');
 var find = file.find;
 
 var app;
@@ -71,11 +72,28 @@ var loop = function(ms, key) {
     }
     else if (rc == 1) {   // SWITCH
       // app.logger.debug("SWITCH...");
+      let old = _getWorkingstep();
       getNext(ms, function() {
         loop(ms, true);
       });
+      let setup = _sameSetup(_getWorkingstep(),old);
+      if (setup){
+        loopstates[path] = false;
+        update("pause");
+        loop(ms,false);
+      }
     }
   }
+};
+
+var _getWorkingstep = function() {
+  var ms = file.ms;
+  let jason = ms.GetKeystateJSON();
+  return jason.workingstep;
+};
+
+var _sameSetup = function (knew, old) {
+  return (step._getSetupFromId(knew) === step._getSetupFromId(old));
 };
 
 ///*******************************************************************\
