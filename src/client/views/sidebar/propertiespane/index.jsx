@@ -17,15 +17,17 @@ function getIcon(type, prefix, data) {
     } else if (type === 'workingstep') {
         return prefix + 'icon glyphicons glyphicons-blacksmith';
     } else if (type === 'tool') {
-        return prefix + 'icon icon-tool';
+        return prefix + 'icon tool';
     } else if (type === 'exit') {
         return 'exit icon glyphicons glyphicons-remove-sign';
     } else if (type === 'time') {
-        return prefix + 'icon glyphicon glyphicon-time';
+        return prefix + 'icon glyphicons glyphicons-clock';
     } else if (type === 'distance') {
-        return prefix + 'icon glyphicon glyphicon-resize-horizontal';
+        return prefix + 'icon glyphicons glyphicons-ruler';
     } else if (type === 'tolerance' && data) {
         return prefix + 'icon tolerance ' + data;
+    } else if (type === 'workpiece') {
+        return prefix + 'icon workpiece';
     } else {
         return prefix + 'icon glyphicons glyphicons-question-sign';
     }
@@ -157,7 +159,7 @@ export default class PropertiesPane extends React.Component {
                             {entity.unit}
                         </MenuItem>
                         {hasWorkingsteps
-                            ? <MenuItem key='workingsteps' className='property children workingsteps'>
+                            ? <MenuItem disabled key='workingsteps' className='property children workingsteps'>
                                 <div className='title'>
                                     Used in Workingsteps:
                                 </div>
@@ -188,7 +190,7 @@ export default class PropertiesPane extends React.Component {
 
                 toolInfo = (
                     <MenuItem key='tool' className='property toolInfo'>
-                        <div className={getIcon('tool', 'property-')}/>
+                        <div className={getIcon('tool')}/>
                         Tool: {this.props.tools[entity.tool].name}
                     </MenuItem>
                 );
@@ -225,7 +227,7 @@ export default class PropertiesPane extends React.Component {
                     <Menu className='properties'>
                         {time}
                         {distance}
-                        <MenuItem key='children' className='property children'>
+                        <MenuItem disabled key='children' className='property children'>
                             <div className='title'>Children:</div>
                             <div className='list'>
                                 {entity.children.map(this.renderNode)}
@@ -238,7 +240,7 @@ export default class PropertiesPane extends React.Component {
                 properties = (
                     <Menu className='properties'>
                         {hasWorkingsteps
-                            ? <MenuItem key='workingsteps' className='property children workingsteps'>
+                            ? <MenuItem disabled key='workingsteps' className='property children workingsteps'>
                                 <div className='title'>
                                     Used in Workingsteps:
                                 </div>
@@ -246,7 +248,7 @@ export default class PropertiesPane extends React.Component {
                                     {entity.workingsteps.map(this.renderNode)}
                                 </div>
                             </MenuItem>
-                                : <MenuItem key='workingsteps' className='property children workingsteps'>
+                                : <MenuItem disabled key='workingsteps' className='property children workingsteps'>
                                     <div className='title'>
                                         Not used in any workingsteps.
                                     </div>

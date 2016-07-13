@@ -230,12 +230,12 @@ $icons: '../icons/';
                 margin-right: 5px;    
             } 
 
-            &:hover {
+            &:hover:not(.rc-menu-item-disabled) {
                 cursor: pointer;
+                background-color: rgba(#2BAEE9, 0.5);
             }
 
             &.rc-menu-item-disabled {
-                cursor: inherit;
                 -webkit-touch-callout: auto;
                 -webkit-user-select: auto;
                 -khtml-user-select: auto;
@@ -249,7 +249,7 @@ $icons: '../icons/';
                 width: 50%;
                 text-align: center;
                 padding: 10px 0px;
-                margin: 0px 25%;
+                margin: 5px 25%;
                 background-color: #333333;
                 color: #F8F8F8;
                 border-bottom: 2px solid transparent;
@@ -336,7 +336,12 @@ $icons: '../icons/';
         border-bottom: 1px solid #DDDDDD;
         
         .icon {
-            display: inherit;
+            font-size: 30px;
+            
+            &:not(.glyphicons):not(.glyphicon) {
+                width: 30px;
+                height: 30px;
+            }
         }
         
         .title {
@@ -350,11 +355,9 @@ $icons: '../icons/';
         }
 
         .exit {
-            display: inherit;
             margin-right: 0px;
             margin-left: 8px;
             float: right;
-            font-size: 28px;
 
             &:hover {
                 cursor: pointer;
@@ -362,32 +365,22 @@ $icons: '../icons/';
             }
         }
     }
-    
-    .icon-tool {
-        background-image: url($icons + 'tools/tool.svg');
+
+    .icon {
+        font-size: 24px;
+        margin-right: 8px;
         background-color: rgba(#FFFFFF, 0);
-        border: 2px solid #333333;
         vertical-align: middle;
         background-size: cover;
         background-position: center;
         border-radius: 5px;
         display: inline-block;
         text-align: center;
-    }
-    
-    .titlebar .icon-tool {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .property .icon-tool {
-        width: 24px;
-        height: 24px;
-    }
-
-    .icon {
-        font-size: 24px;
-        margin-right: 8px;
+        
+        &:not(.glyphicons):not(.glyphicon) {
+            width: 24px;
+            height: 24px;
+        }
 
         &.tolerance {
             &.angularity {
@@ -441,6 +434,15 @@ $icons: '../icons/';
             &.total-runout {
                 background-image: url($icons + 'tolerance/total_runout.svg');
             }
+        }
+        
+        &.tool {
+            background-image: url($icons + 'tools/tool.svg');
+            border: 2px solid #333333;
+        }
+        
+        &.workpiece {
+            background-image: url($icons + 'workpiece.svg');
         }
     }
 
