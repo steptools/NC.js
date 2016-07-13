@@ -172,7 +172,8 @@ $icons: '../icons/';
         
         .icon {
             font-size: 24px;
-            margin-right: 8px;
+            margin-left: 3px;
+            margin-right: 11px;
             
             &.custom {
                 width: 24px;
@@ -250,7 +251,8 @@ $icons: '../icons/';
                         width: 100%;
                         display: inline-flex;
                         align-items: center;
-                        padding: 4px 5px;
+                        padding: 4px 0px;
+                        margin: 1px 0px;
 
                         &.invalid {
                             cursor: default;

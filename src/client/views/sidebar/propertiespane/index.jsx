@@ -22,6 +22,10 @@ function getIcon(type, data) {
                 return 'icon custom tolerance ' + data;
             } 
             return 'icon glyphicons glyphicons-question-sign';
+        case 'tolerance type':
+            return 'icon glyphicons glyphicons-adjust';
+        case 'tolerance value':
+            return 'icon glyphicons glyphicons-adjust-alt';
         case 'exit':
             return 'icon glyphicons glyphicons-remove';
         case 'active':
@@ -230,15 +234,16 @@ export default class PropertiesPane extends React.Component {
                 );
                 break;
             case 'tolerance':
+                let tolType = entity.toleranceType[0].toUpperCase() + entity.toleranceType.slice(1);
                 properties = (
                     <Menu className='properties'>
                         <MenuItem disabled key='tolType' className='property'>
-                            {entity.toleranceType}
-                            Tolerance
+                            <div className={getIcon('tolerance type')}/>
+                            Type: {tolType} Tolerance
                         </MenuItem>
                         <MenuItem disabled key='tolValue' className='property'>
-                            Value: {entity.value}
-                            {entity.unit}
+                            <div className={getIcon('tolerance value')}/>
+                            Value: {entity.value}{entity.unit}
                         </MenuItem>
                         {hasWorkingsteps
                             ? <MenuItem disabled key='workingsteps' className='property children workingsteps'>
