@@ -5,6 +5,12 @@ var tol = file.tol;
 var apt = file.apt;
 var find = file.find;
 
+///*******************************************************************\
+//|                                                                    |
+//|                       Helper Functions                             |
+//|                                                                    |
+//\*******************************************************************/
+
 var exeFromId = function(id) {
 	let ws = {
 		"id": id,
@@ -37,6 +43,12 @@ var exeFromId = function(id) {
 	}
 	return ws;
 };
+
+///*******************************************************************\
+//|                                                                    |
+//|                       Endpoint Functions                           |
+//|                                                                    |
+//\*******************************************************************/
 
 var _getExeFromId = function(req, res) {
 	if (req.params.wsId !== undefined){

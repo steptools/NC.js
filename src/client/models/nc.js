@@ -61,6 +61,7 @@ export default class NC extends THREE.EventDispatcher {
             explode: function() { }
         };
         obj.object3D.applyMatrix(obj.transform);
+        obj.object3D.updateMatrixWorld();
         obj.overlay3D = obj.object3D.clone();
         obj.annotation3D = obj.object3D.clone();
         // Save the object
