@@ -517,17 +517,14 @@ export default class CADView extends React.Component {
 
         return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
-<<<<<<< HEAD
 
             <span className="resetview glyphicon glyphicon-eye-open"
                   onClick={()=>{this.alignToolView(this.props.manager.getSelected());}}/>
-=======
             <ViewButton
               alignCb={() => {this.alignToolView(this.props.manager.getSelected());}}
               toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
               locked = {this.state.lockedView}
             />
->>>>>>> parent of a93fe0b... Revert "Merge branch 'master' into MTConnect"
             {compass}
             <LoadQueueView dispatcher={this.props.manager} guiMode={this.props.guiMode} />
         </div>;
