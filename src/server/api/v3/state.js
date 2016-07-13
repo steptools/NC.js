@@ -82,6 +82,17 @@ var loop = function(ms, key) {
         update("pause");
         loop(ms,false);
       }
+      getDelta(ms, false, function(b) {
+        app.ioServer.emit('nc:delta', JSON.parse(b));
+        if (playbackSpeed > 0) {
+          if (loopTimer !== undefined)
+              clearTimeout(loopTimer);
+          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
+        }
+        else {
+          // app.logger.debug("playback speed is zero, no timeout set");
+        }
+      });
     }
   }
 };
