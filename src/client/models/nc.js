@@ -9,7 +9,6 @@ import Annotation          from './annotation';
 import DataLoader from './data_loader'
 import Shell from './shell'
 
-let fs = require("fs");
 
 /*************************************************************************/
 
