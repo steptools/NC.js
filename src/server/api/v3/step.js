@@ -95,3 +95,5 @@ module.exports = function(app, cb) {
   app.router.get('/v3/nc/setup/:wsId', _getSetup);
 	if (cb) cb();
 };
+
+module.exports._getSetupFromId = _getSetupFromId;
