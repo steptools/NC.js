@@ -133,8 +133,11 @@ export default class PropertiesPane extends React.Component {
         let hasChildren = false;
         if (entity.children && entity.children.length > 0) {
             hasChildren = true;
-        } else if (entity.workingsteps && entity.workingsteps.length > 0) {
-            hasChildren = true;
+        } 
+        
+        let hasWorkingsteps = false;
+        if (entity.workingsteps && entity.workingsteps.length > 0) {
+            hasWorkingsteps = true;
         }
 
         let time = null;
@@ -183,6 +186,7 @@ export default class PropertiesPane extends React.Component {
         console.log(this);
         console.log(entity);
         console.log(entity.type);
+        console.log(hasWorkingsteps);
 
         switch (entity.type) {
             case 'workpiece':
@@ -190,17 +194,15 @@ export default class PropertiesPane extends React.Component {
                     <Menu className='properties'>
                         {hasChildren ? 
                             <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                                <div className='title'>
-                                    Used in Workingsteps:
-                                </div>
+                                <div className='title'>Children:</div>
                                 <div className='list'>
-                                    {entity.workingsteps.map(this.renderNode)}
+                                    {entity.children.map(this.renderNode)}
                                 </div>
                             </MenuItem>
                         : 
                             <MenuItem disabled key='workingsteps' className='property children workingsteps'>
                                 <div className='title'>
-                                    Not used in any workingsteps.
+                                    No Children
                                 </div>
                             </MenuItem>
                         }
@@ -250,7 +252,7 @@ export default class PropertiesPane extends React.Component {
                             <div className={getIcon('tolerance value')}/>
                             Value: {entity.value}{entity.unit}
                         </MenuItem>
-                        {hasChildren ?
+                        {hasWorkingsteps ?
                             <MenuItem disabled key='workingsteps' className='property children workingsteps'>
                                 <div className='title'>
                                     Used in Workingsteps:
@@ -292,7 +294,7 @@ export default class PropertiesPane extends React.Component {
             case 'tool':
                 properties = (
                     <Menu className='properties'>
-                        {hasChildren ? 
+                        {hasWorkingsteps ? 
                             <MenuItem disabled key='workingsteps' className='property children workingsteps'>
                                 <div className='title'>
                                     Used in Workingsteps:
