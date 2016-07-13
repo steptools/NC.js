@@ -222,6 +222,7 @@ $icons: '../icons/';
                 &:hover:not(.rc-menu-item-disabled) {
                     cursor: pointer;
                     color: #2BAEE9;
+                    background-color: #333333;
                     border-bottom-color: #2BAEE9;
                 }
 
@@ -287,7 +288,8 @@ $icons: '../icons/';
 
     .titlebar {
         cursor: default;
-        display: inline-flex;
+        display: flex;
+        justify-content: center;
         align-items: center;
         width: 100%;
         padding: 5px;
@@ -295,12 +297,10 @@ $icons: '../icons/';
         
         .icon:first-child {
             margin-right: 8px;
-            float: left;
         }
         
         .icon:last-child {
             margin-left: 8px;
-            float: right;
             
             &:hover {
                 cursor: pointer;
@@ -309,7 +309,7 @@ $icons: '../icons/';
         }
         
         .title {
-            flex-grow: 10;
+            flex-grow: 1;
             font-size: 14px;
             font-weight: bold;
 
@@ -524,5 +524,5 @@ $icons: '../icons/';
 
     &.texture {
         background-image: url($icons + 'tolerance/texture.svg');
-    }    
+    }  
 }

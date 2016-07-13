@@ -4,28 +4,38 @@ import request from 'superagent';
 import _ from 'lodash';
 
 function getIcon(type, data) {
-    if (type === 'workplan') {
-        return 'icon glyphicons glyphicons-cube-empty';
-    } else if (type === "workplan-setup") {
-        return 'icon glyphicons glyphicons-cube-black';
-    } else if (type === 'selective') {
-        return 'icon glyphicons glyphicons-list-numbered';
-    } else if (type === 'workingstep') {
-        return 'icon glyphicons glyphicons-blacksmith';
-    } else if (type === 'tool') {
-        return 'icon custom tool';
-    } else if (type === 'exit') {
-        return 'icon glyphicons glyphicons-remove-sign';
-    } else if (type === 'time') {
-        return 'icon glyphicons glyphicons-clock';
-    } else if (type === 'distance') {
-        return 'icon glyphicons glyphicons-ruler';
-    } else if (type === 'tolerance' && data) {
-        return 'icon custom tolerance ' + data;
-    } else if (type === 'workpiece') {
-        return 'icon custom workpiece';
-    } else {
-        return 'icon glyphicons glyphicons-question-sign';
+    switch (type) {
+        case 'workplan':
+            return 'icon glyphicons glyphicons-cube-empty';
+        case 'workplan-setup':
+            return 'icon glyphicons glyphicons-cube-black';
+        case 'selective':
+            return 'icon glyphicons glyphicons-list-numbered';
+        case 'workingstep':
+            return 'icon glyphicons glyphicons-blacksmith';
+        case 'tool':
+            return 'icon custom tool';
+        case 'workpiece':
+            return 'icon custom workpiece';
+        case 'tolerance':
+            if (data) {
+                return 'icon custom tolerance ' + data;
+            } 
+            return 'icon glyphicons glyphicons-question-sign';
+        case 'exit':
+            return 'icon glyphicons glyphicons-remove';
+        case 'active':
+            return 'icon glyphicons glyphicons-ok-circle';
+        case 'inactive':
+            return 'icon glyphicons glyphicons-remove-circle';
+        case 'disabled':
+            return 'icon glyphicons glyphicons-ban-circle'
+        case 'time':
+            return 'icon glyphicons glyphicons-clock';
+        case 'distance':
+            return 'icon glyphicons glyphicons-ruler';
+        default:
+            return 'icon glyphicons glyphicons-question-sign';
     }
 }
 
@@ -193,14 +203,17 @@ export default class PropertiesPane extends React.Component {
 
                 if (this.props.ws === entity.id) {
                     selectStep = <MenuItem disabled className='property'>
+                        <div className={getIcon('active')}/>
                         Status: Active
                     </MenuItem>;
                 } else if (entity.enabled) {
                     selectStep = <MenuItem disabled className='property'>
+                        <div className={getIcon('inactive')}/>
                         Status: Inactive
                     </MenuItem>;
                 } else {
                     selectStep = <MenuItem disabled className='property'>
+                        <div className={getIcon('disabled')}/>
                         Status: Disabled
                     </MenuItem>;
                 }
