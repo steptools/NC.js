@@ -3,33 +3,29 @@ import Menu,{Item as MenuItem} from 'rc-menu';
 import request from 'superagent';
 import _ from 'lodash';
 
-function getIcon(type, prefix, data) {
-    if (!prefix) {
-        prefix = '';
-    }
-    
+function getIcon(type, data) {
     if (type === 'workplan') {
-        return prefix + 'icon glyphicons glyphicons-cube-empty';
+        return 'icon glyphicons glyphicons-cube-empty';
     } else if (type === "workplan-setup") {
-        return prefix + 'icon glyphicons glyphicons-cube-black';
+        return 'icon glyphicons glyphicons-cube-black';
     } else if (type === 'selective') {
-        return prefix + 'icon glyphicons glyphicons-list-numbered';
+        return 'icon glyphicons glyphicons-list-numbered';
     } else if (type === 'workingstep') {
-        return prefix + 'icon glyphicons glyphicons-blacksmith';
+        return 'icon glyphicons glyphicons-blacksmith';
     } else if (type === 'tool') {
-        return prefix + 'icon tool';
+        return 'icon custom tool';
     } else if (type === 'exit') {
-        return 'exit icon glyphicons glyphicons-remove-sign';
+        return 'icon glyphicons glyphicons-remove-sign';
     } else if (type === 'time') {
-        return prefix + 'icon glyphicons glyphicons-clock';
+        return 'icon glyphicons glyphicons-clock';
     } else if (type === 'distance') {
-        return prefix + 'icon glyphicons glyphicons-ruler';
+        return 'icon glyphicons glyphicons-ruler';
     } else if (type === 'tolerance' && data) {
-        return prefix + 'icon tolerance ' + data;
+        return 'icon custom tolerance ' + data;
     } else if (type === 'workpiece') {
-        return prefix + 'icon workpiece';
+        return 'icon custom workpiece';
     } else {
-        return prefix + 'icon glyphicons glyphicons-question-sign';
+        return 'icon glyphicons glyphicons-question-sign';
     }
 }
 
@@ -142,9 +138,9 @@ export default class PropertiesPane extends React.Component {
             </MenuItem>
         }
         
-        //console.log(this);
-        //console.log(entity);
-        //console.log(entity.type);
+        console.log(this);
+        console.log(entity);
+        console.log(entity.type);
 
         switch (entity.type) {
             case 'workpiece':
@@ -220,6 +216,35 @@ export default class PropertiesPane extends React.Component {
                     </Menu>
                 );
                 break;
+            case 'tolerance':
+                properties = (
+                    <Menu className='properties'>
+                        <MenuItem disabled key='tolType' className='property'>
+                            {entity.toleranceType}
+                            Tolerance
+                        </MenuItem>
+                        <MenuItem disabled key='tolValue' className='property'>
+                            Value: {entity.value}
+                            {entity.unit}
+                        </MenuItem>
+                        {hasWorkingsteps
+                            ? <MenuItem disabled key='workingsteps' className='property children workingsteps'>
+                                <div className='title'>
+                                    Used in Workingsteps:
+                                </div>
+                                <div className='list'>
+                                    {entity.workingsteps.map(this.renderNode)}
+                                </div>
+                            </MenuItem>
+                                : <MenuItem disabled key='workingsteps' className='property children workingsteps'>
+                                    <div className='title'>
+                                        Not used in any workingsteps.
+                                    </div>
+                                </MenuItem>
+                        }
+                    </Menu>
+                );
+                break;
             case 'workplan':
             case 'workplan-setup':
             case 'selective':
@@ -271,16 +296,21 @@ export default class PropertiesPane extends React.Component {
     }
 
     render() {
+        let entity = this.props.entity;
         let entityName = ''
         let entityType = '';
         let paneName = 'properties-pane';
         let titleIcon = '';
         
-        if (this.props.entity !== null) {
-            entityName = this.props.entity.name;
-            entityType = this.props.entity.type[0].toUpperCase() + this.props.entity.type.slice(1);
+        if (entity !== null) {
+            entityName = entity.name;
+            entityType = entity.type[0].toUpperCase() + entity.type.slice(1);
             paneName += ' visible';
-            titleIcon = getIcon(this.props.entity.type);
+            if (entity.type === 'tolerance') {
+                titleIcon = getIcon(entity.type, entity.toleranceType);
+            } else {
+                titleIcon = getIcon(entity.type);
+            }
         }
 
         return (
@@ -296,7 +326,7 @@ export default class PropertiesPane extends React.Component {
                         onClick={(event) => {this.props.propertiesCb(null);}}
                     />
                 </div>
-                {this.renderProperties(this.props.entity)}
+                {this.renderProperties(entity)}
             </div>
         );
     }
