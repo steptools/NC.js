@@ -1,9 +1,21 @@
 "use strict";
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
-//var file = require('./file');
-var fs = require('fs')
-//var app;
+var fs = require('fs');
 
+///*******************************************************************\
+//|                                                                    |
+//|                       Helper Functions                             |
+//|                                                                    |
+//\*******************************************************************/
+
+
+
+
+///*******************************************************************\
+//|                                                                    |
+//|                       Endpoint Functions                           |
+//|                                                                    |
+//\*******************************************************************/
 
 var _getchangelog = function(req,res){
     fs.readFile("changelog.md", "utf8", function(err,data){
