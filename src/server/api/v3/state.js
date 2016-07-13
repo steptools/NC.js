@@ -209,7 +209,11 @@ var _loop = function(ms, key, wsgcode) {
 var _loopInit = function(req, res) {
   // app.logger.debug("loopstate is " + req.params.loopstate);
 
-  fs.readFile("/Users/UuqV/StepNCViewer/data/boxy/boxy.mtc", function(err, data) {
+
+  let MTCfile = app.project.substring(0, app.project.length - 5) + "mtc";
+
+
+  fs.readFile(MTCfile, function(err, data) {
     WSGCode = JSON.parse(data.toString());
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {
