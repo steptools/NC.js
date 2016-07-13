@@ -21,7 +21,7 @@ var exeFromId = function(id) {
 	if (find.IsWorkingstep(id)) {
 		ws.type = "workingstep";
 		ws.tool = find.GetWorkingstepTool(id);
-		
+
 		return ws;
 	} else if (find.IsSelective(id)) {
 		ws.type = "selective";
@@ -58,8 +58,26 @@ var _getMwp = function(req, res) {
 	res.status(200).send(exeFromId(mwpId));
 };
 
+var _getSetupFromId = function(id) {
+  let test = id;
+  while(test !== 0 && !find.IsWorkplanWithSetup(test))
+  {
+    test = find.GetExecutableContainer(test);
+  }
+  return test;
+};
+
+var _getSetup = function(req, res) {
+  if (req.params.wsId !== undefined){
+    let wsId = req.params.wsId;
+    let id_new = _getSetupFromId(parseInt(wsId));
+    res.status(200).send(id_new);
+  }
+};
+
 module.exports = function(app, cb) {
 	app.router.get('/v3/nc/workplan/:wsId',_getExeFromId);
 	app.router.get('/v3/nc/workplan',_getMwp);
+  app.router.get('/v3/nc/state/:wsId', _getSetup);
 	if (cb) cb();
 };
