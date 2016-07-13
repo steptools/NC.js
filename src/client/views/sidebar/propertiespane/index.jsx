@@ -95,11 +95,7 @@ export default class PropertiesPane extends React.Component {
     }
 
     renderNode(node) {
-        var cName = 'node';
-        //node is a generic white node
-        //node running-node is a node that is the current workingstep
-        //node disabled is a node that is part of a selective but isn't
-        //currently enabled
+        let cName = 'node';
         if (node.id == this.props.ws) {
             cName = 'node running-node';
         } else {
@@ -109,6 +105,10 @@ export default class PropertiesPane extends React.Component {
         }
         
         let icon = <span className={getIcon(node.type)}/>;
+        if (node.type === 'tolerance') {
+            icon = <span className={getIcon(node.type, node.toleranceType)}/>;
+        }
+        
         return (
             <div key={node.id}>
                 <span id={node.id} className={cName} onClick={(event) => {
@@ -186,7 +186,6 @@ export default class PropertiesPane extends React.Component {
         console.log(this);
         console.log(entity);
         console.log(entity.type);
-        console.log(hasWorkingsteps);
 
         switch (entity.type) {
             case 'workpiece':
