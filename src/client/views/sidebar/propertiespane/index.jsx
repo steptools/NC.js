@@ -152,6 +152,32 @@ export default class PropertiesPane extends React.Component {
             </MenuItem>
         }
         
+        let active = null
+        if (entity.type === 'tolerance' || entity.type === 'workingstep') {
+            if (entity.active === true || this.props.ws === entity.id) {
+                active = (
+                    <MenuItem disabled className='property'>
+                        <div className={getIcon('active')}/>
+                        Status: Active
+                    </MenuItem>
+                )
+            } else if (entity.enabled === true) {
+                active = (
+                    <MenuItem disabled className='property'>
+                        <div className={getIcon('inactive')}/>
+                        Status: Inactive
+                    </MenuItem>
+                )
+            } else {
+                active = (
+                    <MenuItem disabled className='property'>
+                        <div className={getIcon('disabled')}/>
+                        Status: Disabled
+                    </MenuItem>
+                )
+            }
+        }
+        
         console.log(this);
         console.log(entity);
         console.log(entity.type);
@@ -160,14 +186,6 @@ export default class PropertiesPane extends React.Component {
             case 'workpiece':
                 properties = (
                     <Menu className='properties'>
-                        <MenuItem disabled key='tolType' className='property'>
-                            {entity.toleranceType}
-                            Tolerance
-                        </MenuItem>
-                        <MenuItem disabled key='tolValue' className='property'>
-                            Value: {entity.value}
-                            {entity.unit}
-                        </MenuItem>
                         {hasWorkingsteps
                             ? <MenuItem disabled key='workingsteps' className='property children workingsteps'>
                                 <div className='title'>
@@ -188,12 +206,11 @@ export default class PropertiesPane extends React.Component {
 
                 break;
             case 'workingstep':
-                let selectStep,
-                    goToButton,
+                let goToButton,
                     toolInfo;
 
                 goToButton = (
-                    <MenuItem key='goto' disabled={!(entity.enabled && this.props.ws !== entity.id)} className='property goTo'>
+                    <MenuItem key='goto' disabled={!(entity.enabled === true && this.props.ws !== entity.id)} className='property goTo'>
                         Go to Workingstep
                     </MenuItem>
                 );
@@ -205,27 +222,11 @@ export default class PropertiesPane extends React.Component {
                     </MenuItem>
                 );
 
-                if (this.props.ws === entity.id) {
-                    selectStep = <MenuItem disabled className='property'>
-                        <div className={getIcon('active')}/>
-                        Status: Active
-                    </MenuItem>;
-                } else if (entity.enabled) {
-                    selectStep = <MenuItem disabled className='property'>
-                        <div className={getIcon('inactive')}/>
-                        Status: Inactive
-                    </MenuItem>;
-                } else {
-                    selectStep = <MenuItem disabled className='property'>
-                        <div className={getIcon('disabled')}/>
-                        Status: Disabled
-                    </MenuItem>;
-                }
                 properties = (
                     <Menu className='properties' onClick={(event) => {
                         this.selectWS(event, entity);
                     }}>
-                        {selectStep}
+                        {active}
                         {time}
                         {distance}
                         {toolInfo}
@@ -237,6 +238,7 @@ export default class PropertiesPane extends React.Component {
                 let tolType = entity.toleranceType[0].toUpperCase() + entity.toleranceType.slice(1);
                 properties = (
                     <Menu className='properties'>
+                        {active}
                         <MenuItem disabled key='tolType' className='property'>
                             <div className={getIcon('tolerance type')}/>
                             Type: {tolType} Tolerance
