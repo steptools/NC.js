@@ -3,7 +3,7 @@ import Menu,{Item as MenuItem} from 'rc-menu';
 import request from 'superagent';
 import _ from 'lodash';
 
-function getIcon(type, prefix) {
+function getIcon(type, prefix, data) {
     if (!prefix) {
         prefix = '';
     }
@@ -21,9 +21,11 @@ function getIcon(type, prefix) {
     } else if (type === 'exit') {
         return 'exit icon glyphicons glyphicons-remove-sign';
     } else if (type === 'time') {
-        return prefix + 'icon glyphicons glyphicons-clock';
+        return prefix + 'icon glyphicon glyphicon-time';
     } else if (type === 'distance') {
-        return prefix + 'icon glyphicons glyphicons-ruler';
+        return prefix + 'icon glyphicon glyphicon-resize-horizontal';
+    } else if (type === 'tolerance' && data) {
+        return prefix + 'icon tolerance ' + data;
     } else {
         return prefix + 'icon glyphicons glyphicons-question-sign';
     }
@@ -114,7 +116,7 @@ export default class PropertiesPane extends React.Component {
             return null;
         }
         
-        let items = null;
+        let properties = null;
         
         let hasWorkingsteps = true;
         if (entity.workingsteps === undefined || entity.workingsteps.length <= 0) {
@@ -127,20 +129,24 @@ export default class PropertiesPane extends React.Component {
             let formattedTime = getFormattedTime(entity);
 
             time = <MenuItem disabled key='time' className='property time'>
-                <div className='property-icon glyphicons glyphicons-clock'/>
+                <div className={getIcon('time')}/>
                 Base time: {formattedTime}
             </MenuItem>
             
             distance = <MenuItem disabled key='distance' className='property distance'>
-                <div className='property-icon glyphicons glyphicons-ruler'/>
+                <div className={getIcon('distance')}/>
                 Distance: {entity.distance.toFixed(2)}
                 {entity.distanceUnits}
             </MenuItem>
         }
+        
+        //console.log(this);
+        //console.log(entity);
+        //console.log(entity.type);
 
         switch (entity.type) {
             case 'workpiece':
-                items = (
+                properties = (
                     <Menu className='properties'>
                         <MenuItem disabled key='tolType' className='property'>
                             {entity.toleranceType}
@@ -200,7 +206,7 @@ export default class PropertiesPane extends React.Component {
                         Status: Disabled
                     </MenuItem>;
                 }
-                items = (
+                properties = (
                     <Menu className='properties' onClick={(event) => {
                         this.selectWS(event, entity);
                     }}>
@@ -215,7 +221,7 @@ export default class PropertiesPane extends React.Component {
             case 'workplan':
             case 'workplan-setup':
             case 'selective':
-                items = (
+                properties = (
                     <Menu className='properties'>
                         {time}
                         {distance}
@@ -229,7 +235,7 @@ export default class PropertiesPane extends React.Component {
                 );
                 break;
             case 'tool':
-                items = (
+                properties = (
                     <Menu className='properties'>
                         {hasWorkingsteps
                             ? <MenuItem key='workingsteps' className='property children workingsteps'>
@@ -250,7 +256,7 @@ export default class PropertiesPane extends React.Component {
                 );
                 break;
             default:
-                items = (
+                properties = (
                     <Menu className='properties'>
                         <MenuItem disabled className='property'>
                             No information available
@@ -259,7 +265,7 @@ export default class PropertiesPane extends React.Component {
                 );
         }
 
-        return items;
+        return properties;
     }
 
     render() {

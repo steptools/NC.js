@@ -214,6 +214,8 @@ $icons: '../icons/';
     .properties {
         height: calc(100% - 54px);
         width: 100%;
+        padding-top: 5px;
+        padding-bottom: 5px;
         overflow-y: scroll;
 
         .property {
@@ -326,6 +328,7 @@ $icons: '../icons/';
     }
 
     .titlebar {
+        cursor: default;
         display: inline-flex;
         align-items: center;
         width: 100%;
@@ -337,12 +340,12 @@ $icons: '../icons/';
         }
         
         .title {
-            width: 100%;
+            width: 80%;
             font-size: 14px;
             font-weight: bold;
 
             .type {
-                border-bottom: 1px solid #666666;
+                border-bottom: 2px solid #666666;
             }
         }
 
@@ -351,6 +354,7 @@ $icons: '../icons/';
             margin-right: 0px;
             margin-left: 8px;
             float: right;
+            font-size: 28px;
 
             &:hover {
                 cursor: pointer;
@@ -362,24 +366,23 @@ $icons: '../icons/';
     .icon-tool {
         background-image: url($icons + 'tools/tool.svg');
         background-color: rgba(#FFFFFF, 0);
+        border: 2px solid #333333;
         vertical-align: middle;
         background-size: cover;
         background-position: center;
+        border-radius: 5px;
         display: inline-block;
         text-align: center;
     }
     
     .titlebar .icon-tool {
-        border: 2px solid #333333;
-        border-radius: 5px;
         width: 30px;
         height: 30px;
     }
     
     .property .icon-tool {
-        border: none;
-        width: 15px;
-        height: 15px;
+        width: 24px;
+        height: 24px;
     }
 
     .icon {
