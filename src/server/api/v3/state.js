@@ -77,7 +77,7 @@ var loop = function(ms, key) {
         loop(ms, true);
       });
       let setup = _sameSetup(_getWorkingstep(),old);
-      if (setup){
+      if (!setup){
         loopStates[path] = false;
         update("pause");
         loop(ms,false);
@@ -95,8 +95,8 @@ var _getWorkingstep = function() {
 };
 
 var _sameSetup = function (knew, old) {
-  let id1 = knew;
-  let id2 = old;
+  let id1 = step._getSetupFromId(knew);
+  let id2 = step._getSetupFromId(old);
   console.log(id1);
   console.log(id2);
   return (step._getSetupFromId(knew) === step._getSetupFromId(old));
