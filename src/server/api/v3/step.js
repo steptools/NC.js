@@ -12,7 +12,8 @@ var exeFromId = function(id) {
 		'baseTime' : find.GetExecutableBaseTime(id),
 		'timeUnits' : find.GetExecutableTimeUnit(id),
 		'distance' : find.GetExecutableDistance(id),
-		'distanceUnits' : find.GetExecutableDistanceUnit(id)
+		'distanceUnits' : find.GetExecutableDistanceUnit(id),
+    'setupID' : _getSetupFromId(id)
 	};
 	if(find.IsEnabled(id))
 		ws.enabled = true;
