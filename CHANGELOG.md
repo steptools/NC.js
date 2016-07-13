@@ -13,6 +13,7 @@ Features:
 - Tolerance View now displays workpieces and all subcomponents of those workpieces as well as tolerances associated with any of these workpieces
 - 404 error page improved 404%!
 - Styling overhaul of the sidebar
+- Keeps entire tool in view when machine is loaded
 
 Bugfixes:
 
