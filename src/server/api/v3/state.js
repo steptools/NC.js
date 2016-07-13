@@ -1,6 +1,7 @@
 "use strict";
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
+var step = require('./step');
 var find = file.find;
 
 var app;
@@ -71,11 +72,39 @@ var loop = function(ms, key) {
     }
     else if (rc == 1) {   // SWITCH
       // app.logger.debug("SWITCH...");
+      let old = _getWorkingstep();
       getNext(ms, function() {
         loop(ms, true);
       });
+      let setup = _sameSetup(_getWorkingstep(),old);
+      if (!setup){
+        loopStates[path] = false;
+        update("pause");
+        loop(ms,false);
+      }
+      getDelta(ms, false, function(b) {
+        app.ioServer.emit('nc:delta', JSON.parse(b));
+        if (playbackSpeed > 0) {
+          if (loopTimer !== undefined)
+              clearTimeout(loopTimer);
+          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
+        }
+        else {
+          // app.logger.debug("playback speed is zero, no timeout set");
+        }
+      });
     }
   }
+};
+
+var _getWorkingstep = function() {
+  var ms = file.ms;
+  let keyjson = JSON.parse(ms.GetKeystateJSON());
+  return keyjson.workingstep;
+};
+
+var _sameSetup = function (newid, oldid) {
+  return (step._getSetupFromId(newid) === step._getSetupFromId(oldid))
 };
 
 ///*******************************************************************\

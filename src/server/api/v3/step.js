@@ -18,7 +18,8 @@ var exeFromId = function(id) {
 		'baseTime' : find.GetExecutableBaseTime(id),
 		'timeUnits' : find.GetExecutableTimeUnit(id),
 		'distance' : find.GetExecutableDistance(id),
-		'distanceUnits' : find.GetExecutableDistanceUnit(id)
+		'distanceUnits' : find.GetExecutableDistanceUnit(id),
+    'setupID' : _getSetupFromId(id)
 	};
 	if(find.IsEnabled(id))
 		ws.enabled = true;
@@ -27,7 +28,7 @@ var exeFromId = function(id) {
 	if (find.IsWorkingstep(id)) {
 		ws.type = "workingstep";
 		ws.tool = find.GetWorkingstepTool(id);
-		
+
 		return ws;
 	} else if (find.IsSelective(id)) {
 		ws.type = "selective";
@@ -70,8 +71,29 @@ var _getMwp = function(req, res) {
 	res.status(200).send(exeFromId(mwpId));
 };
 
+var _getSetupFromId = function(id) {
+  let currentid = parseInt(id);
+  while(currentid !== 0 && !find.IsWorkplanWithSetup(currentid))
+  {
+    currentid = find.GetExecutableContainer(currentid);
+  }
+  return currentid;
+};
+
+var _getSetup = function(req, res) {
+  if (req.params.wsId !== undefined){
+    let wsId = req.params.wsId;
+    let id_new = _getSetupFromId(parseInt(wsId));
+    console.log(id_new);
+    res.status(200).send(String(id_new));
+  }
+};
+
 module.exports = function(app, cb) {
 	app.router.get('/v3/nc/workplan/:wsId',_getExeFromId);
 	app.router.get('/v3/nc/workplan',_getMwp);
+  app.router.get('/v3/nc/setup/:wsId', _getSetup);
 	if (cb) cb();
 };
+
+module.exports._getSetupFromId = _getSetupFromId;
