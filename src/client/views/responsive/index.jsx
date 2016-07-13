@@ -230,10 +230,13 @@ export default class ResponsiveView extends React.Component {
             if(!err && res.ok){
               // Node preprocessing
               let json = JSON.parse(res.text);
-              
+              let lowFlag = true;
               let nodeCheck = (n) => {
                 let node = n;
-                
+                if(node.tolerances !== undefined){
+                    if(node.tolerances.length > 0)
+                        lowFlag = false;
+                }
                 if (node.children === undefined)
                   node.children = [];
                 
@@ -244,10 +247,27 @@ export default class ResponsiveView extends React.Component {
                 else {
                   node.leaf = true;
                 }
+                if(lowFlag){
+                    node.enabled = false;
+                    lowFlag = true;
+                }
+                else
+                    node.enabled = true;
                 return node;
               };
 
               json = _.map(json, nodeCheck);
+
+              json.sort(
+                function(a,b){
+                    if(a.enabled === true && b.enabled === false)
+                        return -1;
+                    else if(a.enabled === false && b.enabled === true)
+                        return 1;
+                    else 
+                        return 0;
+                }
+              );
             
               this.setState({'toleranceCache': json});
             }
