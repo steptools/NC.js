@@ -6,7 +6,13 @@ var tol = file.tol;
 var apt = file.apt;
 var find = file.find;
 
-var GetWorkingstepsForTolerance = function(exe, tolId) {
+///*******************************************************************\
+//|                                                                    |
+//|                       Helper Functions                             |
+//|                                                                    |
+//\*******************************************************************/
+
+var getWorkingstepsForTolerance = function(exe, tolId) {
     if (find.IsWorkingstep(exe)) {
         let allTols = tol.GetWorkingstepToleranceAll(exe);
         if (_.indexOf(allTols, tolId) !== -1) {
@@ -21,7 +27,7 @@ var GetWorkingstepsForTolerance = function(exe, tolId) {
         let children = find.GetNestedExecutableAll(exe);
         if (children !== undefined) {
             _.each(children, (childId) => {
-                rtn = rtn.concat(GetWorkingstepsForTolerance(childId, tolId));
+                rtn = rtn.concat(getWorkingstepsForTolerance(childId, tolId));
             });
         }
         return rtn;
@@ -33,7 +39,7 @@ var GetWorkingstepsForTolerance = function(exe, tolId) {
 };
 
 var getTolerance = function(id) {
-  let steps = GetWorkingstepsForTolerance(find.GetMainWorkplan(), id);
+  let steps = getWorkingstepsForTolerance(find.GetMainWorkplan(), id);
   let name = tol.GetToleranceType(id);
   let tolType;
   if (name) {
@@ -50,16 +56,8 @@ var getTolerance = function(id) {
     "workingsteps": steps,
     "unit" : tol.GetToleranceUnit(id),
     "workpiece": tol.GetWorkpieceOfTolerance(id),
+    "leaf" : true
   };
-};
-
-var _getTols = function(req,res) {
-  let tol_list = tol.GetToleranceAll();
-  let ret = [];
-  for (let id of tol_list){
-      ret.push(getTolerance(id));
-  }
-  res.status(200).send(ret);
 };
 
 var getWp = function(id, type) {
@@ -79,7 +77,13 @@ var getWp = function(id, type) {
 
   for (let sub_id of asm_list) {
     if (id !== sub_id) {
-      subs.push(getWp(sub_id, type));
+      let sub = getWp(sub_id, type);
+      if(sub.children === undefined)
+        sub.children = [];
+      for(let toler in sub.tolerances){
+        sub.children.push(getWsTols(sub.tolerances[toler]));
+      }
+      subs.push(sub);
     }
   }
   
@@ -89,17 +93,22 @@ var getWp = function(id, type) {
   return ret;
 };
 
-var _getWps = function(req,res) {
-  let wps = find.GetWorkpieceAll();
-  let ret = [];
-  for (let id of wps) {
-    let type = find.GetWorkpieceType(id);
-    let wp = getWp(id, type);
-    if (wp.wpType === 'workpiece')
-      ret.push(wp);
+var getWsTols = function(wsId) {
+  if (find.IsWorkingstep(wsId)) { // this may be able to be factored out later
+    let tolerances = JSON.stringify(tol.GetWorkingstepToleranceAll(wsId));
+    return tolerances;
   }
-  res.status(200).send(ret);
+  else {  // we are looking for a tolerance
+    let tol = getTolerance(Number(wsId));
+    return tol;
+  }
 };
+
+///*******************************************************************\
+//|                                                                    |
+//|                       Endpoint Functions                           |
+//|                                                                    |
+//\*******************************************************************/
 
 var _getWsTols = function(req,res) {
   if (req.params.wsId){
@@ -113,6 +122,32 @@ var _getWsTols = function(req,res) {
       res.status(200).send(tol);
     }
   }
+};
+
+var _getTols = function(req,res) {
+  let tol_list = tol.GetToleranceAll();
+  let ret = [];
+  for (let id of tol_list){
+      ret.push(getTolerance(id));
+  }
+  res.status(200).send(ret);
+};
+
+var _getWps = function(req,res) {
+  let wps = find.GetWorkpieceAll();
+  let ret = [];
+  for (let id of wps) {
+    let type = find.GetWorkpieceType(id);
+    let wp = getWp(id, type);
+    if(wp.children === undefined)
+      wp.children = [];
+    for(let wp_tol in wp.tolerances){
+      wp.children.push(getWsTols(wp.tolerances[wp_tol]));
+    }
+    if (wp.wpType === 'workpiece')
+      ret.push(wp);
+  }
+  res.status(200).send(ret);
 };
 
 module.exports = function(app, cb) {
