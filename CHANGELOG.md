@@ -3,6 +3,7 @@ Version 1.4.0
 Features:
 - Keeps entire tool in view when machine is loaded
 - Lowlighted Workpieces if no Tolerances are present
+- Simulation pauses when moving between setups (Ignored when using skip-forward)
 
 Bugfixes:
 - View no longer starts upside down on initial load
@@ -36,7 +37,7 @@ Bugfixes:
 - Part and toolpath geometry move with fixture when needed
 - Clicking on workingstep/workplan works with properties pane again
 - Workplan will now close correctly nodes that were open before moving to a previous workingstep
-- Fixed toggled parent nodes to always highlight if they have an active child regardless 
+- Fixed toggled parent nodes to always highlight if they have an active child regardless
 of the state of the child
 - Remove warning on load queue when loading machine tool
 
