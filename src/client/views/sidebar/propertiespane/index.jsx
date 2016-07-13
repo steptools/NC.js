@@ -158,8 +158,8 @@ export default class PropertiesPane extends React.Component {
         }
         
         let active = null
-        if (entity.type === 'tolerance' || entity.type === 'workingstep') {
-            if (entity.active === true || this.props.ws === entity.id) {
+        if (entity.type === 'workingstep' || entity.type === 'tolerance') {
+            if (this.props.ws === entity.id || (entity.tolerances && entity.tolerances[this.props.ws])) {
                 active = (
                     <MenuItem disabled className='property'>
                         <div className={getIcon('active')}/>
@@ -327,6 +327,9 @@ export default class PropertiesPane extends React.Component {
         let entityType = '';
         let paneName = 'properties-pane';
         let titleIcon = '';
+        
+        //console.log(this);
+        //console.log(entity);
         
         if (entity !== null) {
             entityName = entity.name;
