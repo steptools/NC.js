@@ -72,7 +72,7 @@ var _getMwp = function(req, res) {
 };
 
 var _getSetupFromId = function(id) {
-  let test = id;
+  let test = parseInt(id);
   while(test !== 0 && !find.IsWorkplanWithSetup(test))
   {
     test = find.GetExecutableContainer(test);

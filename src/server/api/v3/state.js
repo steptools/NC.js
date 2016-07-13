@@ -78,7 +78,7 @@ var loop = function(ms, key) {
       });
       let setup = _sameSetup(_getWorkingstep(),old);
       if (setup){
-        loopstates[path] = false;
+        loopStates[path] = false;
         update("pause");
         loop(ms,false);
       }
@@ -89,10 +89,16 @@ var loop = function(ms, key) {
 var _getWorkingstep = function() {
   var ms = file.ms;
   let jason = ms.GetKeystateJSON();
-  return jason.workingstep;
+  let keyjson = JSON.parse(jason);
+
+  return keyjson.workingstep;
 };
 
 var _sameSetup = function (knew, old) {
+  let id1 = knew;
+  let id2 = old;
+  console.log(id1);
+  console.log(id2);
   return (step._getSetupFromId(knew) === step._getSetupFromId(old));
 };
 
