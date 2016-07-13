@@ -6,6 +6,7 @@ Features:
 
 Bugfixes:
 - View no longer starts upside down on initial load
+- Proper icons display on profile tolerances
 
 Reverted:
 
