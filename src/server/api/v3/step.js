@@ -71,7 +71,8 @@ var _getSetup = function(req, res) {
   if (req.params.wsId !== undefined){
     let wsId = req.params.wsId;
     let id_new = _getSetupFromId(parseInt(wsId));
-    res.status(200).send(id_new);
+    console.log(id_new);
+    res.status(200).send(String(id_new));
   }
 };
 
