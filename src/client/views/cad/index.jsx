@@ -81,9 +81,15 @@ export default class CADView extends React.Component {
         // calculate the scene's radius for draw distance calculations
         this.updateSceneBoundingBox(model.getBoundingBox());
         
-        // set the default view
-        this.alignToolView(this.props.manager.getSelected());
-        this.invalidate();
+        let sel = this.props.manager.getSelected();
+        
+        if (_.find(_.values(sel[0]._objects), {usage: 'machine'})) {
+            this.setState({lockedView: false});
+            // set the default view
+            this.zoomToFit(sel);
+            this.invalidate();
+        }
+
         
         // Update the model tree
         let tree = this.props.manager.getTree();
