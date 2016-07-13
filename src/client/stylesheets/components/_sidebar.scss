@@ -462,6 +462,7 @@ $icons: '../icons/';
         background-image: url($icons + 'tolerance/cylindricity.svg');
     }
 
+<<<<<<< HEAD
     &.flatness {
         background-image: url($icons + 'tolerance/flatness.svg');
     }
@@ -469,6 +470,15 @@ $icons: '../icons/';
     &.parallelism {
         background-image: url($icons + 'tolerance/parallelism.svg');
     }
+=======
+        &.line {
+            background-image: url($icons + 'tolerance/profile_line.svg');
+        }
+
+        &.surface {
+            background-image: url($icons + 'tolerance/profile_surface.svg');
+        }
+>>>>>>> a005a872180ed6f0d3b5e02274e3e481864f5e6a
 
     &.perpendicularity {
         background-image: url($icons + 'tolerance/perpendicularity.svg');

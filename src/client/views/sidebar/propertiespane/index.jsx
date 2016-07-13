@@ -182,10 +182,6 @@ export default class PropertiesPane extends React.Component {
                 )
             }
         }
-        
-        console.log(this);
-        console.log(entity);
-        console.log(entity.type);
 
         switch (entity.type) {
             case 'workpiece':
