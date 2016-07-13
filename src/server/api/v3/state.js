@@ -108,9 +108,7 @@ var _getWorkingstep = function() {
 var _sameSetup = function (knew, old) {
   let id1 = step._getSetupFromId(knew);
   let id2 = step._getSetupFromId(old);
-  console.log(id1);
-  console.log(id2);
-  return (step._getSetupFromId(knew) === step._getSetupFromId(old));
+  return (id1 === id2);
 };
 
 ///*******************************************************************\
