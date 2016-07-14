@@ -252,20 +252,6 @@ export default class PropertiesPane extends React.Component {
                             <div className={getIcon('tolerance value')}/>
                             Value: {entity.value}{entity.unit}
                         </MenuItem>
-                        {hasWorkingsteps ?
-                            <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                                <div className='title'>
-                                    Used in Workingsteps:
-                                </div>
-                                <div className='list'>
-                                    {children}
-                                </div>
-                            </MenuItem>
-                        : 
-                            <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                                <div className='title'>Not used in any workingsteps.</div>
-                            </MenuItem>
-                        }
                     </Menu>
                 );
                 break;
