@@ -168,7 +168,6 @@ export default class CADView extends React.Component {
                 let colors = shell.model._geometry.getAttribute('color');
 
                 let indices = _.map(this.props.selectedEntity.faces, (id) => faces.array[id]);
-                console.log(indices);
 
                 // unhighlight each old tolerance face
                 _.each(indices, (index) => {
@@ -229,9 +228,6 @@ export default class CADView extends React.Component {
               this.invalidate();
             }
           });
-        }
-        else {
-          console.log('workingstep is not active');
         }
       }
     }
