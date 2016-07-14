@@ -79,7 +79,7 @@ export default class SidebarView extends React.Component {
                 ? <WorkplanList cbMode={this.props.cbMode} cbTree={this.props.cbTree} ws={this.props.ws} workplanCache={this.props.workplanCache} propertyCb={this.props.openProperties}/>
                 : null}
             {this.props.mode == 'tolerance'
-                ? <ToleranceList cbMode={this.props.cbMode} cbTree={this.props.cbTree} propertyCb={this.props.openProperties} toleranceCache={this.props.toleranceCache}/>
+                ? <ToleranceList cbMode={this.props.cbMode} cbTree={this.props.cbTree} propertyCb={this.props.openProperties} toleranceCache={this.props.toleranceCache} toleranceList={this.props.toleranceList}/>
                 : null}
             {this.props.mode == 'tools'
                 ? <ToolList cbMode={this.props.cbMode} cbTree={this.props.cbTree} ws={this.props.ws} propertyCb={this.props.openProperties} toolCb= {(toolList) => {this.setState({tools: toolList});}} tools={this.props.toolCache} curtool={this.props.curtool}/>

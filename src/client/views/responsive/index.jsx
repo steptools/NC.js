@@ -36,7 +36,8 @@ export default class ResponsiveView extends React.Component {
             logtext : "default",
             toolCache : [],
             curtool : '',
-            toleranceCache: [],
+            toleranceList: [],
+            toleranceCache: {},
             workingstepCache: {},
             workingstepList: [],
             workplanCache: {},
@@ -230,6 +231,7 @@ export default class ResponsiveView extends React.Component {
             if(!err && res.ok){
               // Node preprocessing
               let json = JSON.parse(res.text);
+              let ids = _.keys(json);
               let lowFlag = true;
               let nodeCheck = (n) => {
                 let node = n;
@@ -253,13 +255,14 @@ export default class ResponsiveView extends React.Component {
                 }
                 else
                     node.enabled = true;
-                return node;
               };
 
-              json = _.map(json, nodeCheck);
+              json = _.each(json, nodeCheck);
 
-              json.sort(
-                function(a,b){
+              ids.sort(
+                function(idA,idB){
+                    let a = json[idA];
+                    let b = json[idB];
                     if(a.enabled === true && b.enabled === false)
                         return -1;
                     else if(a.enabled === false && b.enabled === true)
@@ -270,6 +273,7 @@ export default class ResponsiveView extends React.Component {
               );
             
               this.setState({'toleranceCache': json});
+              this.setState({'toleranceList': ids});
             }
           else {
               console.log(err);
@@ -431,6 +435,7 @@ export default class ResponsiveView extends React.Component {
                 }
                 toolCache={this.state.toolCache}
                 curtool={this.state.curtool}
+                toleranceList={this.state.toleranceList}
                 toleranceCache={this.state.toleranceCache}
                 workplanCache={this.state.workplanCache}
                 workingstepCache={this.state.workingstepCache}
@@ -497,6 +502,8 @@ export default class ResponsiveView extends React.Component {
 			root3DObject={this.props.app._root3DObject}
 			guiMode={this.state.guiMode}
             resize={this.state.resize}
+        selectedEntity={this.state.selectedEntity}
+        toleranceCache={this.state.toleranceCache}
 			/>
 		</div>
 		{FV}
