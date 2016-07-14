@@ -42,6 +42,7 @@ export default class ResponsiveView extends React.Component {
       workingstepList: [],
       workplanCache: {},
       selectedEntity: null,
+      previouslySelectedEntities: [null],
     };
 
     this.ppstate = this.ppstate.bind(this);
@@ -271,20 +272,42 @@ export default class ResponsiveView extends React.Component {
   }
 
   handleResize() {
-    if ((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800))
+    if ((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800)) {
       this.setState({guiMode: 0});
-    else
-            this.setState({guiMode: 1});
-
+    } else{
+      this.setState({guiMode: 1});
+    }
+    
     this.setState({resize: true});
     this.setState({resize: false});
   }
 
   openProperties(node) {
-    this.setState({selectedEntity: node});
+    let currEntity = this.state.selectedEntity;
+    let prevEntitities = this.state.previouslySelectedEntities;
+    if (node === null) {
+      this.setState({
+        previouslySelectedEntities: [null],
+        selectedEntity: null,
+      });
+    } else if (node === prevEntitities[0]) {
+      prevEntitities.shift();
+      this.setState({
+        previouslySelectedEntities: prevEntitities,
+        selectedEntity: node,
+      })
+    } else if (currEntity === null) {
+      this.setState({selectedEntity: node});
+    } else {
+      prevEntitities.unshift(currEntity);
+      this.setState({
+        previouslySelectedEntities: prevEntitities,
+        selectedEntity: node,
+      });
+    }
   }
 
-  updateWorkingstep(ws){
+  updateWorkingstep(ws) {
     let url = '/v3/nc/';
     url = url + 'workplan/' + ws;
 
@@ -295,87 +318,88 @@ export default class ResponsiveView extends React.Component {
           this.setState({'ws': workingstep.id, 'wstext':workingstep.name.trim()});
 
           this.setState({'curtool': workingstep.tool});
+        } else {
+          this.setState({'ws':ws,'wstxt':'Operation Unknown'});
         }
-        else
-                    this.setState({'ws':ws,'wstxt':'Operation Unknown'});
       }
     };
 
     request.get(url).end(requestCB);
   }
 
-  playpause(){
+  playpause() {
     let url = '/v3/nc/state/loop/';
     if (this.state.ppbutton ==='play'){
       this.ppstate('play');
       url = url+'start';
-    }
-    else {
+    } else {
       this.ppstate('pause');
       url = url+'stop';
     }
     request.get(url).end((res) => {});
   }
-  nextws(){
+  
+  nextws() {
     let url = '/v3/nc/state/ws/next';
     request.get(url).end((res) => {});
   }
-  prevws(){
+  
+  prevws() {
     let url = '/v3/nc/';
     url = url + 'state/ws/prev';
     request.get(url).end((res) => {});
   }
-  ppstate(state){
+  
+  ppstate(state) {
     let notstate;
     if (state==='play') notstate = 'pause';
     else notstate = 'play';
     this.setState({'ppbutton':notstate});
   }
-  ppBtnClicked(info){
+  
+  ppBtnClicked(info) {
     let cs = this.state.ppbutton;
     this.ppstate(cs);
     this.playpause();
   }
 
-  cbWS(newWS)
-    {
+  cbWS(newWS) {
     this.setState({ws: newWS});
   }
 
   speedChanged(speed) {
     if (!this.state.changeSpeed) {
-            // just update to match server
+      // just update to match server
       this.setState({'playbackSpeed': Number(speed)});
-    }
-    else if (this.state.playbackSpeed === Number(speed)) {
-            // server speed matches client speed now
+    } else if (this.state.playbackSpeed === Number(speed)) {
+      // server speed matches client speed now
       this.setState({'changeSpeed': false});
+    } else {
+      ;// something didn't match up, wait for the proper server response
     }
-        else
-            ;// something didn't match up, wait for the proper server response
   }
 
-	                    changeSpeed(event) {
-  let speed = event.target.value;
+  changeSpeed(event) {
+    let speed = event.target.value;
+    if (!speed) {
+      speed = event.target.attributes.value.value;
+    }
 
-  if (!speed) {
-    speed = event.target.attributes.value.value;
+    // set the value itself
+    this.setState({'playbackSpeed': Number(speed)});
+
+    if (event.type === 'change') {
+      // we don't want to commit anything until some other type of event
+      return; 
+    }
+
+    // tell the client to wait for server speed to catch up
+    this.setState({'changeSpeed': true});
+
+    // now send a request to the server to change its speed
+    let url = '/v3/nc/state/loop/' + Number(speed);
+    request.get(url).end(() => {});
   }
-
-        // set the value itself
-  this.setState({'playbackSpeed': Number(speed)});
-
-  if (event.type === 'change') {
-    return; // we don't want to commit anything until some other type of event
-  }
-
-        // tell the client to wait for server speed to catch up
-  this.setState({'changeSpeed': true});
-
-        // now send a request to the server to change its speed
-  let url = '/v3/nc/state/loop/' + Number(speed);
-  request.get(url).end(() => {});
-}
 
   render() {
     let HV, SV, FV;
@@ -421,6 +445,7 @@ export default class ResponsiveView extends React.Component {
                 workingstepList={this.state.workingstepList}
                 openProperties={this.openProperties}
                 selectedEntity={this.state.selectedEntity}
+                previouslySelectedEntities={this.state.previouslySelectedEntities}
             />;
     }
     else {
@@ -444,8 +469,7 @@ export default class ResponsiveView extends React.Component {
             || (navigator.userAgent.indexOf('Chrome') === -1
                 && navigator.userAgent.indexOf('Safari') !== -1)) {
       cadview_bottom = '10vmin';
-    }
-    else {
+    } else {
       cadview_bottom = '0px';
     }
 
@@ -458,8 +482,7 @@ export default class ResponsiveView extends React.Component {
         'bottom': '0px',
         'right': '0px',
       };
-    }
-    else {
+    } else {
       cadview_style =
       {
         'bottom': cadview_bottom,
