@@ -236,20 +236,16 @@ export default class ResponsiveView extends React.Component {
               let lowFlag = true;
               let nodeCheck = (n) => {
                 let node = n;
-                if(node.tolerances !== undefined){
-                    if(node.tolerances.length > 0)
-                        lowFlag = false;
-                }
-                if (node.children === undefined)
-                  node.children = [];
                 
-                if (node.children.length > 0){
+                if(node.children && node.children.length > 0) {
+                  lowFlag = false;
                   node.leaf = false;
                   _.each(node.children, nodeCheck);
                 }
                 else {
                   node.leaf = true;
                 }
+                
                 if(lowFlag){
                     node.enabled = false;
                     lowFlag = true;
