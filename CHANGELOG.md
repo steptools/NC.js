@@ -1,13 +1,16 @@
 Version 1.4.0
 
 Features:
+
 - Keeps entire tool in view when machine is loaded
 - Lowlighted Workpieces if no Tolerances are present
 
 Bugfixes:
+
 - View no longer starts upside down on initial load
 
 Reverted:
+
 
 Version 1.3.0
 
