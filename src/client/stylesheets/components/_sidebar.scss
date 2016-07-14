@@ -295,19 +295,52 @@ $icons: '../icons/';
     }
 
     .titlebar {
+        width: calc(100% + 38px);
+        position: relative;
+        right: 38px;
         cursor: default;
         display: flex;
-        justify-content: center;
         align-items: center;
-        width: 100%;
+        justify-content: right;
         padding: 5px;
         border-bottom: 1px solid #DDDDDD;
         
-        .icon:first-child {
+        .titleinfo {
+            display: flex;
+            align-items: center;
+            justify-content: right;
+            flex-grow: 1;
+        }
+        
+        .title-back.icon {
+            cursor: pointer;
+            padding-right: 8px;
+            background-color: rgba(#F8F8F8, 1);
+            color: #2BAEE9;
+            -webkit-transition: -webkit-transform ease 250ms;
+            -moz-transition: -moz-transform ease 250ms;
+            -ms-transition: -ms-transform ease 250ms;
+            -o-transition: -o-transform ease 250ms;
+            transition: transform ease 250ms;
+            
+            &:before {
+                align-self: stretch;
+            }
+            
+            &.visible {
+                -webkit-transform: translateX(100%);
+                -moz-transform: translateX(100%);
+                -ms-transform: translateX(100%);
+                -o-transform: translateX(100%);
+                transform: translateX(100%);
+            }
+        }
+        
+        .title-icon.icon {
             margin-right: 8px;
         }
         
-        .icon:last-child {
+        .title-exit.icon {
             margin-left: 8px;
             
             &:hover {
