@@ -232,10 +232,13 @@ export default class ResponsiveView extends React.Component {
               // Node preprocessing
               let json = JSON.parse(res.text);
               let wps = {};
-              let ids = _.keys(json);
+              let ids = [];
               let lowFlag = true;
               let nodeCheck = (n) => {
                 let node = n;
+                
+                if (node.wpType)
+                  ids.push(node.id);
                 
                 if(node.children && node.children.length > 0) {
                   lowFlag = false;

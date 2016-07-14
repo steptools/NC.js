@@ -68,17 +68,19 @@ var getWp = function(id, type) {
     "name": name,
     "wpType": type,
     "tolerances": tolerances,
-    "children": []
+    "children": [],
+    "subs": []
   };
   if (type)
     ret.type = "workpiece";
   
-  let asm_list = find.GetWorkpieceImmediateSubAssemblyAll(id);
+  let asm_list = find.GetWorkpieceSubAssemblyAll(id);
 
   for (let sub_id of asm_list) {
     if (id !== sub_id) {
-      let sub = getWp(sub_id, type);
-      ret.tolerances = ret.tolerances.concat(sub.tolerances);
+      let sub = getWp(sub_id);
+      ret.subs.push(sub);
+      ret.subs.concat(sub.subs);
     }
   }
 
@@ -132,15 +134,21 @@ var _getWps = function(req,res) {
     let type = find.GetWorkpieceType(id);
     let wp = getWp(id, type);
     
+    if (wp.wpType === 'workpiece') {
+      ret[wp.id] = wp;
+      _.each(wp.subs, (child, index) => {
+        ret[child.id] = child;
+        wp.subs[index] = child.id;
+        wp.tolerances = wp.tolerances.concat(ret[child.id].tolerances);
+        ret[child.id].tolerances = undefined;
+      });
+    }
+    
     _.each(wp.tolerances, (wp_tol) => {
       wp.children.push(getWsTols(wp_tol));
     });
     
     wp.tolerances = undefined;
-
-    if (wp.wpType === 'workpiece') {
-      ret[wp.id] = wp;
-    }
   }
   
   res.status(200).send(ret);
