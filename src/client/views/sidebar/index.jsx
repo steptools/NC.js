@@ -1,3 +1,4 @@
+// TODO: NOT styleguide compliant
 import React from 'react';
 import Menu, {Item as MenuItem} from 'rc-menu';
 import WorkingstepList from './workingstepslist';
@@ -9,30 +10,28 @@ import ReactTooltip from 'react-tooltip';
 import cadManager from '../../models/cad_manager';
 
 export default class SidebarView extends React.Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            scrolled: false
-        };
+    this.state = {scrolled: false};
 
-        let disabledView = (name) => {
-            return (() => {
-                this.props.cbMode("disabled");
-                this.props.cbAltMenu(name);
-            }).bind(this);
-        };
+    let disabledView = (name) => {
+      return (() => {
+        this.props.cbMode('disabled');
+        this.props.cbAltMenu(name);
+      }).bind(this);
+      };
 
-        let self = this;
-        let updateWorkingstep = (state) => {
-            self.props.cbWS(state);
-            return;
-        };
+    let self = this;
+    let updateWorkingstep = (state) => {
+      self.props.cbWS(state);
+      return;
+    };
 
-        this.selectMenuItem = this.selectMenuItem.bind(this);
+    this.selectMenuItem = this.selectMenuItem.bind(this);
 
-        this.props.actionManager.on('change-workingstep', updateWorkingstep);
-    }
+    this.props.actionManager.on('change-workingstep', updateWorkingstep);
+  }
 
     componentDidUpdate() {
         if ((!this.state.scrolled) && (this.props.mode !== 'tolerance') && (this.props.ws > -1)) {
