@@ -182,20 +182,11 @@ export default class ResponsiveView extends React.Component {
     url = '/v3/nc/tools/';
     resCb = (err,res) => { //Callback function for response
       if (!err && res.ok){
-              // Node preprocessing
         let tools = {};
         let json = JSON.parse(res.text);
 
         _.each(json, (tool)=> {
           tool.icon = <span className='icon custom tool' />;
-          // collect workingstep info
-          let steps = [];
-
-          _.each(tool.workingsteps, (step) => {
-            steps.push(workingstepCache[step]);
-          });
-          tool.workingsteps = steps;
-
           tools[tool.id] = tool;
         });
 
@@ -247,27 +238,20 @@ export default class ResponsiveView extends React.Component {
             node.enabled = true;
           }
           
-          let steps = [];
-          _.each(node.workingsteps, (step) => {
-            steps.push(workingstepCache[step]);
-          })
-          node.workingsteps = steps;
-          
           return node;
         }
 
         json = _.map(json, nodeCheck);
 
-        json.sort(
-              function(a,b){
-                if (a.enabled === true && b.enabled === false)
-                  return -1;
-                else if (a.enabled === false && b.enabled === true)
-                  return 1;
-                  else
-                      return 0;
-              }
-            );
+        json.sort(function(a,b) {
+          if (a.enabled === true && b.enabled === false) {
+            return -1;
+          } else if (a.enabled === false && b.enabled === true) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
 
         this.setState({'toleranceCache': json});
       }

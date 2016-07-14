@@ -129,6 +129,7 @@ export default class PropertiesPane extends React.Component {
         }
         
         let properties = null;
+        let children = [];
         
         let hasChildren = false;
         if (entity.children && entity.children.length > 0) {
@@ -138,6 +139,9 @@ export default class PropertiesPane extends React.Component {
         let hasWorkingsteps = false;
         if (entity.workingsteps && entity.workingsteps.length > 0) {
             hasWorkingsteps = true;
+            _.each(entity.workingsteps, (n) => {
+                children.push(this.renderNode(this.props.workingsteps[n]));
+            });
         }
 
         let time = null;
@@ -214,7 +218,8 @@ export default class PropertiesPane extends React.Component {
                         Go to Workingstep
                     </MenuItem>
                 );
-
+                
+                if (this.props.tools[entity.tool])
                 toolInfo = (
                     <MenuItem key='tool' className='property toolInfo'>
                         <div className={getIcon('tool')}/>
@@ -253,7 +258,7 @@ export default class PropertiesPane extends React.Component {
                                     Used in Workingsteps:
                                 </div>
                                 <div className='list'>
-                                    {entity.workingsteps.map(this.renderNode)}
+                                    {children}
                                 </div>
                             </MenuItem>
                         : 
@@ -295,7 +300,7 @@ export default class PropertiesPane extends React.Component {
                                     Used in Workingsteps:
                                 </div>
                                 <div className='list'>
-                                    {entity.workingsteps.map(this.renderNode)}
+                                    {children}
                                 </div>
                             </MenuItem>
                         : 
@@ -328,8 +333,8 @@ export default class PropertiesPane extends React.Component {
         let paneName = 'properties-pane';
         let titleIcon = '';
         
-        //console.log(this);
-        //console.log(entity);
+        console.log(this);
+        console.log(entity);
         
         if (entity !== null) {
             entityName = entity.name;
