@@ -57,8 +57,8 @@ export default class SidebarView extends React.Component {
     render() {
         // TODO currently mode menu can only have two layers
         let nested = this.props.mode != "tree";
-
-        let properties = <PropertiesPane entity={this.props.selectedEntity} pid={this.props.pid} ws={this.props.ws} propertiesCb={this.props.openProperties} tools={this.props.toolCache}/>;
+        
+        let properties = <PropertiesPane entity={this.props.selectedEntity} pid={this.props.pid} ws={this.props.ws} propertiesCb={this.props.openProperties} tools={this.props.toolCache} workingsteps={this.props.workingstepCache}/>;
 
         const modeMenu = (
             <Menu onSelect={this.selectMenuItem} defaultSelectedKeys={[this.props.mode]} mode='horizontal' className='sidebar-menu-tabs'>
