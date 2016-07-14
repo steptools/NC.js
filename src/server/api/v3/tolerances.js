@@ -61,10 +61,12 @@ var getTolerance = function(id) {
 
 var getWp = function(id, type) {
   let name = find.GetWorkpieceName(id);
+  let steps = apt.GetWorkpieceExecutableAll(id);
   let tolerances = tol.GetWorkpieceToleranceAll(id);
   let ret = {
     "id": id,
     "name": name,
+    "workingsteps": steps,
     "wpType": type,
     "tolerances": tolerances,
     "children": [],
