@@ -88,13 +88,14 @@ var getWp = function(id, type) {
   return ret;
 };
 
-var getWsTols = function(wsId) {
+var getWsTols = function(wsId, wpId) {
   if (find.IsWorkingstep(wsId)) { // this may be able to be factored out later
     let tolerances = JSON.stringify(tol.GetWorkingstepToleranceAll(wsId));
     return tolerances;
   }
   else {  // we are looking for a tolerance
     let tol = getTolerance(Number(wsId));
+    tol.workpiece = wpId;
     return tol;
   }
 };
@@ -144,7 +145,7 @@ var _getWps = function(req,res) {
     }
     
     _.each(wp.tolerances, (wp_tol) => {
-      wp.children.push(getWsTols(wp_tol));
+      wp.children.push(getWsTols(wp_tol, wp.id));
     });
     
     wp.tolerances = undefined;
