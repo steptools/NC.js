@@ -494,6 +494,7 @@ export default class ResponsiveView extends React.Component {
             resize={this.state.resize}
         selectedEntity={this.state.selectedEntity}
         toleranceCache={this.state.toleranceCache}
+        ws={this.state.ws}
 			/>
 		</div>
 		{FV}

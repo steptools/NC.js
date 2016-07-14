@@ -145,6 +145,62 @@ export default class CADView extends React.Component {
         }
         this.invalidate({ tree: true });
     }
+    
+    componentWillUpdate(nextProps, nextState) {
+      if (this.props.selectedEntity !== null && this.props.selectedEntity.type === 'tolerance') {
+        if (nextProps.selectedEntity === null ||
+          nextProps.selectedEntity !== this.props.selectedEntity) {
+
+          let objs = this.props.manager.getSelected();
+          let shell = _.find(_.values(objs[0]._objects), {usage: 'tobe'});
+          if (shell) {
+            let faces = shell.model._geometry.getAttribute('faces');
+            let colors = shell.model._geometry.getAttribute('color');
+            
+            let indices = _.map(this.props.selectedEntity.faces, (id) => faces.array[id]);
+
+            _.each(indices, (index) => {
+              for (let i=index.start; i < index.end; i++) {
+                let r = colors.array[i * colors.itemSize] *  2.0 - 1;
+                let g = colors.array[i * colors.itemSize + 1] * 2.0 - 1;
+                let b = colors.array[i * colors.itemSize + 2] * 2.0;
+                colors.setXYZ(i, r, g, b);
+              }
+            });
+            colors.needsUpdate = true;
+            this.invalidate();
+          }
+        }
+      }
+    
+      if ((this.props.selectedEntity === null ||
+          this.props.selectedEntity !== nextProps.selectedEntity) &&
+          nextProps.selectedEntity !== null &&
+          nextProps.selectedEntity.type === 'tolerance') {
+
+        if (nextProps.ws === 90424) {
+          let objs = nextProps.manager.getSelected();
+          let shell = _.find(_.values(objs[0]._objects), {usage: 'tobe'});
+          if (shell) {
+            let faces = shell.model._geometry.getAttribute('faces');
+            let colors = shell.model._geometry.getAttribute('color');
+            
+            let indices = _.map(nextProps.selectedEntity.faces, (id) => faces.array[id]);
+
+            _.each(indices, (index) => {
+              for (let i=index.start; i < index.end; i++) {
+                let r = (colors.array[i * colors.itemSize] + 1) / 2.0;
+                let g = (colors.array[i * colors.itemSize + 1] + 1) / 2.0;
+                let b = (colors.array[i * colors.itemSize + 2] + 0) / 2.0;
+                colors.setXYZ(i, r, g, b);
+              }
+            });
+            colors.needsUpdate = true;
+            this.invalidate();
+          }
+        }
+      }
+    }
 
     componentWillMount() {
         this.sceneCenter = new THREE.Vector3(0,0,0);
