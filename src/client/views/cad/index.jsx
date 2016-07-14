@@ -149,29 +149,42 @@ export default class CADView extends React.Component {
     componentWillUpdate(nextProps, nextState) {
       
       // Unhighlight anything that's not being shown
-      if (this.props.selectedEntity !== null && this.props.selectedEntity.type === 'tolerance') {
-        if (nextProps.selectedEntity === null ||
-          nextProps.selectedEntity !== this.props.selectedEntity) {
+      if ((this.props.selectedEntity !== null &&
+          this.props.selectedEntity.type === 'tolerance')) {
+        
+        let workpiece = this.props.toleranceCache[this.props.selectedEntity.workpiece];
+        
+        if (workpiece.workingsteps.indexOf(this.props.ws) >= 0 ) {
 
-          let objs = this.props.manager.getSelected();
-          let shell = _.find(_.values(objs[0]._objects), {usage: 'tobe'});
-          if (shell) {
-            let faces = shell.model._geometry.getAttribute('faces');
-            let colors = shell.model._geometry.getAttribute('color');
-            
-            let indices = _.map(this.props.selectedEntity.faces, (id) => faces.array[id]);
+          if (nextProps.selectedEntity === null ||
+            nextProps.selectedEntity !== this.props.selectedEntity ||
+            this.props.ws !== nextProps.ws) {
 
-            // unhighlight each old tolerance face
-            _.each(indices, (index) => {
-              for (let i=index.start; i < index.end; i++) {
-                let r = colors.array[i * colors.itemSize] *  2.0 - 1;
-                let g = colors.array[i * colors.itemSize + 1] * 2.0 - 1;
-                let b = colors.array[i * colors.itemSize + 2] * 2.0 - 0.6;
-                colors.setXYZ(i, r, g, b);
+            let objs = this.props.manager.getSelected();
+            let shells = _.filter(_.values(objs[0]._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
+            _.each(shells, (shell) => {
+              if (shell) {
+                let faces = shell.model._geometry.getAttribute('faces');
+                let colors = shell.model._geometry.getAttribute('color');
+
+                let indices = _.map(this.props.selectedEntity.faces, (id) => faces.array[id]);
+                console.log(indices);
+
+                // unhighlight each old tolerance face
+                _.each(indices, (index) => {
+                  if (index) {
+                    for (let i = index.start; i < index.end; i++) {
+                      let r = colors.array[i * colors.itemSize] * 2.0 - 1;
+                      let g = colors.array[i * colors.itemSize + 1] * 2.0 - 1;
+                      let b = colors.array[i * colors.itemSize + 2] * 2.0 - 0.6;
+                      colors.setXYZ(i, r, g, b);
+                    }
+                  }
+                });
+                colors.needsUpdate = true;
+                this.invalidate();
               }
             });
-            colors.needsUpdate = true;
-            this.invalidate();
           }
         }
       }
@@ -185,27 +198,36 @@ export default class CADView extends React.Component {
         let workpiece = nextProps.toleranceCache[nextProps.selectedEntity.workpiece];
 
         // check if the selected tolerance/wp is used in the current WS
-        if (workpiece.workingsteps.indexOf(nextProps.ws) > 0) {
+        if (workpiece.workingsteps.indexOf(nextProps.ws) >= 0) {
           let objs = nextProps.manager.getSelected();
-          let shell = _.find(_.values(objs[0]._objects), {usage: 'tobe'});
-          if (shell) {
-            let faces = shell.model._geometry.getAttribute('faces');
-            let colors = shell.model._geometry.getAttribute('color');
-            
-            let indices = _.map(nextProps.selectedEntity.faces, (id) => faces.array[id]);
+          let shells = _.filter(_.values(objs[0]._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
+          _.each(shells, (shell) => {
+            if (shell) {
+              let faces = shell.model._geometry.getAttribute('faces');
+              let colors = shell.model._geometry.getAttribute('color');
+              console.log(faces);
+              console.log(nextProps.selectedEntity.faces);
 
-            // highlight in bright yellow for each face in the tolerance
-            _.each(indices, (index) => {
-              for (let i=index.start; i < index.end; i++) {
-                let r = (colors.array[i * colors.itemSize] + 1) / 2.0;
-                let g = (colors.array[i * colors.itemSize + 1] + 1) / 2.0;
-                let b = (colors.array[i * colors.itemSize + 2] + 0.6) / 2.0;
-                colors.setXYZ(i, r, g, b);
-              }
-            });
-            colors.needsUpdate = true;
-            this.invalidate();
-          }
+              let indices = _.map(nextProps.selectedEntity.faces, (id) => faces.array[id]);
+
+              // highlight in bright yellow for each face in the tolerance
+              _.each(indices, (index) => {
+                if (index) {
+                  for (let i = index.start; i < index.end; i++) {
+                    let r = (colors.array[i * colors.itemSize] + 1) / 2.0;
+                    let g = (colors.array[i * colors.itemSize + 1] + 1) / 2.0;
+                    let b = (colors.array[i * colors.itemSize + 2] + 0.6) / 2.0;
+                    colors.setXYZ(i, r, g, b);
+                  }
+                }
+              });
+              colors.needsUpdate = true;
+              this.invalidate();
+            }
+          });
+        }
+        else {
+          console.log('workingstep is not active');
         }
       }
     }

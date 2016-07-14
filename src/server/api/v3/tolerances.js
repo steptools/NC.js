@@ -12,34 +12,7 @@ var find = file.find;
 //|                                                                    |
 //\*******************************************************************/
 
-var getWorkingstepsForTolerance = function(exe, tolId) {
-    if (find.IsWorkingstep(exe)) {
-        let allTols = tol.GetWorkingstepToleranceAll(exe);
-        if (_.indexOf(allTols, tolId) !== -1) {
-            return [exe];
-        }
-        else {
-            return [];
-        }
-    }
-    else if (find.IsWorkplan(exe) || find.IsSelective(exe)) {
-        let rtn = [];
-        let children = find.GetNestedExecutableAll(exe);
-        if (children !== undefined) {
-            _.each(children, (childId) => {
-                rtn = rtn.concat(getWorkingstepsForTolerance(childId, tolId));
-            });
-        }
-        return rtn;
-    }
-    else {
-        console.log("something's afoot");
-        return [];
-    }
-};
-
 var getTolerance = function(id) {
-  let steps = getWorkingstepsForTolerance(find.GetMainWorkplan(), id);
   let name = tol.GetToleranceType(id);
   let tolType;
   if (name) {
@@ -53,7 +26,6 @@ var getTolerance = function(id) {
     "name": name,
     "toleranceType": tolType,
     "value": tol.GetToleranceValue(id),
-    "workingsteps": steps,
     "unit" : tol.GetToleranceUnit(id),
     "faces": tol.GetToleranceFaceAll(id)
   };
@@ -88,13 +60,14 @@ var getWp = function(id, type) {
   return ret;
 };
 
-var getWsTols = function(wsId) {
+var getWsTols = function(wsId, wpId) {
   if (find.IsWorkingstep(wsId)) { // this may be able to be factored out later
     let tolerances = JSON.stringify(tol.GetWorkingstepToleranceAll(wsId));
     return tolerances;
   }
   else {  // we are looking for a tolerance
     let tol = getTolerance(Number(wsId));
+    tol.workpiece = wpId;
     return tol;
   }
 };
@@ -144,7 +117,7 @@ var _getWps = function(req,res) {
     }
     
     _.each(wp.tolerances, (wp_tol) => {
-      wp.children.push(getWsTols(wp_tol));
+      wp.children.push(getWsTols(wp_tol, wp.id));
     });
     
     wp.tolerances = undefined;
