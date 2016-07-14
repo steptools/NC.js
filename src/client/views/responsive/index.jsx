@@ -231,6 +231,7 @@ export default class ResponsiveView extends React.Component {
             if(!err && res.ok){
               // Node preprocessing
               let json = JSON.parse(res.text);
+              let wps = {};
               let ids = _.keys(json);
               let lowFlag = true;
               let nodeCheck = (n) => {
@@ -244,7 +245,7 @@ export default class ResponsiveView extends React.Component {
                 
                 if (node.children.length > 0){
                   node.leaf = false;
-                  node.children.map(nodeCheck);
+                  _.each(node.children, nodeCheck);
                 }
                 else {
                   node.leaf = true;
@@ -255,9 +256,11 @@ export default class ResponsiveView extends React.Component {
                 }
                 else
                     node.enabled = true;
+                
+                wps[node.id] = node;
               };
 
-              json = _.each(json, nodeCheck);
+              _.each(json, nodeCheck);
 
               ids.sort(
                 function(idA,idB){
@@ -272,7 +275,7 @@ export default class ResponsiveView extends React.Component {
                 }
               );
             
-              this.setState({'toleranceCache': json});
+              this.setState({'toleranceCache': wps});
               this.setState({'toleranceList': ids});
             }
           else {
