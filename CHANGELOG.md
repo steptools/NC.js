@@ -4,6 +4,7 @@ Features:
 
 - Keeps entire tool in view when machine is loaded
 - Lowlighted Workpieces if no Tolerances are present
+- Added a back button to the properties pane that backtracks through previously viewed entities
 
 Bugfixes:
 
