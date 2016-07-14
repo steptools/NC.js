@@ -173,11 +173,14 @@ export default class CADView extends React.Component {
                 // unhighlight each old tolerance face
                 _.each(indices, (index) => {
                   if (index) {
-                    for (let i = index.start; i < index.end; i++) {
-                      let r = colors.array[i * colors.itemSize] * 2.0 - 1;
-                      let g = colors.array[i * colors.itemSize + 1] * 2.0 - 1;
-                      let b = colors.array[i * colors.itemSize + 2] * 2.0 - 0.6;
-                      colors.setXYZ(i, r, g, b);
+                    for (let i = index.start; i < index.end; i += 3) {
+                      let r = colors.array[i] * 2.0 - 1;
+                      let g = colors.array[i + 1] * 2.0 - 1;
+                      let b = colors.array[i + 2] * 2.0 - 0.6;
+                      
+                      colors.array[i] = r;
+                      colors.array[i+1] = g;
+                      colors.array[i+2] = b;
                     }
                   }
                 });
@@ -205,19 +208,20 @@ export default class CADView extends React.Component {
             if (shell) {
               let faces = shell.model._geometry.getAttribute('faces');
               let colors = shell.model._geometry.getAttribute('color');
-              console.log(faces);
-              console.log(nextProps.selectedEntity.faces);
 
               let indices = _.map(nextProps.selectedEntity.faces, (id) => faces.array[id]);
 
               // highlight in bright yellow for each face in the tolerance
               _.each(indices, (index) => {
                 if (index) {
-                  for (let i = index.start; i < index.end; i++) {
-                    let r = (colors.array[i * colors.itemSize] + 1) / 2.0;
-                    let g = (colors.array[i * colors.itemSize + 1] + 1) / 2.0;
-                    let b = (colors.array[i * colors.itemSize + 2] + 0.6) / 2.0;
-                    colors.setXYZ(i, r, g, b);
+                  for (let i = index.start ; i < index.end; i += 3) {
+                    let r = (colors.array[i] + 1) / 2.0;
+                    let g = (colors.array[i + 1] + 1) / 2.0;
+                    let b = (colors.array[i + 2] + 0.6) / 2.0;
+                    
+                    colors.array[i] = r;
+                    colors.array[i+1] = g;
+                    colors.array[i+2] = b;
                   }
                 }
               });
@@ -231,6 +235,8 @@ export default class CADView extends React.Component {
         }
       }
     }
+
+    
 
     componentWillMount() {
         this.sceneCenter = new THREE.Vector3(0,0,0);

@@ -661,7 +661,7 @@ function faceLoad(data, buffers) {
             start: 0,
             end: 0
         }
-        let pIndex = data.faces[i].count * 9;
+        let pIndex = data.faces[i].count * 3
         face.start = index2;
         face.end = index2 + pIndex;
         buffers.faces[data.faces[i].id] = face;
@@ -670,18 +670,14 @@ function faceLoad(data, buffers) {
     for (let i = 0; i < data.faces.length; i++) {
         for(let j = 0; j < (data.faces[i]).count; j++){
             if(data.faces[i].color != null){
-                for(let x = 0; x < 3; x++){
-                    buffers.color[index++] = data.faces[i].color[0];
-                    buffers.color[index++] = data.faces[i].color[1];
-                    buffers.color[index++] = data.faces[i].color[2];
-                }
+                buffers.color[index++] = data.faces[i].color[0];
+                buffers.color[index++] = data.faces[i].color[1];
+                buffers.color[index++] = data.faces[i].color[2];
             }
             else{
-                for(let x = 0; x < 3; x++){
-                    buffers.color[index++] = -1;
-                    buffers.color[index++] = -1;
-                    buffers.color[index++] = -1;
-                }
+                buffers.color[index++] = -1;
+                buffers.color[index++] = -1;
+                buffers.color[index++] = -1;
             }
         }
     }
@@ -707,7 +703,6 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
         }
         unindexValues(dataJSON, buffers);
     }
-    console.log(dataJSON);
     if (dataJSON.faces)
         faceLoad(dataJSON, buffers);
     let parts = url.split("/");
