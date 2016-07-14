@@ -55,7 +55,6 @@ var getTolerance = function(id) {
     "value": tol.GetToleranceValue(id),
     "workingsteps": steps,
     "unit" : tol.GetToleranceUnit(id),
-    "workpiece": tol.GetWorkpieceOfTolerance(id),
     "faces": tol.GetToleranceFaceAll(id)
   };
 };
@@ -136,12 +135,10 @@ var _getWps = function(req,res) {
     
     if (wp.wpType === 'workpiece') {
       ret[wp.id] = wp;
-      _.each(wp.subs, (child, index) => {
-        ret[child.id] = child;
-        wp.subs[index] = child.id;
-        wp.tolerances = wp.tolerances.concat(ret[child.id].tolerances);
-        ret[child.id].tolerances = undefined;
+      _.each(wp.subs, (child) => {
+        wp.tolerances = wp.tolerances.concat(child.tolerances);
       });
+      wp.subs = undefined;
     }
     
     _.each(wp.tolerances, (wp_tol) => {
