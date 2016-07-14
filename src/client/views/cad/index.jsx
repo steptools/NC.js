@@ -147,6 +147,8 @@ export default class CADView extends React.Component {
     }
     
     componentWillUpdate(nextProps, nextState) {
+      
+      // Unhighlight anything that's not being shown
       if (this.props.selectedEntity !== null && this.props.selectedEntity.type === 'tolerance') {
         if (nextProps.selectedEntity === null ||
           nextProps.selectedEntity !== this.props.selectedEntity) {
@@ -159,11 +161,12 @@ export default class CADView extends React.Component {
             
             let indices = _.map(this.props.selectedEntity.faces, (id) => faces.array[id]);
 
+            // unhighlight each old tolerance face
             _.each(indices, (index) => {
               for (let i=index.start; i < index.end; i++) {
                 let r = colors.array[i * colors.itemSize] *  2.0 - 1;
                 let g = colors.array[i * colors.itemSize + 1] * 2.0 - 1;
-                let b = colors.array[i * colors.itemSize + 2] * 2.0;
+                let b = colors.array[i * colors.itemSize + 2] * 2.0 - 0.6;
                 colors.setXYZ(i, r, g, b);
               }
             });
@@ -172,13 +175,17 @@ export default class CADView extends React.Component {
           }
         }
       }
-    
+
+      // now highlight any tolerances present in current workingstep
       if ((this.props.selectedEntity === null ||
           this.props.selectedEntity !== nextProps.selectedEntity) &&
           nextProps.selectedEntity !== null &&
           nextProps.selectedEntity.type === 'tolerance') {
 
-        if (nextProps.ws === 90424) {
+        let workpiece = nextProps.toleranceCache[nextProps.selectedEntity.workpiece];
+
+        // check if the selected tolerance/wp is used in the current WS
+        if (workpiece.workingsteps.indexOf(nextProps.ws) > 0) {
           let objs = nextProps.manager.getSelected();
           let shell = _.find(_.values(objs[0]._objects), {usage: 'tobe'});
           if (shell) {
@@ -187,11 +194,12 @@ export default class CADView extends React.Component {
             
             let indices = _.map(nextProps.selectedEntity.faces, (id) => faces.array[id]);
 
+            // highlight in bright yellow for each face in the tolerance
             _.each(indices, (index) => {
               for (let i=index.start; i < index.end; i++) {
                 let r = (colors.array[i * colors.itemSize] + 1) / 2.0;
                 let g = (colors.array[i * colors.itemSize + 1] + 1) / 2.0;
-                let b = (colors.array[i * colors.itemSize + 2] + 0) / 2.0;
+                let b = (colors.array[i * colors.itemSize + 2] + 0.6) / 2.0;
                 colors.setXYZ(i, r, g, b);
               }
             });
