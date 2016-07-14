@@ -333,9 +333,6 @@ export default class PropertiesPane extends React.Component {
         let paneName = 'properties-pane';
         let titleIcon = '';
         
-        console.log(this);
-        console.log(entity);
-        
         if (entity !== null) {
             entityName = entity.name;
             entityType = entity.type[0].toUpperCase() + entity.type.slice(1);
