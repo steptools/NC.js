@@ -12,34 +12,7 @@ var find = file.find;
 //|                                                                    |
 //\*******************************************************************/
 
-var getWorkingstepsForTolerance = function(exe, tolId) {
-    if (find.IsWorkingstep(exe)) {
-        let allTols = tol.GetWorkingstepToleranceAll(exe);
-        if (_.indexOf(allTols, tolId) !== -1) {
-            return [exe];
-        }
-        else {
-            return [];
-        }
-    }
-    else if (find.IsWorkplan(exe) || find.IsSelective(exe)) {
-        let rtn = [];
-        let children = find.GetNestedExecutableAll(exe);
-        if (children !== undefined) {
-            _.each(children, (childId) => {
-                rtn = rtn.concat(getWorkingstepsForTolerance(childId, tolId));
-            });
-        }
-        return rtn;
-    }
-    else {
-        console.log("something's afoot");
-        return [];
-    }
-};
-
 var getTolerance = function(id) {
-  let steps = getWorkingstepsForTolerance(find.GetMainWorkplan(), id);
   let name = tol.GetToleranceType(id);
   let tolType;
   if (name) {
@@ -53,7 +26,6 @@ var getTolerance = function(id) {
     "name": name,
     "toleranceType": tolType,
     "value": tol.GetToleranceValue(id),
-    "workingsteps": steps,
     "unit" : tol.GetToleranceUnit(id),
     "faces": tol.GetToleranceFaceAll(id)
   };
