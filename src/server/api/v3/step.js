@@ -62,6 +62,10 @@ var exeFromId = function(id) {
 	if (find.IsWorkingstep(id)) {
 		ws.type = "workingstep";
 		ws.tool = find.GetWorkingstepTool(id);
+    ws.feedRate = find.GetProcessFeed(id);
+		ws.feedUnits = find.GetProcessFeedUnit(id);
+		ws.speed = find.GetProcessSpeed(id);
+		ws.speedUnits = find.GetProcessSpeedUnit(id);
 		return ws;
 	} else if (find.IsSelective(id)) {
 		ws.type = "selective";

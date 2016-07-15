@@ -425,6 +425,8 @@ export default class ResponsiveView extends React.Component {
                 ppbutton={this.state.ppbutton}
                 logstate={this.state.logstate}
                 speed={this.state.playbackSpeed}
+                ws={this.state.ws}
+                workingstepCache={this.state.workingstepCache}
             />;
       SV = <SidebarView
                 cadManager={this.props.app.cadManager}
