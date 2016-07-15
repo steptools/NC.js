@@ -6,6 +6,7 @@ Features:
 - Lowlighted Workpieces if no Tolerances are present
 - Added a back button to the properties pane that backtracks through previously viewed entities
 - Selecting a tolerance highlights relevant faces when the associated workingstep is active
+- Added menu item to display speed and feedrate for workingsteps
 
 Bugfixes:
 
