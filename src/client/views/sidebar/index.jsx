@@ -59,6 +59,7 @@ export default class SidebarView extends React.Component {
         let nested = this.props.mode != "tree";
         
         let properties = <PropertiesPane 
+            app={this.props.app}
             entity={this.props.selectedEntity} 
             previousEntity={this.props.previouslySelectedEntities[0]} 
             pid={this.props.pid} 
@@ -66,6 +67,7 @@ export default class SidebarView extends React.Component {
             propertiesCb={this.props.openProperties} 
             tools={this.props.toolCache} 
             workingsteps={this.props.workingstepCache}
+            resize={this.props.resize}
         />;
 
         const modeMenu = (
