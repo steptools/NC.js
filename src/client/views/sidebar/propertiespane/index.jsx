@@ -258,6 +258,15 @@ export default class PropertiesPane extends React.Component {
     properties.push(this.renderTime(entity));
     properties.push(this.renderDistance(entity));
     if (entity.type === 'workingstep') {
+      if (this.props.tools[entity.tool]) {
+        properties.push(
+          <MenuItem key='tool' className='property toolInfo'>
+              <div className={getIcon('tool')}/>
+              Tool: {this.props.tools[entity.tool].name}
+          </MenuItem>
+        );
+      }
+
       properties.push(
         <MenuItem
           key='goto'
@@ -267,15 +276,6 @@ export default class PropertiesPane extends React.Component {
           Go to Workingstep
         </MenuItem>
       );
-
-      if (this.props.tools[entity.tool]) {
-        properties.push(
-          <MenuItem key='tool' className='property toolInfo'>
-              <div className={getIcon('tool')}/>
-              Tool: {this.props.tools[entity.tool].name}
-          </MenuItem>
-        );
-      }
     } else if (entity.type === 'tolerance') {
       properties.push(
         <MenuItem disabled key='tolType' className='property'>
