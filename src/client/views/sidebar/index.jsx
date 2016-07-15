@@ -13,16 +13,45 @@ export default class SidebarView extends React.Component {
     super(props);
 
     this.state = {scrolled: false};
+    
+    let disabledView = (name) => {
+      return (() => {
+        this.props.cbMode("disabled");
+        this.props.cbAltMenu(name);
+      }).bind(this);
+    };
+    
+    let self = this;
+    let updateWorkingstep = (state) => {
+      self.props.cbWS(state);
+      return;
+    };
 
     this.selectMenuItem = this.selectMenuItem.bind(this);
 
-    this.props.actionManager.on('change-workingstep', this.props.cbWS);
+    this.props.actionManager.on('change-workingstep', updateWorkingstep);
   }
 
   selectMenuItem(info) {
     this.props.cbMode(info.key);
     this.setState({'scrolled': false});
   }
+  
+  componentDidUpdate() {
+       if ((!this.state.scrolled) && (this.props.mode !== 'tolerance') && (this.props.ws > -1)) {
+           let currElem = $('.running-node');
+           if (currElem.length > 0) {
+               let tree = $('.m-tree,.treebeard');
+               let tOffset = tree.offset().top + tree.innerHeight();
+               let cOffset = currElem.offset().top + currElem.outerHeight();
+               if (tOffset < cOffset) {
+                   tree.animate({scrollTop: (cOffset - tOffset)}, 1000);
+               }
+               this.setState({'scrolled': true}); 
+           }
+       }
+   }
+   /*
 
   componentDidUpdate() {
     if (this.props.ws < 0 || this.state.scrolled) {
@@ -39,7 +68,7 @@ export default class SidebarView extends React.Component {
       this.setState({'scrolled': true});
     }
   }
-
+*/
   render() {
     let properties = <PropertiesPane
       entity={this.props.selectedEntity}

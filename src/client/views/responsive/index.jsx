@@ -302,7 +302,7 @@ export default class ResponsiveView extends React.Component {
       this.setState({
         previouslySelectedEntities: prevEntitities,
         selectedEntity: node,
-      })
+      });
     } else if (currEntity === null) {
       this.setState({selectedEntity: node});
     } else {

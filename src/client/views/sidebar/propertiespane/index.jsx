@@ -131,21 +131,21 @@ export default class PropertiesPane extends React.Component {
 
     if (active === true) {
       return (
-        <MenuItem disabled className='property'>
+        <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('active')}/>
           Status: Active
         </MenuItem>
       );
     } else if (entity.enabled === true) {
       return (
-        <MenuItem disabled className='property'>
+        <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('inactive')}/>
           Status: Inactive
         </MenuItem>
       );
     } else {
       return (
-        <MenuItem disabled className='property'>
+        <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('disabled')}/>
           Status: Disabled
         </MenuItem>
@@ -252,17 +252,13 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
 
-    let active = this.renderActive(entity);
-    let time = this.renderTime(entity);
-    let distance = this.renderDistance(entity);
-    let children = this.renderChildren(entity);
-    let goToButton = null;
-    let toolInfo = null;
-    let ppClick = null;
-    let tolType = null;
-    let tolVal = null;
+    let properties = [];
+
+    properties.push(this.renderActive(entity));
+    properties.push(this.renderTime(entity));
+    properties.push(this.renderDistance(entity));
     if (entity.type === 'workingstep') {
-      goToButton = (
+      properties.push(
         <MenuItem
           key='goto'
           disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
@@ -273,48 +269,42 @@ export default class PropertiesPane extends React.Component {
       );
 
       if (this.props.tools[entity.tool]) {
-        toolInfo = (
+        properties.push(
           <MenuItem key='tool' className='property toolInfo'>
               <div className={getIcon('tool')}/>
               Tool: {this.props.tools[entity.tool].name}
           </MenuItem>
         );
       }
-
-      ppClick = (event) => {
-        this.selectWS(event, entity);
-      };
     } else if (entity.type === 'tolerance') {
-      tolType = (
+      properties.push(
         <MenuItem disabled key='tolType' className='property'>
           <div className={getIcon('tolerance type')}/>
           Type: {tolType} Tolerance
         </MenuItem>
       );
 
-      tolVal = (
+      properties.push(
         <MenuItem disabled key='tolValue' className='property'>
           <div className={getIcon('tolerance value')}/>
           Value: {entity.value}{entity.unit}
         </MenuItem>
       );
     }
+    properties.push(this.renderChildren(entity));
 
-    return (
-      <Menu
-        className='properties'
-        onClick={ppClick}
-      >
-        {active}
-        {time}
-        {distance}
-        {tolType}
-        {tolVal}
-        {toolInfo}
-        {goToButton}
-        {children}
-      </Menu>
-    );
+    let newProps = [];
+    for (var i = 0; i < properties.length; i++) {
+      if (properties[i]) {
+        newProps.push(properties[i]);
+      }
+    }
+
+    return (<Menu className='properties' onClick={(event) => {
+      this.selectWS(event, entity);
+    }}>
+      {newProps}
+    </Menu>);
   }
 
   render() {
@@ -337,17 +327,12 @@ export default class PropertiesPane extends React.Component {
       titleIcon = 'title-icon ' + titleIcon;
     }
 
-    console.log('Render pp');
-    console.log(this);
-    console.log(entity);
-
     return (
       <div className={paneName}>
         <div className='titlebar'>
           <span
             className={'title-back ' + getIcon('back')}
             onClick={() => {
-              console.log(this);
               this.props.propertiesCb(previousEntity);
             }}
             onMouseOut={() => {
