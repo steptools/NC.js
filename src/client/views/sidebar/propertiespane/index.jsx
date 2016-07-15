@@ -1,4 +1,4 @@
-// NOTE: styleguide compliant
+// TODO: styleguide compliant
 import React from 'react';
 import Menu,{Item as MenuItem} from 'rc-menu';
 import request from 'superagent';
@@ -338,6 +338,7 @@ export default class PropertiesPane extends React.Component {
     }
 
     console.log('Render pp');
+    console.log(this);
     console.log(entity);
 
     return (
