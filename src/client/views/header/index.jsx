@@ -175,12 +175,31 @@ export default class HeaderView extends React.Component {
         } else {
             ppbtntxt = "Pause";
         }
+        
+        let curStep = this.props.workingstepCache[this.props.ws];
+
+        let feedRate = "Not defined";
+        let spindleSpeed = "Not defined";
+      
+        if (curStep) {
+          if (curStep.feedRate !== 0)
+            feedRate = curStep.feedRate + " " + curStep.feedUnits;
+          if (curStep.speed !== 0)
+            spindleSpeed = curStep.speed + " " + curStep.speedUnits;
+        }
+        
         const headerMenu = (
             <Menu mode='horizontal' onClick={this.simulateMenuItemClicked} className='header-menu'>
                 <MenuItem key='backward'><ButtonImage prefix='glyphicon' icon='step-backward'/>Prev</MenuItem>
                 <MenuItem key='play'><ButtonImage prefix='glyphicon' icon={ppbutton}/>{ppbtntxt}</MenuItem>
                 <MenuItem key='forward'><ButtonImage prefix='glyphicon' icon='step-forward'/>Next</MenuItem>
                 <SliderMenuItem key='speed'><Slider id='speed' changed={this.updateSpeed} val={this.props.speed} prefix='glyphicons' left='turtle' right='rabbit'/></SliderMenuItem>
+                <MenuItem disabled key='feed-speed'>
+                  <div className='feed-speed'>Feed rate:</div>
+                  <div className='feed-speed value'>{feedRate}</div>
+                  <div className='feed-speed'>Spindle speed:</div>
+                  <div className='feed-speed value'>{spindleSpeed}</div>
+                </MenuItem>
                 <MenuItem key='showlog' id="logbutton"><ButtonImage prefix='glyphicon' icon='book'/>
                     <div className="version" id="logbutton">v1.1.0</div>
                 </MenuItem>
