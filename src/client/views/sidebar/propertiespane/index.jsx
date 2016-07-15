@@ -246,9 +246,9 @@ export default class PropertiesPane extends React.Component {
                   <MenuItem disabled key='workpieceInfo' className='property workpieceInfo children'>
                       <div key='workpieceTitle' className='title'>Workpieces:</div>
                       <div key='workpieceList' className='list'>
-                        As-is: {asIs.inherited? ' (Inherited)': null}{asIs}
-                        To-be: {toBe.inherited? ' (Inherited)': null}{toBe}
-                        Delta: {delta.inherited? ' (Inherited)': null}{delta}
+                        As-is: {entity.asIs.inherited? ' (Inherited)': null}{asIs}
+                        To-be: {entity.toBe.inherited? ' (Inherited)': null}{toBe}
+                        Delta: {entity.delta.inherited? ' (Inherited)': null}{delta}
                       </div>
                   </MenuItem>
                 );
