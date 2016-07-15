@@ -1,4 +1,4 @@
-// TODO: NOT styleguide compliant
+// NOTE: styleguide compliant
 import React from 'react';
 import Menu, {Item as MenuItem} from 'rc-menu';
 import WorkingstepList from './workingstepslist';
@@ -25,7 +25,7 @@ export default class SidebarView extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.props.ws < 0 || this.state.scrolled || this.props.mode === 'tolerance') {
+    if (this.props.ws < 0 || this.state.scrolled) {
       return;
     }
     let currElem = $('.running-node');
@@ -98,7 +98,6 @@ export default class SidebarView extends React.Component {
           ws={this.props.ws}
           workingstepCache={this.props.workingstepCache}
           workingstepList={this.props.workingstepList}
-          propertyCb={this.props.openProperties}
         />
       );
     } else if (this.props.mode === 'wp') {

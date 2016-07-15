@@ -3,12 +3,11 @@ import ReactDOM from 'react-dom';
 import Menu from 'rc-menu';
 import _ from 'lodash';
 import request from 'superagent';
-import CADView              from '../cad';
-import HeaderView           from '../header';
-import SidebarView          from '../sidebar';
-import FooterView	    from '../footer';
+import CADView from '../cad';
+import HeaderView from '../header';
+import SidebarView from '../sidebar';
+import FooterView	from '../footer';
 import {Markdown as md} from 'node-markdown';
-import ReactTooltip from 'react-tooltip';
 
 export default class ResponsiveView extends React.Component {
   constructor(props){
@@ -283,6 +282,8 @@ export default class ResponsiveView extends React.Component {
   }
 
   openProperties(node) {
+    console.log("OPEN PROPERTIES");
+    console.log(this);
     let currEntity = this.state.selectedEntity;
     let prevEntitities = this.state.previouslySelectedEntities;
     if (node === null) {

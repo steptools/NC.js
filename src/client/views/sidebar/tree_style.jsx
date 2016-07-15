@@ -77,7 +77,9 @@ const Container = (props) => {
       />
       <div
         className={innerName}
-        onClick={props.decorators.propertyCb(node)}
+        onClick={() => {
+          props.decorators.propertyCb(node);
+        }}
       >
         {node.icon}
         <span className='textbox'>
