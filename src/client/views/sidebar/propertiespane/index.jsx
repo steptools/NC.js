@@ -118,6 +118,41 @@ export default class PropertiesPane extends React.Component {
     );
   }
 
+  renderActive(entity) {
+    if (entity.type !== 'workingstep' && entity.type !== 'tolerance') {
+      return null;
+    }
+    let active = false;
+    if (entity.type === 'tolerance') {
+      active = (entity.tolerances && entity.tolerances[this.props.ws]);
+    } else if (entity.type === 'workingstep') {
+      active = (this.props.ws === entity.id);
+    }
+
+    if (active === true) {
+      return (
+        <MenuItem disabled className='property'>
+          <div className={getIcon('active')}/>
+          Status: Active
+        </MenuItem>
+      );
+    } else if (entity.enabled === true) {
+      return (
+        <MenuItem disabled className='property'>
+          <div className={getIcon('inactive')}/>
+          Status: Inactive
+        </MenuItem>
+      );
+    } else {
+      return (
+        <MenuItem disabled className='property'>
+          <div className={getIcon('disabled')}/>
+          Status: Disabled
+        </MenuItem>
+      );
+    }
+  }
+
   renderNode(node) {
     let cName = 'node';
     if (node.id === this.props.ws) {
@@ -151,195 +186,135 @@ export default class PropertiesPane extends React.Component {
     );
   }
 
+  normalizeChildren(entity) {
+    if (entity.children && entity.children.length > 0) {
+      if (typeof entity.children[0] === 'object') {
+        return entity.children;
+      } else if (typeof entity.children[0] === 'number') {
+        let children = [];
+        _.each(entity.children, (c) => {
+          children.push(this.props.workingsteps[c]);
+        });
+        return children;
+      }
+    }
+    if (entity.workingsteps && entity.workingsteps.length > 0) {
+      if (typeof entity.workingsteps[0] === 'object') {
+        return entity.workingsteps;
+      } else if (typeof entity.workingsteps[0] === 'number') {
+        let children = [];
+        _.each(entity.workingsteps, (c) => {
+          children.push(this.props.workingsteps[c]);
+        });
+        return children;
+      }
+    }
+    return null;
+  }
+
+  renderChildren(entity) {
+    if (entity.type === 'workingstep') {
+      return null;
+    }
+    let children = this.normalizeChildren(entity);
+    let childrenTitle;
+    if (entity.type === 'tolerance' || entity.type === 'tool') {
+      if (children) {
+        childrenTitle = 'Used in Workingsteps:';
+      } else {
+        childrenTitle = 'Not used in any workingsteps.';
+      }
+    } else if (children) {
+      childrenTitle = 'Children:';
+    } else {
+      childrenTitle = 'No Children';
+    }
+
+    childrenTitle = (<div className='title'>{childrenTitle}</div>);
+    if (children) {
+      children = (
+        <div className='list'>
+          {children.map(this.renderNode)}
+        </div>
+      );
+    }
+
+    return (
+      <MenuItem disabled key='children' className='property children'>
+        {childrenTitle}
+        {children}
+      </MenuItem>
+    );
+  }
+
   renderProperties(entity) {
     if (entity === null) {
       return null;
     }
 
+    let active = this.renderActive(entity);
     let time = this.renderTime(entity);
     let distance = this.renderDistance(entity);
+    let children = this.renderChildren(entity);
+    let goToButton = null;
+    let toolInfo = null;
+    let ppClick = null;
+    let tolType = null;
+    let tolVal = null;
+    if (entity.type === 'workingstep') {
+      goToButton = (
+        <MenuItem
+          key='goto'
+          disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
+          className='property goTo'
+        >
+          Go to Workingstep
+        </MenuItem>
+      );
 
-    let properties;
-    let children = [];
+      if (this.props.tools[entity.tool]) {
+        toolInfo = (
+          <MenuItem key='tool' className='property toolInfo'>
+              <div className={getIcon('tool')}/>
+              Tool: {this.props.tools[entity.tool].name}
+          </MenuItem>
+        );
+      }
 
-    let hasChildren = false;
-    if (entity.children && entity.children.length > 0) {
-      hasChildren = true;
+      ppClick = (event) => {
+        this.selectWS(event, entity);
+      };
+    } else if (entity.type === 'tolerance') {
+      tolType = (
+        <MenuItem disabled key='tolType' className='property'>
+          <div className={getIcon('tolerance type')}/>
+          Type: {tolType} Tolerance
+        </MenuItem>
+      );
+
+      tolVal = (
+        <MenuItem disabled key='tolValue' className='property'>
+          <div className={getIcon('tolerance value')}/>
+          Value: {entity.value}{entity.unit}
+        </MenuItem>
+      );
     }
 
-    let hasWorkingsteps = false;
-    if (entity.workingsteps && entity.workingsteps.length > 0) {
-      hasWorkingsteps = true;
-      _.each(entity.workingsteps, (n) => {
-        children.push(this.renderNode(this.props.workingsteps[n]));
-      });
-    }
-
-    console.log(entity);
-
-    let active;
-    if (entity.type === 'workingstep' || entity.type === 'tolerance') {
-        if (this.props.ws === entity.id || (entity.tolerances && entity.tolerances[this.props.ws])) {
-            active = (
-                <MenuItem disabled className='property'>
-                    <div className={getIcon('active')}/>
-                    Status: Active
-                </MenuItem>
-            )
-        } else if (entity.enabled === true) {
-            active = (
-                <MenuItem disabled className='property'>
-                    <div className={getIcon('inactive')}/>
-                    Status: Inactive
-                </MenuItem>
-            )
-        } else {
-            active = (
-                <MenuItem disabled className='property'>
-                    <div className={getIcon('disabled')}/>
-                    Status: Disabled
-                </MenuItem>
-            )
-        }
-    }
-
-    switch (entity.type) {
-        case 'workpiece':
-            properties = (
-                <Menu className='properties'>
-                    {hasChildren ? 
-                        <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                            <div className='title'>Children:</div>
-                            <div className='list'>
-                                {entity.children.map(this.renderNode)}
-                            </div>
-                        </MenuItem>
-                    : 
-                        <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                            <div className='title'>
-                                No Children
-                            </div>
-                        </MenuItem>
-                    }
-                </Menu>
-            );
-
-            break;
-        case 'workingstep':
-            let goToButton,
-                toolInfo;
-
-            goToButton = (
-                <MenuItem key='goto' disabled={!(entity.enabled === true && this.props.ws !== entity.id)} className='property goTo'>
-                    Go to Workingstep
-                </MenuItem>
-            );
-            
-            if (this.props.tools[entity.tool])
-            toolInfo = (
-                <MenuItem key='tool' className='property toolInfo'>
-                    <div className={getIcon('tool')}/>
-                    Tool: {this.props.tools[entity.tool].name}
-                </MenuItem>
-            );
-
-            properties = (
-                <Menu className='properties' onClick={(event) => {
-                    this.selectWS(event, entity);
-                }}>
-                    {active}
-                    {time}
-                    {distance}
-                    {toolInfo}
-                    {goToButton}
-                </Menu>
-            );
-            break;
-        case 'tolerance':
-            let tolType = entity.toleranceType[0].toUpperCase() + entity.toleranceType.slice(1);
-            properties = (
-                <Menu className='properties'>
-                    {active}
-                    <MenuItem disabled key='tolType' className='property'>
-                        <div className={getIcon('tolerance type')}/>
-                        Type: {tolType} Tolerance
-                    </MenuItem>
-                    <MenuItem disabled key='tolValue' className='property'>
-                        <div className={getIcon('tolerance value')}/>
-                        Value: {entity.value}{entity.unit}
-                    </MenuItem>
-                    {hasWorkingsteps ?
-                        <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                            <div className='title'>
-                                Used in Workingsteps:
-                            </div>
-                            <div className='list'>
-                                {children}
-                            </div>
-                        </MenuItem>
-                    : 
-                        <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                            <div className='title'>Not used in any workingsteps.</div>
-                        </MenuItem>
-                    }
-                </Menu>
-            );
-            break;
-        case 'workplan':
-        case 'workplan-setup':
-        case 'selective':
-            properties = (
-                <Menu className='properties'>
-                    {time}
-                    {distance}
-                    {hasChildren ?
-                        <MenuItem disabled key='children' className='property children'>
-                            <div className='title'>Children:</div>
-                            <div className='list'>
-                                {entity.children.map(this.renderNode)}
-                            </div>
-                        </MenuItem>
-                    :
-                        <MenuItem disabled key='children' className='property children'>
-                            <div className='title'>No Children</div>
-                        </MenuItem>
-                    }
-                </Menu>
-            );
-            break;
-        case 'tool':
-            properties = (
-                <Menu className='properties'>
-                    {hasWorkingsteps ? 
-                        <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                            <div className='title'>
-                                Used in Workingsteps:
-                            </div>
-                            <div className='list'>
-                                {children}
-                            </div>
-                        </MenuItem>
-                    : 
-                        <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                            <div className='title'>
-                                Not used in any workingsteps.
-                            </div>
-                        </MenuItem>
-                    }
-                </Menu>
-            );
-            break;
-        default:
-            properties = (
-                <Menu className='properties'>
-                    <MenuItem disabled className='property'>
-                        No information available
-                    </MenuItem>
-                </Menu>
-            );
-    }
-
-    return properties;
+    return (
+      <Menu
+        className='properties'
+        onClick={ppClick}
+      >
+        {active}
+        {time}
+        {distance}
+        {tolType}
+        {tolVal}
+        {toolInfo}
+        {goToButton}
+        {children}
+      </Menu>
+    );
   }
 
   render() {
@@ -361,6 +336,9 @@ export default class PropertiesPane extends React.Component {
       }
       titleIcon = 'title-icon ' + titleIcon;
     }
+
+    console.log('Render pp');
+    console.log(entity);
 
     return (
       <div className={paneName}>

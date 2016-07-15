@@ -47,24 +47,32 @@ export default class ResponsiveView extends React.Component {
     this.ppstate = this.ppstate.bind(this);
     this.ppBtnClicked = this.ppBtnClicked.bind(this);
 
-    this.props.app.socket.on('nc:state',(state)=>{this.ppstate(state);});
+    this.props.app.socket.on('nc:state', (state) => {
+      this.ppstate(state);
+    });
 
     this.props.app.actionManager.on('sim-pp', this.ppBtnClicked);
-    this.props.app.actionManager.on('sim-f',(info) => {this.nextws();});
-    this.props.app.actionManager.on('sim-b',(info) => {this.prevws();});
+    this.props.app.actionManager.on('sim-f', () => {
+      this.nextws();
+    });
+    this.props.app.actionManager.on('sim-b', () => {
+      this.prevws();
+    });
 
-    this.updateWorkingstep = this.updateWorkingstep.bind(this);
+    this.updateWS = this.updateWorkingstep.bind(this);
 
-    this.handleResize   = this.handleResize.bind(this);
-    this.props.app.actionManager.on('change-workingstep', this.updateWorkingstep);
+    this.handleResize = this.handleResize.bind(this);
+    this.props.app.actionManager.on('change-workingstep', this.updateWS);
 
-    this.cbWS=this.cbWS.bind(this);
+    this.cbWS = this.cbWS.bind(this);
 
     this.speedChanged = this.speedChanged.bind(this);
     this.changeSpeed = this.changeSpeed.bind(this);
 
     this.props.app.actionManager.on('simulate-setspeed', this.changeSpeed);
-    this.props.app.socket.on('nc:speed',(speed)=>{this.speedChanged(speed);});
+    this.props.app.socket.on('nc:speed', (speed) => {
+      this.speedChanged(speed);
+    });
     this.openProperties = this.openProperties.bind(this);
   }
 
@@ -75,13 +83,13 @@ export default class ResponsiveView extends React.Component {
         let stateObj = JSON.parse(response.text);
 
         if (stateObj.state === 'play') {
-          this.setState({'ppbutton': 'pause'}); //Loop is running, we need a pause button.
+          //Loop is running, we need a pause button.
+          this.setState({'ppbutton': 'pause'});
         } else {
           this.setState({'ppbutton': 'play'});
         }
         this.setState({'playbackSpeed': Number(stateObj.speed)});
-      }
-      else {
+      } else {
         console.log(error);
       }
     };
