@@ -213,7 +213,10 @@ export default class PropertiesPane extends React.Component {
                 break;
             case 'workingstep':
                 let goToButton,
-                    toolInfo;
+                    toolInfo,
+                    asIs,
+                    toBe,
+                    delta;
 
                 goToButton = (
                     <MenuItem key='goto' disabled={!(entity.enabled === true && this.props.ws !== entity.id)} className='property goTo'>
@@ -228,6 +231,27 @@ export default class PropertiesPane extends React.Component {
                         Tool: {this.props.tools[entity.tool].name}
                     </MenuItem>
                 );
+              
+                if (entity.asIs.id !== 0) {
+                    asIs = this.renderNode(this.props.toleranceCache[entity.asIs.id]);
+                }
+                if (entity.toBe.id !== 0) {
+                    toBe = this.renderNode(this.props.toleranceCache[entity.toBe.id]);
+                }
+                if (entity.delta.id !== 0) {
+                    delta = this.renderNode(this.props.toleranceCache[entity.delta.id]);
+                }
+              
+                let workpieceInfo = (
+                  <MenuItem disabled key='workpieceInfo' className='property workpieceInfo children'>
+                      <div key='workpieceTitle' className='title'>Workpieces:</div>
+                      <div key='workpieceList' className='list'>
+                        As-is: {asIs.inherited? ' (Inherited)': null}{asIs}
+                        To-be: {toBe.inherited? ' (Inherited)': null}{toBe}
+                        Delta: {delta.inherited? ' (Inherited)': null}{delta}
+                      </div>
+                  </MenuItem>
+                );
 
                 properties = (
                     <Menu className='properties' onClick={(event) => {
@@ -237,6 +261,7 @@ export default class PropertiesPane extends React.Component {
                         {time}
                         {distance}
                         {toolInfo}
+                        {workpieceInfo}
                         {goToButton}
                     </Menu>
                 );
