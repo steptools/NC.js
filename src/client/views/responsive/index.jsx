@@ -282,8 +282,6 @@ export default class ResponsiveView extends React.Component {
   }
 
   openProperties(node) {
-    console.log("OPEN PROPERTIES");
-    console.log(this);
     let currEntity = this.state.selectedEntity;
     let prevEntitities = this.state.previouslySelectedEntities;
     if (node === null) {
