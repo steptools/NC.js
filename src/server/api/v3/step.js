@@ -19,8 +19,42 @@ var exeFromId = function(id) {
 		'timeUnits' : find.GetExecutableTimeUnit(id),
 		'distance' : find.GetExecutableDistance(id),
 		'distanceUnits' : find.GetExecutableDistanceUnit(id),
-    'setupID' : _getSetupFromId(id)
+    'setupID' : _getSetupFromId(id),
+		'asIs': {
+			id: find.GetExecutableWorkpieceAsIsLocal(id),
+			inherited: false
+		},
+		'toBe': {
+			id: find.GetExecutableWorkpieceToBeLocal(id),
+			inherited: false
+		},
+		'delta': {
+			id: find.GetExecutableWorkpieceRemovalLocal(id),
+			inherited: false
+		}
 	};
+
+	if (ws.asIs.id === 0) {
+		ws.asIs.id = find.GetExecutableWorkpieceAsIs(id);
+		ws.asIs.inherited = true;
+		if (ws.asIs.id === 0)
+			ws.asIs = null;
+	}
+	
+	if (ws.toBe.id === 0) {
+		ws.toBe.id = find.GetExecutableWorkpieceToBe(id);
+		ws.toBe.inherited = true;
+		if (ws.asIs.id === 0)
+			ws.asIs = null;
+	}
+	
+	if (ws.delta.id === 0) {
+		ws.delta.id = find.GetExecutableWorkpieceRemoval(id);
+		ws.delta.inherited = true;
+		if (ws.delta.id === 0)
+			ws.delta = null;
+	}
+
 	if(find.IsEnabled(id))
 		ws.enabled = true;
 	else
@@ -28,7 +62,10 @@ var exeFromId = function(id) {
 	if (find.IsWorkingstep(id)) {
 		ws.type = "workingstep";
 		ws.tool = find.GetWorkingstepTool(id);
-
+    ws.feedRate = find.GetProcessFeed(id);
+		ws.feedUnits = find.GetProcessFeedUnit(id);
+		ws.speed = find.GetProcessSpeed(id);
+		ws.speedUnits = find.GetProcessSpeedUnit(id);
 		return ws;
 	} else if (find.IsSelective(id)) {
 		ws.type = "selective";
