@@ -349,8 +349,8 @@ export default class PropertiesPane extends React.Component {
               }}
             />
             <span className='title'>
-              <div className='type'>{entityData.entityType}</div>
-              <div className='name'>{entityData.entityName}</div>
+              <div className='type'>{entityData.type}</div>
+              <div className='name'>{entityData.name}</div>
             </span>
             <span
               className={'title-exit ' + getIcon('exit')}
