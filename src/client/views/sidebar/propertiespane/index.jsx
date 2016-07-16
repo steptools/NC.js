@@ -293,47 +293,49 @@ export default class PropertiesPane extends React.Component {
     }
     properties.push(this.renderChildren(entity));
 
-    let newProps = [];
-    for (var i = 0; i < properties.length; i++) {
-      if (properties[i]) {
-        newProps.push(properties[i]);
-      }
-    }
+    properties = properties.filter(p => p !== null);
 
     return (<Menu className='properties' onClick={(event) => {
       this.selectWS(event, entity);
     }}>
-      {newProps}
+      {properties}
     </Menu>);
   }
 
-  render() {
+  getEntityData() {
     let entity = this.props.entity;
-    let entityName;
-    let entityType;
-    let previousEntity = this.props.previousEntity;
-    let paneName = 'properties-pane';
-    let titleIcon;
+    let entityData = {
+      entity: this.props.entity,
+      previousEntity: this.props.previousEntity,
+      paneName: 'properties-pane',
+    };
 
     if (entity !== null) {
-      entityName = entity.name;
-      entityType = entity.type[0].toUpperCase() + entity.type.slice(1);
-      paneName += ' visible';
+      entityData.name = entity.name;
+      entityData.type = entity.type[0].toUpperCase() + entity.type.slice(1);
+      entityData.paneName += ' visible';
+      let icon;
       if (entity.type === 'tolerance') {
-        titleIcon = getIcon(entity.type, entity.toleranceType);
+        icon = getIcon(entity.type, entity.toleranceType);
       } else {
-        titleIcon = getIcon(entity.type);
+        icon = getIcon(entity.type);
       }
-      titleIcon = 'title-icon ' + titleIcon;
+      entityData.titleIcon = 'title-icon ' + icon;
     }
 
+    return entityData;
+  }
+
+  render() {
+    let entityData = this.getEntityData();
+
     return (
-      <div className={paneName}>
+      <div className={entityData.paneName}>
         <div className='titlebar'>
           <span
             className={'title-back ' + getIcon('back')}
             onClick={() => {
-              this.props.propertiesCb(previousEntity);
+              this.props.propertiesCb(entityData.previousEntity);
             }}
             onMouseOut={() => {
               $('.title-back.icon').removeClass('visible');
@@ -341,14 +343,14 @@ export default class PropertiesPane extends React.Component {
           />
           <div className='titleinfo'>
             <span
-              className={titleIcon}
+              className={entityData.titleIcon}
               onMouseOver={() => {
                 $('.title-back.icon').addClass('visible');
               }}
             />
             <span className='title'>
-              <div className='type'>{entityType}</div>
-              <div className='name'>{entityName}</div>
+              <div className='type'>{entityData.entityType}</div>
+              <div className='name'>{entityData.entityName}</div>
             </span>
             <span
               className={'title-exit ' + getIcon('exit')}
@@ -358,7 +360,7 @@ export default class PropertiesPane extends React.Component {
             />
           </div>
         </div>
-        {this.renderProperties(entity)}
+        {this.renderProperties(entityData.entity)}
       </div>
     );
   }
