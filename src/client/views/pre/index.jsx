@@ -9,7 +9,7 @@ export default class PreviewPane extends CADView {
   constructor(props) {
     super(props);
   }
-  
+
   componentDidMount() {
     let self = this;
     // RENDERER
@@ -78,9 +78,9 @@ export default class PreviewPane extends CADView {
     this.animate(true);
     this.handleResize();
 }
-  
+
   render() {
-    
+
     return <div id='preview-container'>
       <canvas id="preview-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
     </div>;
