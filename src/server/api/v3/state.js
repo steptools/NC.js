@@ -104,7 +104,7 @@ var _getWorkingstep = function() {
 };
 
 var _sameSetup = function (newid, oldid) {
-  return (step._getSetupFromId(newid) === step._getSetupFromId(oldid))
+  return (step.getSetupFromId(newid) === step.getSetupFromId(oldid))
 };
 
 ///*******************************************************************\
