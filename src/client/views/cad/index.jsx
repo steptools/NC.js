@@ -10,6 +10,7 @@ import React            from 'react';
 import ViewerControls   from './viewer_controls';
 import CompassView      from '../compass/compass';
 import LoadQueueView    from '../load_queue';
+import GeometryView     from '../geometry';
 
 // Import shaders
 require('./shaders/VelvetyShader');
@@ -58,8 +59,8 @@ export default class CADView extends React.Component {
         this.onModelRemove  = this.onModelRemove.bind(this);
         this.invalidate     = this.invalidate.bind(this);
         this.onKeypress     = this.onKeypress.bind(this);
-        this.onMouseUp      = this.onMouseUp.bind(this);
-        this.onMouseMove    = this.onMouseMove.bind(this);
+/*        this.onMouseUp      = this.onMouseUp.bind(this);
+        this.onMouseMove    = this.onMouseMove.bind(this); */
         this.alignToolView = this.alignToolView.bind(this);
         this.highlightFaces = this.highlightFaces.bind(this);
     }
@@ -531,7 +532,7 @@ export default class CADView extends React.Component {
         }
     }
 
-    // Handle clicking in the model view for selection
+    /*// Handle clicking in the model view for selection
     onMouseUp(event) {
         if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
             let obj = this.props.manager.hitTest(this.camera, event);
@@ -545,7 +546,7 @@ export default class CADView extends React.Component {
             let obj = this.props.manager.hitTest(this.camera, event);
             this.handleHighlighting(obj);
         }
-    }
+    }*/
 
     render() {
         let compass = this.camera ? <CompassView
@@ -557,6 +558,7 @@ export default class CADView extends React.Component {
         /> : undefined;
 
         return <div id='cadjs-container'>
+            <GeometryView manager={this.props.manager}/>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
             <ViewButton
               alignCb={() => {
