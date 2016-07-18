@@ -50,6 +50,7 @@ function hasActiveChildren(node, id) {
 const Container = (props) => {
   let node = props.node;
   node.icon = getNodeIcon(node);
+  
   let innerName = 'inner';
   let outerName = 'node';
   if (hasActiveChildren(node, props.decorators.ws) === 'active') {
@@ -57,6 +58,7 @@ const Container = (props) => {
   } else if (node.enabled === false) {
     innerName += ' disabled';
   }
+
   let toggleName = 'toggle';
   if (node.leaf === true) {
     toggleName = 'toggle-hidden';
@@ -64,6 +66,11 @@ const Container = (props) => {
     toggleName += ' glyphicon glyphicon-chevron-down';
   } else {
     toggleName += ' glyphicon glyphicon-chevron-right';
+  }
+
+  let nodeName = node.name;
+  if (node.type === 'tolerance') {
+    nodeName += ' - ' + node.value + node.unit;
   }
 
   return (
@@ -81,7 +88,7 @@ const Container = (props) => {
       >
         {node.icon}
         <span className='textbox'>
-          {node.name}
+          {nodeName}
         </span>
       </div>
     </div>
