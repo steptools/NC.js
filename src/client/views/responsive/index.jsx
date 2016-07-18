@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Menu from 'rc-menu';
 import _ from 'lodash';
 import request from 'superagent';
 import CADView from '../cad';
@@ -14,9 +12,13 @@ export default class ResponsiveView extends React.Component {
     super(props);
 
     let tempGuiMode=1;
-    if ((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800)) {
+
+    let innerWidth = window.innerWidth;
+    let innerHeight = window.innerHeight;
+    if ((innerWidth-390 > innerHeight) && (innerWidth > 800)) {
       tempGuiMode=0;
     }
+
     this.state = {
       guiMode: tempGuiMode,
       svmode: 'ws',
@@ -153,7 +155,7 @@ export default class ResponsiveView extends React.Component {
 
       let log = '';
       request
-        .get(chlog_url)
+        .get('/log')
         .end((err, res) => {
           if (!err && res.ok) {
             log = md(res.text);
