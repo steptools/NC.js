@@ -20,16 +20,6 @@ class CADApp extends THREE.EventDispatcher {
         let $body = $('body');
         this.services = $body.data('services');
         this.config = $body.data('config');
-        // Set state
-        this.state = {
-            token: window.localStorage.getItem('user:token'),
-            user: undefined
-        };
-        if (this.state.token) {
-            this.handleLogin({ token: this.state.token });
-        } else {
-            this.addEventListener('user:login', this.handleLogin.bind(this));
-        }
 
         // Setup socket
         this.socket = undefined;
@@ -44,7 +34,6 @@ class CADApp extends THREE.EventDispatcher {
         }
         // Create data manager
         this.cadManager = new CADManager(this.config, this.socket,this);
-        this.previewManager = new CADManager(this.config, this.socket,this);
 
         // Create application-level action manager
         this.actionManager = actionManager;
@@ -68,31 +57,6 @@ class CADApp extends THREE.EventDispatcher {
             baseURL: this.services.api_endpoint + this.services.version,
             modelType: 'nc'
         });
-        
-        this.previewManager.dispatchEvent({
-            type: 'setModel',
-            path: 'state/key',
-            baseURL: this.services.api_endpoint + this.services.version,
-            modelType: 'nc'
-        });
-    }
-
-    handleLogin(ev) {
-        // Set app state
-        window.localStorage.setItem('user:token', ev.token);
-        this.state.token = ev.token;
-        this.state.user = jwtDecode(this.state.token);
-        this.removeEventListener('user:login', this.handleLogin.bind(this));
-        this.addEventListener('user:logout', this.handleLogout.bind(this));
-    }
-
-    handleLogout() {
-        // Update logged out state
-        window.localStorage.setItem('user:token', undefined);
-        this.state.token = undefined;
-        this.state.user = undefined;
-        this.removeEventListener('user:logout', this.handleLogout.bind(this));
-        this.addEventListener('user:login', this.handleLogin.bind(this));
     }
 }
 

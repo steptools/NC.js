@@ -102,9 +102,17 @@ export default class GeometryView extends React.Component{
   onModelAdd(event) {
     //This is where the NC model is being loaded into the CADview
     let model = this.props.manager._models[event.path];
+
+    //This was used to replace model.getObject3D() to test the shell loading for preview pane
+    let model2 = 0;
+    for(let key in model.getObjects()){
+      model2 = model.getObjects()[key].object3D;
+      this.geometryScene.add(model2);
+    }
+    
     // Add the model to the scene
     this.annotationScene.add(   model.getAnnotation3D());
-    this.geometryScene.add(     model.getObject3D());
+    //this.geometryScene.add(     model2);
     this.overlayScene.add(      model.getOverlay3D());
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
@@ -160,36 +168,31 @@ export default class GeometryView extends React.Component{
   }
 
   componentWillMount() {
-      this.sceneCenter = new THREE.Vector3(0,0,0);
-      this.sceneRadius = 10000;
-      this.props.manager.addEventListener("model:add", this.onModelAdd);
-      this.props.manager.addEventListener("model:remove", this.onModelRemove);
-      this.props.manager.addEventListener("shellLoad", this.onShellLoad);
-      this.props.manager.addEventListener("annotationLoad", this.invalidate);
-      this.props.manager.addEventListener("invalidate", this.invalidate);
-      // Keybased events
-      window.addEventListener("keydown", this.onKeypress, true);
-      window.addEventListener("keypress", this.onKeypress, true);
+    this.sceneCenter = new THREE.Vector3(0,0,0);
+    this.sceneRadius = 10000;
+    this.props.manager.addEventListener("model:add", this.onModelAdd);
+    this.props.manager.addEventListener("model:remove", this.onModelRemove);
+    this.props.manager.addEventListener("shellLoad", this.onShellLoad);
+    this.props.manager.addEventListener("annotationLoad", this.invalidate);
+    this.props.manager.addEventListener("invalidate", this.invalidate);
   }
 
-  componentWillUnmount() {
-      window.removeEventListener("keypress", this.onKeypress);
-      window.removeEventListener("keydown", this.onKeypress);
-      this.props.manager.removeEventListener("model:add", this.onModelAdd);
-      this.props.manager.removeEventListener("model:remove", this.onModelRemove);
-      this.props.manager.removeEventListener("shellLoad", this.invalidate);
-      this.props.manager.removeEventListener("annotationLoad", this.invalidate);
-      this.props.manager.removeEventListener("invalidate", this.invalidate);
+  componentWillUnmount() {      
+    this.props.manager.removeEventListener("model:add", this.onModelAdd);
+    this.props.manager.removeEventListener("model:remove", this.onModelRemove);
+    this.props.manager.removeEventListener("shellLoad", this.invalidate);
+    this.props.manager.removeEventListener("annotationLoad", this.invalidate);
+    this.props.manager.removeEventListener("invalidate", this.invalidate);
   }
   
   componentDidUpdate() {
-      if (this.props.resize)
-          this.handleResize();
+    if (this.props.resize)
+        this.handleResize();
 
-      if (this.state.lockedView) {
-          this.alignToolView(this.props.manager.getSelected());
-          this.invalidate();
-      }
+    if (this.state.lockedView) {
+        this.alignToolView(this.props.manager.getSelected());
+        this.invalidate();
+    }
   }
 
   handleResize() {
@@ -387,18 +390,18 @@ export default class GeometryView extends React.Component{
 
   // Handle clicking in the model view for selection
   onMouseUp(event) {
-      if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
+      /*if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
           let obj = this.props.manager.hitTest(this.camera, event);
           this.handleSelection(obj, event);
-      }
+      }*/
   }
 
   // Handle mouse movements in the model view for highlighting
   onMouseMove(event) {
-      if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
+      /*if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
           let obj = this.props.manager.hitTest(this.camera, event);
           this.handleHighlighting(obj);
-      }
+      }*/
   }
   
   render() {

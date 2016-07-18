@@ -8,7 +8,6 @@
 let _                   = require('lodash');
 import React            from 'react';
 import ViewerControls   from './viewer_controls';
-import CompassView      from '../compass/compass';
 import LoadQueueView    from '../load_queue';
 import GeometryView     from '../geometry';
 
@@ -31,7 +30,7 @@ class ViewButton extends React.Component {
     return <div className="resetview">
       <span
         className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
-        onClick={this.props.alignCb}
+        onClick={() => {}/*this.props.alignCb*/}
       />
       <span
         className={"lock glyphicons glyphicons-" + icon + (this.props.locked ? ' locked' : '')}
@@ -62,10 +61,10 @@ export default class CADView extends React.Component {
       return <div id='cadjs-container'>
           <GeometryView manager={this.props.manager} selectedEntity={this.props.selectedEntity} guiMode={this.props.guiMode}/>
           <ViewButton
-            alignCb={() => {
+            /*alignCb={() => {
               this.alignToolView(this.props.manager.getSelected());
               this.invalidate();
-            }}
+            }}*/
             toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
             locked = {this.state.lockedView}
           />

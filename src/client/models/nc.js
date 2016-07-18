@@ -19,7 +19,7 @@ export default class NC extends THREE.EventDispatcher {
         this._workingstep = workingstep;
         this._timeIn = timeIn;
         this._loader = loader;
-        this._objects = [];
+        this._objects = {};
         this.type = 'nc';
         this.raycaster = new THREE.Raycaster();
         this._object3D = new THREE.Object3D();
@@ -128,6 +128,10 @@ export default class NC extends THREE.EventDispatcher {
 
     getObject3D() {
         return this._object3D;
+    };
+
+    getObjects() {
+        return this._objects;
     };
 
     getOverlay3D() {
