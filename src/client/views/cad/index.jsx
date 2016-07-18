@@ -30,7 +30,7 @@ class ViewButton extends React.Component {
     return <div className="resetview">
       <span
         className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
-        onClick={() => {}/*this.props.alignCb*/}
+        onClick={this.props.alignCb}
       />
       <span
         className={"lock glyphicons glyphicons-" + icon + (this.props.locked ? ' locked' : '')}
@@ -51,6 +51,9 @@ export default class CADView extends React.Component {
             lockedView: true,
             oldColors: {}
         };
+
+        this.onMouseUp = this.onMouseUp.bind(this);
+        this.lockedCb = this.lockedCb.bind(this);
     }
 
     // Handle all object selection needs
@@ -79,17 +82,39 @@ export default class CADView extends React.Component {
       }
     }
 
-    componentDidMount() {
+    // Handle clicking in the model view for selection
+    onMouseUp(event) {
+      if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
+          let obj = this.props.manager.hitTest(this.camera, event);
+          this.handleSelection(obj, event);
+      }
+    }
+
+    lockedCb(){
+      if(lockedView){
+        this.setState({'lockedView' : false});
+      }
+      else{
+        this.setState({'lockedView' : true});
+      }
     }
 
     render() {
       return <div id='cadjs-container'>
-          <GeometryView manager={this.props.manager} selectedEntity={this.props.selectedEntity} guiMode={this.props.guiMode}/>
+          <GeometryView 
+            ref={'alignGeomView'} 
+            manager={this.props.manager} 
+            selectedEntity={this.props.selectedEntity} 
+            guiMode={this.props.guiMode} 
+            onMouseUp={this.onMouseUp} 
+            locked={this.state.lockedView}
+            lockedCb={this.lockedCb}
+            />
           <ViewButton
-            /*alignCb={() => {
-              this.alignToolView(this.props.manager.getSelected());
-              this.invalidate();
-            }}*/
+            alignCb={() => {
+              this.refs.alignGeomView.alignToolView(this.props.manager.getSelected());
+              this.refs.alignGeomView.invalidate();
+            }}
             toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
             locked = {this.state.lockedView}
           />
