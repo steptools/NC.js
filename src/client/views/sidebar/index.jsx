@@ -59,6 +59,7 @@ export default class SidebarView extends React.Component {
         let nested = this.props.mode != "tree";
         
         let properties = <PropertiesPane 
+            app={this.props.app}
             entity={this.props.selectedEntity} 
             previousEntity={this.props.previouslySelectedEntities[0]} 
             pid={this.props.pid} 
@@ -66,6 +67,8 @@ export default class SidebarView extends React.Component {
             propertiesCb={this.props.openProperties} 
             tools={this.props.toolCache} 
             workingsteps={this.props.workingstepCache}
+            resize={this.props.resize}
+            toleranceCache={this.props.toleranceCache}
         />;
 
         const modeMenu = (
@@ -87,7 +90,7 @@ export default class SidebarView extends React.Component {
                 ? <WorkplanList cbMode={this.props.cbMode} cbTree={this.props.cbTree} ws={this.props.ws} workplanCache={this.props.workplanCache} propertyCb={this.props.openProperties}/>
                 : null}
             {this.props.mode == 'tolerance'
-                ? <ToleranceList cbMode={this.props.cbMode} cbTree={this.props.cbTree} propertyCb={this.props.openProperties} toleranceCache={this.props.toleranceCache}/>
+                ? <ToleranceList cbMode={this.props.cbMode} cbTree={this.props.cbTree} propertyCb={this.props.openProperties} toleranceCache={this.props.toleranceCache} toleranceList={this.props.toleranceList}/>
                 : null}
             {this.props.mode == 'tools'
                 ? <ToolList cbMode={this.props.cbMode} cbTree={this.props.cbTree} ws={this.props.ws} propertyCb={this.props.openProperties} toolCb= {(toolList) => {this.setState({tools: toolList});}} tools={this.props.toolCache} curtool={this.props.curtool}/>

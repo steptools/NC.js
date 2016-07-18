@@ -40,6 +40,14 @@
     &:hover {
         border-bottom: 2px solid #2DB7F5;
     }
+
+    .feed-speed {
+        margin: 0 10px;
+
+        &.value {
+            font-weight: bold;
+        }
+    }
 }
 
 .menu-item-button {
