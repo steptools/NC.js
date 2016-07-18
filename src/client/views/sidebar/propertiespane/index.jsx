@@ -41,6 +41,16 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-clock';
     case 'distance':
       return 'icon glyphicons glyphicons-ruler';
+    case 'feedrate':
+      return 'icon glyphicons glyphicons-dashboard';
+    case 'spindlespeed':
+      if (data === 'CW') {
+        return 'icon glyphicons glyphicons-rotate-right';
+      } else if (data === 'CCW') {
+        return 'icon glyphicons glyphicons-rotate-left';
+      } else {
+        return 'icon glyphicons glyphicons-refresh';
+      }
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -78,6 +88,8 @@ export default class PropertiesPane extends React.Component {
 
     this.state = {entity: null};
 
+    this.properties = [];
+
     this.selectWS = this.selectWS.bind(this);
     this.renderNode = this.renderNode.bind(this);
   }
@@ -93,34 +105,9 @@ export default class PropertiesPane extends React.Component {
     // some other menu item clicked, no need to do anything
   }
 
-  renderTime(entity) {
-    if (!entity.baseTime) {
-      return null;
-    }
-    return (
-      <MenuItem disabled key='time' className='property time'>
-        <div className={getIcon('time')}/>
-        Base time: {getFormattedTime(entity)}
-      </MenuItem>
-    );
-  }
-
-  renderDistance(entity) {
-    if (!entity.distance) {
-      return null;
-    }
-    return (
-      <MenuItem disabled key='distance' className='property distance'>
-        <div className={getIcon('distance')}/>
-        Distance: {entity.distance.toFixed(2)}
-        {entity.distanceUnits}
-      </MenuItem>
-    );
-  }
-
   renderActive(entity) {
     if (entity.type !== 'workingstep' && entity.type !== 'tolerance') {
-      return null;
+      return;
     }
     let active = false;
     if (entity.type === 'tolerance') {
@@ -130,27 +117,132 @@ export default class PropertiesPane extends React.Component {
     }
 
     if (active === true) {
-      return (
+      this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('active')}/>
           Status: Active
         </MenuItem>
       );
     } else if (entity.enabled === true) {
-      return (
+      this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('inactive')}/>
           Status: Inactive
         </MenuItem>
       );
     } else {
-      return (
+      this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('disabled')}/>
           Status: Disabled
         </MenuItem>
       );
     }
+  }
+
+  renderTime(entity) {
+    if (!entity.baseTime) {
+      return;
+    }
+    this.properties.push(
+      <MenuItem disabled key='time' className='property time'>
+        <div className={getIcon('time')}/>
+        Base time: {getFormattedTime(entity)}
+      </MenuItem>
+    );
+  }
+
+  renderDistance(entity) {
+    if (!entity.distance) {
+      return;
+    }
+    this.properties.push(
+      <MenuItem disabled key='distance' className='property distance'>
+        <div className={getIcon('distance')}/>
+        Distance: {entity.distance.toFixed(2) + ' ' + entity.distanceUnits}
+      </MenuItem>
+    );
+  }
+
+  renderWorkingstep(entity) {
+    if (entity.type !== 'workingstep') {
+      return;
+    }
+
+    let feedrateData = '';
+    if (entity.feedRate !== 0) {
+      feedrateData = entity.feedRate + ' ' + entity.feedUnits;
+    } else {
+      feedrateData = 'Not defined';
+    }
+    this.properties.push(
+      <MenuItem disabled key='feedrate' className='property feedrate'>
+        <div className={getIcon('feedrate')}/>
+        Feed rate: {feedrateData}
+      </MenuItem>
+    );
+
+    let spindleData = entity.speed + ' ' + entity.speedUnits;
+    spindleData = spindleData.slice(1);
+    let spindleIcon = null;
+    if (entity.speed > 0) {
+      spindleData += ' (CCW)';
+      spindleIcon = getIcon('spindlespeed', 'CCW');
+    } else if (entity.speed < 0) {
+      spindleData += ' (CW)';
+      spindleIcon = getIcon('spindlespeed', 'CW');
+    } else {
+      spindleData = 'Not defined';
+      spindleIcon = getIcon('spindlespeed');
+    }
+    this.properties.push(
+      <MenuItem disabled key='spindlespeed' className='property spindlespeed'>
+        <div className={spindleIcon}/>
+        Spindle speed: {spindleData}
+      </MenuItem>
+    );
+
+    if (this.props.tools[entity.tool]) {
+      this.properties.push(
+        <MenuItem key='tool' className='property tool'>
+            <div className={getIcon('tool')}/>
+            Tool: {this.props.tools[entity.tool].name}
+        </MenuItem>
+      );
+    }
+  }
+
+  renderGoto(entity) {
+    if (entity.type !== 'workingstep') {
+      return;
+    }
+    this.properties.push(
+      <MenuItem
+        key='goto'
+        disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
+        className='property goto'
+      >
+        Go to Workingstep
+      </MenuItem>
+    );
+  }
+
+  renderTolerance(entity) {
+    if (entity.type !== 'tolerance') {
+      return;
+    }
+    this.properties.push(
+      <MenuItem disabled key='tolType' className='property tolType'>
+        <div className={getIcon('tolerance type')}/>
+        Type: {entity.tolType} Tolerance
+      </MenuItem>
+    );
+    this.properties.push(
+      <MenuItem disabled key='tolValue' className='property tolValue'>
+        <div className={getIcon('tolerance value')}/>
+        Value: {entity.value}{entity.unit}
+      </MenuItem>
+    );
   }
 
   renderNode(node) {
@@ -239,7 +331,7 @@ export default class PropertiesPane extends React.Component {
       );
     }
 
-    return (
+    this.properties.push(
       <MenuItem disabled key='children' className='property children'>
         {childrenTitle}
         {children}
@@ -248,58 +340,29 @@ export default class PropertiesPane extends React.Component {
   }
 
   renderProperties(entity) {
+    this.properties = [];
     if (entity === null) {
       return null;
     }
 
-    let properties = [];
+    this.renderActive(entity);
+    this.renderTime(entity);
+    this.renderDistance(entity);
+    this.renderWorkingstep(entity);
+    this.renderGoto(entity);
+    this.renderTolerance(entity);
+    this.renderChildren(entity);
 
-    properties.push(this.renderActive(entity));
-    properties.push(this.renderTime(entity));
-    properties.push(this.renderDistance(entity));
-    if (entity.type === 'workingstep') {
-      if (this.props.tools[entity.tool]) {
-        properties.push(
-          <MenuItem key='tool' className='property toolInfo'>
-              <div className={getIcon('tool')}/>
-              Tool: {this.props.tools[entity.tool].name}
-          </MenuItem>
-        );
-      }
-
-      properties.push(
-        <MenuItem
-          key='goto'
-          disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
-          className='property goTo'
-        >
-          Go to Workingstep
-        </MenuItem>
-      );
-    } else if (entity.type === 'tolerance') {
-      properties.push(
-        <MenuItem disabled key='tolType' className='property'>
-          <div className={getIcon('tolerance type')}/>
-          Type: {tolType} Tolerance
-        </MenuItem>
-      );
-
-      properties.push(
-        <MenuItem disabled key='tolValue' className='property'>
-          <div className={getIcon('tolerance value')}/>
-          Value: {entity.value}{entity.unit}
-        </MenuItem>
-      );
-    }
-    properties.push(this.renderChildren(entity));
-
-    properties = properties.filter(p => p !== null);
-
-    return (<Menu className='properties' onClick={(event) => {
-      this.selectWS(event, entity);
-    }}>
-      {properties}
-    </Menu>);
+    return (
+      <Menu
+        className='properties'
+        onClick={(event) => {
+          this.selectWS(event, entity);
+        }}
+      >
+        {this.properties}
+      </Menu>
+    );
   }
 
   getEntityData() {
