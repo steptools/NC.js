@@ -3,12 +3,11 @@ import ReactDOM from 'react-dom';
 import Menu from 'rc-menu';
 import _ from 'lodash';
 import request from 'superagent';
-import CADView              from '../cad';
-import HeaderView           from '../header';
-import SidebarView          from '../sidebar';
-import FooterView	    from '../footer';
+import CADView from '../cad';
+import HeaderView from '../header';
+import SidebarView from '../sidebar';
+import FooterView	from '../footer';
 import {Markdown as md} from 'node-markdown';
-import ReactTooltip from 'react-tooltip';
 
 export default class ResponsiveView extends React.Component {
   constructor(props){
@@ -18,7 +17,6 @@ export default class ResponsiveView extends React.Component {
     if ((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800)) {
       tempGuiMode=0;
     }
-
     this.state = {
       guiMode: tempGuiMode,
       svmode: 'ws',
@@ -48,24 +46,32 @@ export default class ResponsiveView extends React.Component {
     this.ppstate = this.ppstate.bind(this);
     this.ppBtnClicked = this.ppBtnClicked.bind(this);
 
-    this.props.app.socket.on('nc:state',(state)=>{this.ppstate(state);});
+    this.props.app.socket.on('nc:state', (state) => {
+      this.ppstate(state);
+    });
 
     this.props.app.actionManager.on('sim-pp', this.ppBtnClicked);
-    this.props.app.actionManager.on('sim-f',(info) => {this.nextws();});
-    this.props.app.actionManager.on('sim-b',(info) => {this.prevws();});
+    this.props.app.actionManager.on('sim-f', () => {
+      this.nextws();
+    });
+    this.props.app.actionManager.on('sim-b', () => {
+      this.prevws();
+    });
 
-    this.updateWorkingstep = this.updateWorkingstep.bind(this);
+    this.updateWS = this.updateWorkingstep.bind(this);
 
-    this.handleResize   = this.handleResize.bind(this);
-    this.props.app.actionManager.on('change-workingstep', this.updateWorkingstep);
+    this.handleResize = this.handleResize.bind(this);
+    this.props.app.actionManager.on('change-workingstep', this.updateWS);
 
-    this.cbWS=this.cbWS.bind(this);
+    this.cbWS = this.cbWS.bind(this);
 
     this.speedChanged = this.speedChanged.bind(this);
     this.changeSpeed = this.changeSpeed.bind(this);
 
     this.props.app.actionManager.on('simulate-setspeed', this.changeSpeed);
-    this.props.app.socket.on('nc:speed',(speed)=>{this.speedChanged(speed);});
+    this.props.app.socket.on('nc:speed', (speed) => {
+      this.speedChanged(speed);
+    });
     this.openProperties = this.openProperties.bind(this);
   }
 
@@ -76,13 +82,13 @@ export default class ResponsiveView extends React.Component {
         let stateObj = JSON.parse(response.text);
 
         if (stateObj.state === 'play') {
-          this.setState({'ppbutton': 'pause'}); //Loop is running, we need a pause button.
+          //Loop is running, we need a pause button.
+          this.setState({'ppbutton': 'pause'});
         } else {
           this.setState({'ppbutton': 'play'});
         }
         this.setState({'playbackSpeed': Number(stateObj.speed)});
-      }
-      else {
+      } else {
         console.log(error);
       }
     };
@@ -191,79 +197,88 @@ export default class ResponsiveView extends React.Component {
           tools[tool.id] = tool;
         });
 
-        this.setState({'toolCache': tools});
-      }
-      else {
-        console.log(err);
-      }
-    };
+                this.setState({'toolCache': tools});
+            }
+            else {
+                console.log(err);
+            }
+        };
+        
+        request
+            .get(url)
+            .end(resCb);
+        
+        url = "/v3/nc/tools/"+this.state.ws;
+        request
+            .get(url)
+            .end((err,res) => {
+                if(!err && res.ok){
+                  this.setState({"curtool":res.text});
+                }
+            });
+        
+        
+        // now the same for workpiece/tolerance view
+        
+        url = "/v3/nc/workpieces/";
+        resCb = (err,res) => { //Callback function for response
+            if(!err && res.ok){
+              // Node preprocessing
+              let json = JSON.parse(res.text);
+              let wps = {};
+              let ids = [];
+              let lowFlag = true;
+              let nodeCheck = (n) => {
+                let node = n;
+                
+                if (node.wpType)
+                  ids.push(node.id);
+                
+                if(node.children && node.children.length > 0) {
+                  lowFlag = false;
+                  node.leaf = false;
+                  _.each(node.children, nodeCheck);
+                }
+                else {
+                  node.leaf = true;
+                }
+                
+                if(lowFlag){
+                    node.enabled = false;
+                    lowFlag = true;
+                }
+                else
+                    node.enabled = true;
+                
+                wps[node.id] = node;
+              };
 
-    request
+              _.each(json, nodeCheck);
+
+              ids.sort(
+                function(idA,idB){
+                    let a = json[idA];
+                    let b = json[idB];
+                    if(a.enabled === true && b.enabled === false)
+                        return -1;
+                    else if(a.enabled === false && b.enabled === true)
+                        return 1;
+                    else 
+                        return 0;
+                }
+              );
+            
+              this.setState({'toleranceCache': wps});
+              this.setState({'toleranceList': ids});
+            }
+          else {
+              console.log(err);
+          }
+        };
+        
+        request
           .get(url)
           .end(resCb);
-
-    url = '/v3/nc/tools/'+this.state.ws;
-    request
-          .get(url)
-          .end((err,res) => {
-            if (!err && res.ok){
-              this.setState({'curtool':res.text});
-            }
-          });
-
-
-      // now the same for workpiece/tolerance view
-
-    url = '/v3/nc/workpieces/';
-    resCb = (err,res) => { //Callback function for response
-      if (!err && res.ok) {
-        let json = JSON.parse(res.text);
-        
-        let enabledFlag = true;
-        let nodeCheck = (node) => {
-          if (node.tolerances && node.tolerances.length > 0) {
-            enabledFlag = false;
-          }
-          
-          if (node.children && node.children.length > 0) {
-            node.leaf = false;
-            node.children.map(nodeCheck);
-          } else {
-            node.leaf = true;
-          }
-          
-          if (enabledFlag) {
-            node.enabled = false;
-            enabledFlag = true;
-          } else {
-            node.enabled = true;
-          }
-          
-          return node;
-        }
-
-        json = _.map(json, nodeCheck);
-
-        json.sort(function(a,b) {
-          if (a.enabled === true && b.enabled === false) {
-            return -1;
-          } else if (a.enabled === false && b.enabled === true) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
-
-        this.setState({'toleranceCache': json});
-      }
-      else {
-        console.log(err);
-      }
-    };
-
-    request
-        .get(url)
-        .end(resCb);
 
   }
 
@@ -295,7 +310,7 @@ export default class ResponsiveView extends React.Component {
       this.setState({
         previouslySelectedEntities: prevEntitities,
         selectedEntity: node,
-      })
+      });
     } else if (currEntity === null) {
       this.setState({selectedEntity: node});
     } else {
@@ -417,6 +432,8 @@ export default class ResponsiveView extends React.Component {
                 ppbutton={this.state.ppbutton}
                 logstate={this.state.logstate}
                 speed={this.state.playbackSpeed}
+                ws={this.state.ws}
+                workingstepCache={this.state.workingstepCache}
             />;
       SV = <SidebarView
                 cadManager={this.props.app.cadManager}
@@ -439,6 +456,7 @@ export default class ResponsiveView extends React.Component {
                 }
                 toolCache={this.state.toolCache}
                 curtool={this.state.curtool}
+                toleranceList={this.state.toleranceList}
                 toleranceCache={this.state.toleranceCache}
                 workplanCache={this.state.workplanCache}
                 workingstepCache={this.state.workingstepCache}
@@ -504,6 +522,9 @@ export default class ResponsiveView extends React.Component {
 			root3DObject={this.props.app._root3DObject}
 			guiMode={this.state.guiMode}
             resize={this.state.resize}
+        selectedEntity={this.state.selectedEntity}
+        toleranceCache={this.state.toleranceCache}
+        ws={this.state.ws}
 			/>
 		</div>
 		{FV}
