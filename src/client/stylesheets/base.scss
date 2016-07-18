@@ -1,15 +1,15 @@
 body {
     font: 11px 'Lucida Grande', sans-serif;
     overflow: hidden;
-    background-color: #fff;
+    background-color: #FFFFFF;
     width: 100%;
     height: 100%;
 }
-
 $headerHeight: 90px;
 $sidebarWidth: 390px;
-$sidebarTabsHeight: 103px;
-$sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
+$sidebarTabBarHeight: 110px;
+$sidebarTabHeight: calc(#{$sidebarTabBarHeight}/2 - 5px);
+$sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabBarHeight});
 @import 'components/all';
 
 .primary-view {
@@ -26,9 +26,8 @@ $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
         border: 2px #333 solid;
         width: 100%;
         height: 100%;
-
-
     }
+
     .resetview {
         font-size: 40px;
         position: absolute;
@@ -38,13 +37,10 @@ $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
         color: #999999;
         z-index: 10;
         padding: 7px;
-        text-shadow:
-                -1px -1px 0 #333,
-                1px -1px 0 #333,
-                -1px 1px 0 #333,
-                1px 1px 0 #333;
+        text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
 
-        span:hover,.locked {
+        .locked,
+        span:hover {
             color: #F8F8F8;
             cursor: pointer;
         }
@@ -54,21 +50,6 @@ $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
             position: absolute;
             right: 0;
             top: 0;
-        }
-    }
-    .resetview {
-        font-size: 40px;
-        position: absolute;
-        right: 110px;
-        margin: 15px;
-        top: 25px;
-        color: #999999;
-        transform: scaleY(0.8);
-        z-index: 10;
-
-        &:hover {
-            color: #F8F8F8;
-            cursor: pointer;
         }
     }
 }
@@ -85,7 +66,6 @@ $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabsHeight});
 .model-tree {
     z-index: 2;
 }
-
 // NOTE: "glyphicon" refers to the font "Glyphicons Halflings"
 //       "glyphicons" refers to the font "Glyphicons Regular"
 @import '../fonts/glyphicons';

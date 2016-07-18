@@ -59,7 +59,7 @@ export default class NC extends THREE.EventDispatcher {
 
 
     addModel(model, usage, type, id, transform, bbox) {
-        console.log('Add Model(' + usage + '): ' + id);
+        // console.log('Add Model(' + usage + '): ' + id);
         let self = this;
         // Setup 3D object holder
         let obj = {
@@ -84,6 +84,7 @@ export default class NC extends THREE.EventDispatcher {
             explode: function() { }
         };
         obj.object3D.applyMatrix(obj.transform);
+        obj.object3D.updateMatrixWorld();
         obj.overlay3D = obj.object3D.clone();
         obj.annotation3D = obj.object3D.clone();
         // Save the object
@@ -276,7 +277,7 @@ export default class NC extends THREE.EventDispatcher {
         if (delta.next){
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
-            console.log("Keyframe recieved");
+            // console.log("Keyframe recieved");
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
@@ -363,7 +364,7 @@ export default class NC extends THREE.EventDispatcher {
                 }
                 let obj = self._objects[geom.id];
                 if(obj !== undefined) {
-                    if (obj.rendered !== false && obj.usage === 'cutter') {
+                    if (obj.rendered !== false) {
                         let transform = new THREE.Matrix4();
                         if (!geom.xform) return;
                         transform.fromArray(geom.xform);
@@ -371,6 +372,9 @@ export default class NC extends THREE.EventDispatcher {
                         let quaternion = new THREE.Quaternion();
                         let scale = new THREE.Vector3();
                         transform.decompose(position, quaternion, scale);
+
+
+
                         let mtposition = new THREE.Vector3(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
                         obj.object3D.position.copy(mtposition);
                         obj.object3D.quaternion.copy(quaternion);
@@ -380,6 +384,14 @@ export default class NC extends THREE.EventDispatcher {
                         self._overlay3D.add(self.traceLine);
                         self.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
 
+                        // we need to update all 3D properties so that
+                        // annotations, overlays and objects are all updated
+                        obj.object3D.position.copy(position);
+                        obj.object3D.quaternion.copy(quaternion);
+                        obj.annotation3D.position.copy(position);
+                        obj.annotation3D.quaternion.copy(quaternion);
+                        obj.overlay3D.position.copy(position);
+                        obj.overlay3D.quaternion.copy(quaternion);
                         alter = true;
                     }
                 }

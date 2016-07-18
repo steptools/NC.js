@@ -1,7 +1,8 @@
 .header {
     width: 100%;
     height: $headerHeight;
-    background-color: #fff;
+    background-color: #FFFFFF;
+    border-bottom: none;
     position: relative;
     z-index: 10;
     -moz-user-select: none;
@@ -12,14 +13,14 @@
 }
 
 .header-menu {
-    background-color: #f8f8f8;
+    background-color: #F8F8F8;
 
     .rc-menu-item {
         padding: 0;
         min-width: 85px;
         min-height: inherit;
         text-align: center;
-        border-right: 1px solid #ddd;
+        border-right: 1px solid #DDDDDD;
         background: none;
         white-space: normal;
     }
@@ -29,7 +30,7 @@
     }
 }
 
-.rc-menu-item:first-child {
+.header .rc-menu-item:first-child {
     margin-left: 2px;
 }
 
@@ -37,14 +38,14 @@
     min-height: inherit;
 
     &:hover {
-        border-bottom: 2px solid #2db7f5;
+        border-bottom: 2px solid #2DB7F5;
     }
 }
 
 .menu-item-button {
     .button-icon {
         font-size: 32px;
-        color: rgba(#666, .5);
+        color: rgba(#666666, .5);
         padding-bottom: 11px;
         padding-top: 15px;
         display: block;
@@ -54,7 +55,7 @@
         cursor: pointer;
 
         .button-icon {
-            color: #2baee9;
+            color: #2BAEE9;
             opacity: 1;
         }
     }
@@ -64,17 +65,17 @@
     &:hover {
         input[type=range] {
             &::-webkit-slider-thumb {
-                background: #35b8fd;
+                background: #35B8FD;
                 border-color: transparent;
             }
 
             &::-moz-range-thumb {
-                background: #35b8fd;
+                background: #35B8FD;
                 border-color: transparent;
             }
 
             &::-ms-thumb {
-                background: #35b8fd;
+                background: #35B8FD;
                 border-color: transparent;
             }
         }
@@ -102,10 +103,10 @@
     .slider-icon {
         font-size: 20px;
         opacity: 0.5;
-        color: #666;
+        color: #666666;
 
         &:hover {
-            color: #2baee9;
+            color: #2BAEE9;
             opacity: 1;
             cursor: pointer;
         }
@@ -127,7 +128,7 @@ input[type=range] {
     -webkit-appearance: none;
     width: 100%;
     height: $thumbHeight + 2px;
-    background-color: #f8f8f8;
+    background-color: #F8F8F8;
     cursor: pointer;
 
     &:focus {
@@ -138,12 +139,12 @@ input[type=range] {
         width: 100%;
         height: $trackHeight;
         cursor: pointer;
-        background: rgba(#666, .5);
+        background: rgba(#666666, .5);
         border-radius: 1px;
     }
 
     &::-webkit-slider-thumb {
-        border: 1px solid rgba(#666, .5);
+        border: 1px solid rgba(#666666, .5);
         height: $thumbHeight;
         width: $thumbWidth;
         border-radius: 2px;
@@ -157,16 +158,16 @@ input[type=range] {
         width: 100%;
         height: $trackHeight;
         cursor: pointer;
-        background: rgba(#666, .5);
+        background: rgba(#666666, .5);
         border-radius: 1px;
     }
 
     &::-moz-range-thumb {
-        border: 1px solid rgba(#666, .5);
+        border: 1px solid rgba(#666666, .5);
         height: $thumbHeight;
         width: $thumbWidth;
         border-radius: 2px;
-        background: #fff;
+        background: #FFFFFF;
         cursor: pointer;
     }
     
@@ -181,18 +182,18 @@ input[type=range] {
 
     &::-ms-fill-lower,
     &::-ms-fill-upper {
-        background: rgba(#666, .5);
+        background: rgba(#666666, .5);
         border-radius: 1px;
         cursor: pointer;
     }
 
     &::-ms-thumb {
-        border: 1px solid rgba(#666, .5);
+        border: 1px solid rgba(#666666, .5);
         border-width: 1px;
         height: $thumbHeight;
         width: $thumbWidth;
         border-radius: 2px;
-        background: #ffffff;
+        background: #FFFFFF;
         cursor: pointer;
         margin-top: 0px;
     }
@@ -215,7 +216,7 @@ input[type=range] {
     z-index: -1;
     display: block;
     padding: 6px;
-    border: 2px #333 solid;
+    border: 2px #333333 solid;
     overflow-y: auto;
     text-align: left;
     background-color: rgb(248, 248, 248);
