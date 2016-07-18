@@ -8,6 +8,7 @@ Features:
 - Selecting a tolerance highlights relevant faces when the associated workingstep is active
 - Added displays for speed and feedrate of workingsteps in header and properties pane
 - Added value of the tolerance to its title in the tolerance view
+- Associate workpieces and workingsteps and display this relationship in properties pane
 
 Bugfixes:
 
