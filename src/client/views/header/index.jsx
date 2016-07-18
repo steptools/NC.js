@@ -184,8 +184,13 @@ export default class HeaderView extends React.Component {
         if (curStep) {
           if (curStep.feedRate !== 0)
             feedRate = curStep.feedRate + " " + curStep.feedUnits;
-          if (curStep.speed !== 0)
-            spindleSpeed = curStep.speed + " " + curStep.speedUnits;
+          if (curStep.speed !== 0) {
+            spindleSpeed = Math.abs(curStep.speed) + " " + curStep.speedUnits;
+            if (curStep.speed > 0)
+              spindleSpeed = spindleSpeed + " (CCW)";
+            else
+              spindleSpeed = spindleSpeed + " (CW)";
+          }
         }
         
         const headerMenu = (
