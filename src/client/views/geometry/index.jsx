@@ -102,17 +102,9 @@ export default class GeometryView extends React.Component{
   onModelAdd(event) {
     //This is where the NC model is being loaded into the CADview
     let model = this.props.manager._models[event.path];
-
-    //This was used to replace model.getObject3D() to test the shell loading for preview pane
-    let model2 = 0;
-    for(let key in model.getObjects()){
-      model2 = model.getObjects()[key].object3D;
-      this.geometryScene.add(model2);
-    }
-    
     // Add the model to the scene
     this.annotationScene.add(   model.getAnnotation3D());
-    //this.geometryScene.add(     model2);
+    this.geometryScene.add(     model.getObject3D());
     this.overlayScene.add(      model.getOverlay3D());
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
