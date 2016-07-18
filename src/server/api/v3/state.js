@@ -206,6 +206,48 @@ var _loop = function(ms, key, wsgcode) {
   }
 };
 
+var parseGCodes = function() {
+  let GCodeFile = app.project.substring(0, app.project.length - 5) + "min";
+	let MTCfile = app.project.substring(0, app.project.length - 5) + "mtc";
+	let lineNumber = 0;
+
+	let fileRead = new Promise(function(resolve, reject) {
+		var MTCcontent = [];
+  	fs.readFile(GCodeFile, function(err, data) {
+			var GCodes = data.toString().split("\n");
+			_.each(GCodes, function(line) {
+				if (line[0] == "(") {
+					console.log("Comment");
+					if (line[1] == "W") {
+						console.log(lineNumber);
+						MTCcontent.push(lineNumber);
+					}
+				}
+				else {
+					lineNumber++;
+				}
+			});
+			resolve(MTCcontent);
+		});
+	});
+	
+	fileRead.then(function(res) {
+		console.log(res);
+	
+		var JSONContent = "{\"worksteps\" : [\n";
+		_.each(res, function(code){
+			JSONContent = JSONContent + code.toString() + ",\n";
+		});
+		JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + "\n]}";
+	
+		fs.writeFile(MTCfile, JSONContent, (err) => {console.log(err)} );
+		console.log(JSONContent);
+	});
+
+	
+}
+
+
 var _loopInit = function(req, res) {
   // app.logger.debug("loopstate is " + req.params.loopstate);
 
@@ -214,7 +256,12 @@ var _loopInit = function(req, res) {
 
 
   fs.readFile(MTCfile, function(err, data) {
-    WSGCode = JSON.parse(data.toString());
+		if (err) {
+				WSGCode = parseGCodes();
+		}
+		else {
+				WSGCode = JSON.parse(data.toString());
+		}
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {
         res.status(200).send(JSON.stringify({'state': "play", 'speed': playbackSpeed}));
