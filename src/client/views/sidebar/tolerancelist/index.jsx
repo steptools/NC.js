@@ -30,9 +30,13 @@ export default class ToleranceList extends React.Component {
   }
 
   render(){
+    let tolList = this.props.toleranceList.map((id) => {
+        return this.props.toleranceCache[id];
+    });
+    
     return (
-      this.props.toleranceCache.length > 0 ?
-      <Treebeard data={this.props.toleranceCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
+      tolList.length > 0 ?
+      <Treebeard data={tolList} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
         : null
     );
   }

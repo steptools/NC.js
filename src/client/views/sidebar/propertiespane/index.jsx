@@ -194,18 +194,18 @@ export default class PropertiesPane extends React.Component {
             case 'workpiece':
                 properties = (
                     <Menu className='properties'>
-                        {hasChildren ? 
+                        {hasWorkingsteps ?
                             <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                                <div className='title'>Children:</div>
+                                <div className='title'>
+                                    Used in Workingsteps:
+                                </div>
                                 <div className='list'>
-                                    {entity.children.map(this.renderNode)}
+                                    {children}
                                 </div>
                             </MenuItem>
                         : 
                             <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                                <div className='title'>
-                                    No Children
-                                </div>
+                                <div className='title'>Not used in any workingsteps.</div>
                             </MenuItem>
                         }
                     </Menu>
@@ -214,7 +214,10 @@ export default class PropertiesPane extends React.Component {
                 break;
             case 'workingstep':
                 let goToButton,
-                    toolInfo;
+                    toolInfo,
+                    asIs,
+                    toBe,
+                    delta;
 
                 goToButton = (
                     <MenuItem key='goto' disabled={!(entity.enabled === true && this.props.ws !== entity.id)} className='property goTo'>
@@ -229,6 +232,27 @@ export default class PropertiesPane extends React.Component {
                         Tool: {this.props.tools[entity.tool].name}
                     </MenuItem>
                 );
+              
+                if (entity.asIs.id !== 0) {
+                    asIs = this.renderNode(this.props.toleranceCache[entity.asIs.id]);
+                }
+                if (entity.toBe.id !== 0) {
+                    toBe = this.renderNode(this.props.toleranceCache[entity.toBe.id]);
+                }
+                if (entity.delta.id !== 0) {
+                    delta = this.renderNode(this.props.toleranceCache[entity.delta.id]);
+                }
+              
+                let workpieceInfo = (
+                  <MenuItem disabled key='workpieceInfo' className='property workpieceInfo children'>
+                      <div key='workpieceTitle' className='title'>Workpieces:</div>
+                      <div key='workpieceList' className='list'>
+                        As-is: {entity.asIs.inherited? ' (Inherited)': null}{asIs}
+                        To-be: {entity.toBe.inherited? ' (Inherited)': null}{toBe}
+                        Delta: {entity.delta.inherited? ' (Inherited)': null}{delta}
+                      </div>
+                  </MenuItem>
+                );
 
                 properties = (
                     <Menu className='properties' onClick={(event) => {
@@ -238,6 +262,7 @@ export default class PropertiesPane extends React.Component {
                         {time}
                         {distance}
                         {toolInfo}
+                        {workpieceInfo}
                         {goToButton}
                     </Menu>
                 );
@@ -255,20 +280,6 @@ export default class PropertiesPane extends React.Component {
                             <div className={getIcon('tolerance value')}/>
                             Value: {entity.value}{entity.unit}
                         </MenuItem>
-                        {hasWorkingsteps ?
-                            <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                                <div className='title'>
-                                    Used in Workingsteps:
-                                </div>
-                                <div className='list'>
-                                    {children}
-                                </div>
-                            </MenuItem>
-                        : 
-                            <MenuItem disabled key='workingsteps' className='property children workingsteps'>
-                                <div className='title'>Not used in any workingsteps.</div>
-                            </MenuItem>
-                        }
                     </Menu>
                 );
                 break;
@@ -358,6 +369,7 @@ export default class PropertiesPane extends React.Component {
                   root3DObject={this.props.app._root3DObject}
                   guiMode={0}
                   resize={this.props.resize}
+                  selectedEntity={null}
                   />
                 <div className='titlebar'>
                     <span 
