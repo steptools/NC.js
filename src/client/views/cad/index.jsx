@@ -60,9 +60,6 @@ export default class CADView extends React.Component {
         this.onKeypress     = this.onKeypress.bind(this);
         this.onMouseUp      = this.onMouseUp.bind(this);
         this.onMouseMove    = this.onMouseMove.bind(this);
-        this.onTreeClick    = this.onTreeClick.bind(this);
-        this.onTreeChange   = this.onTreeChange.bind(this);
-        this.onTreeNodeEnterExit = this.onTreeNodeEnterExit.bind(this);
         this.alignToolView = this.alignToolView.bind(this);
         this.highlightFaces = this.highlightFaces.bind(this);
     }
@@ -112,7 +109,6 @@ export default class CADView extends React.Component {
             case 27:
                 this.props.openProperties(null);
                 break;
-
             // Go to special viewing postion on 'a'
             case 97:
                 //console.log(this.camera);
@@ -543,55 +539,12 @@ export default class CADView extends React.Component {
         }
     }
 
-    // Handle clicking in the model tree for selection
-    onTreeClick(node, event) {
-        this.handleSelection(node.obj, event);
-    }
-
-    // Handle synchronization of collapse/expand in the tree
-    onTreeChange(tree, parent, node) {
-        if (!parent && node) {
-            node.obj.toggleCollapsed();
-            tree = this.props.manager.getTree();
-            this.setState({ modelTree: tree });
-        }
-    }
-
-    // Handle all object highlighting needs
-    handleHighlighting(obj) {
-        let change = false;
-        if (this.state.lastHovered && (!obj || obj.getID() != this.state.lastHovered.getID())) {
-            // Clear existing highlight
-            this.state.lastHovered.toggleHighlight();
-            change = true;
-        }
-        // Did we find a new object
-        if (obj && (!this.state.lastHovered || obj.getID() != this.state.lastHovered.getID())) {
-            obj = obj.getNamedParent();
-            // Yes, go highlight it in the tree
-            obj.toggleHighlight(0xffff60);
-            change = true;
-        }
-        // Update the model tree and redraw if things have changed
-        if (change) {
-            let tree = this.props.manager.getTree();
-            this.setState({ modelTree: tree });
-            this.invalidate();
-        }
-        this.state.lastHovered = obj;
-    }
-
     // Handle mouse movements in the model view for highlighting
     onMouseMove(event) {
         if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
             let obj = this.props.manager.hitTest(this.camera, event);
             this.handleHighlighting(obj);
         }
-    }
-
-    // Handle mouse movements in the model tree for highlighting
-    onTreeNodeEnterExit(node) {
-        this.handleHighlighting(node.obj);
     }
 
     render() {
