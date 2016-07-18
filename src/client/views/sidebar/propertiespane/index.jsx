@@ -80,6 +80,7 @@ export default class PropertiesPane extends React.Component {
 
     this.selectWS = this.selectWS.bind(this);
     this.renderNode = this.renderNode.bind(this);
+    this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
   }
 
   selectWS(event, entity) {
@@ -186,43 +187,49 @@ export default class PropertiesPane extends React.Component {
     );
   }
 
-  normalizeChildren(entity) {
-    if (entity.children && entity.children.length > 0) {
-      if (typeof entity.children[0] === 'object') {
-        return entity.children;
-      } else if (typeof entity.children[0] === 'number') {
-        let children = [];
-        _.each(entity.children, (c) => {
-          children.push(this.props.workingsteps[c]);
-        });
-        return children;
-      }
+  renderWorkingsteps(entity) {
+    if (entity.type !== 'workpiece' && entity.type !== 'tool') {
+      return null;
     }
-    if (entity.workingsteps && entity.workingsteps.length > 0) {
-      if (typeof entity.workingsteps[0] === 'object') {
-        return entity.workingsteps;
-      } else if (typeof entity.workingsteps[0] === 'number') {
-        let children = [];
-        _.each(entity.workingsteps, (c) => {
-          children.push(this.props.workingsteps[c]);
-        });
-        return children;
-      }
+    let title, steps;
+    if (entity.workingsteps.length > 0) {
+      title = 'Used in Workingsteps:';
+      steps = (<div className='list'>
+        {entity.workingsteps.map((step) => 
+          this.renderNode(this.props.workingsteps[step])
+        )}
+      </div>);
+    } else {
+      title = 'Not used in any workingsteps.';
     }
-    return null;
+    
+    title = (<div className='title'>{title}</div>);
+    
+    return (
+      <MenuItem disabled key='workingsteps' className='property children'>
+        {title}
+        {steps}
+      </MenuItem>
+    );
   }
 
   renderChildren(entity) {
     if (entity.type === 'workingstep') {
       return null;
     }
-    let children = this.normalizeChildren(entity);
+    let children = entity.children; // this.normalizeChildren(entity);
     let childrenTitle;
-    if (entity.type === 'tolerance' || entity.type === 'tool') {
+    if (entity.type === 'tolerance') {
       if (children) {
         childrenTitle = 'Used in Workingsteps:';
       } else {
         childrenTitle = 'Not used in any workingsteps.';
+      }
+    } else if (entity.type === 'workpiece') {
+      if (children) {
+        childrenTitle = 'Tolerances:';
+      } else {
+        childrenTitle = 'No tolerances defined.';
       }
     } else if (children) {
       childrenTitle = 'Children:';
@@ -280,7 +287,7 @@ export default class PropertiesPane extends React.Component {
       properties.push(
         <MenuItem disabled key='tolType' className='property'>
           <div className={getIcon('tolerance type')}/>
-          Type: {tolType} Tolerance
+          Type: {entity.tolType} Tolerance
         </MenuItem>
       );
 
@@ -290,8 +297,12 @@ export default class PropertiesPane extends React.Component {
           Value: {entity.value}{entity.unit}
         </MenuItem>
       );
+    } else if (entity.type === 'workpiece' || entity.type === 'tool') {
+      properties.push(this.renderWorkingsteps(entity));
     }
-    properties.push(this.renderChildren(entity));
+    
+    if (entity.type !== 'tool')
+      properties.push(this.renderChildren(entity));
 
     properties = properties.filter(p => p !== null);
 
