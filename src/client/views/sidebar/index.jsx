@@ -44,12 +44,13 @@ export default class SidebarView extends React.Component {
   render() {
     let properties = <PropertiesPane
       entity={this.props.selectedEntity}
-      previousEntity={this.props.previouslySelectedEntities[0]}
+      previousEntities={this.props.previouslySelectedEntities}
       pid={this.props.pid}
       ws={this.props.ws}
       propertiesCb={this.props.openProperties}
       tools={this.props.toolCache}
       workingsteps={this.props.workingstepCache}
+      toleranceCache={this.props.toleranceCache}
     />;
 
     const tabs = (

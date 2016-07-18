@@ -92,6 +92,7 @@ export default class PropertiesPane extends React.Component {
 
     this.selectWS = this.selectWS.bind(this);
     this.renderNode = this.renderNode.bind(this);
+    this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
   }
 
   selectWS(event, entity) {
@@ -278,43 +279,101 @@ export default class PropertiesPane extends React.Component {
     );
   }
 
-  normalizeChildren(entity) {
-    if (entity.children && entity.children.length > 0) {
-      if (typeof entity.children[0] === 'object') {
-        return entity.children;
-      } else if (typeof entity.children[0] === 'number') {
-        let children = [];
-        _.each(entity.children, (c) => {
-          children.push(this.props.workingsteps[c]);
-        });
-        return children;
+  renderWorkingsteps(entity) {
+    if (entity.type !== 'workpiece' && entity.type !== 'tool') {
+      return null;
+    }
+    let title, steps;
+    if (entity.workingsteps.length > 0) {
+      title = 'Used in Workingsteps:';
+      steps = (<div className='list'>
+        {entity.workingsteps.map((step) => 
+          this.renderNode(this.props.workingsteps[step])
+        )}
+      </div>);
+    } else {
+      title = 'Not used in any workingsteps.';
+    }
+    
+    title = (<div className='title'>{title}</div>);
+    
+    this.properties.push (
+      <MenuItem disabled key='workingsteps' className='property children'>
+        {title}
+        {steps}
+      </MenuItem>
+    );
+  }
+  
+  renderWorkpieces(entity) {
+    if (entity.type !== 'workingstep') {
+      return null;
+    }
+    
+    let asIs, toBe, delta;
+
+    if (entity.asIs.id !== 0) {
+      asIs = this.renderNode(this.props.toleranceCache[entity.asIs.id]);
+      if (asIs) {
+        asIs = (
+          <div>
+            As-Is{entity.asIs.inherited ? ' (Inherited)' : null}: {asIs}
+          </div>
+        );
       }
     }
-    if (entity.workingsteps && entity.workingsteps.length > 0) {
-      if (typeof entity.workingsteps[0] === 'object') {
-        return entity.workingsteps;
-      } else if (typeof entity.workingsteps[0] === 'number') {
-        let children = [];
-        _.each(entity.workingsteps, (c) => {
-          children.push(this.props.workingsteps[c]);
-        });
-        return children;
+    if (entity.toBe.id !== 0) {
+      toBe = this.renderNode(this.props.toleranceCache[entity.toBe.id]);
+      if (toBe) {
+        toBe = (
+          <div>
+            To-Be{entity.toBe.inherited ? ' (Inherited)' : null}: {toBe}
+          </div>
+        );
       }
     }
-    return null;
+    if (entity.delta.id !== 0) {
+      delta = this.renderNode(this.props.toleranceCache[entity.delta.id]);
+      if (delta) {
+        delta = (
+          <div>
+            Delta{entity.delta.inherited ? ' (Inherited)' : null}: {delta}
+          </div>
+        );
+      }
+    }
+
+    let title = (<div className='title'>Workpieces:</div>);
+
+    this.properties.push(
+      <MenuItem disabled key='workpieces' className='property children'>
+        {title}
+        <div className='list'>
+          {asIs}
+          {toBe}
+          {delta}
+        </div>
+      </MenuItem>
+    );
   }
 
   renderChildren(entity) {
-    if (entity.type === 'workingstep') {
+    if (entity.type === 'workingstep' || entity.type === 'tool') {
       return null;
     }
-    let children = this.normalizeChildren(entity);
+    let children = entity.children; // this.normalizeChildren(entity);
     let childrenTitle;
-    if (entity.type === 'tolerance' || entity.type === 'tool') {
+    if (entity.type === 'tolerance') {
       if (children) {
         childrenTitle = 'Used in Workingsteps:';
       } else {
         childrenTitle = 'Not used in any workingsteps.';
+      }
+    } else if (entity.type === 'workpiece') {
+      if (children && children.length > 0) {
+        childrenTitle = 'Tolerances:';
+      } else {
+        childrenTitle = 'No tolerances defined.';
       }
     } else if (children) {
       childrenTitle = 'Children:';
@@ -349,8 +408,10 @@ export default class PropertiesPane extends React.Component {
     this.renderTime(entity);
     this.renderDistance(entity);
     this.renderWorkingstep(entity);
+    this.renderWorkpieces(entity);
     this.renderGoto(entity);
     this.renderTolerance(entity);
+    this.renderWorkingsteps(entity);
     this.renderChildren(entity);
 
     return (
@@ -369,7 +430,7 @@ export default class PropertiesPane extends React.Component {
     let entity = this.props.entity;
     let entityData = {
       entity: this.props.entity,
-      previousEntity: this.props.previousEntity,
+      previousEntity: this.props.previousEntities[0],
       paneName: 'properties-pane',
     };
 
@@ -398,7 +459,7 @@ export default class PropertiesPane extends React.Component {
           <span
             className={'title-back ' + getIcon('back')}
             onClick={() => {
-              this.props.propertiesCb(entityData.previousEntity);
+              this.props.propertiesCb(entityData.previousEntity, true);
             }}
             onMouseOut={() => {
               $('.title-back.icon').removeClass('visible');

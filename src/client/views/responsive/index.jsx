@@ -293,26 +293,24 @@ export default class ResponsiveView extends React.Component {
     this.setState({resize: false});
   }
 
-  openProperties(node) {
+  openProperties(node, backtrack) {
     let currEntity = this.state.selectedEntity;
-    let prevEntitities = this.state.previouslySelectedEntities;
+    let prevEntities = this.state.previouslySelectedEntities;
     if (node === null) {
       this.setState({
         previouslySelectedEntities: [null],
         selectedEntity: null,
       });
-    } else if (node === prevEntitities[0]) {
-      prevEntitities.shift();
-      this.setState({
-        previouslySelectedEntities: prevEntitities,
-        selectedEntity: node,
-      });
     } else if (currEntity === null) {
       this.setState({selectedEntity: node});
     } else {
-      prevEntitities.unshift(currEntity);
+      if (backtrack) {
+        prevEntities.shift();
+      } else {
+        prevEntities.unshift(currEntity);
+      }
       this.setState({
-        previouslySelectedEntities: prevEntitities,
+        previouslySelectedEntities: prevEntities,
         selectedEntity: node,
       });
     }
