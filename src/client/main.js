@@ -44,6 +44,7 @@ class CADApp extends THREE.EventDispatcher {
         }
         // Create data manager
         this.cadManager = new CADManager(this.config, this.socket,this);
+        this.previewManager = new CADManager(this.config, this.socket,this);
 
         // Create application-level action manager
         this.actionManager = actionManager;
@@ -62,6 +63,13 @@ class CADApp extends THREE.EventDispatcher {
         });
 
         this.cadManager.dispatchEvent({
+            type: 'setModel',
+            path: 'state/key',
+            baseURL: this.services.api_endpoint + this.services.version,
+            modelType: 'nc'
+        });
+        
+        this.previewManager.dispatchEvent({
             type: 'setModel',
             path: 'state/key',
             baseURL: this.services.api_endpoint + this.services.version,
