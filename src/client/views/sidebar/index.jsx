@@ -68,6 +68,7 @@ export default class SidebarView extends React.Component {
             tools={this.props.toolCache} 
             workingsteps={this.props.workingstepCache}
             resize={this.props.resize}
+            toleranceCache={this.props.toleranceCache}
         />;
 
         const modeMenu = (
