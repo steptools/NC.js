@@ -1,3 +1,4 @@
+// NOTE: styleguide compliant
 import React from 'react';
 import _ from 'lodash';
 import request from 'superagent';
@@ -122,8 +123,16 @@ export default class ResponsiveView extends React.Component {
         let stepNodes = {};
         let index = 1;
         let negIndex = -1;
-        let nodeCheck = (node)=> {
-          if (node.type === 'selective' || node.type === 'workplan' || node.type === 'workplan-setup') {
+        let nodeCheck = (node) => {
+          if (node.type === 'workingstep') {
+            node.number = index;
+            node.leaf = true;
+            stepNodes[node.id] = node;
+            if (node.enabled) {
+              wsList.push(node.id);
+              index = index + 1;
+            }
+          } else {
             if (node.type === 'workplan-setup') {
               wsList.push(negIndex);
               stepNodes[negIndex] = {name: node.name};
@@ -133,14 +142,6 @@ export default class ResponsiveView extends React.Component {
               node.children.map(nodeCheck);
             }
             node.leaf = false;
-          } else {
-            node.number = index;
-            node.leaf = true;
-            stepNodes[node.id] = node;
-            if (node.enabled) {
-              wsList.push(node.id);
-              index = index + 1;
-            }
           }
           node.toggled = false;
         };
@@ -155,13 +156,11 @@ export default class ResponsiveView extends React.Component {
         console.log(err);
       }
     };
-
     request.get(url).end(resCb);
 
     // get the project loopstate
     url = '/v3/nc/state/loop/';
     resCb = (error, response) => {
-
       let log = '';
       request
         .get('/log')
@@ -171,7 +170,6 @@ export default class ResponsiveView extends React.Component {
           } else {
             console.log(err);
           }});
-
       this.setState({'logtext' : log});
 
       if (!error && response.ok) {
@@ -189,7 +187,6 @@ export default class ResponsiveView extends React.Component {
         console.log(error);
       }
     };
-
     request.get(url).end(resCb);
 
     // get the cache of tools
@@ -209,11 +206,9 @@ export default class ResponsiveView extends React.Component {
         console.log(err);
       }
     };
+    request.get(url).end(resCb);
 
-    request
-        .get(url)
-        .end(resCb);
-
+    // get the current tool
     url = '/v3/nc/tools/' + this.state.ws;
     request
       .get(url)
@@ -223,7 +218,7 @@ export default class ResponsiveView extends React.Component {
         }
       });
 
-    // now the same for workpiece/tolerance view
+    // get data for workpiece/tolerance view
     url = '/v3/nc/workpieces/';
     resCb = (err,res) => { //Callback function for response
       if (!err && res.ok) {
@@ -278,10 +273,7 @@ export default class ResponsiveView extends React.Component {
         console.log(err);
       }
     };
-
-    request
-      .get(url)
-      .end(resCb);
+    request.get(url).end(resCb);
   }
 
   componentWillUnmount() {
@@ -289,7 +281,9 @@ export default class ResponsiveView extends React.Component {
   }
 
   handleResize() {
-    if ((window.innerWidth-390 > window.innerHeight) && (window.innerWidth > 800)) {
+    let innerWidth = window.innerWidth;
+    let innerHeight = window.innerHeight;
+    if ((innerWidth-390 > innerHeight) && (innerWidth > 800)) {
       this.setState({guiMode: 0});
     } else {
       this.setState({guiMode: 1});
@@ -325,14 +319,16 @@ export default class ResponsiveView extends React.Component {
   }
 
   updateWorkingstep(ws) {
-    let url = '/v3/nc/';
-    url = url + 'workplan/' + ws;
+    let url = '/v3/nc/workplan/' + ws;
 
     let requestCB = (error, response) => {
       if (!error && response.ok) {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
-          this.setState({'ws': workingstep.id, 'wstext':workingstep.name.trim()});
+          this.setState({
+            'ws': workingstep.id,
+            'wstext':workingstep.name.trim(),
+          });
 
           this.setState({'curtool': workingstep.tool});
         } else {
