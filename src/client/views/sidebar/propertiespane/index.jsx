@@ -297,16 +297,68 @@ export default class PropertiesPane extends React.Component {
     
     title = (<div className='title'>{title}</div>);
     
-    return (
+    this.properties.push (
       <MenuItem disabled key='workingsteps' className='property children'>
         {title}
         {steps}
       </MenuItem>
     );
   }
+  
+  renderWorkpieces(entity) {
+    if (entity.type !== 'workingstep') {
+      return null;
+    }
+    
+    let asIs, toBe, delta;
+
+    if (entity.asIs.id !== 0) {
+      asIs = this.renderNode(this.props.toleranceCache[entity.asIs.id]);
+      if (asIs) {
+        asIs = (
+          <div>
+            As-Is{entity.asIs.inherited ? ' (Inherited)' : null}: {asIs}
+          </div>
+        );
+      }
+    }
+    if (entity.toBe.id !== 0) {
+      toBe = this.renderNode(this.props.toleranceCache[entity.toBe.id]);
+      if (toBe) {
+        toBe = (
+          <div>
+            To-Be{entity.toBe.inherited ? ' (Inherited)' : null}: {toBe}
+          </div>
+        );
+      }
+    }
+    if (entity.delta.id !== 0) {
+      delta = this.renderNode(this.props.toleranceCache[entity.delta.id]);
+      if (delta) {
+        delta = (
+          <div>
+            Delta{entity.delta.inherited ? ' (Inherited)' : null}: {delta}
+          </div>
+        );
+      }
+    }
+
+    let title = (<div className='title'>Workpieces:</div>);
+
+    this.properties.push(
+      <MenuItem disabled key='workpieces' className='property children'>
+        {title}
+        <div className='list'>
+          {asIs}
+          {toBe}
+          {delta}
+        </div>
+      </MenuItem>
+    );
+  }
 
   renderChildren(entity) {
-    if (entity.type === 'workingstep') {
+    if (entity.type === 'workingstep' || entity.type === 'tool') {
       return null;
     }
     let children = entity.children; // this.normalizeChildren(entity);
@@ -318,7 +370,7 @@ export default class PropertiesPane extends React.Component {
         childrenTitle = 'Not used in any workingsteps.';
       }
     } else if (entity.type === 'workpiece') {
-      if (children) {
+      if (children && children.length > 0) {
         childrenTitle = 'Tolerances:';
       } else {
         childrenTitle = 'No tolerances defined.';
@@ -356,8 +408,10 @@ export default class PropertiesPane extends React.Component {
     this.renderTime(entity);
     this.renderDistance(entity);
     this.renderWorkingstep(entity);
+    this.renderWorkpieces(entity);
     this.renderGoto(entity);
     this.renderTolerance(entity);
+    this.renderWorkingsteps(entity);
     this.renderChildren(entity);
 
     return (
