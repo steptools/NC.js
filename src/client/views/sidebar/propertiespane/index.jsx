@@ -280,7 +280,7 @@ export default class PropertiesPane extends React.Component {
       properties.push(
         <MenuItem disabled key='tolType' className='property'>
           <div className={getIcon('tolerance type')}/>
-          Type: {tolType} Tolerance
+          Type: {entity.tolType} Tolerance
         </MenuItem>
       );
 

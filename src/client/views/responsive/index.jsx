@@ -45,9 +45,27 @@ export default class ResponsiveView extends React.Component {
       previouslySelectedEntities: [null],
     };
 
+    this.addBindings();
+    this.addListeners();
+  }
+
+  addBindings() {
     this.ppstate = this.ppstate.bind(this);
     this.ppBtnClicked = this.ppBtnClicked.bind(this);
 
+    this.updateWS = this.updateWorkingstep.bind(this);
+
+    this.handleResize = this.handleResize.bind(this);
+
+    this.cbWS = this.cbWS.bind(this);
+
+    this.speedChanged = this.speedChanged.bind(this);
+    this.changeSpeed = this.changeSpeed.bind(this);
+
+    this.openProperties = this.openProperties.bind(this);
+  }
+
+  addListeners() {
     this.props.app.socket.on('nc:state', (state) => {
       this.ppstate(state);
     });
@@ -60,21 +78,12 @@ export default class ResponsiveView extends React.Component {
       this.prevws();
     });
 
-    this.updateWS = this.updateWorkingstep.bind(this);
-
-    this.handleResize = this.handleResize.bind(this);
     this.props.app.actionManager.on('change-workingstep', this.updateWS);
-
-    this.cbWS = this.cbWS.bind(this);
-
-    this.speedChanged = this.speedChanged.bind(this);
-    this.changeSpeed = this.changeSpeed.bind(this);
 
     this.props.app.actionManager.on('simulate-setspeed', this.changeSpeed);
     this.props.app.socket.on('nc:speed', (speed) => {
       this.speedChanged(speed);
     });
-    this.openProperties = this.openProperties.bind(this);
   }
 
   componentWillMount() {
