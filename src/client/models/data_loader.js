@@ -352,6 +352,7 @@ export default class DataLoader extends THREE.EventDispatcher {
     }
 
     buildShapeJSON(req, doc, assembly, id, parent, transform, isRoot) {
+        console.log("BUILDING SHAPE JSON");
         // We are really only looking up stuff when non-root
         if (!isRoot) return assembly.getChild(id);
         // Ok, now let's really build some stuff
