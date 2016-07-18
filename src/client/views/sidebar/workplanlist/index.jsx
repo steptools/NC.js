@@ -1,63 +1,71 @@
+// NOTE: styleguide compliant
 import React from 'react';
 import {Treebeard} from 'react-treebeard';
 import ts from '../tree_style.jsx';
 
 export default class WorkplanList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {current: false};
-        this.onToggle = this.onToggle.bind(this);
-        this.toggleToCurrentWS(this.props.workplanCache);
-        this.decorators = ts.decorators;
-        this.decorators.propertyCb = this.props.propertyCb;
-    }
+  constructor(props) {
+    super(props);
 
-    onToggle(node, toggled) {
-        if (this.state.cursor) {
-            this.state.cursor.active = false;
-        }
-        node.active = true;
-        if (node.children) {
-            node.toggled = toggled;
-        }
-        this.setState({cursor: node, current: !this.state.current});
-    }
+    this.state = {current: false};
 
-    shouldComponentUpdate(nextProps, nextState) {
-        if (this.state.current !== nextState.current) {
-            return true;
-        }
-        return this.props.ws !== nextProps.ws;
-    }
+    this.onToggle = this.onToggle.bind(this);
+    this.toggleToCurrentWS(this.props.workplanCache);
+    this.decorators = ts.decorators;
+    this.decorators.propertyCb = this.props.propertyCb;
+  }
 
-    componentDidMount() {
-        $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
+  onToggle(node, toggled) {
+    if (this.state.cursor) {
+      this.state.cursor.active = false;
     }
+    node.active = true;
+    if (node.children) {
+      node.toggled = toggled;
+    }
+    this.setState({cursor: node, current: !this.state.current});
+  }
 
-    toggleToCurrentWS(node) {
-        let childtag = false; // 
-        if (node.id === this.props.ws) {
-            node.toggled = true;
-            return true;
-        }
-        if (node.enabled && !node.leaf) {
-            for (let i = 0; i < node.children.length; i++) {
-                if (this.toggleToCurrentWS(node.children[i])) {
-                    node.toggled = true;
-                    childtag = true;
-                }
-            }
-        }
-        if(childtag === true){
-            return true;
-        }
-        node.toggled = false;
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.current !== nextState.current) {
+      return true;
     }
+    return this.props.ws !== nextProps.ws;
+  }
 
-    render() {
-        this.decorators.ws = this.props.ws;
-        return (
-            <Treebeard id='TEST' data={this.props.workplanCache} onToggle={this.onToggle} style={ts.style} decorators={this.decorators}/>
-        );
+  componentDidMount() {
+    $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
+  }
+
+  toggleToCurrentWS(node) {
+    let childtag = false;
+    if (node.id === this.props.ws) {
+      node.toggled = true;
+      return true;
     }
+    if (node.enabled && !node.leaf) {
+      for (let i = 0; i < node.children.length; i++) {
+        if (this.toggleToCurrentWS(node.children[i])) {
+          node.toggled = true;
+          childtag = true;
+        }
+      }
+    }
+    if (childtag === true) {
+      return true;
+    }
+    node.toggled = false;
+  }
+
+  render() {
+    this.decorators.ws = this.props.ws;
+    return (
+      <Treebeard
+        data={this.props.workplanCache}
+        onToggle={this.onToggle}
+        style={ts.style}
+        decorators={this.decorators}
+      />
+    );
+  }
 }
