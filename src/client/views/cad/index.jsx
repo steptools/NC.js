@@ -60,9 +60,9 @@ export default class CADView extends React.Component {
         this.onKeypress     = this.onKeypress.bind(this);
         this.onMouseUp      = this.onMouseUp.bind(this);
         this.onMouseMove    = this.onMouseMove.bind(this);
-        this.onTreeClick    = this.onTreeClick.bind(this);
-        this.onTreeChange   = this.onTreeChange.bind(this);
-        this.onTreeNodeEnterExit = this.onTreeNodeEnterExit.bind(this);
+        //this.onTreeClick    = this.onTreeClick.bind(this);
+        //this.onTreeChange   = this.onTreeChange.bind(this);
+        //this.onTreeNodeEnterExit = this.onTreeNodeEnterExit.bind(this);
         this.alignToolView = this.alignToolView.bind(this);
         this.highlightFaces = this.highlightFaces.bind(this);
     }
@@ -506,7 +506,7 @@ export default class CADView extends React.Component {
         this.sceneRadius = newBoundingBox.size().length() / 2;
     }
 
-    // Handle all object selection needs
+/*    // Handle all object selection needs
     handleSelection(obj, event) {
         let change = false, flip = false;
         let selected = this.props.manager.getSelected();
@@ -533,7 +533,7 @@ export default class CADView extends React.Component {
             this.setState({ modelTree: tree });
             this.invalidate();
         }
-    }
+    }*/
 
     // Handle clicking in the model view for selection
     onMouseUp(event) {
@@ -543,7 +543,7 @@ export default class CADView extends React.Component {
         }
     }
 
-    // Handle clicking in the model tree for selection
+    /*// Handle clicking in the model tree for selection
     onTreeClick(node, event) {
         this.handleSelection(node.obj, event);
     }
@@ -579,7 +579,7 @@ export default class CADView extends React.Component {
             this.invalidate();
         }
         this.state.lastHovered = obj;
-    }
+    }*/
 
     // Handle mouse movements in the model view for highlighting
     onMouseMove(event) {
@@ -589,10 +589,10 @@ export default class CADView extends React.Component {
         }
     }
 
-    // Handle mouse movements in the model tree for highlighting
+    /*// Handle mouse movements in the model tree for highlighting
     onTreeNodeEnterExit(node) {
         this.handleHighlighting(node.obj);
-    }
+    }*/
 
     render() {
         let compass = this.camera ? <CompassView
