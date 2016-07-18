@@ -176,7 +176,7 @@ export default class HeaderView extends React.Component {
       case 'backward':
         this.props.actionManager.emit('sim-b');
         break;
-      case 'showlog':
+      case 'changelog':
         let changelog = document.getElementById('changes');
         if (this.props.logstate === false) {
           changelog.className = 'changelog visible';
