@@ -108,15 +108,6 @@ export default class GeometryView extends React.Component{
     this.overlayScene.add(      model.getOverlay3D());
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
-    
-    let sel = this.props.manager.getSelected();
-    
-    if (_.find(_.values(sel[0]._objects), {usage: 'machine'})) {
-        this.setState({lockedView: false});
-        // set the default view
-        this.zoomToFit(sel);
-        this.invalidate();
-    }
   }
 
   onModelRemove(event) {
