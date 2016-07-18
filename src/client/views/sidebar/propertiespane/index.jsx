@@ -1,6 +1,5 @@
 import React from 'react';
 import Menu,{Item as MenuItem} from 'rc-menu';
-import PreviewPane from '../../pre';
 import request from 'superagent';
 import _ from 'lodash';
 
@@ -362,15 +361,6 @@ export default class PropertiesPane extends React.Component {
         
         return (
             <div className={paneName}>
-                <PreviewPane
-                  manager={this.props.app.previewManager}
-                  openProperties={this.props.propertiesCb}
-                  viewContainerId='primary-view'
-                  root3DObject={this.props.app._root3DObject}
-                  guiMode={0}
-                  resize={this.props.resize}
-                  selectedEntity={null}
-                  />
                 <div className='titlebar'>
                     <span 
                         className={'title-back ' + getIcon('back')}
