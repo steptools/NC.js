@@ -1,15 +1,13 @@
 // NOTE: styleguide compliant
 import React from 'react';
 var md = require('node-markdown').Markdown;
-import Menu, {Item as PlainMenuItem} from 'rc-menu';
-import _ from 'lodash';
-import ReactTooltip from 'react-tooltip';
+import Menu, {Item as MenuItem} from 'rc-menu';
 
 function getIcon(type) {
   switch (type) {
     case 'backward':
       return 'icon glyphicon glyphicon-step-backward';
-    case 'next':
+    case 'forward':
       return 'icon glyphicon glyphicon-step-forward';
     case 'play':
       return 'icon glyphicon glyphicon-play';
@@ -19,6 +17,8 @@ function getIcon(type) {
       return 'icon left glyphicons glyphicons-turtle';
     case 'speed-right':
       return 'icon right glyphicons glyphicons-rabbit';
+    case 'changelog':
+      return 'icon glyphicon glyphicon-book';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -30,79 +30,30 @@ class ButtonItem extends React.Component {
   }
 
   render() {
-    return (
-      <PlainMenuItem key={this.props.eventKey} className={}>
-        <div className='button'>
-          <div className={getIcon(this.props.eventKey)}/>
-          {this.props.children}
-        </div>
-      </PlainMenuItem>
-    );
-  }
-}
-
-class MenuItem extends React.Component {
-  render() {
-    let name = 'header-menu-item menu-item-button';
-    if (this.props.tooltip) {
-      let id = _.uniqueId('tooltip_');
-      return (
-        <PlainMenuItem {...this.props}>
-          <div className={name}>
-            <span data-tip data-for={id}>
-              {this.props.children}
-            </span>
-            <ReactTooltip
-              id={id}
-              place='top'
-              type='dark'
-              effect='float'
-              delayShow={this.props.delayShow}
-            >
-              {this.props.tooltip}
-            </ReactTooltip>
-          </div>
-        </PlainMenuItem>
-      );
-    } else {
-      return (
-        <PlainMenuItem {...this.props}>
-          <div className={name}>
-            {this.props.children}
-          </div>
-        </PlainMenuItem>
-      );
+    let icon = getIcon(this.props.eventKey);
+    if (this.props.icon) {
+      icon = getIcon(this.props.icon);
     }
+    return (
+      <MenuItem {...this.props} className='button'>
+        <div className={icon}/>
+        {this.props.children}
+      </MenuItem>
+    );
   }
 }
 
 class SliderMenuItem extends React.Component {
   render() {
     return (
-      <PlainMenuItem {...this.props}>
+      <MenuItem {...this.props}>
         <div className='header-menu-item menu-item-slider'>
           {this.props.children}
         </div>
-      </PlainMenuItem>
+      </MenuItem>
     );
   }
 }
-
-class ButtonImage extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    let prefix = this.props.prefix;
-    let icon = prefix + '-' + this.props.icon;
-    return (<div className={'button-icon ' + prefix + ' ' + icon}/>);
-  }
-}
-
-ButtonImage.propTypes = {
-  icon: React.PropTypes.string.isRequired,
-};
 
 class Slider extends React.Component {
   constructor(props) {
@@ -238,7 +189,7 @@ export default class HeaderView extends React.Component {
   }
 
   render() {
-    let ppbtntxt;
+    let ppbtntxt = '';
     let ppbutton = this.props.ppbutton;
     if (this.props.ppbutton === 'play') {
       ppbtntxt = 'Play';
@@ -270,14 +221,8 @@ export default class HeaderView extends React.Component {
         className='header-menu'
       >
         <ButtonItem key='backward'>Prev</ButtonItem>
-        <MenuItem key='play'>
-          <ButtonImage prefix='glyphicon' icon={ppbutton}/>
-          {ppbtntxt}
-        </MenuItem>
-        <MenuItem key='forward'>
-          <ButtonImage prefix='glyphicon' icon='step-forward'/>
-          Next
-        </MenuItem>
+        <ButtonItem key='play' icon={ppbutton}>{ppbtntxt}</ButtonItem>
+        <ButtonItem key='forward'>Next</ButtonItem>
         <SliderMenuItem key='speed'>
           <Slider
             id='speed'
@@ -294,10 +239,9 @@ export default class HeaderView extends React.Component {
           <div className='feed-speed'>Spindle speed:</div>
           <div className='feed-speed value'>{spindleSpeed}</div>
         </MenuItem>
-        <MenuItem key='showlog' id='logbutton'>
-          <ButtonImage prefix='glyphicon' icon='book'/>
+        <ButtonItem key='changelog' id='logbutton'>
           <div className='version' id='logbutton'>v1.1.0</div>
-        </MenuItem>
+        </ButtonItem>
       </Menu>
     );
 

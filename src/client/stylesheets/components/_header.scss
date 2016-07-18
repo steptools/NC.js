@@ -58,7 +58,10 @@
 
     &:hover {
         cursor: pointer;
-        color: rgba(#2BAEE9, 1);
+        
+        .icon {
+            color: rgba(#2BAEE9, 1);
+        }
     }
 }
 
