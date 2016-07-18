@@ -306,7 +306,7 @@ export default class PropertiesPane extends React.Component {
     let entity = this.props.entity;
     let entityData = {
       entity: this.props.entity,
-      previousEntity: this.props.previousEntity,
+      previousEntity: this.props.previousEntities[0],
       paneName: 'properties-pane',
     };
 
@@ -335,7 +335,7 @@ export default class PropertiesPane extends React.Component {
           <span
             className={'title-back ' + getIcon('back')}
             onClick={() => {
-              this.props.propertiesCb(entityData.previousEntity);
+              this.props.propertiesCb(entityData.previousEntity, true);
             }}
             onMouseOut={() => {
               $('.title-back.icon').removeClass('visible');
