@@ -163,6 +163,29 @@ $icons: '../icons/';
     -o-transition: -o-transform ease 250ms;
     transition: transform ease 250ms;
 
+    overflow-x: visible;
+
+    .preview {
+        position: absolute;
+        border: solid 3px #F8F8F8;
+        width: $sidebarWidth;
+        height: $sidebarWidth;
+
+        -webkit-transition: -webkit-transform ease 250ms;
+        -moz-transition: -moz-transform ease 250ms;
+        -ms-transition: -ms-transform ease 250ms;
+        -o-transition: -o-transform ease 250ms;
+        transition: transform ease 250ms;
+
+        &.visible {
+            -webkit-transform: translate3d($sidebarWidth, 0, 0);
+            -moz-transform: translate3d($sidebarWidth, 0, 0);
+            -ms-transform: translate3d($sidebarWidth, 0, 0);
+            -o-transform: translate3d($sidebarWidth, 0, 0);
+            transform: translate3d($sidebarWidth, 0, 0);
+        }
+    }
+
     .properties {
         height: calc(100% - 54px);
         width: 100%;

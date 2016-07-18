@@ -87,7 +87,7 @@ export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {entity: null};
+    this.state = {entity: null, preview: false};
 
     this.properties = [];
 
@@ -398,6 +398,27 @@ export default class PropertiesPane extends React.Component {
       </MenuItem>
     );
   }
+  
+  renderPreview(entity) {
+    if (entity === null) {
+      return null;
+    }
+    
+    let cName = 'preview';
+    if (this.state.preview) {
+      cName = cName + ' visible';
+    }
+
+    return (
+      <div className={cName} id='preview-container'>
+        {this.state.preview?
+          'GEOM VIEW HERE'
+          :
+          null
+        }
+      </div>
+    );
+  }
 
   renderProperties(entity) {
     this.properties = [];
@@ -456,6 +477,7 @@ export default class PropertiesPane extends React.Component {
 
     return (
       <div className={entityData.paneName}>
+        {this.renderPreview(entityData.entity)}
         <div className='titlebar'>
           <span
             className={'title-back ' + getIcon('back')}
