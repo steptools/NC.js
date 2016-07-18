@@ -5,6 +5,42 @@ import Menu, {Item as PlainMenuItem} from 'rc-menu';
 import _ from 'lodash';
 import ReactTooltip from 'react-tooltip';
 
+function getIcon(type) {
+  switch (type) {
+    case 'backward':
+      return 'icon glyphicon glyphicon-step-backward';
+    case 'next':
+      return 'icon glyphicon glyphicon-step-forward';
+    case 'play':
+      return 'icon glyphicon glyphicon-play';
+    case 'pause':
+      return 'icon glyphicon glyphicon-pause';
+    case 'speed-left':
+      return 'icon left glyphicons glyphicons-turtle';
+    case 'speed-right':
+      return 'icon right glyphicons glyphicons-rabbit';
+    default:
+      return 'icon glyphicons glyphicons-question-sign';
+  }
+}
+
+class ButtonItem extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <PlainMenuItem key={this.props.eventKey} className={}>
+        <div className='button'>
+          <div className={getIcon(this.props.eventKey)}/>
+          {this.props.children}
+        </div>
+      </PlainMenuItem>
+    );
+  }
+}
+
 class MenuItem extends React.Component {
   render() {
     let name = 'header-menu-item menu-item-button';
@@ -209,9 +245,8 @@ export default class HeaderView extends React.Component {
     } else {
       ppbtntxt = 'Pause';
     }
-//let showlog = this.props.logstate;
-    let curStep = this.props.workingstepCache[this.props.ws];
 
+    let curStep = this.props.workingstepCache[this.props.ws];
     let feedRate = 'Not defined';
     let spindleSpeed = 'Not defined';
     if (curStep) {
@@ -234,10 +269,7 @@ export default class HeaderView extends React.Component {
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
       >
-        <MenuItem key='backward'>
-          <ButtonImage prefix='glyphicon' icon='step-backward'/>
-          Prev
-        </MenuItem>
+        <ButtonItem key='backward'>Prev</ButtonItem>
         <MenuItem key='play'>
           <ButtonImage prefix='glyphicon' icon={ppbutton}/>
           {ppbtntxt}

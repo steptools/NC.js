@@ -50,26 +50,19 @@
     }
 }
 
-.menu-item-button {
-    .button-icon {
-        font-size: 32px;
-        color: rgba(#666666, .5);
+.header .button {
+    .icon {
         padding-bottom: 11px;
         padding-top: 15px;
-        display: block;
     }
 
     &:hover {
         cursor: pointer;
-
-        .button-icon {
-            color: #2BAEE9;
-            opacity: 1;
-        }
+        color: rgba(#2BAEE9, 1);
     }
 }
 
-.menu-item-slider {
+.header .menu-item-slider {
     &:hover {
         input[type=range] {
             &::-webkit-slider-thumb {
@@ -90,7 +83,7 @@
     }
 }
 
-.slider {
+.header .slider {
     width: 249px;
     padding: 19px 15px 8px;
 
@@ -108,28 +101,25 @@
         }
     }
 
-    .slider-icon {
+    .icon {
         font-size: 20px;
-        opacity: 0.5;
-        color: #666666;
+        
+        &.left {
+            float: left;
+        }
+        
+        &.right {
+            float: right;
+        }
 
         &:hover {
-            color: #2BAEE9;
-            opacity: 1;
+            color: rgba(#2BAEE9, 1);
             cursor: pointer;
         }
     }
-
-    .slider-left-icon {
-        float: left;
-    }
-
-    .slider-right-icon {
-        float: right;
-    }
 }
 
-input[type=range] {
+.header input[type=range] {
     $thumbHeight: 28px;
     $thumbWidth: 10px;
     $trackHeight: 8px;
@@ -210,12 +200,14 @@ input[type=range] {
         display: none;
     }
 }
-.version{
+
+.header .version{
     display:inline-block;
     height: 18px;
 
 }
-.changelog {
+
+.header .changelog {
     max-height: 350px;
     width: $sidebarWidth;
     position: absolute;
@@ -246,4 +238,10 @@ input[type=range] {
         -o-transform: translateY(100%);
         transform: translateY(100%);
     }
+}
+
+.header .icon {
+    font-size: 32px;
+    color: rgba(#666666, .5);
+    display: block;
 }
