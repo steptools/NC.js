@@ -340,6 +340,7 @@ export default class PropertiesPane extends React.Component {
   }
 
   renderProperties(entity) {
+    this.properties = [];
     if (entity === null) {
       return null;
     }
