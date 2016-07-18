@@ -47,13 +47,13 @@ export default class CADView extends React.Component {
         super(props);
         this.state = {
             isViewChanging: false,
-            lastHovered: undefined,
             lockedView: true,
             oldColors: {}
         };
 
         this.onMouseUp = this.onMouseUp.bind(this);
         this.lockedCb = this.lockedCb.bind(this);
+        this.changingCb = this.changingCb.bind(this);
     }
 
     // Handle all object selection needs
@@ -78,25 +78,24 @@ export default class CADView extends React.Component {
           change = true;
       }
       if (change) {
-          this.invalidate();
+          this.refs.alignGeomView.invalidate();
       }
     }
 
     // Handle clicking in the model view for selection
     onMouseUp(event) {
       if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
-          let obj = this.props.manager.hitTest(this.camera, event);
+          let obj = this.props.manager.hitTest(this.refs.alignGeomView.camera, event);
           this.handleSelection(obj, event);
       }
     }
 
-    lockedCb(){
-      if(lockedView){
-        this.setState({'lockedView' : false});
-      }
-      else{
-        this.setState({'lockedView' : true});
-      }
+    lockedCb(state){
+      this.setState({'lockedView' : state});
+    }
+
+    changingCb(state){
+      this.setState({'isViewChanging' : state});
     }
 
     render() {
@@ -109,6 +108,8 @@ export default class CADView extends React.Component {
             onMouseUp={this.onMouseUp} 
             locked={this.state.lockedView}
             lockedCb={this.lockedCb}
+            changeCb={this.changingCb}
+            resize={this.props.resize}
             />
           <ViewButton
             alignCb={() => {

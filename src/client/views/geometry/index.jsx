@@ -62,6 +62,7 @@ export default class GeometryView extends React.Component{
 
     // CONTROL EVENT HANDLERS
     this.controls.addEventListener('change', function(options) {
+      //changing to this.props.changeCB(true); breaks this, figure out why
       self.state.isViewChanging = true;
       let x0 = self.sceneCenter,
           x1 = self.camera.position,
@@ -78,7 +79,7 @@ export default class GeometryView extends React.Component{
     });
     this.controls.addEventListener("start", function() {
       self.continuousRendering = true;
-      self.props.loadedCb();
+      self.props.lockedCb(false);
     });
     this.controls.addEventListener("end", function() {
         self.invalidate();
@@ -93,7 +94,7 @@ export default class GeometryView extends React.Component{
 
   onShellLoad(event) {
     // Get around the fact that viewerControls calls change a bunch at startup
-    this.setState({'isViewChanging':true});
+    this.props.changeCb(true);
     this.invalidate(event);
   }
   
