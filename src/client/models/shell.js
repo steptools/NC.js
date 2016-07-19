@@ -9,28 +9,34 @@
 export default class Shell extends THREE.EventDispatcher {
     constructor(id, assembly, parent, size, defaultColor, boundingBox) {
         super();
-        let ret = assembly.makeChild(id, this);
-        if (!ret) {
-            this._id = id;
-            this._assembly = assembly;
-            this._parent = parent;
-            this._size = size;
-            this._color = defaultColor;
-            this._boundingBox = boundingBox;
-            if (this._boundingBox.isEmpty()) {
-                console.log("Found empty bounding box: " + this._id);
-            }
+        this._id = id;
+        this._assembly = assembly;
+        this._parent = parent;
+        this._size = size;
+        this._color = defaultColor;
+        this._boundingBox = boundingBox;
+        if (this._boundingBox.isEmpty()) {
+            console.log("Found empty bounding box: " + this._id);
         }
-        return ret;
-    }
-
-    static unloadData() {
-        // TODO: Need to implement this
-        console.log("Shell.unloadData - Not Implemented");
+        this.getNamedParent = this.getNamedParent.bind(this);
+        return this;
     }
 
     getID() {
         return this._id;
+    }
+
+    getNamedParent() {
+        console.log(this._parent);
+        return this._parent;
+    }
+
+    getBoundingBox() {
+        return this._boundingBox;
+    }
+
+    getGeometry() {
+        return this._geometry;
     }
 
     addGeometry(position, normals, colors, faces) {
@@ -65,13 +71,5 @@ export default class Shell extends THREE.EventDispatcher {
         // All done - signal completion
         this._isLoaded = true;
         this.dispatchEvent({type: "shellEndLoad", shell: this});
-    }
-
-    getBoundingBox() {
-        return this._boundingBox;
-    }
-
-    getGeometry() {
-        return this._geometry;
     }
 };
