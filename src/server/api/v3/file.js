@@ -1,5 +1,5 @@
 "use strict";
-let StepNC = require('../../../../../STEPNode/build/Release/StepNC');
+let StepNC = require('../../../../../STEPNode/build/Release/StepNode');
 let fs = require("fs");
 
 
@@ -13,7 +13,7 @@ function init(path, machinetool){
 
 	this.apt.OpenProject(path);
 	this.find.OpenProject(path);
-	
+
 	this.ms = new StepNC.machineState(path);
 	if(machinetool !== ""){
 		if(!this.ms.LoadMachine(machinetool))
