@@ -103,7 +103,7 @@ export default class GeometryView extends React.Component{
             nextProps.selectedEntity !== this.props.selectedEntity ||
             this.props.ws !== nextProps.ws) {
           
-            this.highlightFaces(this.props.selectedEntity, this.props.manager.getSelected(), true);
+            this.highlightFaces(this.props.selectedEntity, this.props.manager.getRootModels(), true);
         }
       }
     }
@@ -120,8 +120,8 @@ export default class GeometryView extends React.Component{
           g: 0,
           b: 1.0
         };
-        
-        this.highlightFaces(nextProps.selectedEntity, nextProps.manager.getSelected(), false, highlightColor);
+
+        this.highlightFaces(nextProps.selectedEntity, nextProps.manager.getRootModels(), false, highlightColor);
       }
     }
   }
@@ -290,6 +290,7 @@ export default class GeometryView extends React.Component{
   }
 
   highlightFaces(entity, objs, unhighlight, newColor) {
+    console.log(objs);
     let shells = _.filter(_.values(objs[0]._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
     _.each(shells, (shell) => {
       if (shell && shell.model._geometry) {
