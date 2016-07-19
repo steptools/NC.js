@@ -30,7 +30,7 @@ class ViewButton extends React.Component {
     return <div className="resetview">
       <span
         className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
-        onClick={() => {}/*this.props.alignCb*/}
+        onClick={this.props.alignCb}
       />
       <span
         className={"lock glyphicons glyphicons-" + icon + (this.props.locked ? ' locked' : '')}
@@ -46,25 +46,76 @@ export default class CADView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            modelTree: {},
             isViewChanging: false,
-            lastHovered: undefined,
             lockedView: true,
             oldColors: {}
         };
+
+        this.onMouseUp = this.onMouseUp.bind(this);
+        this.lockedCb = this.lockedCb.bind(this);
+        this.changingCb = this.changingCb.bind(this);
     }
 
-    componentDidMount() {
+    // Handle all object selection needs
+    handleSelection(obj, event) {
+      let change = false, flip = false;
+      let selected = this.props.manager.getSelected();
+      // Toggle selection if already selected
+      if (obj && selected.length === 1 && selected[0].getID() === obj.getID()) {
+          flip = true;
+      }
+      // Allow meta for multi-selection
+      if (!event.metaKey && !flip) {
+          // Clear all currently selected objects
+          this.props.manager.clearSelected(selected);
+          change = true;
+      }
+      // Did we find an object
+      if (obj) {
+          obj = obj.getNamedParent();
+          // Toggle the bounding box
+          obj.toggleSelection();
+          change = true;
+      }
+      if (change) {
+          this.refs.alignGeomView.invalidate();
+      }
+    }
+
+    // Handle clicking in the model view for selection
+    onMouseUp(event) {
+      if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
+          let obj = this.props.manager.hitTest(this.refs.alignGeomView.camera, event);
+          this.handleSelection(obj, event);
+      }
+    }
+
+    lockedCb(state){
+      this.setState({'lockedView' : state});
+    }
+
+    changingCb(state){
+      this.setState({'isViewChanging' : state});
     }
 
     render() {
       return <div id='cadjs-container'>
-          <GeometryView manager={this.props.manager} selectedEntity={this.props.selectedEntity} guiMode={this.props.guiMode}/>
+          <GeometryView 
+            ref={'alignGeomView'} 
+            manager={this.props.manager} 
+            selectedEntity={this.props.selectedEntity} 
+            guiMode={this.props.guiMode} 
+            onMouseUp={this.onMouseUp} 
+            locked={this.state.lockedView}
+            lockedCb={this.lockedCb}
+            changeCb={this.changingCb}
+            resize={this.props.resize}
+            />
           <ViewButton
-            /*alignCb={() => {
-              this.alignToolView(this.props.manager.getSelected());
-              this.invalidate();
-            }}*/
+            alignCb={() => {
+              this.refs.alignGeomView.alignToolView(this.props.manager.getSelected());
+              this.refs.alignGeomView.invalidate();
+            }}
             toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
             locked = {this.state.lockedView}
           />
