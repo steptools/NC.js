@@ -3,7 +3,11 @@ import React from 'react';
 var md = require('node-markdown').Markdown;
 import Menu, {Item as MenuItem} from 'rc-menu';
 
-function getIcon(type) {
+function getIcon(type, data) {
+  if (!data) {
+    data = '';
+  }
+
   switch (type) {
     case 'backward':
       return 'icon glyphicon glyphicon-step-backward';
@@ -13,10 +17,22 @@ function getIcon(type) {
       return 'icon glyphicon glyphicon-play';
     case 'pause':
       return 'icon glyphicon glyphicon-pause';
-    case 'speed-left':
-      return 'icon left glyphicons glyphicons-turtle';
-    case 'speed-right':
-      return 'icon right glyphicons glyphicons-rabbit';
+    case 'speed':
+      if (data === 'left') {
+        return 'icon left glyphicons glyphicons-turtle';
+      } else if (data === 'right') {
+        return 'icon right glyphicons glyphicons-rabbit';
+      }
+    case 'feedrate':
+      return 'icon glyphicons glyphicons-dashboard';
+    case 'spindlespeed':
+      if (data === 'CW') {
+        return 'icon glyphicons glyphicons-rotate-right';
+      } else if (data === 'CCW') {
+        return 'icon glyphicons glyphicons-rotate-left';
+      } else {
+        return 'icon glyphicons glyphicons-refresh';
+      }
     case 'changelog':
       return 'icon glyphicon glyphicon-book';
     default:
@@ -24,7 +40,7 @@ function getIcon(type) {
   }
 }
 
-class ButtonItem extends React.Component {
+class Button extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -43,18 +59,6 @@ class ButtonItem extends React.Component {
   }
 }
 
-class SliderMenuItem extends React.Component {
-  render() {
-    return (
-      <MenuItem {...this.props}>
-        <div className='header-menu-item menu-item-slider'>
-          {this.props.children}
-        </div>
-      </MenuItem>
-    );
-  }
-}
-
 class Slider extends React.Component {
   constructor(props) {
     super(props);
@@ -67,61 +71,49 @@ class Slider extends React.Component {
 
   render() {
     let name = this.props.id.charAt(0).toUpperCase() + this.props.id.slice(1);
-    if (this.props.left && this.props.right && this.props.prefix) {
-      let prefix = this.props.prefix;
-      let left = prefix + '-' + this.props.left;
-      let right = prefix + '-' + this.props.right;
-      let cNameLeft = 'slider-icon slider-left-icon ' + prefix + ' ' + left;
-      let cNameRight = 'slider-icon slider-right-icon ' + prefix + ' ' + right;
-      // TODO:Remove onMouseUp / onKeyUp if/when bug is fixed with onChange
-      return (
-        <div className='slider sliderWithIcons'>
-          <input
-            className={'range-' + this.props.id}
-            onChange={this.changed}
-            onMouseUp={this.changed}
-            onKeyUp={this.changed}
-            value={this.props.val}
-            type='range'
-            min='0'
-            max='200'
-            step='1'
-          />
-          <div className='sliderData'>
-            <div
-              className={cNameLeft}
-              onMouseUp={this.changed}
-              onKeyUp={this.changed}
-              value='0'
-            />
-            <div className={'slider-text text-' + this.props.id}>{name}</div>
-            <div
-              className={cNameRight}
-              onMouseUp={this.changed}
-              onKeyUp={this.changed}
-              value='200'
-            />
-          </div>
-        </div>
+    let cName = 'slider no-icons';
+    let left = null;
+    let right = null;
+    if (this.props.icons) {
+      cName = 'slider with-icons';
+      left = (
+        <div
+          className={getIcon(this.props.id, 'left')}
+          onMouseUp={this.changed}
+          onKeyUp={this.changed}
+          value='0'
+        />
       );
-    } else {
-      return (
-        <div className='slider sliderNoIcons'>
-          <input
-            className={'range-' + this.props.id}
-            onChange={this.changed}
-            type='range'
-            min='0'
-            max='200'
-            step='1'
-            value={this.props.val}
-          />
-          <div className='sliderData'>
-            <output className={'text-' + this.props.id}>{name}</output>
-          </div>
-        </div>
+      right = (
+        <div
+          className={getIcon(this.props.id, 'right')}
+          onMouseUp={this.changed}
+          onKeyUp={this.changed}
+          value='200'
+        />
       );
     }
+    // TODO:Remove onMouseUp / onKeyUp if/when bug is fixed with onChange
+    return (
+      <MenuItem {...this.props} key={this.props.id} className={cName}>
+        <input
+          className={'range-' + this.props.id}
+          onChange={this.changed}
+          onMouseUp={this.changed}
+          onKeyUp={this.changed}
+          value={this.props.val}
+          type='range'
+          min='0'
+          max='200'
+          step='1'
+        />
+        <div className='sliderData'>
+          {left}
+          <div className={'slider-text text-' + this.props.id}>{name}</div>
+          {right}
+        </div>
+      </MenuItem>
+    );
   }
 }
 
@@ -129,8 +121,7 @@ Slider.propTypes = {
   changed: React.PropTypes.func.isRequired,
   id: React.PropTypes.string.isRequired,
   val: React.PropTypes.number.isRequired,
-  left: React.PropTypes.string.isRequired,
-  right: React.PropTypes.string.isRequired,
+  icons: React.PropTypes.string.isRequired,
 };
 
 export default class HeaderView extends React.Component {
@@ -139,6 +130,7 @@ export default class HeaderView extends React.Component {
 
     this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
     this.updateSpeed = this.updateSpeed.bind(this);
+    this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
   }
 
   componentDidMount() {
@@ -154,6 +146,29 @@ export default class HeaderView extends React.Component {
       }
     };
     chlog.send();
+  }
+
+  getFeedSpeedInfo() {
+    let curStep = this.props.workingstepCache[this.props.ws];
+    let fr = 'Not defined';
+    let ss = 'Not defined';
+    let ssIcon = null;
+    if (curStep && curStep.feedRate !== 0) {
+      fr = curStep.feedRate + ' ' + curStep.feedUnits;
+    }
+    if (curStep && curStep.speed !== 0) {
+      ss = Math.abs(curStep.speed) + ' ' + curStep.speedUnits;
+      if (curStep.speed > 0) {
+        ss += ' (CCW)';
+        ssIcom = getIcon('spindlespeed', 'CCW');
+      } else {
+        ss += ' (CW)';
+        ssIcon = getIcon('spindlespeed', 'CW');
+      }
+    } else {
+      ssIcon = getIcon('spindlespeed');
+    }
+    return [fr, ss, ssIcon];
   }
 
   updateSpeed(info) {
@@ -197,22 +212,7 @@ export default class HeaderView extends React.Component {
       ppbtntxt = 'Pause';
     }
 
-    let curStep = this.props.workingstepCache[this.props.ws];
-    let feedRate = 'Not defined';
-    let spindleSpeed = 'Not defined';
-    if (curStep) {
-      if (curStep.feedRate !== 0) {
-        feedRate = curStep.feedRate + ' ' + curStep.feedUnits;
-      }
-      if (curStep.speed !== 0) {
-        spindleSpeed = Math.abs(curStep.speed) + ' ' + curStep.speedUnits;
-        if (curStep.speed > 0) {
-          spindleSpeed = spindleSpeed + ' (CCW)';
-        } else {
-          spindleSpeed = spindleSpeed + ' (CW)';
-        }
-      }
-    }
+    let feedSpeedInfo = this.getFeedSpeedInfo();
 
     const headerMenu = (
       <Menu
@@ -220,28 +220,30 @@ export default class HeaderView extends React.Component {
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
       >
-        <ButtonItem key='backward'>Prev</ButtonItem>
-        <ButtonItem key='play' icon={ppbutton}>{ppbtntxt}</ButtonItem>
-        <ButtonItem key='forward'>Next</ButtonItem>
-        <SliderMenuItem key='speed'>
-          <Slider
-            id='speed'
-            changed={this.updateSpeed}
-            val={this.props.speed}
-            prefix='glyphicons'
-            left='turtle'
-            right='rabbit'
-          />
-        </SliderMenuItem>
-        <MenuItem disabled key='feed-speed'>
-          <div className='feed-speed'>Feed rate:</div>
-          <div className='feed-speed value'>{feedRate}</div>
-          <div className='feed-speed'>Spindle speed:</div>
-          <div className='feed-speed value'>{spindleSpeed}</div>
+        <Button key='backward'>Prev</Button>
+        <Button key='play' icon={ppbutton}>{ppbtntxt}</Button>
+        <Button key='forward'>Next</Button>
+        <Slider
+          id='speed'
+          changed={this.updateSpeed}
+          val={this.props.speed}
+          icons='true'
+        />
+        <MenuItem disabled key='feed-speed' className='info feed-speed'>
+          <div className='feedrate'>
+            <span className={getIcon('feedrate')}/>
+            <span className='title'>Feed rate: </span>
+            <span className='value'>{feedSpeedInfo[0]}</span>
+          </div>
+          <div className='spindlespeed'>
+            <span className={feedSpeedInfo[2]}/>
+            <span className='title'>Spindle speed: </span>
+            <span className='value'>{feedSpeedInfo[1]}</span>
+          </div>
         </MenuItem>
-        <ButtonItem key='changelog' id='logbutton'>
+        <Button key='changelog' id='logbutton'>
           <div className='version' id='logbutton'>v1.1.0</div>
-        </ButtonItem>
+        </Button>
       </Menu>
     );
 

@@ -14,39 +14,47 @@
 
 .header-menu {
     background-color: #F8F8F8;
+    height: 100%;
 
     .rc-menu-item {
-        padding: 0;
         min-width: 85px;
-        min-height: inherit;
+        height: inherit;
+        border-bottom: 2px solid transparent;
         text-align: center;
+        padding: 0;
         border-right: 1px solid #DDDDDD;
         background: none;
         white-space: normal;
+        
+        &:first-child {
+            margin-left: 2px;
+        }
+
+        &:hover:not(.rc-menu-item-disabled) {
+            border-bottom-color: #2DB7F5;
+        }
+    }
+    
+    .info {
+        display: flex;
+        flex-flow: column;
+        align-content: center;
+        align-items: center;
+        
+        .icon {
+            font-size: 24px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .value {
+            font-weight: bold;
+        }
     }
 
     li:last-child {
         float: right;
-    }
-}
-
-.header .rc-menu-item:first-child {
-    margin-left: 2px;
-}
-
-.header-menu-item {
-    min-height: inherit;
-
-    &:hover {
-        border-bottom: 2px solid #2DB7F5;
-    }
-
-    .feed-speed {
-        margin: 0 10px;
-
-        &.value {
-            font-weight: bold;
-        }
+        border-left: 1px solid #DDDDDD;
     }
 }
 
@@ -65,34 +73,13 @@
     }
 }
 
-.header .menu-item-slider {
-    &:hover {
-        input[type=range] {
-            &::-webkit-slider-thumb {
-                background: #35B8FD;
-                border-color: transparent;
-            }
-
-            &::-moz-range-thumb {
-                background: #35B8FD;
-                border-color: transparent;
-            }
-
-            &::-ms-thumb {
-                background: #35B8FD;
-                border-color: transparent;
-            }
-        }
-    }
-}
-
 .header .slider {
     width: 249px;
     padding: 19px 15px 8px;
 
     .sliderData {
         height: 20px;
-        padding-top: 11px;
+        padding-top: 9px;
         cursor: default;
 
         div {
@@ -118,6 +105,25 @@
         &:hover {
             color: rgba(#2BAEE9, 1);
             cursor: pointer;
+        }
+    }
+    
+    &:hover {
+        input[type=range] {
+            &::-webkit-slider-thumb {
+                background: #35B8FD;
+                border-color: transparent;
+            }
+            
+            &::-moz-range-thumb {
+                background: #35B8FD;
+                border-color: transparent;
+            }
+            
+            &::-ms-thumb {
+                background: #35B8FD;
+                border-color: transparent;
+            }
         }
     }
 }
