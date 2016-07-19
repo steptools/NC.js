@@ -112,19 +112,6 @@ export default class NC extends THREE.EventDispatcher {
         }
     }
 
-    makeChild(id, fallback) {
-        ////console.log("NC.makeChild: " + id);
-        //if (!id) {
-        //    throw new Error("null id");
-        //}
-        //let ret = this._objects[id];
-        //if (ret) {
-        //    return ret;
-        //}
-        //this._objects[id] = fallback;
-        //return null;
-    }
-
     getObject3D() {
         return this._object3D;
     };
@@ -176,38 +163,6 @@ export default class NC extends THREE.EventDispatcher {
         if (this.bbox && this.state.selected) {
             this._overlay3D.add(this.bbox);
         }
-    }
-
-    getTree(root) {
-        let node = {
-            id:                 root,
-            text:               this.project,
-            collapsed:          this.state.collapsed,
-            obj:                this,
-            state: {
-                selected:       this.state.selected,
-                highlighted:    this.state.highlighted,
-                visible:        this.state.visible,
-                opacity:        this.state.opacity,
-                explodeDistance:this.state.explodeDistance
-            },
-            children    : []
-        };
-        // Gen tree for all children
-        let keys = _.keys(this._objects);
-        _.each(keys, function(key) {
-            let tmpNode = {
-                id          : key,
-                text        : key,
-                collapsed   : false,
-                state       : {
-                    disabled  : false,
-                    selected  : false
-                }
-            };
-            node.children.push(tmpNode);
-        });
-        return node;
     }
 
     clearHighlights() {
@@ -321,7 +276,6 @@ export default class NC extends THREE.EventDispatcher {
                         baseURL: url,
                         type: "shell"
                     })
-                   //this.addModel(geomData,geomData.usage,'cutter',)
                 }
             });
 
@@ -364,7 +318,12 @@ export default class NC extends THREE.EventDispatcher {
         return alter;
     }
 
-    getSelected() { return [this]; }
+    getSelected() { 
+       if(this.state.selected) 
+        return [this]; 
+        else
+            return [];
+    }
     getID() { return this.id; }
     toggleHighlight() { }
     toggleVisibility() { }

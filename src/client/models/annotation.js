@@ -7,13 +7,10 @@
 export default class Annotation extends THREE.EventDispatcher {
     constructor(id, model) {
         super();
-        let ret = model.makeChild(id, this);
-        if (!ret) {
-            this._id = id;
-            this._model = model;
-            this._geometry = undefined;
-        }
-        return ret;
+        this._id = id;
+        this._model = model;
+        this._geometry = undefined;
+        return this;
     }
 
     getID() {
