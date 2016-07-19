@@ -48,7 +48,7 @@ export default class CADView extends React.Component {
         this.state = {
             isViewChanging: false,
             lockedView: true,
-            oldColors: {}
+            oldColors: {},
         };
 
         this.onMouseUp = this.onMouseUp.bind(this);
@@ -110,6 +110,7 @@ export default class CADView extends React.Component {
             lockedCb={this.lockedCb}
             changeCb={this.changingCb}
             resize={this.props.resize}
+            toleranceCache={this.props.toleranceCache}
             />
           <ViewButton
             alignCb={() => {
@@ -125,5 +126,5 @@ export default class CADView extends React.Component {
 };
 
 CADView.propTypes = {
-    manager: React.PropTypes.object.isRequired
+    manager: React.PropTypes.object.isRequired,
 };
