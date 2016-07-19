@@ -1,5 +1,5 @@
 "use strict";
-var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
+var StepNC = require('../../../../../STEPNode/build/Release/StepNode');
 var file = require('./file');
 var tol = file.tol;
 var apt = file.apt;
@@ -40,14 +40,14 @@ var exeFromId = function(id) {
 		if (ws.asIs.id === 0)
 			ws.asIs = null;
 	}
-	
+
 	if (ws.toBe.id === 0) {
 		ws.toBe.id = find.GetExecutableWorkpieceToBe(id);
 		ws.toBe.inherited = true;
 		if (ws.asIs.id === 0)
 			ws.asIs = null;
 	}
-	
+
 	if (ws.delta.id === 0) {
 		ws.delta.id = find.GetExecutableWorkpieceRemoval(id);
 		ws.delta.inherited = true;
