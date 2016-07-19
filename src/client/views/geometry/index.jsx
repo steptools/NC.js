@@ -68,21 +68,21 @@ export default class GeometryView extends React.Component{
           x1subX0 = x1.clone().sub(x0),
           c = x2subX1.clone().cross(x1.clone().sub(x0)).lengthSq() / x2subX1.lengthSq(),
           d = Math.sqrt(Math.abs(c - x1subX0.lengthSq()));
-      self.camera.near = Math.max(0.1, d - self.sceneRadius);
-      self.camera.far = d + self.sceneRadius;
-      self.camera.updateProjectionMatrix();
+      this.camera.near = Math.max(0.1, d - this.sceneRadius);
+      this.camera.far = d + this.sceneRadius;
+      this.camera.updateProjectionMatrix();
       if (!options.noInvalidate){
-        self.invalidate();
+        this.invalidate();
       }
     });
-    this.controls.addEventListener("start", function() {
-      self.continuousRendering = true;
-      self.props.lockedCb(false);
+    this.controls.addEventListener("start", () => {
+      this.continuousRendering = true;
+      this.props.lockedCb(false);
     });
-    this.controls.addEventListener("end", function() {
-      self.invalidate();
-      self.continuousRendering = false;
-      self.props.changeCb(false);
+    this.controls.addEventListener("end", () => {
+      this.invalidate();
+      this.continuousRendering = false;
+      this.props.changeCb(false);
     });
 
     // SCREEN RESIZE
