@@ -15,8 +15,6 @@ export default class GeometryView extends React.Component{
     };
 
     this.invalidate     = this.invalidate.bind(this);
-    this.onMouseUp      = this.onMouseUp.bind(this);
-    this.onMouseMove    = this.onMouseMove.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
     this.highlightFaces = this.highlightFaces.bind(this);
     this.onShellLoad    = this.onShellLoad.bind(this);
@@ -64,6 +62,7 @@ export default class GeometryView extends React.Component{
 
     // CONTROL EVENT HANDLERS
     this.controls.addEventListener('change', function(options) {
+      //changing to this.props.changeCB(true); breaks this, figure out why
       self.state.isViewChanging = true;
       let x0 = self.sceneCenter,
           x1 = self.camera.position,
@@ -80,7 +79,7 @@ export default class GeometryView extends React.Component{
     });
     this.controls.addEventListener("start", function() {
       self.continuousRendering = true;
-      self.setState({'lockedView': false});
+      self.props.lockedCb(false);
     });
     this.controls.addEventListener("end", function() {
         self.invalidate();
@@ -95,7 +94,7 @@ export default class GeometryView extends React.Component{
 
   onShellLoad(event) {
     // Get around the fact that viewerControls calls change a bunch at startup
-    this.setState({'isViewChanging':true});
+    this.props.changeCb(true);
     this.invalidate(event);
   }
   
@@ -108,15 +107,6 @@ export default class GeometryView extends React.Component{
     this.overlayScene.add(      model.getOverlay3D());
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
-    
-    let sel = this.props.manager.getSelected();
-    
-    if (_.find(_.values(sel[0]._objects), {usage: 'machine'})) {
-        this.setState({lockedView: false});
-        // set the default view
-        this.zoomToFit(sel);
-        this.invalidate();
-    }
   }
 
   onModelRemove(event) {
@@ -181,7 +171,7 @@ export default class GeometryView extends React.Component{
     if (this.props.resize)
         this.handleResize();
 
-    if (this.state.lockedView) {
+    if (this.props.locked) {
         this.alignToolView(this.props.manager.getSelected());
         this.invalidate();
     }
@@ -239,7 +229,6 @@ export default class GeometryView extends React.Component{
     let toolMin = toolBox.min.clone().applyMatrix4(tool.object3D.matrixWorld);
   
     let toolAxis = GeometryView.getAxisVector(toolMax.clone().sub(toolMin));
-    console.log(toolAxis);
     
     let toolPos = tool.object3D.position.clone().sub(partPos);
 
@@ -346,7 +335,7 @@ export default class GeometryView extends React.Component{
       self.animate(false);
     });
     if (this.continuousRendering === true || this.shouldRender === true || forceRendering === true) {
-      if (this.state.lockedView)
+      if (this.props.locked)
         this.alignToolView(this.props.manager.getSelected());
       this.shouldRender = false;
       this.drawScene();
@@ -379,22 +368,6 @@ export default class GeometryView extends React.Component{
     }
     this.shouldRender = true;
   }
-
-  // Handle clicking in the model view for selection
-  onMouseUp(event) {
-      /*if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
-          let obj = this.props.manager.hitTest(this.camera, event);
-          this.handleSelection(obj, event);
-      }*/
-  }
-
-  // Handle mouse movements in the model view for highlighting
-  onMouseMove(event) {
-      /*if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
-          let obj = this.props.manager.hitTest(this.camera, event);
-          this.handleHighlighting(obj);
-      }*/
-  }
   
   render() {
     let compass = this.camera ? <CompassView
@@ -405,7 +378,7 @@ export default class GeometryView extends React.Component{
       guiMode={this.props.guiMode}
     /> : undefined;
     return <div id='geometry-container'>
-      <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
+      <canvas id="cadjs-canvas" onMouseUp={this.props.onMouseUp} onMouseMove={this.onMouseMove} />
       {compass}
     </div>;
     }

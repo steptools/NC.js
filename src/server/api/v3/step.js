@@ -129,7 +129,7 @@ var _getSetup = function(req, res) {
 module.exports = function(app, cb) {
 	app.router.get('/v3/nc/workplan/:wsId',_getExeFromId);
 	app.router.get('/v3/nc/workplan',_getMwp);
-  	app.router.get('/v3/nc/setup/:wsId', _getSetup);
+  app.router.get('/v3/nc/setup/:wsId', _getSetup);
 	if (cb) cb();
 };
 

@@ -84,7 +84,6 @@ var loop = function(ms, key) {
       }
       getDelta(ms, false, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
-        console.log(JSON.parse(b));
         if (playbackSpeed > 0) {
           if (loopTimer !== undefined)
               clearTimeout(loopTimer);
