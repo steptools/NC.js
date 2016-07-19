@@ -34,23 +34,6 @@
             border-bottom-color: #2DB7F5;
         }
     }
-    
-    .info {
-        display: flex;
-        flex-flow: column;
-        align-content: center;
-        align-items: center;
-        
-        .icon {
-            font-size: 24px;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        
-        .value {
-            font-weight: bold;
-        }
-    }
 
     li:last-child {
         float: right;
@@ -210,10 +193,41 @@
     }
 }
 
+.header .info {
+    padding: 0px 10px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: flex-start;
+    cursor: default;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -o-user-select: none;
+    
+    .item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .icon {
+        margin-right: 8px;
+    }
+    
+    .icon, .text {
+        display: inline-block;
+        text-align: left;
+    }
+    
+    .value {
+        font-weight: bold;
+    }
+}
+
 .header .version{
     display:inline-block;
     height: 18px;
-
 }
 
 .header .changelog {

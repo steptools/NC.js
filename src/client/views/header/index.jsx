@@ -230,15 +230,19 @@ export default class HeaderView extends React.Component {
           icons='true'
         />
         <MenuItem disabled key='feed-speed' className='info feed-speed'>
-          <div className='feedrate'>
-            <span className={getIcon('feedrate')}/>
-            <span className='title'>Feed rate: </span>
-            <span className='value'>{feedSpeedInfo[0]}</span>
+          <div className='item'>
+            <div className={getIcon('feedrate')}/>
+            <div className='text'>
+              <div className='title'>Feed rate:</div>
+              <div className='value'>{feedSpeedInfo[0]}</div>
+            </div>
           </div>
-          <div className='spindlespeed'>
-            <span className={feedSpeedInfo[2]}/>
-            <span className='title'>Spindle speed: </span>
-            <span className='value'>{feedSpeedInfo[1]}</span>
+          <div className='item'>
+            <div className={feedSpeedInfo[2]}/>
+            <div className='text'>
+              <div className='title'>Spindle speed:</div>
+              <div className='value'>{feedSpeedInfo[1]}</div>
+            </div>
           </div>
         </MenuItem>
         <Button key='changelog' id='logbutton'>
