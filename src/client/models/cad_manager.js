@@ -27,6 +27,10 @@ export default class CADManager extends THREE.EventDispatcher {
         // Start listening for events
         this.bindEvents();
     }
+    
+    getRootModels() {
+        return _.values(this._models);
+    }
 
     // Load a new assembly request
     load(req) {
