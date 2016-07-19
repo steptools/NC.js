@@ -107,6 +107,7 @@ APIServer.prototype._setSite = function() {
         api_endpoint: endpoint,
         socket: "",
         version: '/v3',
+        machine: self.config.machine,
     };
     // Serve the root client framework - customized as needed
     var _serveRoot = function (req, res) {
@@ -114,7 +115,7 @@ APIServer.prototype._setSite = function() {
             title: 'NC.js',
             source: '/js/main.js',
             services: services,
-            config: self.config.client
+            config: self.config.client,
         };
         res.render('base.jade', appConfig);
     };
@@ -141,25 +142,6 @@ APIServer.prototype.run = function() {
             inputData=inputData.toString().trim().toLowerCase();
             if(inputData.length == 0)
                 process.exit(0);
-            //uncomment all the code below for a confirmation method (and get rid of the above two lines)
-            /*if(!exiting)
-            {
-                if((inputData == "quit") || (inputData == "q") || (inputData == "exit"))
-                {
-                    console.log("Are you sure? [y/n]");
-                    exiting=true;
-                }
-            }
-            else
-            {
-                if((inputData == "yes") || (inputData == "y"))
-                {
-                    self.server.close(function () { console.log('Server exiting...'); });
-                    process.exit(0);
-                    //console.log("**pretends to exit**");
-                }
-                exiting=false;
-            }*/
         }
     });
 

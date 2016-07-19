@@ -20,7 +20,7 @@ class CADApp extends THREE.EventDispatcher {
         let $body = $('body');
         this.services = $body.data('services');
         this.config = $body.data('config');
-
+        
         // Setup socket
         this.socket = undefined;
         if (this.config.socket) {
