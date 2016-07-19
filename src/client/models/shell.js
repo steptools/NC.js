@@ -27,7 +27,6 @@ export default class Shell extends THREE.EventDispatcher {
     }
 
     getNamedParent() {
-        console.log(this._parent);
         return this._parent;
     }
 

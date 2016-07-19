@@ -64,18 +64,9 @@ export default class CADView extends React.Component {
       if (obj && selected.length === 1 && selected[0].getID() === obj.getID()) {
           flip = true;
       }
-      // Allow meta for multi-selection
-      if (!event.metaKey && !flip) {
-          // Clear all currently selected objects
-          this.props.manager.clearSelected(selected);
-          change = true;
-      }
       // Did we find an object
       if (obj) {
-        console.log(obj);
-        console.log(obj.model.getNamedParent())
           obj = obj.model.getNamedParent();
-          console.log(obj);
           // Toggle the bounding box
           obj.toggleSelection();
           change = true;
@@ -89,6 +80,7 @@ export default class CADView extends React.Component {
     onMouseUp(event) {
       if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
         let obj = this.props.manager.hitTest(this.refs.alignGeomView.camera, event);
+        console.log(obj);
         this.handleSelection(obj, event);
       }
     }
