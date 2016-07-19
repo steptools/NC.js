@@ -37,7 +37,6 @@ export default class NC extends THREE.EventDispatcher {
 
     addModel(model, usage, type, id, transform, bbox) {
         // console.log('Add Model(' + usage + '): ' + id);
-        let self = this;
         // Setup 3D object holder
         let obj = {
             model: model,
@@ -143,14 +142,13 @@ export default class NC extends THREE.EventDispatcher {
     };
 
     getBoundingBox() {
-        let self = this;
         if (!this.boundingBox) {
             this.boundingBox = new THREE.Box3();
             let keys = _.keys(this._objects);
-            _.each(keys, function(key) {
-                let object = self._objects[key];
+            _.each(keys, (key) => {
+                let object = this._objects[key];
                 if (object.type !== 'polyline') {
-                    self.boundingBox.union(object.bbox);
+                    this.boundingBox.union(object.bbox);
                 }
             });
         }
@@ -158,22 +156,21 @@ export default class NC extends THREE.EventDispatcher {
     }
 
     calcBoundingBox() {
-        let self = this;
 
         this._overlay3D.remove(this.bbox);
         this.boundingBox = new THREE.Box3();
-        let keys = _.keys(self._objects);
-        _.each(keys, function(key) {
-            let object = self._objects[key];
+        let keys = _.keys(this._objects);
+        _.each(keys, (key) => {
+            let object = this._objects[key];
             if (object.rendered !== false && object.type !== 'polyline') {
                 let newBox = new THREE.Box3().setFromObject(object.object3D);
                 if (!newBox.isEmpty()) {
                     object.bbox = newBox;
                 }
-                self.boundingBox.union(object.bbox);
+                this.boundingBox.union(object.bbox);
             }
         });
-        let bounds = self.boundingBox;
+        let bounds = this.boundingBox;
 
         this.bbox = Assembly.buildBoundingBox(bounds);
         if (this.bbox && this.state.selected) {
@@ -250,7 +247,6 @@ export default class NC extends THREE.EventDispatcher {
     }
 
     applyDelta(delta) {
-        let self = this;
         let alter = false;
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
@@ -261,10 +257,10 @@ export default class NC extends THREE.EventDispatcher {
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
-            var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture"));
+            var oldgeom = _.filter(_.values(this._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture"));
             _.each(oldgeom,(geom)=> {
-                self._object3D.remove(geom.object3D);
-                self._overlay3D.remove(geom.object3D);
+                this._object3D.remove(geom.object3D);
+                this._overlay3D.remove(geom.object3D);
                 geom.rendered = false;
             });
 
@@ -300,13 +296,13 @@ export default class NC extends THREE.EventDispatcher {
                 let name = geomData.id;
                 if(geomData.usage =="asis") return;
 
-                if(self._objects[name]) {
-                    let obj = self._objects[name];
+                if(this._objects[name]) {
+                    let obj = this._objects[name];
                     if (!obj.rendered) {
-                        self._overlay3D.add(obj.object3D);
+                        this._overlay3D.add(obj.object3D);
                         obj.rendered = true;
                         obj.setVisible();
-                        self._objects[name] = obj;
+                        this._objects[name] = obj;
                     }
                 }
                 else {
@@ -337,12 +333,12 @@ export default class NC extends THREE.EventDispatcher {
         else {
             // Handle each geom update in the delta
             // This is usually just a tool movement.
-            _.each(delta.geom, function(geom) {
+            _.each(delta.geom, (geom) => {
                 if (!window.geom || window.geom.length < 100){
                     window.geom = window.geom || [];
                     window.geom.push(geom);
                 }
-                let obj = self._objects[geom.id];
+                let obj = this._objects[geom.id];
                 if(obj !== undefined) {
                     if (obj.rendered !== false) {
                         let transform = new THREE.Matrix4();

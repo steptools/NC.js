@@ -21,7 +21,6 @@ export default class GeometryView extends React.Component{
   }
   
   componentDidMount() {
-    let self = this;
     // RENDERER
     this.canvasParent = document.getElementById('geometry-container');
     this.canvas = document.getElementById('cadjs-canvas');
@@ -59,31 +58,31 @@ export default class GeometryView extends React.Component{
     });
 
     // CONTROL EVENT HANDLERS
-    this.controls.addEventListener('change', function(options) {
+    this.controls.addEventListener('change', (options) => {
       //changing to this.props.changeCB(true); breaks this, figure out why
-      self.setState({'isViewChanging': true});
-      //self.state.isViewChanging = true;
-      let x0 = self.sceneCenter,
-          x1 = self.camera.position,
-          x2 = self.controls.target,
+      this.setState({'isViewChanging': true});
+      //this.state.isViewChanging = true;
+      let x0 = this.sceneCenter,
+          x1 = this.camera.position,
+          x2 = this.controls.target,
           x2subX1 = x2.clone().sub(x1),
           x1subX0 = x1.clone().sub(x0),
           c = x2subX1.clone().cross(x1.clone().sub(x0)).lengthSq() / x2subX1.lengthSq(),
           d = Math.sqrt(Math.abs(c - x1subX0.lengthSq()));
-      self.camera.near = Math.max(0.1, d - self.sceneRadius);
-      self.camera.far = d + self.sceneRadius;
-      self.camera.updateProjectionMatrix();
+      this.camera.near = Math.max(0.1, d - this.sceneRadius);
+      this.camera.far = d + this.sceneRadius;
+      this.camera.updateProjectionMatrix();
     if (!options.noInvalidate)
-      self.invalidate();
+      this.invalidate();
     });
-    this.controls.addEventListener("start", function() {
-      self.continuousRendering = true;
-      self.props.lockedCb(false);
+    this.controls.addEventListener("start", () => {
+      this.continuousRendering = true;
+      this.props.lockedCb(false);
     });
-    this.controls.addEventListener("end", function() {
-        self.invalidate();
-        self.continuousRendering = false;
-        self.props.changeCb(false);;
+    this.controls.addEventListener("end", () => {
+        this.invalidate();
+        this.continuousRendering = false;
+        this.props.changeCb(false);;
     });
 
     // SCREEN RESIZE
@@ -329,9 +328,8 @@ export default class GeometryView extends React.Component{
   }
 
   animate(forceRendering) {
-    let self = this;
-    window.requestAnimationFrame(function() {
-      self.animate(false);
+    window.requestAnimationFrame(() => {
+      this.animate(false);
     });
     if (this.continuousRendering === true || this.shouldRender === true || forceRendering === true) {
       if (this.props.locked)
