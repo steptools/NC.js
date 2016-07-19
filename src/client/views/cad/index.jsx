@@ -20,12 +20,12 @@ class ViewButton extends React.Component {
   constructor(props) {
     super(props);
   }
-  
+
   render() {
     let icon = "unlock";
     if (this.props.locked)
       icon = "lock";
-    
+
     return <div className="resetview">
       <span
         className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
@@ -77,7 +77,7 @@ export default class CADView extends React.Component {
 
     // Handle clicking in the model view for selection
     onMouseUp(event) {
-      if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
+      if (this.props.manager.modelCount() > 0) {
         let obj = this.props.manager.hitTest(this.refs.alignGeomView.camera, event);
         this.handleSelection(obj, event);
       }
@@ -93,12 +93,12 @@ export default class CADView extends React.Component {
 
     render() {
       return <div id='cadjs-container'>
-          <GeometryView 
-            ref={'alignGeomView'} 
-            manager={this.props.manager} 
-            selectedEntity={this.props.selectedEntity} 
-            guiMode={this.props.guiMode} 
-            onMouseUp={this.onMouseUp} 
+          <GeometryView
+            ref={'alignGeomView'}
+            manager={this.props.manager}
+            selectedEntity={this.props.selectedEntity}
+            guiMode={this.props.guiMode}
+            onMouseUp={this.onMouseUp}
             locked={this.state.lockedView}
             lockedCb={this.lockedCb}
             isViewChanging={this.state.isViewChanging}
