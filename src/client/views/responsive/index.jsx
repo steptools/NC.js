@@ -226,46 +226,22 @@ export default class ResponsiveView extends React.Component {
         let json = JSON.parse(res.text);
         let wps = {};
         let ids = [];
-        let lowFlag = true;
         let nodeCheck = (n) => {
           let node = n;
 
-          if (node.wpType) {
+          if (node.wpType && node.children && node.children.length > 0) {
             ids.push(node.id);
-          }
-
-          if (node.children && node.children.length > 0) {
-            lowFlag = false;
+            node.enabled = true;
             node.leaf = false;
             _.each(node.children, nodeCheck);
           } else {
             node.leaf = true;
           }
 
-          if (lowFlag) {
-            node.enabled = false;
-            lowFlag = true;
-          } else {
-            node.enabled = true;
-          }
           wps[node.id] = node;
         };
 
         _.each(json, nodeCheck);
-
-        ids.sort(
-          function(idA,idB) {
-            let a = json[idA];
-            let b = json[idB];
-            if (a.enabled === true && b.enabled === false) {
-              return -1;
-            } else if (a.enabled === false && b.enabled === true) {
-              return 1;
-            } else {
-              return 0;
-            }
-          }
-        );
 
         this.setState({'toleranceCache': wps});
         this.setState({'toleranceList': ids});
