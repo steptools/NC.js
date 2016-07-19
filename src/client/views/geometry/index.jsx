@@ -149,7 +149,7 @@ export default class GeometryView extends React.Component{
         this.handleResize();
 
     if (this.props.locked) {
-        this.alignToolView(this.props.manager.getSelected());
+        this.alignToolView(this.props.manager.getRootModels());
         this.invalidate();
     }
   }
@@ -334,7 +334,7 @@ export default class GeometryView extends React.Component{
     });
     if (this.continuousRendering === true || this.shouldRender === true || forceRendering === true) {
       if (this.props.locked)
-        this.alignToolView(this.props.manager.getSelected());
+        this.alignToolView(this.props.manager.getRootModels());
       this.shouldRender = false;
       this.drawScene();
       this.controls.update();
