@@ -1,5 +1,5 @@
 "use strict";
-var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
+var StepNC = require('../../../../../STEPNode/build/Release/StepNode');
 var file = require('./file');
 var _ = require('lodash');
 var tol = file.tol;
@@ -19,7 +19,7 @@ var getTolerance = function(id) {
     name = name.replace(/_/g, ' ').toLowerCase();
     tolType = name.split(' ')[0];
   }
-  
+
   return {
     "id": id,
     "type": 'tolerance',
@@ -46,7 +46,7 @@ var getWp = function(id, type) {
   };
   if (type)
     ret.type = "workpiece";
-  
+
   let asm_list = find.GetWorkpieceSubAssemblyAll(id);
 
   for (let sub_id of asm_list) {
@@ -107,7 +107,7 @@ var _getWps = function(req,res) {
   for (let id of wps) {
     let type = find.GetWorkpieceType(id);
     let wp = getWp(id, type);
-    
+
     if (wp.wpType === 'workpiece') {
       ret[wp.id] = wp;
       _.each(wp.subs, (child) => {
@@ -115,14 +115,14 @@ var _getWps = function(req,res) {
       });
       wp.subs = undefined;
     }
-    
+
     _.each(wp.tolerances, (wp_tol) => {
       wp.children.push(getWsTols(wp_tol, wp.id));
     });
-    
+
     wp.tolerances = undefined;
   }
-  
+
   res.status(200).send(ret);
 };
 
