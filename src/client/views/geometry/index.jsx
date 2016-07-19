@@ -21,7 +21,6 @@ export default class GeometryView extends React.Component{
   }
   
   componentDidMount() {
-    let self = this;
     // RENDERER
     this.canvasParent = document.getElementById('geometry-container');
     this.canvas = document.getElementById('cadjs-canvas');
@@ -59,13 +58,12 @@ export default class GeometryView extends React.Component{
     });
 
     // CONTROL EVENT HANDLERS
-    this.controls.addEventListener('change', function(options) {
-      //changing to this.props.changeCB(true); breaks this, figure out why
-      self.setState({'isViewChanging': true});
-      //self.state.isViewChanging = true;
-      let x0 = self.sceneCenter,
-          x1 = self.camera.position,
-          x2 = self.controls.target,
+    this.controls.addEventListener('change', (options) => {
+      if (!this.props.isViewChanging)
+        this.props.changeCb(true);
+      let x0 = this.sceneCenter,
+          x1 = this.camera.position,
+          x2 = this.controls.target,
           x2subX1 = x2.clone().sub(x1),
           x1subX0 = x1.clone().sub(x0),
           c = x2subX1.clone().cross(x1.clone().sub(x0)).lengthSq() / x2subX1.lengthSq(),
@@ -73,17 +71,18 @@ export default class GeometryView extends React.Component{
       self.camera.near = Math.max(0.1, d - self.sceneRadius);
       self.camera.far = d + self.sceneRadius;
       self.camera.updateProjectionMatrix();
-    if (!options.noInvalidate)
-      self.invalidate();
+      if (!options.noInvalidate){
+        self.invalidate();
+      }
     });
     this.controls.addEventListener("start", function() {
       self.continuousRendering = true;
       self.props.lockedCb(false);
     });
     this.controls.addEventListener("end", function() {
-        self.invalidate();
-        self.continuousRendering = false;
-        self.props.changeCb(false);;
+      self.invalidate();
+      self.continuousRendering = false;
+      self.props.changeCb(false);
     });
 
     // SCREEN RESIZE
@@ -91,27 +90,6 @@ export default class GeometryView extends React.Component{
     this.handleResize();
   }
 
-  onShellLoad(event) {
-    // Get around the fact that viewerControls calls change a bunch at startup
-    this.props.changeCb(true);
-    this.invalidate(event);
-  }
-  
-  onModelAdd(event) {
-    //This is where the NC model is being loaded into the CADview
-    let model = this.props.manager._models[event.path];
-    // Add the model to the scene
-    this.annotationScene.add(   model.getAnnotation3D());
-    this.geometryScene.add(     model.getObject3D());
-    this.overlayScene.add(      model.getOverlay3D());
-    // calculate the scene's radius for draw distance calculations
-    this.updateSceneBoundingBox(model.getBoundingBox());
-  }
-
-  onModelRemove(event) {
-    console.log('ModelRemove: ' + event.path);
-  }
-  
   componentWillUpdate(nextProps, nextState) {
     // Unhighlight anything that's not being shown
     if ((this.props.selectedEntity !== null &&
@@ -174,6 +152,27 @@ export default class GeometryView extends React.Component{
         this.alignToolView(this.props.manager.getSelected());
         this.invalidate();
     }
+  }
+
+  onShellLoad(event) {
+    // Get around the fact that viewerControls calls change a bunch at startup
+    this.props.changeCb(true);
+    this.invalidate(event);
+  }
+  
+  onModelAdd(event) {
+    //This is where the NC model is being loaded into the CADview
+    let model = this.props.manager._models[event.path];
+    // Add the model to the scene
+    this.annotationScene.add(   model.getAnnotation3D());
+    this.geometryScene.add(     model.getObject3D());
+    this.overlayScene.add(      model.getOverlay3D());
+    // calculate the scene's radius for draw distance calculations
+    this.updateSceneBoundingBox(model.getBoundingBox());
+  }
+
+  onModelRemove(event) {
+    console.log('ModelRemove: ' + event.path);
   }
 
   handleResize() {
@@ -255,17 +254,18 @@ export default class GeometryView extends React.Component{
           newPos.x = 1;
         else
           newPos.y = 1;
-      }
+    }
 
       // make sure the fixture is facing away from us if it would block view of the part
-      if (fixturePos.dot(newPos) < 0)
-        newPos.negate();
+    if (fixturePos.dot(newPos) < 0)
+      newPos.negate();
     }
     // we have no fixture
     else {
       newPos.crossVectors(newUp, new THREE.Vector3(1, 0, 0));
-      if (newPos.length() === 0)
+      if (newPos.length() === 0){
         newPos.crossVectors(newUp, new THREE.Vector3(0, 1, 0));
+      }
     }
 
     // TODO: See if we can actually use the tool in calculations
@@ -329,9 +329,8 @@ export default class GeometryView extends React.Component{
   }
 
   animate(forceRendering) {
-    let self = this;
-    window.requestAnimationFrame(function() {
-      self.animate(false);
+    window.requestAnimationFrame(() => {
+      this.animate(false);
     });
     if (this.continuousRendering === true || this.shouldRender === true || forceRendering === true) {
       if (this.props.locked)
@@ -361,7 +360,6 @@ export default class GeometryView extends React.Component{
       if (options.boundingBox) {
         // then update the bounding box for the new model
         this.updateSceneBoundingBox(options.model.getBoundingBox());
-
         this.controls.dispatchEvent({type: 'change', 'noInvalidate': true });
       }
     }

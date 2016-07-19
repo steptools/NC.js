@@ -72,7 +72,10 @@ export default class CADView extends React.Component {
       }
       // Did we find an object
       if (obj) {
-          obj = obj.getNamedParent();
+        console.log(obj);
+        console.log(obj.model.getNamedParent())
+          obj = obj.model.getNamedParent();
+          console.log(obj);
           // Toggle the bounding box
           obj.toggleSelection();
           change = true;
@@ -85,8 +88,8 @@ export default class CADView extends React.Component {
     // Handle clicking in the model view for selection
     onMouseUp(event) {
       if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
-          let obj = this.props.manager.hitTest(this.refs.alignGeomView.camera, event);
-          this.handleSelection(obj, event);
+        let obj = this.props.manager.hitTest(this.refs.alignGeomView.camera, event);
+        this.handleSelection(obj, event);
       }
     }
 
@@ -108,6 +111,7 @@ export default class CADView extends React.Component {
             onMouseUp={this.onMouseUp} 
             locked={this.state.lockedView}
             lockedCb={this.lockedCb}
+            isViewChanging={this.state.isViewChanging}
             changeCb={this.changingCb}
             resize={this.props.resize}
             toleranceCache={this.props.toleranceCache}
