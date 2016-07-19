@@ -14,89 +14,55 @@
 
 .header-menu {
     background-color: #F8F8F8;
+    height: 100%;
 
     .rc-menu-item {
-        padding: 0;
         min-width: 85px;
-        min-height: inherit;
+        height: inherit;
+        border-bottom: 2px solid transparent;
         text-align: center;
+        padding: 0;
         border-right: 1px solid #DDDDDD;
         background: none;
         white-space: normal;
+        
+        &:first-child {
+            margin-left: 2px;
+        }
+
+        &:hover:not(.rc-menu-item-disabled) {
+            border-bottom-color: #2DB7F5;
+        }
     }
 
     li:last-child {
         float: right;
+        border-left: 1px solid #DDDDDD;
     }
 }
 
-.header .rc-menu-item:first-child {
-    margin-left: 2px;
-}
-
-.header-menu-item {
-    min-height: inherit;
-
-    &:hover {
-        border-bottom: 2px solid #2DB7F5;
-    }
-
-    .feed-speed {
-        margin: 0 10px;
-
-        &.value {
-            font-weight: bold;
-        }
-    }
-}
-
-.menu-item-button {
-    .button-icon {
-        font-size: 32px;
-        color: rgba(#666666, .5);
+.header .button {
+    .icon {
         padding-bottom: 11px;
         padding-top: 15px;
-        display: block;
     }
 
     &:hover {
         cursor: pointer;
-
-        .button-icon {
-            color: #2BAEE9;
-            opacity: 1;
+        
+        .icon {
+            color: rgba(#2BAEE9, 1);
         }
     }
 }
 
-.menu-item-slider {
-    &:hover {
-        input[type=range] {
-            &::-webkit-slider-thumb {
-                background: #35B8FD;
-                border-color: transparent;
-            }
-
-            &::-moz-range-thumb {
-                background: #35B8FD;
-                border-color: transparent;
-            }
-
-            &::-ms-thumb {
-                background: #35B8FD;
-                border-color: transparent;
-            }
-        }
-    }
-}
-
-.slider {
+.header .slider {
     width: 249px;
     padding: 19px 15px 8px;
 
     .sliderData {
         height: 20px;
-        padding-top: 11px;
+        padding-top: 9px;
         cursor: default;
 
         div {
@@ -108,28 +74,44 @@
         }
     }
 
-    .slider-icon {
+    .icon {
         font-size: 20px;
-        opacity: 0.5;
-        color: #666666;
+        
+        &.left {
+            float: left;
+        }
+        
+        &.right {
+            float: right;
+        }
 
         &:hover {
-            color: #2BAEE9;
-            opacity: 1;
+            color: rgba(#2BAEE9, 1);
             cursor: pointer;
         }
     }
-
-    .slider-left-icon {
-        float: left;
-    }
-
-    .slider-right-icon {
-        float: right;
+    
+    &:hover {
+        input[type=range] {
+            &::-webkit-slider-thumb {
+                background: #35B8FD;
+                border-color: transparent;
+            }
+            
+            &::-moz-range-thumb {
+                background: #35B8FD;
+                border-color: transparent;
+            }
+            
+            &::-ms-thumb {
+                background: #35B8FD;
+                border-color: transparent;
+            }
+        }
     }
 }
 
-input[type=range] {
+.header input[type=range] {
     $thumbHeight: 28px;
     $thumbWidth: 10px;
     $trackHeight: 8px;
@@ -210,12 +192,45 @@ input[type=range] {
         display: none;
     }
 }
-.version{
+
+.header .info {
+    padding: 0px 10px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: flex-start;
+    cursor: default;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -o-user-select: none;
+    
+    .item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .icon {
+        margin-right: 8px;
+    }
+    
+    .icon, .text {
+        display: inline-block;
+        text-align: left;
+    }
+    
+    .value {
+        font-weight: bold;
+    }
+}
+
+.header .version{
     display:inline-block;
     height: 18px;
-
 }
-.changelog {
+
+.header .changelog {
     max-height: 350px;
     width: $sidebarWidth;
     position: absolute;
@@ -246,4 +261,10 @@ input[type=range] {
         -o-transform: translateY(100%);
         transform: translateY(100%);
     }
+}
+
+.header .icon {
+    font-size: 32px;
+    color: rgba(#666666, .5);
+    display: block;
 }
