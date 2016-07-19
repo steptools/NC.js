@@ -286,13 +286,16 @@ export default class DataLoader extends THREE.EventDispatcher {
         //console.log('Process NC: ' + doc.project);
         let nc = new NC(doc.project, doc.workingstep, doc.time_in_workingstep, this);
         _.each(doc.geom, (geomData) => {
-            let color = DataLoader.parseColor("7d7d7d");
+            let color = DataLoader.parseColor('7d7d7d');
             let transform = DataLoader.parseXform(geomData.xform, true);
             // Is this a shell
             if (_.has(geomData, 'shell')) {
-                if(geomData.usage === "cutter")
+                if(geomData.usage === 'cutter')
                 {
                     color = DataLoader.parseColor("FF530D");
+                }
+                if(geomData.usage === 'fixture' && this._app.services.machine.dir === ''){
+                    return;
                 }
                 let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
                 let shell = new Shell(geomData.id, nc, nc, geomData.size, color, boundingBox);
@@ -302,7 +305,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 this.addRequest({
                     path: geomData.shell.split('.')[0],
                     baseURL: req.base,
-                    type: "shell"
+                    type: 'shell'
                 });
             // Is this a polyline
             } else if (_.has(geomData, 'polyline')) {
@@ -315,7 +318,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 this.addRequest({
                     path: name,
                     baseURL: req.base,
-                    type: "annotation"
+                    type: 'annotation'
                 });
             } else {
                 console.log('No idea what we found: ' + geomData);
