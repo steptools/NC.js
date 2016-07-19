@@ -7,7 +7,6 @@
 
 let _                   = require('lodash');
 import React            from 'react';
-import ViewerControls   from './viewer_controls';
 import LoadQueueView    from '../load_queue';
 import GeometryView     from '../geometry';
 
@@ -80,7 +79,6 @@ export default class CADView extends React.Component {
     onMouseUp(event) {
       if (!this.state.isViewChanging && this.props.manager.modelCount() > 0) {
         let obj = this.props.manager.hitTest(this.refs.alignGeomView.camera, event);
-        console.log(obj);
         this.handleSelection(obj, event);
       }
     }
