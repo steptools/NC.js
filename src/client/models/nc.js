@@ -182,7 +182,9 @@ export default class NC extends THREE.EventDispatcher {
         mouse.x = (mouseX / window.innerWidth) * 2 - 1;
         mouse.y = -(mouseY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(mouse, camera);
-        let intersections = this.raycaster.intersectObjects(this._object3D.children, true);
+        
+        let objs = _.map(_.values(this._objects), (obj) => obj.object3D);
+        let intersections = this.raycaster.intersectObjects(objs, true);
         // Did we hit anything?
         let object = undefined;
         if (intersections.length > 0) {
