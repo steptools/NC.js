@@ -42,12 +42,11 @@ export default class Product extends THREE.EventDispatcher {
         shape.setProduct(this);
         this._shapes.push(shape);
         if (this._isRoot) {
-            let self = this;
             this._object3D.add(shape.getObject3D());
             this._overlay3D.add(shape.getOverlay3D());
             this._annotation3D.add(shape.getAnnotation3D());
-            shape.addEventListener("shapeLoaded", function(event) {
-                self.dispatchEvent({ type: "shapeLoaded", shell: event.shell });
+            shape.addEventListener("shapeLoaded", (event) => {
+                this.dispatchEvent({ type: "shapeLoaded", shell: event.shell });
             });
         }
     }
@@ -139,10 +138,9 @@ export default class Product extends THREE.EventDispatcher {
     }
 
     toggleOpacity() {
-        let self = this;
-        function setOpacity(opacity) {
-            self.state.opacity = opacity;
-            self._object3D.traverse(function (object) {
+        let setOpacity = (opacity) => {
+            this.state.opacity = opacity;
+            this._object3D.traverse(function (object) {
                 if (object.material && object.material.uniforms.opacity) {
                     object.material.transparent = opacity < 1;
                     object.material.depthWrite = opacity === 1;
