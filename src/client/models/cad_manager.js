@@ -30,20 +30,19 @@ export default class CADManager extends THREE.EventDispatcher {
 
     // Load a new assembly request
     load(req) {
-        let self = this;
         // Default the model type to assembly
         req.type = req.modelType ? req.modelType : 'assembly';
         delete req.modelType;
         // Load the model
-        this._loader.load(req, function(err, model) {
+        this._loader.load(req, (err, model) => {
             if (err) {
                 console.log('CADManager.load error: ' + err);
             } else {
                 // Add the model to the list of loaded models
-                self._models[req.path] = model;
-                self.dispatchEvent({ type: 'model:add', path: req.path });
+                this._models[req.path] = model;
+                this.dispatchEvent({ type: 'model:add', path: req.path });
                 // Make sure all the rest of the parts have loaded
-                self._loader.runLoadQueue();
+                this._loader.runLoadQueue();
             }
         });
         // Get the rest of the files
@@ -65,16 +64,15 @@ export default class CADManager extends THREE.EventDispatcher {
     }
 
     bindEvents() {
-        let self = this;
         // Set up handling of load events - pass them from the data-loader on
-        let loaderEventHandler = function(event) {
-            self.dispatchEvent(event);
+        let loaderEventHandler = (event) => {
+            this.dispatchEvent(event);
         };
 
         let modelsEventHandler = function(event) {
             let keys = _.keys(this._models);
-            _.each(keys, function(key) {
-                self._models[key].dispatchEvent(event);
+            _.each(keys, (key) => {
+                this._models[key].dispatchEvent(event);
             });
         };
         // Rebroadcast data loader events
@@ -134,10 +132,9 @@ export default class CADManager extends THREE.EventDispatcher {
     }
 
     getSelected() {
-        let self = this;
         let keys = _.keys(this._models);
-        let selected = _.map(keys, function(key) {
-            return self._models[key].getSelected()
+        let selected = _.map(keys, (key) => {
+            return this._models[key].getSelected()
         });
         return _.flatten(selected);
     }
@@ -164,19 +161,18 @@ export default class CADManager extends THREE.EventDispatcher {
     }
 
     onDelta(delta) {
-        let self = this;
         if (!window.deltas || window.deltas.length < 1000){
           window.deltas = window.deltas || [];
           window.deltas.push(delta);
         }
         let keys = _.keys(this._models);
-        _.each(keys, function(key) {
-            let model = self._models[key];
+        _.each(keys, (key) => {
+            let model = this._models[key];
             if (model.project === delta.project) {
                 if (model.applyDelta(delta)) {
                     model.calcBoundingBox();
                     // Only redraw if there were changes
-                    self.dispatchEvent({ type: 'invalidate', 'boundingBox': true, 'model': model});
+                    this.dispatchEvent({ type: 'invalidate', 'boundingBox': true, 'model': model});
                 }
             }
         });
