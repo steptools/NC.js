@@ -5,6 +5,10 @@ import request from 'superagent';
 import _ from 'lodash';
 
 function getIcon(type, data) {
+  if (!data) {
+    data = '';
+  }
+
   switch (type) {
     case 'workplan':
       return 'icon glyphicons glyphicons-cube-empty';
