@@ -109,7 +109,7 @@ export default class CADView extends React.Component {
             />
           <ViewButton
             alignCb={() => {
-              this.refs.alignGeomView.alignToolView(this.props.manager.getSelected());
+              this.refs.alignGeomView.alignToolView(this.props.manager.getRootModels());
               this.refs.alignGeomView.invalidate();
             }}
             toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
