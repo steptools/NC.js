@@ -108,6 +108,7 @@ export default class CADView extends React.Component {
             onMouseUp={this.onMouseUp} 
             locked={this.state.lockedView}
             lockedCb={this.lockedCb}
+            isViewChanging={this.state.isViewChanging}
             changeCb={this.changingCb}
             resize={this.props.resize}
             toleranceCache={this.props.toleranceCache}

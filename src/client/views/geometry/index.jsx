@@ -59,9 +59,8 @@ export default class GeometryView extends React.Component{
 
     // CONTROL EVENT HANDLERS
     this.controls.addEventListener('change', (options) => {
-      //changing to this.props.changeCB(true); breaks this, figure out why
-      this.setState({'isViewChanging': true});
-      //this.state.isViewChanging = true;
+      if (!this.props.isViewChanging)
+        this.props.changeCb(true);
       let x0 = this.sceneCenter,
           x1 = this.camera.position,
           x2 = this.controls.target,
