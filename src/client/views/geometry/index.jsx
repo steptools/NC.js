@@ -9,8 +9,6 @@ export default class GeometryView extends React.Component{
     super(props);
 
     this.state = {
-      isViewChanging: false,
-      lastHovered: undefined,
       oldColors: {}
     };
 
@@ -63,7 +61,8 @@ export default class GeometryView extends React.Component{
     // CONTROL EVENT HANDLERS
     this.controls.addEventListener('change', function(options) {
       //changing to this.props.changeCB(true); breaks this, figure out why
-      self.state.isViewChanging = true;
+      self.setState({'isViewChanging': true});
+      //self.state.isViewChanging = true;
       let x0 = self.sceneCenter,
           x1 = self.camera.position,
           x2 = self.controls.target,
@@ -84,7 +83,7 @@ export default class GeometryView extends React.Component{
     this.controls.addEventListener("end", function() {
         self.invalidate();
         self.continuousRendering = false;
-        self.state.isViewChanging = false;
+        self.props.changeCb(false);;
     });
 
     // SCREEN RESIZE
