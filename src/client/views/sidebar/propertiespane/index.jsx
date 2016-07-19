@@ -284,7 +284,8 @@ export default class PropertiesPane extends React.Component {
   }
 
   renderWorkingsteps(entity) {
-    if (entity.type !== 'workpiece' && entity.type !== 'tool') {
+    if (entity.type !== 'workpiece' && entity.type !== 'tool' &&
+        entity.type !== 'tolerance') {
       return null;
     }
     let title, steps;
@@ -362,18 +363,13 @@ export default class PropertiesPane extends React.Component {
   }
 
   renderChildren(entity) {
-    if (entity.type === 'workingstep' || entity.type === 'tool') {
+    if (entity.type === 'workingstep' || entity.type === 'tool' ||
+        entity.type === 'tolerance') {
       return null;
     }
     let children = entity.children; // this.normalizeChildren(entity);
     let childrenTitle;
-    if (entity.type === 'tolerance') {
-      if (children) {
-        childrenTitle = 'Used in Workingsteps:';
-      } else {
-        childrenTitle = 'Not used in any workingsteps.';
-      }
-    } else if (entity.type === 'workpiece') {
+    if (entity.type === 'workpiece') {
       if (children && children.length > 0) {
         childrenTitle = 'Tolerances:';
       } else {
