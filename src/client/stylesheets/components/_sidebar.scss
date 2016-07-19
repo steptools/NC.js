@@ -46,8 +46,7 @@ $icons: '../icons/';
             
             .textbox {
                 vertical-align: middle;
-                display: inline-block;
-                width: calc(100% - 38px);
+                display: block;
             }
             
             .setup-textbox{
@@ -456,7 +455,7 @@ $icons: '../icons/';
         display: inline-block;
         text-align: center;
         height: 30px;
-        width: 30px;
+        min-width: 30px;
     }
 
     &.workpiece {
