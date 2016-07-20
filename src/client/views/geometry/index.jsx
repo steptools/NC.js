@@ -22,8 +22,9 @@ export default class GeometryView extends React.Component{
   
   componentDidMount() {
     // RENDERER
-    this.canvasParent = $('.geometry-container')[0];
-    this.canvas = $('.cadjs-canvas')[0];
+    this.canvasParent = $(this.props.parentSelector + ' .geometry-container')[0];
+    this.canvas = $(this.props.parentSelector + ' .cadjs-canvas')[0];
+    
     this.renderer = new THREE.WebGLRenderer({
         canvas: this.canvas,
         antialias: true,

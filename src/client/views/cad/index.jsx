@@ -99,6 +99,7 @@ export default class CADView extends React.Component {
             toleranceCache={this.props.toleranceCache}
             ws={this.props.ws}
             isCadView={true}
+            parentSelector='#cadjs-container'
             />
           <ViewButton
             alignCb={() => {

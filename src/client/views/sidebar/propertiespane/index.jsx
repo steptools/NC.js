@@ -439,7 +439,7 @@ export default class PropertiesPane extends React.Component {
           guiMode={this.props.guiMode}
           resize={this.props.resize}
           isCadView={false}
-          id='preview'
+          parentSelector='.preview-container'
         />
       );
     }
