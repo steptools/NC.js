@@ -386,11 +386,11 @@ export default class NC extends THREE.EventDispatcher {
 
                         // we need to update all 3D properties so that
                         // annotations, overlays and objects are all updated
-                        obj.object3D.position.copy(position);
+                        obj.object3D.position.copy(mtposition);
                         obj.object3D.quaternion.copy(quaternion);
-                        obj.annotation3D.position.copy(position);
+                        obj.annotation3D.position.copy(mtposition);
                         obj.annotation3D.quaternion.copy(quaternion);
-                        obj.overlay3D.position.copy(position);
+                        obj.overlay3D.position.copy(mtposition);
                         obj.overlay3D.quaternion.copy(quaternion);
                         alter = true;
                     }

@@ -16,8 +16,6 @@ let path = find.GetProjectName();
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
-
-var current = 0;
 ///*******************************************************************\
 //|                                                                    |
 //|                       Helper Functions                             |
@@ -124,6 +122,16 @@ var findWS = function(current) {
     console.log("GCODE Switched!");
     return true;
 	}
+	while (current < WSGCode["worksteps"][WSGCodeIndex - 1]){
+	    if (WSGCodeIndex >= WSGCode["worksteps"].length) {2
+	      WSGCodeIndex = 0;
+	    }
+	    else {
+	      WSGCodeIndex = WSGCodeIndex + 1;
+	    }
+	    change = true;
+	}
+	  return change;
 }
 		
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
@@ -154,7 +162,7 @@ var _getDelta = function(ms, key, wsgcode, cb) {
 
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
-    if (findWS(res[4], wsgcode) ) {
+    if (findWS(res[4]) ) {
       console.log("keystate");
       ms.NextWS();
       holder = JSON.parse(ms.GetKeystateJSON());
@@ -232,8 +240,7 @@ var parseGCodes = function() {
 			var GCodes = data.toString().split("\n");
 			_.each(GCodes, function(line) {
 				if (line[0] == "(") {
-					console.log("Comment");
-					if (line[1] == "W") {
+					if (line.substring(1, 12) == "WORKINGSTEP") {
 						console.log(lineNumber);
 						MTCcontent.push(lineNumber);
 					}
@@ -247,6 +254,7 @@ var parseGCodes = function() {
 	});
 	
 	fileRead.then(function(res) {
+		res.shift();
 		console.log(res);
 	
 		var JSONContent = "{\"worksteps\" : [\n";
