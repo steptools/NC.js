@@ -35,16 +35,17 @@ export default class CompassView extends React.Component {
     }
 
     bindEvents() {
-        let defaultUpVector = new THREE.Vector3(0,1,0);
+        let self = this,
+        defaultUpVector = new THREE.Vector3(0,1,0);
 
-        this.$cubeButtons.on('mouseenter', () => {
-            this.$cubeButtons
+        this.$cubeButtons.on('mouseenter', function () {
+            self.$cubeButtons
                 .removeClass('hover')
                 .filter('[data-group="' + $(this).attr('data-group') + '"]')
                 .addClass('hover');
-        }).on('mouseleave', () => {
-            this.$cubeButtons.removeClass('hover');
-        }).on('click', () => {
+        }).on('mouseleave', function () {
+            self.$cubeButtons.removeClass('hover');
+        }).on('click', function () {
             let upVector, upValues, eulerOrder;
             if (typeof(this.dataset.up) !== 'undefined') {
                 upValues = this.dataset.up.split(',').map(parseFloat);
@@ -60,7 +61,7 @@ export default class CompassView extends React.Component {
                 parseFloat(this.dataset.z)*conversionFactor,
                 eulerOrder);
 
-            this.controls.setRotationFromEuler(viewAngles, upVector /* allowed to be undefined */);
+            self.controls.setRotationFromEuler(viewAngles, upVector /* allowed to be undefined */);
         });
     }
 
