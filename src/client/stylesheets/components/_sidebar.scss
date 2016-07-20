@@ -22,16 +22,13 @@ $icons: '../icons/';
         .m-node {
             margin: 1px 0px;
             
-            .icon {
-                margin-right: 8px;
-            }
-            
             .node {
-                display: inline-block;
+                display: flex;
                 cursor: pointer;
-                width: calc(100%);
+                width: 100%;
                 padding: 4px 5px;
                 margin: 0px 0px;
+                align-items: center;
                 
                 &:hover:not(.setup) {
                     background-color: rgba(#2BAEE9, 0.5);
@@ -44,10 +41,13 @@ $icons: '../icons/';
                 }
             }
             
-            .textbox {
-                vertical-align: middle;
-                display: block;
+            .icon {
+                margin-right: 8px;
             }
+            
+            /*.textbox {
+                flex-grow: 1;
+            }*/
             
             .setup-textbox{
                 display: table;

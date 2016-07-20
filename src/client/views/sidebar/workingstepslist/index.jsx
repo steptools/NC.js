@@ -17,7 +17,7 @@ export default class WorkingstepList extends React.Component {
 
   getNodeIcon(node) {
     if (!isNaN(node.number)) {
-      return <span className='icon custom letter'>{node.number}</span>;
+      return <div className='icon custom letter'>{node.number}</div>;
     }
   }
 
@@ -33,7 +33,7 @@ export default class WorkingstepList extends React.Component {
     }
 
     return (
-      <ol
+      <div
         id={node.id}
         className={cName}
         onClick={() => {
@@ -50,7 +50,7 @@ export default class WorkingstepList extends React.Component {
         {node.id === undefined
           ? <span className="setup-textbox">{node.name}</span>
           : <span className="textbox">{node.name}</span>}
-      </ol>
+      </div>
     );
   }
 
