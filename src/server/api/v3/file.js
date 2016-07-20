@@ -14,8 +14,8 @@ function init(path, machinetool){
 	fs.accessSync(path, fs.R_OK , (err) => {
   		process.exit();
 	});
-	this.apt = new StepNC.AptStepMaker();
 	this.find = new StepNC.Finder();
+	this.apt = new StepNC.AptStepMaker();
 	this.tol = new StepNC.Tolerance();
 	this.ms = new StepNC.machineState(path);
 	if(machinetool !== ""){
@@ -24,8 +24,8 @@ function init(path, machinetool){
 		else
 			console.log("Loaded Machine Successfully")
 	}
-	this.apt.OpenProject(path);
 	this.find.OpenProject(path);
+	this.apt.OpenProject(path);
 	return;
 }
 

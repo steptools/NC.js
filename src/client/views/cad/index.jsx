@@ -49,7 +49,7 @@ export default class CADView extends React.Component {
             modelTree: {},
             isViewChanging: false,
             lastHovered: undefined,
-            lockedView: true
+            lockedView: false
         };
         this.handleResize   = this.handleResize.bind(this);
         this.onShellLoad    = this.onShellLoad.bind(this);
@@ -70,7 +70,7 @@ export default class CADView extends React.Component {
         this.setState({'isViewChanging':true});
         this.invalidate(event);
     }
-    
+
     onModelAdd(event) {
         //This is where the NC model is being loaded into the CADview
         let model = this.props.manager._models[event.path];
@@ -81,15 +81,8 @@ export default class CADView extends React.Component {
         // calculate the scene's radius for draw distance calculations
         this.updateSceneBoundingBox(model.getBoundingBox());
         
-        let sel = this.props.manager.getSelected();
-        
-        if (_.find(_.values(sel[0]._objects), {usage: 'machine'})) {
-            this.setState({lockedView: false});
-            // set the default view
-            this.zoomToFit(sel);
-            this.invalidate();
-        }
-
+        // set the default view
+        this.alignToolView([model]);
         
         // Update the model tree
         let tree = this.props.manager.getTree();
@@ -115,7 +108,6 @@ export default class CADView extends React.Component {
             case 97:
                 //console.log(this.camera);
                 this.alignToolView(this.props.manager.getSelected());
-                this.invalidate();
                 break;
             // Explode on 'x' key pressed
             case 120:
@@ -238,14 +230,15 @@ export default class CADView extends React.Component {
         this.props.manager.removeEventListener("invalidate", this.invalidate);
     }
     
+    componentWillUpdate(nextProps, nextState) {
+        if (!this.state.lockedView && nextState.lockedView) {
+            this.invalidate();
+        }
+    }
+
     componentDidUpdate() {
         if (this.props.resize)
             this.handleResize();
-
-        if (this.state.lockedView) {
-            this.alignToolView(this.props.manager.getSelected());
-            this.invalidate();
-        }
     }
 
     handleResize() {
@@ -278,8 +271,6 @@ export default class CADView extends React.Component {
 
     alignToolView(objects) {
         
-        if (objects[0] === undefined) return;
-
         // find the orientation of the referenced object
         let tool = _.find(_.values(objects[0]._objects), {'usage': 'cutter', 'rendered': true});
         let part = _.find(_.values(objects[0]._objects), {'usage': 'tobe', 'rendered': true});
@@ -352,6 +343,7 @@ export default class CADView extends React.Component {
 
         this.controls.alignTop(newUp, newPos);
 
+        this.invalidate();
     }
   
     static getAxisVector(vec) {
@@ -525,19 +517,11 @@ export default class CADView extends React.Component {
 
         return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
-<<<<<<< HEAD
 
             <span className="resetview glyphicon glyphicon-eye-open"
                   onClick={()=>{this.alignToolView(this.props.manager.getSelected());}}/>
             <ViewButton
               alignCb={() => {this.alignToolView(this.props.manager.getSelected());}}
-=======
-            <ViewButton
-              alignCb={() => {
-                this.alignToolView(this.props.manager.getSelected());
-                this.invalidate();
-              }}
->>>>>>> master
               toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
               locked = {this.state.lockedView}
             />

@@ -1,7 +1,6 @@
 "use strict";
 var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
 var file = require('./file');
-var step = require('./step');
 var find = file.find;
 var request = require("superagent");
 var parseXMLString = require("xml2js");
@@ -16,17 +15,12 @@ let path = find.GetProjectName();
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
-///*******************************************************************\
-//|                                                                    |
-//|                       Helper Functions                             |
-//|                                                                    |
-//\*******************************************************************/
 
 var update = (val) => {
   app.ioServer.emit("nc:state", val);
 };
 
-var updateSpeed = (speed) => {
+var _updateSpeed = (speed) => {
   app.ioServer.emit("nc:speed", speed);
 };
 
@@ -121,12 +115,6 @@ var findWS = function(current) {
     }
     console.log("GCODE Switched!");
     return true;
-		
-//TODO: Get rid of this function and consolidate with endpoint functions if possible
-var getDelta = function(ms, key, cb) {
-  var response = "";
-  if (key) {
-    response = ms.GetKeystateJSON()
   }
   while (current < WSGCode["worksteps"][WSGCodeIndex - 1]){
     if (WSGCodeIndex >= WSGCode["worksteps"].length) {
@@ -170,20 +158,20 @@ var _getDelta = function(ms, key, wsgcode, cb) {
 
 
 var _getNext = function(ms, cb) {
-  cb(response);
-};
-
-var getNext = function(ms, cb) {
   ms.NextWS();
+  //assume switch was successful
+  app.logger.debug("Switched!");
   cb();
 };
 
-var getPrev = function(ms, cb) {
+var _getPrev = function(ms, cb) {
   ms.PrevWS();
+  //assume switch was successful
+  app.logger.debug("Switched!");
   cb();
 };
 
-var getToWS = function(wsId, ms, cb) {
+var _getToWS = function(wsId, ms, cb) {
   ms.GoToWS(wsId);
   //assume switch was successful
   app.logger.debug("Switched! " + wsId);
@@ -192,11 +180,6 @@ var getToWS = function(wsId, ms, cb) {
 
 //Machine state, key, workingstep g-code
 var _loop = function(ms, key, wsgcode) {
-  cb();
-};
-
-
-var loop = function(ms, key) {
   if (loopStates[path] === true) {
     app.logger.debug("Loop step " + path);
     let rc = ms.AdvanceState();
@@ -207,7 +190,7 @@ var loop = function(ms, key) {
         if (playbackSpeed > 0) {
           if (loopTimer !== undefined)
               clearTimeout(loopTimer);
-          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
+          loopTimer = setTimeout(function () { _loop(ms, false); }, 50 / (playbackSpeed / 200));
         }
         else {
           // app.logger.debug("playback speed is zero, no timeout set");
@@ -215,27 +198,9 @@ var loop = function(ms, key) {
       });
     /*}
     else if (rc == 1) {   // SWITCH
-      // app.logger.debug("SWITCH...");
-      let old = _getWorkingstep();
-      getNext(ms, function() {
-        loop(ms, true);
-      });
-      let setup = _sameSetup(_getWorkingstep(),old);
-      if (!setup){
-        loopStates[path] = false;
-        update("pause");
-        loop(ms,false);
-      }
-      getDelta(ms, false, function(b) {
-        app.ioServer.emit('nc:delta', JSON.parse(b));
-        if (playbackSpeed > 0) {
-          if (loopTimer !== undefined)
-              clearTimeout(loopTimer);
-          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
-        }
-        else {
-          // app.logger.debug("playback speed is zero, no timeout set");
-        }
+      app.logger.debug("SWITCH...");
+      _getNext(ms, function() {
+        _loop(ms, true);
       });
     }*/
   }
@@ -282,21 +247,6 @@ var parseGCodes = function() {
 	
 }
 
-var _getWorkingstep = function() {
-  var ms = file.ms;
-  let keyjson = JSON.parse(ms.GetKeystateJSON());
-  return keyjson.workingstep;
-};
-
-var _sameSetup = function (newid, oldid) {
-  return (step._getSetupFromId(newid) === step._getSetupFromId(oldid))
-};
-
-///*******************************************************************\
-//|                                                                    |
-//|                       Endpoint Functions                           |
-//|                                                                    |
-//\*******************************************************************/
 
 var _loopInit = function(req, res) {
   // app.logger.debug("loopstate is " + req.params.loopstate);
@@ -334,7 +284,7 @@ var _loopInit = function(req, res) {
             res.status(200).send("Already running");
             return;
           }
-          // app.logger.debug("Looping " + path);
+          app.logger.debug("Looping " + path);
           loopStates[path] = true;
           res.status(200).send("OK");
           update("play");
@@ -355,7 +305,7 @@ var _loopInit = function(req, res) {
 
             if (Number(playbackSpeed) !== newSpeed) {
               playbackSpeed = newSpeed;
-              // app.logger.debug("Changing speed to " + newSpeed);
+              app.logger.debug("Changing speed to " + newSpeed);
             }
 
             if (loopStates[path] === true) {
@@ -365,7 +315,7 @@ var _loopInit = function(req, res) {
             else {
               res.status(200).send(JSON.stringify({"state": "pause", "speed": playbackSpeed}));
             }
-            updateSpeed(playbackSpeed);
+            _updateSpeed(playbackSpeed);
           }
           else {
             // untested case
@@ -384,19 +334,23 @@ var _wsInit = function(req, res) {
       loopStates[path] = false;
     }
 
+    // load the machine tool using global options
+    /*if (app.machinetool !== "")
+      ms.LoadMachine(app.machinetool);*/
+
     switch(command) {
       case "next":
         var temp = loopStates[path];
         loopStates[path] = true;
         if (temp) {
-        getNext(ms, function() {
-        loop(ms, true);
+        _getNext(ms, function() {
+        _loop(ms, true);
         });
         }
         else{
-          loop(ms,false);
-          getNext(ms, function() {
-          loop(ms, true);
+          _loop(ms,false);
+          _getNext(ms, function() {
+          _loop(ms, true);
           });
           loopStates[path] = false;
           update("pause");
@@ -407,14 +361,14 @@ var _wsInit = function(req, res) {
         var temp = loopStates[path];
         loopStates[path] = true;
         if (temp) {
-        getPrev(ms, function() {
-        loop(ms, true);
+        _getPrev(ms, function() {
+        _loop(ms, true);
         });
         }
         else{
-          loop(ms,false);
-          getPrev(ms, function() {
-          loop(ms, true);
+          _loop(ms,false);
+          _getPrev(ms, function() {
+          _loop(ms, true);
           });
           loopStates[path] = false;
           update("pause");
@@ -427,16 +381,16 @@ var _wsInit = function(req, res) {
             temp = loopStates[path];
             loopStates[path] = true;
             if (temp) {
-            getToWS(ws, ms, function() {
-            loop(ms, true);
+            _getToWS(ws, ms, function() {
+            _loop(ms, true);
             });
             loopStates[path] = false;
             update("pause");
             }
             else{
-              loop(ms,false);
-              getToWS(ws, ms, function() {
-              loop(ms, true);
+              _loop(ms,false);
+              _getToWS(ws, ms, function() {
+              _loop(ms, true);
               });
               loopStates[path] = false;
               update("pause");
@@ -447,12 +401,12 @@ var _wsInit = function(req, res) {
                 // untested case
               }
       }
-      getDelta(ms, false, function(b) {
+      _getDelta(ms, false, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
           if (loopTimer !== undefined)
               clearTimeout(loopTimer);
-          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
+          loopTimer = setTimeout(function () { _loop(ms, false); }, 50 / (playbackSpeed / 200));
         }
         else {
           // app.logger.debug("playback speed is zero, no timeout set");

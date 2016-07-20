@@ -4,13 +4,7 @@ var file = require('./file');
 var find = file.find;
 var _ = require('lodash');
 
-///*******************************************************************\
-//|                                                                    |
-//|                       Helper Functions                             |
-//|                                                                    |
-//\*******************************************************************/
-
-var getWorkstepsForTool = function(exe, toolId) {
+var _getWorkstepsForTool = function(exe, toolId) {
     if (find.IsWorkingstep(exe)) {
         if (find.GetWorkingstepTool(exe) === toolId) {
             return [exe];
@@ -24,7 +18,7 @@ var getWorkstepsForTool = function(exe, toolId) {
         let children = find.GetNestedExecutableAll(exe);
         if (children !== undefined) {
             _.each(children, (childId) => {
-                rtn = rtn.concat(getWorkstepsForTool(childId, toolId));
+                rtn = rtn.concat(_getWorkstepsForTool(childId, toolId));
             });
         }
         return rtn;
@@ -34,19 +28,13 @@ var getWorkstepsForTool = function(exe, toolId) {
     }
 };
 
-///*******************************************************************\
-//|                                                                    |
-//|                       Endpoint Functions                           |
-//|                                                                    |
-//\*******************************************************************/
-
 var _getTools = function (req, res) {
   let toolList = find.GetToolAll();
   let rtn = [];
   for(let id of toolList){
       let name = find.GetToolPartName(id).replace(/_/g, ' ');
       let toolType = find.GetToolType(id);
-      let workingsteps = getWorkstepsForTool(find.GetMainWorkplan(), id);
+      let workingsteps = _getWorkstepsForTool(find.GetMainWorkplan(), id);
       let enable = false;
       for (let ws of workingsteps){
         if (find.IsEnabled(ws)) enable = true;
@@ -74,7 +62,7 @@ var _getWsTool = function (req, res) {
 var _getToolEnabled = function (req, res) {
   let ret = false;
   let toolID = req.params.toolId;
-  let workingsteps = getWorkstepsForTool(find.GetMainWorkplan(), parseInt(toolID));
+  let workingsteps = _getWorkstepsForTool(find.GetMainWorkplan(), parseInt(toolID));
   for(let ws in workingsteps){
     if(find.IsEnabled(workingsteps[ws])) ret = true;
   }
