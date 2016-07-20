@@ -86,6 +86,7 @@ export default class GeometryView extends React.Component{
     });
 
     // SCREEN RESIZE
+    this.forceUpdate();
     this.animate(true);
     this.handleResize();
   }
