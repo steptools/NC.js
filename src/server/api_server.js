@@ -91,7 +91,7 @@ APIServer.prototype._setRoutes = function(cb) {
                     require('./api/v3/geometry')(self, function (){
                         require('./api/v3/changelog')(self, function(){if(cb)cb();});
                     });
-                });    
+                });
             });
         });
     });
@@ -121,7 +121,7 @@ APIServer.prototype._setSite = function() {
 
     this.router.get('/', _serveRoot);
     this.router.get('*', function(req, res){
-        res.status(404).send('404 please go to localhost:8080 to access the server');
+        res.status(404).send('404 Error: Not Found');
     });
 };
 
