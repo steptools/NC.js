@@ -207,6 +207,7 @@ export default class NC extends THREE.EventDispatcher {
         let alter = false;
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
+        console.log(this);
         if (!delta.hasOwnProperty('prev')){
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
@@ -214,7 +215,10 @@ export default class NC extends THREE.EventDispatcher {
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
-            var oldgeom = _.filter(_.values(this._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture"));
+            var oldgeom = _.filter(_.values(this._objects), (geom) => (
+                geom.usage =="cutter" || geom.usage =="tobe" || 
+                geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture")
+            );
             _.each(oldgeom,(geom)=> {
                 this._object3D.remove(geom.object3D);
                 this._overlay3D.remove(geom.object3D);
@@ -228,7 +232,10 @@ export default class NC extends THREE.EventDispatcher {
 
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
-            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || (geom.usage =="tobe" && _.has(geom, 'shell')) || geom.usage =="asis"||geom.usage=='machine' || geom.usage=='fixture'));
+            var geoms = _.filter(delta.geom, (geom) => (
+                geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) || 
+                geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
+            );
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
@@ -237,11 +244,11 @@ export default class NC extends THREE.EventDispatcher {
                     this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
                     // Push the annotation for later completion
                     this._loader._annotations[name] = annotation;
-                    var url = "/v3/nc/";
+                    var url = '/v3/nc/';
                     this._loader.addRequest({
                         path: name,
                         baseURL: url,
-                        type: "annotation"
+                        type: 'annotation'
                     });
                 } else {
                     this._loader._annotations[name].addToScene();
@@ -251,7 +258,7 @@ export default class NC extends THREE.EventDispatcher {
 
             _.each(geoms, (geomData)=>{
                 let name = geomData.id;
-                if(geomData.usage =="asis") return;
+                if(geomData.usage =='asis' || (this.app.services.machine.dir === '' && geomData.usage == 'fixture')) return;
 
                 if(this._objects[name]) {
                     let obj = this._objects[name];
@@ -294,6 +301,7 @@ export default class NC extends THREE.EventDispatcher {
                     window.geom = window.geom || [];
                     window.geom.push(geom);
                 }
+                console.log(geom);
                 let obj = this._objects[geom.id];
                 if(obj !== undefined) {
                     if (obj.rendered !== false) {
