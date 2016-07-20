@@ -288,7 +288,6 @@ export default class GeometryView extends React.Component{
   }
 
   highlightFaces(entity, objs, unhighlight, newColor) {
-    console.log(objs);
     let shells = _.filter(_.values(objs[0]._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
     _.each(shells, (shell) => {
       if (shell && shell.model._geometry) {

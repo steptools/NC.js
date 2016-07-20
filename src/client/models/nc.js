@@ -207,7 +207,6 @@ export default class NC extends THREE.EventDispatcher {
         let alter = false;
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
-        console.log(this);
         if (!delta.hasOwnProperty('prev')){
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
@@ -301,7 +300,6 @@ export default class NC extends THREE.EventDispatcher {
                     window.geom = window.geom || [];
                     window.geom.push(geom);
                 }
-                console.log(geom);
                 let obj = this._objects[geom.id];
                 if(obj !== undefined) {
                     if (obj.rendered !== false) {
