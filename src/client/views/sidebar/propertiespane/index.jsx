@@ -222,7 +222,8 @@ export default class PropertiesPane extends React.Component {
   }
   
   renderPreviewButton(entity) {
-    if (entity.type === 'workplan' || entity.type === 'selective') {
+    if (entity.type === 'workplan' || entity.type === 'selective' ||
+        entity.type === 'workplan-setup') {
       return;
     }
     
