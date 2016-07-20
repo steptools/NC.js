@@ -21,12 +21,12 @@ class ViewButton extends React.Component {
   constructor(props) {
     super(props);
   }
-  
+
   render() {
     let icon = "unlock";
     if (this.props.locked)
       icon = "lock";
-    
+
     return <div className="resetview">
       <span
         className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
@@ -70,7 +70,7 @@ export default class CADView extends React.Component {
         this.setState({'isViewChanging':true});
         this.invalidate(event);
     }
-    
+
     onModelAdd(event) {
         //This is where the NC model is being loaded into the CADview
         let model = this.props.manager._models[event.path];
@@ -80,9 +80,9 @@ export default class CADView extends React.Component {
         this.overlayScene.add(      model.getOverlay3D());
         // calculate the scene's radius for draw distance calculations
         this.updateSceneBoundingBox(model.getBoundingBox());
-        
+
         let sel = this.props.manager.getSelected();
-        
+
         if (_.find(_.values(sel[0]._objects), {usage: 'machine'})) {
             this.setState({lockedView: false});
             // set the default view
@@ -90,7 +90,7 @@ export default class CADView extends React.Component {
             this.invalidate();
         }
 
-        
+
         // Update the model tree
         let tree = this.props.manager.getTree();
         this.setState({ modelTree:tree });
@@ -237,14 +237,14 @@ export default class CADView extends React.Component {
         this.props.manager.removeEventListener("annotationLoad", this.invalidate);
         this.props.manager.removeEventListener("invalidate", this.invalidate);
     }
-    
+
     componentDidUpdate() {
         if (this.props.resize)
-            this.handleResize();
+            //this.handleResize();
 
         if (this.state.lockedView) {
-            this.alignToolView(this.props.manager.getSelected());
-            this.invalidate();
+            //this.alignToolView(this.props.manager.getSelected());
+            //this.invalidate();
         }
     }
 
@@ -277,7 +277,7 @@ export default class CADView extends React.Component {
     }
 
     alignToolView(objects) {
-        
+
         if (objects[0] === undefined) return;
 
         // find the orientation of the referenced object
@@ -288,16 +288,16 @@ export default class CADView extends React.Component {
 
         let partPos = new THREE.Vector3().setFromMatrixPosition(part.object3D.matrixWorld);
         let toolBox = tool.model.getBoundingBox().clone();
-          
+
         let toolMax = toolBox.max.clone().applyMatrix4(tool.object3D.matrixWorld);
         let toolMin = toolBox.min.clone().applyMatrix4(tool.object3D.matrixWorld);
-      
+
         let toolAxis = CADView.getAxisVector(toolMax.clone().sub(toolMin));
-        
+
         let toolPos = tool.object3D.position.clone().sub(partPos);
 
         let newUp = toolAxis.clone()
-      
+
         // get the unit vector corresponding to this view
         newUp = CADView.getAxisVector(newUp);
 
@@ -342,7 +342,7 @@ export default class CADView extends React.Component {
             dist = radius / Math.sin(fov * 0.5),
             newTargetPosition = boundingBox.max.clone().
             lerp(boundingBox.min, 0.5);
-      
+
         // adjust the camera position based on the new target
         this.camera.position
             .sub(this.controls.target)
@@ -353,7 +353,7 @@ export default class CADView extends React.Component {
         this.controls.alignTop(newUp, newPos);
 
     }
-  
+
     static getAxisVector(vec) {
       // Find the closest axis-aligned unit vector to the given vector
       let absVec = new THREE.Vector3(Math.abs(vec.x), Math.abs(vec.y), Math.abs(vec.z));
@@ -376,8 +376,8 @@ export default class CADView extends React.Component {
           rtn.z = 1;
         else
           rtn.z = -1;
-      }  
-      
+      }
+
       return rtn;
     }
 

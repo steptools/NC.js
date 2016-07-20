@@ -44,7 +44,7 @@ export default class SidebarView extends React.Component {
                 if (tOffset < cOffset) {
                     tree.animate({scrollTop: (cOffset - tOffset)}, 1000);
                 }
-                this.setState({'scrolled': true}); 
+                //this.setState({'scrolled': true});
             }
         }
     }
@@ -57,14 +57,14 @@ export default class SidebarView extends React.Component {
     render() {
         // TODO currently mode menu can only have two layers
         let nested = this.props.mode != "tree";
-        
-        let properties = <PropertiesPane 
-            entity={this.props.selectedEntity} 
-            previousEntity={this.props.previouslySelectedEntities[0]} 
-            pid={this.props.pid} 
-            ws={this.props.ws} 
-            propertiesCb={this.props.openProperties} 
-            tools={this.props.toolCache} 
+
+        let properties = <PropertiesPane
+            entity={this.props.selectedEntity}
+            previousEntity={this.props.previouslySelectedEntities[0]}
+            pid={this.props.pid}
+            ws={this.props.ws}
+            propertiesCb={this.props.openProperties}
+            tools={this.props.toolCache}
             workingsteps={this.props.workingstepCache}
         />;
 
