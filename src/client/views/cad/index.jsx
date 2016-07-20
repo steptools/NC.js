@@ -525,19 +525,12 @@ export default class CADView extends React.Component {
 
         return <div id='cadjs-container'>
             <canvas id="cadjs-canvas" onMouseUp={this.onMouseUp} onMouseMove={this.onMouseMove} />
-<<<<<<< HEAD
 
-            <span className="resetview glyphicon glyphicon-eye-open"
-                  onClick={()=>{this.alignToolView(this.props.manager.getSelected());}}/>
-            <ViewButton
-              alignCb={() => {this.alignToolView(this.props.manager.getSelected());}}
-=======
             <ViewButton
               alignCb={() => {
                 this.alignToolView(this.props.manager.getSelected());
                 this.invalidate();
               }}
->>>>>>> master
               toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
               locked = {this.state.lockedView}
             />
