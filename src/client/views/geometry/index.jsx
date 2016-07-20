@@ -59,8 +59,6 @@ export default class GeometryView extends React.Component{
 
     // CONTROL EVENT HANDLERS
     this.controls.addEventListener('change', (options) => {
-      if (!this.props.isViewChanging)
-        this.props.changeCb(true);
       let x0 = this.sceneCenter,
           x1 = this.camera.position,
           x2 = this.controls.target,
@@ -82,7 +80,6 @@ export default class GeometryView extends React.Component{
     this.controls.addEventListener("end", () => {
       this.invalidate();
       this.continuousRendering = false;
-      this.props.changeCb(false);
     });
 
     // SCREEN RESIZE
@@ -155,8 +152,6 @@ export default class GeometryView extends React.Component{
   }
 
   onShellLoad(event) {
-    // Get around the fact that viewerControls calls change a bunch at startup
-    this.props.changeCb(true);
     this.invalidate(event);
   }
   
