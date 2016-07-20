@@ -22,8 +22,8 @@ export default class GeometryView extends React.Component{
   
   componentDidMount() {
     // RENDERER
-    this.canvasParent = document.getElementById('geometry-container');
-    this.canvas = document.getElementById('cadjs-canvas');
+    this.canvasParent = $('.geometry-container')[0];
+    this.canvas = $('.cadjs-canvas')[0];
     this.renderer = new THREE.WebGLRenderer({
         canvas: this.canvas,
         antialias: true,
@@ -59,8 +59,9 @@ export default class GeometryView extends React.Component{
 
     // CONTROL EVENT HANDLERS
     this.controls.addEventListener('change', (options) => {
-      if (!this.props.isViewChanging)
+      if (!this.props.isViewChanging && this.props.isCadView) {
         this.props.changeCb(true);
+      }
       let x0 = this.sceneCenter,
           x1 = this.camera.position,
           x2 = this.controls.target,
@@ -77,12 +78,16 @@ export default class GeometryView extends React.Component{
     });
     this.controls.addEventListener("start", () => {
       this.continuousRendering = true;
-      this.props.lockedCb(false);
+      if (this.props.isCadView) {
+        this.props.lockedCb(false);
+      }
     });
     this.controls.addEventListener("end", () => {
       this.invalidate();
       this.continuousRendering = false;
-      this.props.changeCb(false);
+      if (this.props.isCadView) {
+        this.props.changeCb(false);
+      }
     });
 
     // SCREEN RESIZE
@@ -156,7 +161,9 @@ export default class GeometryView extends React.Component{
 
   onShellLoad(event) {
     // Get around the fact that viewerControls calls change a bunch at startup
-    this.props.changeCb(true);
+    if (this.props.isCadView) {
+      this.props.changeCb(true);
+    }
     this.invalidate(event);
   }
   
@@ -369,14 +376,14 @@ export default class GeometryView extends React.Component{
   
   render() {
     let compass = this.camera ? <CompassView
-      compassParentId="cadjs-canvas"
+      compassParentClass="cadjs-canvas"
       camera={this.camera}
       controls={this.controls}
       dispatcher={this.props.manager}
       guiMode={this.props.guiMode}
     /> : undefined;
-    return <div id='geometry-container'>
-      <canvas id="cadjs-canvas" onMouseUp={this.props.onMouseUp} onMouseMove={this.onMouseMove} />
+    return <div className='geometry-container'>
+      <canvas className='cadjs-canvas' onMouseUp={this.props.onMouseUp} onMouseMove={this.onMouseMove} />
       {compass}
     </div>;
     }

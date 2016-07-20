@@ -53,6 +53,8 @@ export default class SidebarView extends React.Component {
       workingsteps={this.props.workingstepCache}
       resize={this.props.resize}
       toleranceCache={this.props.toleranceCache}
+      guiMode={this.props.guiMode}
+      manager={this.props.cadManager}
     />;
 
     const tabs = (

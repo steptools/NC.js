@@ -106,6 +106,7 @@ export default class CADView extends React.Component {
             resize={this.props.resize}
             toleranceCache={this.props.toleranceCache}
             ws={this.props.ws}
+            isCadView={true}
             />
           <ViewButton
             alignCb={() => {

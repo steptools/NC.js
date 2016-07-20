@@ -28,7 +28,7 @@ export default class CompassView extends React.Component {
     /* compassParentId, camera, controls */
     constructor(props) {
         super(props);
-        this.compassParent = $('#' + this.props.compassParentId);
+        this.compassParent = $('.' + this.props.compassParentClass);
         this.controls = this.props.controls;
         this.camera = this.props.camera;
         this.update = this.update.bind(this);
@@ -183,6 +183,6 @@ export default class CompassView extends React.Component {
 }
 
 CompassView.propTypes = {
-    compassParentId: React.PropTypes.string.isRequired,
+    compassParentClass: React.PropTypes.string.isRequired,
     dispatcher: React.PropTypes.object.isRequired
 };

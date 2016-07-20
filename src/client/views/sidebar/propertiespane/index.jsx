@@ -433,14 +433,14 @@ export default class PropertiesPane extends React.Component {
       cName = cName + ' visible';
 
       content = (
-        <div>
-          <span
-            className={'preview-exit ' + getIcon('exit')}
-            onClick={() => {
-                this.setState({'preview': false});
-              }}
-          />
-        </div>
+        <GeometryView
+          manager={this.props.manager}
+          selectedEntity={this.props.entity}
+          guiMode={this.props.guiMode}
+          resize={this.props.resize}
+          isCadView={false}
+          id='preview'
+        />
       );
     }
     
@@ -448,6 +448,12 @@ export default class PropertiesPane extends React.Component {
       <div className='preview'>
         <div className='preview-cover' />
         <div className={cName} id='preview-container'>
+          <span
+            className={'preview-exit ' + getIcon('exit')}
+            onClick={() => {
+                this.setState({'preview': false});
+              }}
+          />
           {content}
         </div>
       </div>
