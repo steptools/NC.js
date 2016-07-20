@@ -23,7 +23,7 @@ export default class NC extends THREE.EventDispatcher {
         this._objects = [];
         this.type = 'nc';
 
-        this.traceNum = 1;
+        this.traceNum = 5000;
         var trace = new THREE.BufferGeometry();
         this.tracePoint = new Float32Array(this.traceNum * 3);
         trace.addAttribute('position', new THREE.BufferAttribute(this.tracePoint, 3));
@@ -31,12 +31,16 @@ export default class NC extends THREE.EventDispatcher {
             color: 0xffa07a,
             linewidth: 2
         }));
+				this.traceLine.visible = true;
 
 
         this.raycaster = new THREE.Raycaster();
         this._object3D = new THREE.Object3D();
         this._overlay3D = new THREE.Object3D();
-
+				this._object3D.add(obj.object3D);
+				this._overlay3D.add(this.traceLine);
+				
+				
         this._annotation3D = new THREE.Object3D();
         this.state = {
             selected:       false,
@@ -381,6 +385,7 @@ export default class NC extends THREE.EventDispatcher {
                         console.log(obj.object3D.position);
 
 
+												self._objects3D.add(self.traceLine);
                         self._overlay3D.add(self.traceLine);
                         self.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
 
