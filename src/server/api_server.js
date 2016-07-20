@@ -12,7 +12,8 @@ var http                = require('http'),
     cookieParser        = require('cookie-parser'),
     jade                = require('jade'),
     CoreServer          = require('./core_server'),
-    util                = require('util');
+    util                = require('util'),
+    fs                  = require('fs');
 
 
 /************************* Support Site *********************************/
@@ -88,9 +89,7 @@ APIServer.prototype._setRoutes = function(cb) {
         require('./api/v3/state')(self, function () {
             require('./api/v3/tool')(self, function (){
                 require('./api/v3/tolerances')(self, function (){
-                    require('./api/v3/geometry')(self, function (){
-                        require('./api/v3/changelog')(self, function(){if(cb)cb();});
-                    });
+                    require('./api/v3/geometry')(self, function (){if(cb)cb();});
                 });
             });
         });
@@ -111,11 +110,13 @@ APIServer.prototype._setSite = function() {
     };
     // Serve the root client framework - customized as needed
     var _serveRoot = function (req, res) {
+        var change = fs.readFileSync("CHANGELOG.md", "utf8");
         var appConfig = {
             title: 'NC.js',
             source: '/js/main.js',
             services: services,
             config: self.config.client,
+            changelog: change,
         };
         res.render('base.jade', appConfig);
     };

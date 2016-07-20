@@ -27,10 +27,6 @@ export default class CADManager extends THREE.EventDispatcher {
         // Start listening for events
         this.bindEvents();
     }
-    
-    getRootModels() {
-        return _.values(this._models);
-    }
 
     // Load a new assembly request
     load(req) {
@@ -53,19 +49,7 @@ export default class CADManager extends THREE.EventDispatcher {
         this._loader.runLoadQueue();
     }
 
-    centerModels() {
-        // TODO: Do we need to implement this?
-        // Reset all models to be centered on the origin
-        //if (this._product) {
-        //    let bbox = this._product.getBoundingBox();
-        //    if (!bbox.empty()) {
-        //        let x = (bbox.max.x + bbox.min.x) / -2.0;
-        //        let y = (bbox.max.y + bbox.min.y) / -2.0;
-        //        let z = (bbox.max.z + bbox.min.z) / -2.0;
-        //        this._product.applyMatrix(new THREE.Matrix4().makeTranslation(x, y, z));
-        //    }
-        //}
-    }
+    centerModels() { }
 
     bindEvents() {
         // Set up handling of load events - pass them from the data-loader on
@@ -143,10 +127,8 @@ export default class CADManager extends THREE.EventDispatcher {
         return _.flatten(selected);
     }
 
-    getTree() {
-        // TODO: Needs to handle multiple models at once
-        let keys = _.keys(this._models);
-        return keys.length > 0 ? this._models[keys[0]].getTree(keys[0]) : {};
+    getRootModels() {
+        return _.values(this._models);
     }
 
     modelCount() {
