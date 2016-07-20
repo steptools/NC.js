@@ -38,14 +38,14 @@ export default class CompassView extends React.Component {
         let self = this,
         defaultUpVector = new THREE.Vector3(0,1,0);
 
-        this.$cubeButtons.on('mouseenter', function () {
+        this.$cubeButtons.on('mouseenter', () => {
             self.$cubeButtons
                 .removeClass('hover')
                 .filter('[data-group="' + $(this).attr('data-group') + '"]')
                 .addClass('hover');
-        }).on('mouseleave', function () {
+        }).on('mouseleave', () => {
             self.$cubeButtons.removeClass('hover');
-        }).on('click', function () {
+        }).on('click', () => {
             let upVector, upValues, eulerOrder;
             if (typeof(this.dataset.up) !== 'undefined') {
                 upValues = this.dataset.up.split(',').map(parseFloat);
