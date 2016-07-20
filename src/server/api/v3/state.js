@@ -121,6 +121,8 @@ var findWS = function(current) {
     }
     console.log("GCODE Switched!");
     return true;
+	}
+}
 		
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
 var getDelta = function(ms, key, cb) {
