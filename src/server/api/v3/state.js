@@ -16,6 +16,8 @@ let path = find.GetProjectName();
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
+
+var current = 0;
 ///*******************************************************************\
 //|                                                                    |
 //|                       Helper Functions                             |
@@ -127,6 +129,7 @@ var findWS = function(current) {
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
 var getDelta = function(ms, key, cb) {
   var response = "";
+	var change = false;
   if (key) {
     response = ms.GetKeystateJSON()
   }
@@ -193,12 +196,12 @@ var getToWS = function(wsId, ms, cb) {
 };
 
 //Machine state, key, workingstep g-code
-var _loop = function(ms, key, wsgcode) {
+var _loop = function(ms, key) {
   cb();
 };
 
 
-var loop = function(ms, key) {
+var loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
     app.logger.debug("Loop step " + path);
     let rc = ms.AdvanceState();
@@ -215,31 +218,6 @@ var loop = function(ms, key) {
           // app.logger.debug("playback speed is zero, no timeout set");
         }
       });
-    /*}
-    else if (rc == 1) {   // SWITCH
-      // app.logger.debug("SWITCH...");
-      let old = _getWorkingstep();
-      getNext(ms, function() {
-        loop(ms, true);
-      });
-      let setup = _sameSetup(_getWorkingstep(),old);
-      if (!setup){
-        loopStates[path] = false;
-        update("pause");
-        loop(ms,false);
-      }
-      getDelta(ms, false, function(b) {
-        app.ioServer.emit('nc:delta', JSON.parse(b));
-        if (playbackSpeed > 0) {
-          if (loopTimer !== undefined)
-              clearTimeout(loopTimer);
-          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
-        }
-        else {
-          // app.logger.debug("playback speed is zero, no timeout set");
-        }
-      });
-    }*/
   }
 };
 
@@ -340,7 +318,7 @@ var _loopInit = function(req, res) {
           loopStates[path] = true;
           res.status(200).send("OK");
           update("play");
-          _loop(ms, false, JSON.parse(data.toString()));
+          loop(ms, false, JSON.parse(data.toString()));
           break;
         case "stop":
           if (loopStates[path] === false) {
@@ -361,7 +339,7 @@ var _loopInit = function(req, res) {
             }
 
             if (loopStates[path] === true) {
-              _loop(ms, false, JSON.parse(data.toString()));
+              loop(ms, false, JSON.parse(data.toString()));
               res.status(200).send(JSON.stringify({"state": "play", "speed": playbackSpeed}));
             }
             else {

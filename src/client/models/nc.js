@@ -364,7 +364,7 @@ export default class NC extends THREE.EventDispatcher {
                 }
                 let obj = self._objects[geom.id];
                 if(obj !== undefined) {
-                    if (obj.rendered !== false) {
+                    if (obj.rendered !== false && obj.usage == "cutter") {
                         let transform = new THREE.Matrix4();
                         if (!geom.xform) return;
                         transform.fromArray(geom.xform);
@@ -374,7 +374,7 @@ export default class NC extends THREE.EventDispatcher {
                         transform.decompose(position, quaternion, scale);
 
 
-
+												
                         let mtposition = new THREE.Vector3(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
                         obj.object3D.position.copy(mtposition);
                         obj.object3D.quaternion.copy(quaternion);
