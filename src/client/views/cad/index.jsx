@@ -45,14 +45,12 @@ export default class CADView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isViewChanging: false,
             lockedView: true,
             oldColors: {},
         };
 
         this.onMouseUp = this.onMouseUp.bind(this);
         this.lockedCb = this.lockedCb.bind(this);
-        this.changingCb = this.changingCb.bind(this);
     }
 
     // Handle all object selection needs
@@ -87,10 +85,6 @@ export default class CADView extends React.Component {
       this.setState({'lockedView' : state});
     }
 
-    changingCb(state){
-      this.setState({'isViewChanging' : state});
-    }
-
     render() {
       return <div id='cadjs-container'>
           <GeometryView
@@ -101,8 +95,6 @@ export default class CADView extends React.Component {
             onMouseUp={this.onMouseUp}
             locked={this.state.lockedView}
             lockedCb={this.lockedCb}
-            isViewChanging={this.state.isViewChanging}
-            changeCb={this.changingCb}
             resize={this.props.resize}
             toleranceCache={this.props.toleranceCache}
             ws={this.props.ws}
