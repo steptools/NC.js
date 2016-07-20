@@ -35,7 +35,6 @@ export default class ResponsiveView extends React.Component {
       resize: false,
       changeSpeed: false,
       playbackSpeed: 50,
-      logtext : 'default',
       toolCache : [],
       curtool : '',
       toleranceCache: [],
@@ -161,17 +160,6 @@ export default class ResponsiveView extends React.Component {
     // get the project loopstate
     url = '/v3/nc/state/loop/';
     resCb = (error, response) => {
-      let log = '';
-      request
-        .get('/log')
-        .end((err, res) => {
-          if (!err && res.ok) {
-            log = md(res.text);
-          } else {
-            console.log(err);
-          }});
-      this.setState({'logtext' : log});
-
       if (!error && response.ok) {
         let stateObj = JSON.parse(response.text);
 
