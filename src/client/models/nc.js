@@ -37,7 +37,7 @@ export default class NC extends THREE.EventDispatcher {
         this.raycaster = new THREE.Raycaster();
         this._object3D = new THREE.Object3D();
         this._overlay3D = new THREE.Object3D();
-				this._object3D.add(obj.object3D);
+				this._object3D.add(this.traceLine);
 				this._overlay3D.add(this.traceLine);
 				
 				
@@ -385,7 +385,7 @@ export default class NC extends THREE.EventDispatcher {
                         console.log(obj.object3D.position);
 
 
-												self._objects3D.add(self.traceLine);
+												self._object3D.add(self.traceLine);
                         self._overlay3D.add(self.traceLine);
                         self.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
 
