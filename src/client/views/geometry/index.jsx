@@ -161,6 +161,10 @@ export default class GeometryView extends React.Component{
   }
   
   onModelAdd(event) {
+    if (this.props.viewType !== event.viewType) {
+      return;
+    }
+    
     //This is where the NC model is being loaded into the CADview
     let model = this.props.manager._models[event.path];
     // Add the model to the scene

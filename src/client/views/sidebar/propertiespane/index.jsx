@@ -442,6 +442,7 @@ export default class PropertiesPane extends React.Component {
           isCadView={false}
           toleranceCache={this.props.toleranceCache}
           parentSelector='.preview-container'
+          viewType='preview'
         />
       );
     }

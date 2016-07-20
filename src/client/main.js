@@ -55,6 +55,7 @@ class CADApp extends THREE.EventDispatcher {
 
         this.cadManager.dispatchEvent({
             type: 'setModel',
+            viewType: 'cadjs',
             path: 'state/key',
             baseURL: this.services.api_endpoint + this.services.version,
             modelType: 'nc'

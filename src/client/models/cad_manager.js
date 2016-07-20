@@ -40,7 +40,11 @@ export default class CADManager extends THREE.EventDispatcher {
             } else {
                 // Add the model to the list of loaded models
                 this._models[req.path] = model;
-                this.dispatchEvent({ type: 'model:add', path: req.path });
+                this.dispatchEvent({
+                    type: 'model:add',
+                    path: req.path,
+                    viewType: req.viewType,
+                });
                 // Make sure all the rest of the parts have loaded
                 this._loader.runLoadQueue();
             }
