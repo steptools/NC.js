@@ -41,7 +41,8 @@ var MTListen = function() {
     let mtc = request.get('http://192.168.0.123:5000/current');
     mtc.end(function (err, res) {
       parseXMLString.parseString(res.text, function (error, result) {
-        let find = result['MTConnectStreams']['Streams'][0]['DeviceStream'][0]['ComponentStream'];
+        let find = result['MTConnectStreams']['Streams'][0];
+        find = find['DeviceStream'][0]['ComponentStream'];
         let pathtag = _.find(find, function(tag) {
           if (tag['$']['name'] === 'path') {
             return true;
@@ -126,25 +127,7 @@ var findWS = function(current) {
 };
 
 //TODO: Get rid of this function and consolidate with endpoint functions
-var getDelta = function(ms, key) {
-  var change = false;
-  if (key) {
-    response = ms.GetKeystateJSON();
-  }
-
-  while (current < WSGCode['worksteps'][WSGCodeIndex - 1]) {
-    if (WSGCodeIndex >= WSGCode['worksteps'].length) {
-      WSGCodeIndex = 0;
-    } else {
-      WSGCodeIndex = WSGCodeIndex + 1;
-    }
-    change = true;
-  }
-  return change;
-};
-
-//TODO: Get rid of this function and consolidate with endpoint functions
-var _getDelta = function(ms, key, wsgcode, cb) {
+var _getDelta = function(ms, key, cb) {
   let holder = '';
   let theQuestion = MTListen();
   // let theAnswer = 42;
@@ -163,8 +146,8 @@ var _getDelta = function(ms, key, wsgcode, cb) {
     }
     holder.mtcoords = res[0];
     holder.offset = [res[1], res[2], res[3]];
-		holder.gcode = res[4];
-		holder.feed = res[5];
+    holder.gcode = res[4];
+    holder.feed = res[5];
     let response = JSON.stringify(holder);
     //app.logger.debug('got ' + response);
     cb(response);
@@ -191,7 +174,7 @@ var getToWS = function(wsId, ms, cb) {
 var loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
     app.logger.debug('Loop step ' + path);
-    _getDelta(ms, key, wsgcode, function(b) {
+    _getDelta(ms, key, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {
@@ -398,7 +381,7 @@ var _wsInit = function(req, res) {
           res.status(200).send('OK');
         }
     }
-    getDelta(ms, false, function(b) {
+    _getDelta(ms, false, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {

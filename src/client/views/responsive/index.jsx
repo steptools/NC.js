@@ -44,12 +44,7 @@ export default class ResponsiveView extends React.Component {
       workplanCache: {},
       selectedEntity: null,
       previouslySelectedEntities: [null],
-      live: false,
       mtc: {},
-      gcode: -1,
-      line: -1,
-      feedrate: null,
-      spindlespeed: null,
     };
 
     this.addBindings();
@@ -57,14 +52,17 @@ export default class ResponsiveView extends React.Component {
   }
 
   addBindings() {
+    this.getWorkplan = this.getWorkplan.bind(this);
+    this.getLoopstate = this.getLoopstate.bind(this);
+    this.getViewData = this.getViewData.bind(this);
+
     this.ppstate = this.ppstate.bind(this);
     this.ppBtnClicked = this.ppBtnClicked.bind(this);
 
     this.updateWS = this.updateWorkingstep.bind(this);
+    this.cbWS = this.cbWS.bind(this);
 
     this.handleResize = this.handleResize.bind(this);
-
-    this.cbWS = this.cbWS.bind(this);
 
     this.speedChanged = this.speedChanged.bind(this);
     this.changeSpeed = this.changeSpeed.bind(this);
@@ -114,9 +112,7 @@ export default class ResponsiveView extends React.Component {
     request.get(url).end(requestCB);
   }
 
-  componentDidMount() {
-    window.addEventListener('resize', this.handleResize);
-
+  getWorkplan() {
     // set a temp variable for the workingstep cache
     let workingstepCache = {};
     let wsList = [];
@@ -163,10 +159,12 @@ export default class ResponsiveView extends React.Component {
       }
     };
     request.get(url).end(resCb);
+  }
 
+  getLoopstate() {
     // get the project loopstate
-    url = '/v3/nc/state/loop/';
-    resCb = (error, response) => {
+    let url = '/v3/nc/state/loop/';
+    let resCb = (error, response) => {
       let log = '';
       request
         .get('/log')
@@ -194,39 +192,12 @@ export default class ResponsiveView extends React.Component {
       }
     };
     request.get(url).end(resCb);
+  }
 
-    // get the cache of tools
-    url = '/v3/nc/tools/';
-    resCb = (err, res) => { //Callback function for response
-      if (!err && res.ok) {
-        let tools = {};
-        let json = JSON.parse(res.text);
-
-        _.each(json, (tool)=> {
-          tool.icon = <span className='icon custom tool'/>;
-          tools[tool.id] = tool;
-        });
-
-        this.setState({toolCache: tools});
-      } else {
-        console.log(err);
-      }
-    };
-    request.get(url).end(resCb);
-
-    // get the current tool
-    url = '/v3/nc/tools/' + this.state.ws;
-    request
-      .get(url)
-      .end((err, res) => {
-        if (!err && res.ok) {
-          this.setState({curtool: res.text});
-        }
-      });
-
+  getViewData() {
     // get data for workpiece/tolerance view
-    url = '/v3/nc/workpieces/';
-    resCb = (err, res) => { //Callback function for response
+    let url = '/v3/nc/workpieces/';
+    let resCb = (err, res) => { //Callback function for response
       if (!err && res.ok) {
         // Node preprocessing
         let json = JSON.parse(res.text);
@@ -259,8 +230,45 @@ export default class ResponsiveView extends React.Component {
       }
     };
     request.get(url).end(resCb);
+  }
 
-    // get current gcode
+  componentDidMount() {
+    window.addEventListener('resize', this.handleResize);
+
+    this.getWorkplan();
+    this.getLoopstate();
+    this.getViewData();
+
+    // get the cache of tools
+    let url = '/v3/nc/tools/';
+    let resCb = (err, res) => { //Callback function for response
+      if (!err && res.ok) {
+        let tools = {};
+        let json = JSON.parse(res.text);
+
+        _.each(json, (tool)=> {
+          tool.icon = <span className='icon custom tool'/>;
+          tools[tool.id] = tool;
+        });
+
+        this.setState({toolCache: tools});
+      } else {
+        console.log(err);
+      }
+    };
+    request.get(url).end(resCb);
+
+    // get the current tool
+    url = '/v3/nc/tools/' + this.state.ws;
+    request
+      .get(url)
+      .end((err, res) => {
+        if (!err && res.ok) {
+          this.setState({curtool: res.text});
+        }
+      });
+
+    // get current mtc data
     url = '/v3/nc/state/mtc';
     resCb = (err, res) => {
       if (!err && res.ok) {
@@ -429,6 +437,7 @@ export default class ResponsiveView extends React.Component {
           speed={this.state.playbackSpeed}
           ws={this.state.ws}
           workingstepCache={this.state.workingstepCache}
+          mtc={this.state.mtc}
         />
       );
       SV = (

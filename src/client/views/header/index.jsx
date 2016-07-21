@@ -102,12 +102,10 @@ export default class HeaderView extends React.Component {
   render() {
     console.log(this);
 
-    const headerMenu = (
-      <Menu
-        mode='horizontal'
-        onClick={this.simulateMenuItemClicked}
-        className='header-menu'
-      >
+    let mtc = this.props.mtc;
+    let live = null;
+    if (mtc.live === true) {
+      live = (
         <MenuItem disabled key='live' className='info live active'>
           <div className='item'>
             <div className={getIcon('live')}/>
@@ -116,12 +114,33 @@ export default class HeaderView extends React.Component {
             </div>
           </div>
         </MenuItem>
+      );
+    } else {
+      live = (
+        <MenuItem disabled key='live' className='info live'>
+          <div className='item'>
+            <div className={getIcon('live')}/>
+            <div className='text'>
+              <div className='value'>Stopped</div>
+            </div>
+          </div>
+        </MenuItem>
+      );
+    }
+
+    const headerMenu = (
+      <Menu
+        mode='horizontal'
+        onClick={this.simulateMenuItemClicked}
+        className='header-menu'
+      >
+        {live}
         <MenuItem disabled key='line' className='info line'>
           <div className='item'>
             <div className={getIcon('line')}/>
             <div className='text'>
-              <div className='title'>GCode:</div>
-              <div className='value'>this.props.mtc.gcode</div>
+              <div className='title'>Block number:</div>
+              <div className='value'>{mtc.gcode}</div>
             </div>
           </div>
         </MenuItem>
@@ -130,7 +149,7 @@ export default class HeaderView extends React.Component {
             <div className={getIcon('feedrate')}/>
             <div className='text'>
               <div className='title'>Feed rate:</div>
-              <div className='value'>Not defined yet</div>
+              <div className='value'>{mtc.feedrate}</div>
             </div>
           </div>
           <div className='item'>
