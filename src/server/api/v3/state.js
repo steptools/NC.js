@@ -147,6 +147,7 @@ var _getDelta = function(ms, key, cb) {
   theQuestion.then(function(res) {
     MTCHold.feedrate = 'Not defined';
     MTCHold.gcode = 'Not defined';
+    MTCHold.spindleSpeed = 'Not defined';
     MTCHold.feedrate = res[5];
     MTCHold.feedrateUnits = res[6];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
