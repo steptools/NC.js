@@ -72,22 +72,22 @@
     .item {
         display: flex;
         align-items: center;
+        
+        .icon {
+            margin-right: 8px;
+        }
+        
+        .icon, .text {
+            display: inline-block;
+            text-align: left;
+        }
+        
+        .value {
+            font-weight: bold;
+        }
     }
     
-    .icon {
-        margin-right: 8px;
-    }
-    
-    .icon, .text {
-        display: inline-block;
-        text-align: left;
-    }
-    
-    .value {
-        font-weight: bold;
-    }
-    
-    .gcode {
+    &.gcode {
         min-width: 250px;
     }
     
