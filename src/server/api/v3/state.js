@@ -51,7 +51,7 @@ var MTListen = function() {
           }
         });
         resCoords = pathtag.Samples[0].PathPosition[0]._.split(' ');
-        feedrate = pathtag['Samples'][0]['PathFeedrate'][0]['_'];
+        feedrate = pathtag['Samples'][0]['PathFeedrate'][1]['_'];
         console.log(feedrate);
 
         if (pathtag['Events'][0]['Block']) {
