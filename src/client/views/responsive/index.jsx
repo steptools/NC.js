@@ -372,6 +372,7 @@ export default class ResponsiveView extends React.Component {
             this.setState({live: false});
           }
         }
+        e = $('.header .item.spindlespeed .value').html(mtc.spindlespeed);
       }
     };
     request.get(url).end(resCb);
