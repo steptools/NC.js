@@ -23,11 +23,11 @@ export default class GeometryView extends React.Component{
   
   componentDidMount() {
     // RENDERER
-    this.canvasParent = $(this.props.parentSelector)[0];
-    this.canvas = $(this.props.parentSelector + ' .cadjs-canvas')[0];
+    this.canvasParent = $(this.props.parentSelector);
+    this.canvas = $(this.props.parentSelector + ' .cadjs-canvas');
     
     this.renderer = new THREE.WebGLRenderer({
-        canvas: this.canvas,
+        canvas: this.canvas[0],
         antialias: true,
         alpha: false
     });
@@ -43,7 +43,7 @@ export default class GeometryView extends React.Component{
     // CAMERA
     this.camera = new THREE.PerspectiveCamera(
       45,
-      this.canvasParent.offsetWidth / this.canvasParent.offsetHeight,
+      this.canvasParent[0].offsetWidth / this.canvasParent[0].offsetHeight,
       0.1,
       1000000
     );
@@ -203,8 +203,8 @@ export default class GeometryView extends React.Component{
   }
 
   handleResize() {
-    this.renderer.setSize(this.canvasParent.offsetWidth, this.canvasParent.offsetHeight);
-    this.camera.aspect = this.canvasParent.offsetWidth / this.canvasParent.offsetHeight;
+    this.renderer.setSize(this.canvasParent.innerWidth(), this.canvasParent.innerHeight());
+    this.camera.aspect = this.canvasParent.innerWidth() / this.canvasParent.innerHeight();
     this.controls.handleResize();
     this.controls.dispatchEvent({ type: 'change' });
     this.drawScene();

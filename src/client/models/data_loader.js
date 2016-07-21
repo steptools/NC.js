@@ -292,10 +292,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         }
 
         // TODO: not hardcoded
-        let boundingBox = DataLoader.parseBoundingBox([
-            -42.5, -42.5, -2.5,
-            42.5, 42.5, 82.5
-        ]);
+        let boundingBox = new THREE.Box3();
 
         let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);
         nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
