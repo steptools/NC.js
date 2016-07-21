@@ -253,6 +253,8 @@ export default class ResponsiveView extends React.Component {
       }
     };
     request.get(url).end(resCb);
+    url = '/v3/nc/state/loop/start';
+    request.get(url).end();
   }
 
   componentWillUnmount() {
