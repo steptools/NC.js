@@ -1,6 +1,5 @@
 'use strict';
 var file = require('./file');
-var step = require('./step');
 var find = file.find;
 var request = require('superagent');
 var parseXMLString = require('xml2js');
@@ -31,19 +30,19 @@ var updateSpeed = (speed) => {
 
 var MTListen = function() {
   var resCoords = [];
-  var sequence = '';
   var xOffset;
   var yOffset;
   var zOffset;
   var currentgcode;
   var feedrate;
   console.log(find.GetProjectName());
-  
+
   return new Promise(function(resolve) {
     let mtc = request.get('http://192.168.0.123:5000/current');
     mtc.end(function (err, res) {
       parseXMLString.parseString(res.text, function (error, result) {
-        let pathtag = _.find(result['MTConnectStreams']['Streams'][0]['DeviceStream'][0]['ComponentStream'], function(tag) {
+        let find = result['MTConnectStreams']['Streams'][0]['DeviceStream'][0]['ComponentStream'];
+        let pathtag = _.find(find, function(tag) {
           if (tag['$']['name'] === 'path') {
             return true;
           } else {
@@ -53,13 +52,13 @@ var MTListen = function() {
         resCoords = pathtag.Samples[0].PathPosition[0]._.split(' ');
         feedrate = pathtag['Samples'][0]['PathFeedrate'][0]['_'];
         console.log(feedrate);
-        
+
         if (pathtag['Events'][0]['Block']) {
           currentgcode = pathtag['Events'][0]['Block'][0]['_'];
         } else {
           currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
         }
-        
+
         let xTag = _.find(pathtag['Events'][0]['e:Variables'], function(tag) {
           if (tag['$']['subType'] === 'x:WORKOFFSET_X_AXIS') {
             return true;
@@ -68,7 +67,7 @@ var MTListen = function() {
           }
         });
         xOffset = parseInt(xTag['_']);
-        
+
         let yTag = _.find(pathtag['Events'][0]['e:Variables'], function(tag) {
           if (tag['$']['subType'] === 'x:WORKOFFSET_X_AXIS') {
             return true;
@@ -76,9 +75,9 @@ var MTListen = function() {
             return false;
           }
         });
-        
+
         yOffset = parseInt(yTag['_']);
-        
+
         let zTag = _.find(pathtag['Events'][0]['e:Variables'], function(tag) {
           if (tag['$']['subType'] === 'x:WORKOFFSET_X_AXIS') {
             return true;
@@ -87,16 +86,15 @@ var MTListen = function() {
           }
         });
         zOffset = parseInt(zTag['_']);
-        
+
         currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
       });
-      
-      
+
       var coords = [];
       coords[0] = parseInt(resCoords[0]);
       coords[1] = parseInt(resCoords[1]);
       coords[2] = parseInt(resCoords[2]);
-      
+
       console.log(currentgcode);
       resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate]);
     });
@@ -105,7 +103,7 @@ var MTListen = function() {
 
 var findWS = function(current) {
   var change = false;
-  
+
   if (current >= WSGCode['worksteps'][WSGCodeIndex]) {
     if (WSGCodeIndex >= WSGCode['worksteps'].length) {
       WSGCodeIndex = 0;
@@ -115,7 +113,7 @@ var findWS = function(current) {
     console.log('GCODE Switched!');
     return true;
   }
-  
+
   while (current < WSGCode['worksteps'][WSGCodeIndex - 1]) {
     if (WSGCodeIndex >= WSGCode['worksteps'].length) {
       WSGCodeIndex = 0;
@@ -133,7 +131,7 @@ var getDelta = function(ms, key) {
   if (key) {
     response = ms.GetKeystateJSON();
   }
-  
+
   while (current < WSGCode['worksteps'][WSGCodeIndex - 1]) {
     if (WSGCodeIndex >= WSGCode['worksteps'].length) {
       WSGCodeIndex = 0;
@@ -150,7 +148,7 @@ var _getDelta = function(ms, key, wsgcode, cb) {
   let holder = '';
   let theQuestion = MTListen();
   // let theAnswer = 42;
-  
+
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
     if (findWS(res[4]) ) {
@@ -207,13 +205,13 @@ var parseGCodes = function() {
   let GCodeFile = app.project.substring(0, app.project.length - 5) + 'min';
   let MTCfile = app.project.substring(0, app.project.length - 5) + 'mtc';
   let lineNumber = 0;
-  
+
   let fileRead = new Promise(function(resolve) {
     var MTCcontent = [];
     fs.readFile(GCodeFile, function(err, res) {
       var GCodes = null;
       if (res) {
-        GCodes = data.toString().split('\n');
+        GCodes = res.toString().split('\n');
       }
       _.each(GCodes, function(line) {
         if (line[0] === '(') {
@@ -228,17 +226,17 @@ var parseGCodes = function() {
       resolve(MTCcontent);
     });
   });
-  
+
   fileRead.then(function(res) {
     res.shift();
     console.log(res);
-    
+
     var JSONContent = '{\'worksteps\' : [\n';
     _.each(res, function(code) {
       JSONContent = JSONContent + code.toString() + ',\n';
     });
     JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + '\n]}';
-    
+
     fs.writeFile(MTCfile, JSONContent, (err) => {
       console.log(err);
     });
@@ -267,9 +265,13 @@ var _loopInit = function(req, res) {
 
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {
-        res.status(200).send(JSON.stringify({'state': 'play', 'speed': playbackSpeed}));
+        res
+          .status(200)
+          .send(JSON.stringify({'state': 'play', 'speed': playbackSpeed}));
       } else {
-        res.status(200).send(JSON.stringify({'state': 'pause', 'speed': playbackSpeed}));
+        res
+          .status(200)
+          .send(JSON.stringify({'state': 'pause', 'speed': playbackSpeed}));
       }
     } else {
       let loopstate = req.params.loopstate;
@@ -323,81 +325,75 @@ var _wsInit = function(req, res) {
   if (req.params.command) {
     let command = req.params.command;
     var ms = file.ms;
-    if (typeof(loopStates[path]) === 'undefined') {
+    if (typeof loopStates[path] === 'undefined') {
       loopStates[path] = false;
     }
-    
-    switch(command) {
+
+    switch (command) {
       case 'next':
-      var temp = loopStates[path];
-      loopStates[path] = true;
-      if (temp) {
-        getNext(ms, function() {
-          loop(ms, true);
-        });
-      }
-      else{
-        loop(ms,false);
-        getNext(ms, function() {
-          loop(ms, true);
-        });
-        loopStates[path] = false;
-        update('pause');
-      }
-      res.status(200).send('OK');
-      break;
-      case 'prev':
-      var temp = loopStates[path];
-      loopStates[path] = true;
-      if (temp) {
-        getPrev(ms, function() {
-          loop(ms, true);
-        });
-      }
-      else{
-        loop(ms,false);
-        getPrev(ms, function() {
-          loop(ms, true);
-        });
-        loopStates[path] = false;
-        update('pause');
-      }
-      res.status(200).send('OK');
-      break;
-      default:
-      if (!isNaN(parseFloat(command)) && isFinite(command)) {
-        let ws = Number(command);
-        temp = loopStates[path];
+        var temp = loopStates[path];
         loopStates[path] = true;
         if (temp) {
-          getToWS(ws, ms, function() {
+          getNext(ms, function() {
             loop(ms, true);
           });
-          loopStates[path] = false;
-          update('pause');
-        }
-        else{
+        } else {
           loop(ms,false);
-          getToWS(ws, ms, function() {
+          getNext(ms, function() {
             loop(ms, true);
           });
           loopStates[path] = false;
           update('pause');
         }
         res.status(200).send('OK');
-      }
-      else {
-        // untested case
-      }
+        break;
+      case 'prev':
+        var temp = loopStates[path];
+        loopStates[path] = true;
+        if (temp) {
+          getPrev(ms, function() {
+            loop(ms, true);
+          });
+        } else {
+          loop(ms,false);
+          getPrev(ms, function() {
+            loop(ms, true);
+          });
+          loopStates[path] = false;
+          update('pause');
+        }
+        res.status(200).send('OK');
+        break;
+      default:
+        if (!isNaN(parseFloat(command)) && isFinite(command)) {
+          let ws = Number(command);
+          temp = loopStates[path];
+          loopStates[path] = true;
+          if (temp) {
+            getToWS(ws, ms, function() {
+              loop(ms, true);
+            });
+            loopStates[path] = false;
+            update('pause');
+          } else {
+            loop(ms,false);
+            getToWS(ws, ms, function() {
+              loop(ms, true);
+            });
+            loopStates[path] = false;
+            update('pause');
+          }
+          res.status(200).send('OK');
+        }
     }
     getDelta(ms, false, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
       if (playbackSpeed > 0) {
-        if (loopTimer !== undefined)
-        clearTimeout(loopTimer);
-        loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
-      }
-      else {
+        if (loopTimer !== undefined) {
+          clearTimeout(loopTimer);
+        }
+        loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+      } else {
         // app.logger.debug('playback speed is zero, no timeout set');
       }
     });
@@ -429,5 +425,7 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
-  if (cb) cb();
+  if (cb) {
+    cb();
+  }
 };
