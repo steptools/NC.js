@@ -1,5 +1,5 @@
 "use strict";
-var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
+var StepNC = require('../../../../../STEPNode/build/Release/StepNode');
 var file = require('./file');
 var step = require('./step');
 var find = file.find;
@@ -133,7 +133,7 @@ var findWS = function(current) {
 	}
 	  return change;
 }
-		
+
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
 var getDelta = function(ms, key, cb) {
   var response = "";
@@ -252,22 +252,22 @@ var parseGCodes = function() {
 			resolve(MTCcontent);
 		});
 	});
-	
+
 	fileRead.then(function(res) {
 		res.shift();
 		console.log(res);
-	
+
 		var JSONContent = "{\"worksteps\" : [\n";
 		_.each(res, function(code){
 			JSONContent = JSONContent + code.toString() + ",\n";
 		});
 		JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + "\n]}";
-	
+
 		fs.writeFile(MTCfile, JSONContent, (err) => {console.log(err)} );
 		console.log(JSONContent);
 	});
 
-	
+
 }
 
 var _getWorkingstep = function() {
