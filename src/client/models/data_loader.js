@@ -200,8 +200,15 @@ export default class DataLoader extends THREE.EventDispatcher {
             case "shellLoad":
             //This is the case where the shell comes in with position, normals and colors vector after ProcessShellJSON
                 shell = this._shells[event.data.id+".json"];
-                if (!shell) {
-                    console.log('DataLoader.ShellLoad: invalid shell ID' + event.data.id);
+              
+                if (req.type === 'previewShell') {
+                    this.buildPreviewNC(event.data, req);
+                    this.dispatchEvent({
+                        type: "shellLoad",
+                        file: event.data.file
+                    });
+                } else if (!shell) {
+                    console.log('DataLoader.ShellLoad: invalid shell ID ' + event.data.id);
                 } else {
                     data = event.data.data;
                     // Remove the reference to the shell
@@ -247,6 +254,12 @@ export default class DataLoader extends THREE.EventDispatcher {
             if(newpath[newpath.length - 1] === '/')
                 newpath = newpath.substring(0 , newpath.length - 1);
             data.url = newpath + '/geometry/' + req.path + '/' + req.type;
+        } else if (data.type === 'previewShell') {
+            data.shellSize = req.shellSize;
+            let newpath = req.baseURL;
+            if(newpath[newpath.length - 1] === '/')
+                newpath = newpath.substring(0 , newpath.length - 1);
+            data.url = newpath + '/geometry/' + req.path + '/shell';
         }
         else if (data.type === "annotation") {
             let newpath = (req.baseURL).split('state')[0];
@@ -255,6 +268,41 @@ export default class DataLoader extends THREE.EventDispatcher {
             data.url = newpath + '/geometry/' + req.path + '/' + req.type;
         }
         worker.postMessage(data);
+    }
+    
+    buildPreviewNC(data, req) {
+        let nc = new NC(null, null, null, this);
+        
+        let color = DataLoader.parseColor('7d7d7d');
+        // TODO: don't hardcode this if possible
+        let transform = DataLoader.parseXform( [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        ], true);
+        
+        // Is this a shell
+        if(data.usage === 'cutter')
+        {
+            color = DataLoader.parseColor("FF530D");
+        }
+        if(data.usage === 'fixture' && this._app.services.machine.dir === ''){
+            return;
+        }
+
+        // TODO: not hardcoded
+        let boundingBox = DataLoader.parseBoundingBox([
+            -42.5, -42.5, -2.5,
+            42.5, 42.5, 82.5
+        ]);
+
+        let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);
+        nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
+        
+        shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
+        
+        req.callback(undefined, nc);
     }
 
     buildAssemblyJSON(jsonText, req) {
@@ -324,7 +372,9 @@ export default class DataLoader extends THREE.EventDispatcher {
                 console.log('No idea what we found: ' + geomData);
             }
         });
-        this._app.actionManager.emit('change-workingstep',doc.workingstep);
+        if (doc.workingstep) {
+            this._app.actionManager.emit('change-workingstep', doc.workingstep);
+        }
         req.callback(undefined, nc);
     }
 

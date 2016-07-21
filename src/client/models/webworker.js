@@ -786,6 +786,7 @@ let messageHandler = function(e) {
             case "annotation":
                 processAnnotation(url, workerID, res.text);
                 break;
+            case "previewShell":
             case "shell":
                 // Try to parse the JSON file
                 let dataJSON;
