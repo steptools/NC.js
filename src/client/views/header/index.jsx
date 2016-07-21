@@ -118,15 +118,6 @@ export default class HeaderView extends React.Component {
             </div>
           </div>
         </MenuItem>
-        <MenuItem disabled key='gcode' className='info gcode'>
-          <div className='item'>
-            <div className={getIcon('gcode')}/>
-            <div className='text'>
-              <div className='title'>Current GCode:</div>
-              <div className='value'></div>
-            </div>
-          </div>
-        </MenuItem>
         <MenuItem disabled key='feed-speed' className='info feed-speed'>
           <div className='item feedrate'>
             <div className={getIcon('feedrate')}/>
@@ -139,6 +130,15 @@ export default class HeaderView extends React.Component {
             <div className={getIcon('spindlespeed')}/>
             <div className='text'>
               <div className='title'>Spindle speed:</div>
+              <div className='value'></div>
+            </div>
+          </div>
+        </MenuItem>
+        <MenuItem disabled key='gcode' className='info gcode'>
+          <div className='item'>
+            <div className={getIcon('gcode')}/>
+            <div className='text'>
+              <div className='title'>Current GCode:</div>
               <div className='value'></div>
             </div>
           </div>
