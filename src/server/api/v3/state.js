@@ -37,6 +37,7 @@ var MTListen = function() {
   var yOffset;
   var zOffset;
   var currentgcode;
+	var feedrate;
   console.log(find.GetProjectName());
 
   return new Promise(function(resolve, reject) {
@@ -55,6 +56,8 @@ var MTListen = function() {
         });
         resCoords = pathtag.Samples[0].PathPosition[0]._.split(" ");
 
+				 feedrate = pathtag["Samples"][0]["PathFeedrate"][0]["_"];
+				console.log(feedrate);
 
         if (pathtag["Events"][0]["Block"]) {
           currentgcode = pathtag["Events"][0]["Block"][0]["_"];
@@ -104,7 +107,7 @@ var MTListen = function() {
       coords[2] = parseInt(resCoords[2]);
 
       console.log(currentgcode);
-      resolve([coords, xOffset, yOffset, zOffset, currentgcode]);
+      resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate]);
     });
   });
 }
