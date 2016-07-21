@@ -53,7 +53,6 @@ var MTListen = function() {
         });
         resCoords = pathtag.Samples[0].PathPosition[0]._.split(' ');
         feedrate = pathtag['Samples'][0]['PathFeedrate'][1]['_'];
-        console.log(feedrate);
 
         if (pathtag['Events'][0]['Block']) {
           currentgcode = pathtag['Events'][0]['Block'][0]['_'];
@@ -135,8 +134,8 @@ var _getDelta = function(ms, key, cb) {
 
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
-    MTC.feedrate = 0;
-    MTC.gcode = 'default';
+    MTCHold.feedrate = 0;
+    MTCHold.gcode = 'default';
     MTCHold.feedrate = res[5];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
     if (findWS(res[4]) ) {
