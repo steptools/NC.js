@@ -87,6 +87,10 @@
         font-weight: bold;
     }
     
+    .gcode {
+        min-width: 250px;
+    }
+    
     &.live {
         .icon {
             margin-right: 5px;
