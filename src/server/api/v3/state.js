@@ -153,6 +153,7 @@ var _getDelta = function(ms, key, cb) {
     MTCHold.feedrate = 'Not defined';
     MTCHold.gcode = 'Not defined';
     MTCHold.feedrate = res[5];
+    MTCHold.feedrateUnits = res[6];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
     if (findWS(res[4]) ) {
       console.log('keystate');
