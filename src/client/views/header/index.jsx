@@ -37,7 +37,7 @@ function getIcon(type, data) {
       return 'icon glyphicon glyphicon-book';
     case 'live':
       return 'icon glyphicons glyphicons-record';
-    case 'line':
+    case 'gcode':
       return 'icon glyphicons glyphicons-chevron-right';
     default:
       return 'icon glyphicons glyphicons-question-sign';
@@ -100,33 +100,9 @@ export default class HeaderView extends React.Component {
   }
 
   render() {
-    console.log('render header');
+    //console.log('render header');
     let mtc = this.props.mtc;
     //console.log(mtc);
-    let live = null;
-    if (mtc.live === true) {
-      live = (
-        <MenuItem disabled key='live' className='info live active'>
-          <div className='item'>
-            <div className={getIcon('live')}/>
-            <div className='text'>
-              <div className='value'>Live</div>
-            </div>
-          </div>
-        </MenuItem>
-      );
-    } else {
-      live = (
-        <MenuItem disabled key='live' className='info live'>
-          <div className='item'>
-            <div className={getIcon('live')}/>
-            <div className='text'>
-              <div className='value'>Stopped</div>
-            </div>
-          </div>
-        </MenuItem>
-      );
-    }
 
     const headerMenu = (
       <Menu
@@ -134,29 +110,36 @@ export default class HeaderView extends React.Component {
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
       >
-        {live}
-        <MenuItem disabled key='line' className='info line'>
+        <MenuItem disabled key='live' className='info live'>
           <div className='item'>
-            <div className={getIcon('line')}/>
+            <div className={getIcon('live')}/>
+            <div className='text'>
+              <div className='value'></div>
+            </div>
+          </div>
+        </MenuItem>
+        <MenuItem disabled key='gcode' className='info gcode'>
+          <div className='item'>
+            <div className={getIcon('gcode')}/>
             <div className='text'>
               <div className='title'>Current GCode:</div>
-              <div className='value'>{mtc.gcode}</div>
+              <div className='value'></div>
             </div>
           </div>
         </MenuItem>
         <MenuItem disabled key='feed-speed' className='info feed-speed'>
-          <div className='item'>
+          <div className='item feedrate'>
             <div className={getIcon('feedrate')}/>
             <div className='text'>
               <div className='title'>Feed rate:</div>
-              <div className='value'>{mtc.feedrate}</div>
+              <div className='value'></div>
             </div>
           </div>
-          <div className='item'>
+          <div className='item spindlespeed'>
             <div className={getIcon('spindlespeed')}/>
             <div className='text'>
               <div className='title'>Spindle speed:</div>
-              <div className='value'>Not defined yet</div>
+              <div className='value'></div>
             </div>
           </div>
         </MenuItem>

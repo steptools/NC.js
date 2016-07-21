@@ -135,8 +135,8 @@ var _getDelta = function(ms, key, cb) {
 
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
-    MTC.feedrate = 0;
-    MTC.gcode = 'default';
+    MTCHold.feedrate = 'Not defined';
+    MTCHold.gcode = 'Not defined';
     MTCHold.feedrate = res[5];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
     if (findWS(res[4]) ) {

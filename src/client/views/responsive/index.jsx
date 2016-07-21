@@ -276,7 +276,6 @@ export default class ResponsiveView extends React.Component {
     url = '/v3/nc/state/mtc';
     resCb = (err, res) => {
       if (!err && res.ok) {
-        console.log(JSON.parse(res.text));
         this.setState({mtc: JSON.parse(res.text)});
       }
     };
@@ -349,17 +348,17 @@ export default class ResponsiveView extends React.Component {
   }
 
   updateMTC() {
-    let mtc = {};
     // get current mtc data
     let url = '/v3/nc/state/mtc';
     let resCb = (err, res) => {
       if (!err && res.ok) {
-        mtc = res.text;
+        let mtc = JSON.parse(res.text);
+        //console.log(mtc);
+        $('.header .info.gcode .value').html(mtc.gcode);
+        $('.header .item.feedrate .value').html(mtc.feedrate);
       }
     };
     request.get(url).end(resCb);
-    console.log(mtc);
-    $('.header .info.line .value').val(mtc.gcode);
   }
 
   playpause() {
