@@ -71,6 +71,8 @@ export default class ResponsiveView extends React.Component {
     this.openProperties = this.openProperties.bind(this);
 
     this.updateMTC = this.updateMTC.bind(this);
+    this.populateFeedRate = this.populateFeedRate.bind(this);
+    this.populateSpindleSpeed = this.populateSpindleSpeed.bind(this);
   }
 
   addListeners() {
@@ -348,6 +350,53 @@ export default class ResponsiveView extends React.Component {
     request.get(url).end(requestCB);
   }
 
+  populateSpindleSpeed(ss) {
+    let e = $('.header .item.spindlespeed .value');
+    let icon = $('.header .item.spindlespeed .icon');
+    if (!isNaN(ss)) {
+      ss = Math.abs(ss) + ' ' + 'units';
+      if (ss > 0) {
+        ss += ' (CCW)';
+        if (icon.hasClass('glyphicons-rotate-left') === false) {
+          icon.removeClass();
+          icon.addClass('icon glyphicons glyphicons-rotate-left');
+        }
+      } else {
+        ss += ' (CW)';
+        if (icon.hasClass('glyphicons-rotate-right') === false) {
+          icon.removeClass();
+          icon.addClass('icon glyphicons glyphicons-rotate-right');
+        }
+      }
+    } else {
+      if (icon.hasClass('glyphicons-refresh') === false) {
+        icon.removeClass();
+        icon.addClass('icon glyphicons glyphicons-refresh');
+      }
+    }
+    e.html(ss);
+  }
+
+  populateFeedRate(fr, units) {
+    let e = $('.header .item.feedrate .value');
+    if (!isNaN(fr)) {
+      fr = Math.round(fr * 100) / 100;
+      e.html(fr + ' ' + units);
+      if (this.state.live === false) {
+        $('.header .info.live').addClass('active');
+        $('.header .info.live .value').html('Live');
+        this.setState({live: true});
+      }
+    } else {
+      e.html(fr);
+      if (this.state.live === true) {
+        $('.header .info.live.active').removeClass('active');
+        $('.header .info.live .value').html('Stopped');
+        this.setState({live: false});
+      }
+    }
+  }
+
   updateMTC() {
     // get current mtc data
     let url = '/v3/nc/state/mtc';
@@ -358,49 +407,8 @@ export default class ResponsiveView extends React.Component {
       let mtc = JSON.parse(res.text);
       // populate the header
       $('.header .info.gcode .value').html(mtc.gcode);
-
-      let e = $('.header .item.spindlespeed .value');
-      let icon = $('.header .item.spindlespeed .icon');
-      if (!isNaN(mtc.spindlespeed)) {
-        let ss = Math.abs(mtc.spindlespeed) + ' ' + 'units';
-        if (mtc.spindlespeed > 0) {
-          ss += ' (CCW)';
-          if (icon.hasClass('glyphicons-rotate-left') === false) {
-            icon.removeClass();
-            icon.addClass('icon glyphicons glyphicons-rotate-left');
-          }
-        } else {
-          ss += ' (CW)';
-          if (icon.hasClass('glyphicons-rotate-right') === false) {
-            icon.removeClass();
-            icon.addClass('icon glyphicons glyphicons-rotate-right');
-          }
-        }
-        e.html(ss);
-      } else {
-        e.html(mtc.spindlespeed);
-        if (icon.hasClass('glyphicons-refresh') === false) {
-          icon.removeClass();
-          icon.addClass('icon glyphicons glyphicons-refresh');
-        }
-      }
-
-      e = $('.header .item.feedrate .value');
-      if (!isNaN(mtc.feedrate)) {
-        e.html((Math.round(mtc.feedrate * 100) / 100) + ' ' + mtc.feedrateUnits);
-        if (this.state.live === false) {
-          $('.header .info.live').addClass('active');
-          $('.header .info.live .value').html('Live');
-          this.setState({live: true});
-        }
-      } else {
-        e.html(mtc.feedrate);
-        if (this.state.live === true) {
-          $('.header .info.live.active').removeClass('active');
-          $('.header .info.live .value').html('Stopped');
-          this.setState({live: false});
-        }
-      }
+      this.populateSpindleSpeed(mtc.spindlespeed);
+      this.populateFeedRate(mtc.feedrate, mtc.feedrateUnits);
     };
     request.get(url).end(resCb);
   }

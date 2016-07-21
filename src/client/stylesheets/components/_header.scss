@@ -25,10 +25,6 @@
         border-right: 1px solid #DDDDDD;
         background: none;
         white-space: normal;
-        
-        &:first-child {
-            margin-left: 2px;
-        }
 
         &:hover:not(.rc-menu-item-disabled) {
             border-bottom-color: #2DB7F5;

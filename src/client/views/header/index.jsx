@@ -114,7 +114,7 @@ export default class HeaderView extends React.Component {
           <div className='item'>
             <div className={getIcon('live')}/>
             <div className='text'>
-              <div className='value'></div>
+              <div className='value'>Stopped</div>
             </div>
           </div>
         </MenuItem>
@@ -123,14 +123,14 @@ export default class HeaderView extends React.Component {
             <div className={getIcon('feedrate')}/>
             <div className='text'>
               <div className='title'>Feed rate:</div>
-              <div className='value'></div>
+              <div className='value'>Not defined</div>
             </div>
           </div>
           <div className='item spindlespeed'>
             <div className={getIcon('spindlespeed')}/>
             <div className='text'>
               <div className='title'>Spindle speed:</div>
-              <div className='value'></div>
+              <div className='value'>Not defined</div>
             </div>
           </div>
         </MenuItem>
@@ -139,7 +139,7 @@ export default class HeaderView extends React.Component {
             <div className={getIcon('gcode')}/>
             <div className='text'>
               <div className='title'>Current GCode:</div>
-              <div className='value'></div>
+              <div className='value'>Not defined</div>
             </div>
           </div>
         </MenuItem>
