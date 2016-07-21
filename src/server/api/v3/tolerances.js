@@ -47,12 +47,8 @@ var getWp = function(id, type) {
   if (type)
     ret.type = "workpiece";
 
-<<<<<<< HEAD
-  let asm_list = find.GetWorkpieceSubAssemblyAll(id);
-=======
   let asm_list = find.GetWorkpieceImmediateSubAssemblyAll(id);
   let subs = [];
->>>>>>> 5c30718e5fb8332264c56362bfad1d52a62285df
 
   for (let sub_id of asm_list) {
     if (id !== sub_id) {
@@ -62,12 +58,9 @@ var getWp = function(id, type) {
     }
   }
 
-<<<<<<< HEAD
-=======
   if (subs.length > 0)
     ret.children = subs;
 
->>>>>>> 5c30718e5fb8332264c56362bfad1d52a62285df
   return ret;
 };
 
