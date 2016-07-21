@@ -1,5 +1,5 @@
 "use strict";
-var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
+var StepNC = require('../../../../../STEPNode/build/Release/StepNode');
 var file = require('./file');
 var step = require('./step');
 var find = file.find;
@@ -277,7 +277,7 @@ var _getWorkingstep = function() {
 };
 
 var _sameSetup = function (newid, oldid) {
-  return (step._getSetupFromId(newid) === step._getSetupFromId(oldid))
+  return (step.getSetupFromId(newid) === step.getSetupFromId(oldid))
 };
 
 ///*******************************************************************\
