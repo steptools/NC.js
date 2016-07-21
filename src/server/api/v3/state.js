@@ -239,6 +239,7 @@ var parseGCodes = function() {
     fs.writeFile(MTCfile, JSONContent, (err) => {
       console.log(err);
     });
+		MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
   });
 };
 
@@ -258,9 +259,9 @@ var _loopInit = function(req, res) {
     } else {
       if (data) {
         WSGCode = JSON.parse(data.toString());
+				MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
       }
     }
-    MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
 
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {
