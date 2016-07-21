@@ -100,10 +100,6 @@ export default class HeaderView extends React.Component {
   }
 
   render() {
-    //console.log('render header');
-    let mtc = this.props.mtc;
-    //console.log(mtc);
-
     const headerMenu = (
       <Menu
         mode='horizontal'

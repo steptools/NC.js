@@ -507,7 +507,6 @@ export default class ResponsiveView extends React.Component {
           speed={this.state.playbackSpeed}
           ws={this.state.ws}
           workingstepCache={this.state.workingstepCache}
-          mtc={this.state.mtc}
         />
       );
       SV = (

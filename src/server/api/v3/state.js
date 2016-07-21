@@ -41,6 +41,9 @@ var MTListen = function() {
   return new Promise(function(resolve) {
     let mtc = request.get('http://192.168.0.123:5000/current');
     mtc.end(function (err, res) {
+      if (err || !res.ok) {
+        return;
+      }
       parseXMLString.parseString(res.text, function (error, result) {
         let find = result['MTConnectStreams']['Streams'][0];
         find = find['DeviceStream'][0]['ComponentStream'];
