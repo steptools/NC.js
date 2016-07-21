@@ -49,7 +49,8 @@ export default class CADView extends React.Component {
             modelTree: {},
             isViewChanging: false,
             lastHovered: undefined,
-            lockedView: true
+            lockedView: true,
+            oldColors: {}
         };
         this.handleResize   = this.handleResize.bind(this);
         this.onShellLoad    = this.onShellLoad.bind(this);
@@ -63,6 +64,7 @@ export default class CADView extends React.Component {
         this.onTreeChange   = this.onTreeChange.bind(this);
         this.onTreeNodeEnterExit = this.onTreeNodeEnterExit.bind(this);
         this.alignToolView = this.alignToolView.bind(this);
+        this.highlightFaces = this.highlightFaces.bind(this);
     }
 
     onShellLoad(event) {
@@ -144,6 +146,84 @@ export default class CADView extends React.Component {
                 break;
         }
         this.invalidate({ tree: true });
+    }
+  
+    highlightFaces(entity, objs, unhighlight, newColor) {
+      let shells = _.filter(_.values(objs[0]._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
+      _.each(shells, (shell) => {
+        if (shell && shell.model._geometry) {
+          let faces = shell.model._geometry.getAttribute('faces');
+          let colors = shell.model._geometry.getAttribute('color');
+
+          let indices = _.map(entity.faces, (id) => faces.array[id]);
+
+          if (!unhighlight && !this.state.oldColors[shell.id]) {
+            let oldColors = this.state.oldColors;
+            oldColors[shell.id] = colors.clone();
+            this.setState({'oldColors': oldColors});
+          }
+
+          _.each(indices, (index) => {
+            if (index) {
+              for (let i = index.start; i < index.end; i += 3) {
+                
+                if (unhighlight) {
+                  colors.array[i] = this.state.oldColors[shell.id].array[i];
+                  colors.array[i + 1] = this.state.oldColors[shell.id].array[i + 1];
+                  colors.array[i + 2] = this.state.oldColors[shell.id].array[i + 2];
+                }
+                else {
+                  colors.array[i] = newColor.r;
+                  colors.array[i + 1] = newColor.g;
+                  colors.array[i + 2] = newColor.b;
+                }
+              }
+            }
+          });
+          
+          colors.needsUpdate = true;
+          this.invalidate();
+        }
+      });
+    }
+    
+    componentWillUpdate(nextProps, nextState) {
+      
+      // Unhighlight anything that's not being shown
+      if ((this.props.selectedEntity !== null &&
+          this.props.selectedEntity.type === 'tolerance')) {
+        
+        let workpiece = this.props.toleranceCache[this.props.selectedEntity.workpiece];
+        
+        if (workpiece.workingsteps.indexOf(this.props.ws) >= 0 ) {
+
+          if (nextProps.selectedEntity === null ||
+              nextProps.selectedEntity !== this.props.selectedEntity ||
+              this.props.ws !== nextProps.ws) {
+            
+              this.highlightFaces(this.props.selectedEntity, this.props.manager.getSelected(), true);
+          }
+        }
+      }
+
+        
+      // now highlight any tolerances present in current workingstep
+      if (nextProps.selectedEntity !== null &&
+          nextProps.selectedEntity.type === 'tolerance') {
+
+        let workpiece = nextProps.toleranceCache[nextProps.selectedEntity.workpiece];
+        // check if the selected tolerance/wp is used in the current WS
+        if (workpiece.workingsteps.indexOf(nextProps.ws) >= 0) {
+            
+          let highlightColor = {
+            r: 1.0,
+            g: 0,
+            b: 1.0
+          };
+          
+          this.highlightFaces(nextProps.selectedEntity, nextProps.manager.getSelected(), false, highlightColor);
+        }
+      }
     }
 
     componentWillMount() {
