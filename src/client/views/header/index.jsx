@@ -35,94 +35,14 @@ function getIcon(type, data) {
       }
     case 'changelog':
       return 'icon glyphicon glyphicon-book';
+    case 'live':
+      return 'icon glyphicons glyphicons-record';
+    case 'line':
+      return 'icon glyphicons glyphicons-chevron-right';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
 }
-
-class Button extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    let icon = getIcon(this.props.eventKey);
-    if (this.props.icon) {
-      icon = getIcon(this.props.icon);
-    }
-    return (
-      <MenuItem {...this.props} className='button'>
-        <div className={icon}/>
-        {this.props.children}
-      </MenuItem>
-    );
-  }
-}
-
-class Slider extends React.Component {
-  constructor(props) {
-    super(props);
-    this.changed = this.changed.bind(this);
-  }
-
-  changed(info) {
-    this.props.changed(info);
-  }
-
-  render() {
-    let name = this.props.id.charAt(0).toUpperCase() + this.props.id.slice(1);
-    let cName = 'slider no-icons';
-    let left = null;
-    let right = null;
-    if (this.props.icons) {
-      cName = 'slider with-icons';
-      left = (
-        <div
-          className={getIcon(this.props.id, 'left')}
-          onMouseUp={this.changed}
-          onKeyUp={this.changed}
-          value='0'
-        />
-      );
-      right = (
-        <div
-          className={getIcon(this.props.id, 'right')}
-          onMouseUp={this.changed}
-          onKeyUp={this.changed}
-          value='200'
-        />
-      );
-    }
-    // TODO:Remove onMouseUp / onKeyUp if/when bug is fixed with onChange
-    return (
-      <MenuItem {...this.props} key={this.props.id} className={cName}>
-        <input
-          className={'range-' + this.props.id}
-          onChange={this.changed}
-          onMouseUp={this.changed}
-          onKeyUp={this.changed}
-          value={this.props.val}
-          type='range'
-          min='0'
-          max='200'
-          step='1'
-        />
-        <div className='sliderData'>
-          {left}
-          <div className={'slider-text text-' + this.props.id}>{name}</div>
-          {right}
-        </div>
-      </MenuItem>
-    );
-  }
-}
-
-Slider.propTypes = {
-  changed: React.PropTypes.func.isRequired,
-  id: React.PropTypes.string.isRequired,
-  val: React.PropTypes.number.isRequired,
-  icons: React.PropTypes.string.isRequired,
-};
 
 export default class HeaderView extends React.Component {
   constructor(props) {
@@ -171,26 +91,8 @@ export default class HeaderView extends React.Component {
     return [fr, ss, ssIcon];
   }
 
-  updateSpeed(info) {
-    this.props.actionManager.emit('simulate-setspeed', info);
-  }
-
   simulateMenuItemClicked(info) {
     switch (info.key) {
-      case 'forward':
-        this.props.actionManager.emit('sim-f');
-        break;
-      case 'play':
-        this.props.actionManager.emit('sim-pp');
-        if (this.props.ppbutton === 'play') {
-          this.props.cbPPButton('pause');
-        } else {
-          this.props.cbPPButton('play');
-        }
-        break;
-      case 'backward':
-        this.props.actionManager.emit('sim-b');
-        break;
       case 'changelog':
         let changelog = document.getElementById('changes');
         if (this.props.logstate === false) {
@@ -204,14 +106,6 @@ export default class HeaderView extends React.Component {
   }
 
   render() {
-    let ppbtntxt = '';
-    let ppbutton = this.props.ppbutton;
-    if (this.props.ppbutton === 'play') {
-      ppbtntxt = 'Play';
-    } else {
-      ppbtntxt = 'Pause';
-    }
-
     let feedSpeedInfo = this.getFeedSpeedInfo();
 
     const headerMenu = (
@@ -220,15 +114,16 @@ export default class HeaderView extends React.Component {
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
       >
-        <Button key='backward'>Prev</Button>
-        <Button key='play' icon={ppbutton}>{ppbtntxt}</Button>
-        <Button key='forward'>Next</Button>
-        <Slider
-          id='speed'
-          changed={this.updateSpeed}
-          val={this.props.speed}
-          icons='true'
-        />
+        <MenuItem disabled key='live' className='info live'>
+          <div className='item'>
+            <div className={getIcon('live')}/>
+          </div>
+        </MenuItem>
+        <MenuItem disabled key='line' className='info line'>
+          <div className='item'>
+            <div className={getIcon('line')}/>
+          </div>
+        </MenuItem>
         <MenuItem disabled key='feed-speed' className='info feed-speed'>
           <div className='item'>
             <div className={getIcon('feedrate')}/>
