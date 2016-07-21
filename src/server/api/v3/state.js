@@ -231,7 +231,7 @@ var parseGCodes = function() {
     res.shift();
     console.log(res);
 
-    var JSONContent = '{\'worksteps\' : [\n';
+    var JSONContent = '{\"worksteps\" : [\n';
     _.each(res, function(code) {
       JSONContent = JSONContent + code.toString() + ',\n';
     });
@@ -310,9 +310,19 @@ var _loopInit = function(req, res) {
             }
             if (loopStates[path] === true) {
               loop(ms, false, JSON.parse(data.toString()));
-              res.status(200).send(JSON.stringify({'state': 'play', 'speed': playbackSpeed}));
+              res
+                .status(200)
+                .send(JSON.stringify({
+                  'state': 'play',
+                  'speed': playbackSpeed,
+                }));
             } else {
-              res.status(200).send(JSON.stringify({'state': 'pause', 'speed': playbackSpeed}));
+              res
+                .status(200)
+                .send(JSON.stringify({
+                  'state': 'pause',
+                  'speed': playbackSpeed,
+                }));
             }
             updateSpeed(playbackSpeed);
           }
