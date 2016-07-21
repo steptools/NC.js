@@ -100,6 +100,7 @@ export default class HeaderView extends React.Component {
   }
 
   render() {
+    console.log('render header');
     let mtc = this.props.mtc;
     //console.log(mtc);
     let live = null;
@@ -138,7 +139,7 @@ export default class HeaderView extends React.Component {
           <div className='item'>
             <div className={getIcon('line')}/>
             <div className='text'>
-              <div className='title'>Block number:</div>
+              <div className='title'>Current GCode:</div>
               <div className='value'>{mtc.gcode}</div>
             </div>
           </div>
