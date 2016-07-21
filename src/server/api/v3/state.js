@@ -52,7 +52,7 @@ var MTListen = function() {
           }
         });
         resCoords = pathtag.Samples[0].PathPosition[0]._.split(' ');
-        feedrate = pathtag['Samples'][0]['PathFeedrate'][0]['_'];
+        feedrate = pathtag['Samples'][0]['PathFeedrate'][1]['_'];
         console.log(feedrate);
 
         if (pathtag['Events'][0]['Block']) {
@@ -136,7 +136,7 @@ var _getDelta = function(ms, key, cb) {
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
     MTCHold.feedrate = res[5];
-    MTCHold.gcode = res[4];
+    MTCHold.gcode = WSGCode['GCode'][res[4]];
     if (findWS(res[4]) ) {
       console.log('keystate');
       ms.NextWS();
@@ -196,6 +196,7 @@ var parseGCodes = function() {
 
   let fileRead = new Promise(function(resolve) {
     var MTCcontent = [];
+		var GCcontent = [];
     fs.readFile(GCodeFile, function(err, res) {
       var GCodes = null;
       if (res) {
@@ -208,19 +209,30 @@ var parseGCodes = function() {
             MTCcontent.push(lineNumber);
           }
         } else {
+					GCcontent.push(line);
           lineNumber++;
         }
       });
-      resolve(MTCcontent);
+      resolve([MTCcontent, GCcontent]);
     });
   });
 
   fileRead.then(function(res) {
-    res.shift();
+    res[0].shift();
 
     var JSONContent = '{\"worksteps\" : [\n';
-    _.each(res, function(code) {
+    _.each(res[0], function(code) {
       JSONContent = JSONContent + code.toString() + ',\n';
+    });
+    JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + '\n],';
+
+    fs.writeFile(MTCfile, JSONContent, (err) => {
+      console.log(err);
+    });
+		
+    JSONContent = JSONContent + '\n\n\"GCode\" : [\n';
+    _.each(res[1], function(code) {
+      JSONContent = JSONContent + '\"' + code.toString().substring(0, code.toString().length - 1) + '\",\n';
     });
     JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + '\n]}';
 
@@ -248,6 +260,7 @@ var _loopInit = function(req, res) {
         WSGCode = JSON.parse(data.toString());
       }
     }
+    MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
 
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {
