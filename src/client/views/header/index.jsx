@@ -68,7 +68,6 @@ export default class HeaderView extends React.Component {
     super(props);
 
     this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
-    this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
   }
 
   componentDidMount() {
@@ -86,29 +85,6 @@ export default class HeaderView extends React.Component {
     chlog.send();
   }
 
-  getFeedSpeedInfo() {
-    let curStep = this.props.workingstepCache[this.props.ws];
-    let fr = 'Not defined';
-    let ss = 'Not defined';
-    let ssIcon = null;
-    if (curStep && curStep.feedRate !== 0) {
-      fr = curStep.feedRate + ' ' + curStep.feedUnits;
-    }
-    if (curStep && curStep.speed !== 0) {
-      ss = Math.abs(curStep.speed) + ' ' + curStep.speedUnits;
-      if (curStep.speed > 0) {
-        ss += ' (CCW)';
-        ssIcom = getIcon('spindlespeed', 'CCW');
-      } else {
-        ss += ' (CW)';
-        ssIcon = getIcon('spindlespeed', 'CW');
-      }
-    } else {
-      ssIcon = getIcon('spindlespeed');
-    }
-    return [fr, ss, ssIcon];
-  }
-
   simulateMenuItemClicked(info) {
     switch (info.key) {
       case 'changelog':
@@ -124,8 +100,6 @@ export default class HeaderView extends React.Component {
   }
 
   render() {
-    let feedSpeedInfo = this.getFeedSpeedInfo();
-
     console.log(this);
 
     const headerMenu = (
@@ -134,14 +108,21 @@ export default class HeaderView extends React.Component {
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
       >
-        <MenuItem disabled key='live' className='info live'>
+        <MenuItem disabled key='live' className='info live active'>
           <div className='item'>
             <div className={getIcon('live')}/>
+            <div className='text'>
+              <div className='value'>Live</div>
+            </div>
           </div>
         </MenuItem>
         <MenuItem disabled key='line' className='info line'>
           <div className='item'>
             <div className={getIcon('line')}/>
+            <div className='text'>
+              <div className='title'>GCode:</div>
+              <div className='value'>this.props.mtc.gcode</div>
+            </div>
           </div>
         </MenuItem>
         <MenuItem disabled key='feed-speed' className='info feed-speed'>
@@ -149,14 +130,14 @@ export default class HeaderView extends React.Component {
             <div className={getIcon('feedrate')}/>
             <div className='text'>
               <div className='title'>Feed rate:</div>
-              <div className='value'>{feedSpeedInfo[0]}</div>
+              <div className='value'>Not defined yet</div>
             </div>
           </div>
           <div className='item'>
-            <div className={feedSpeedInfo[2]}/>
+            <div className={getIcon('spindlespeed')}/>
             <div className='text'>
               <div className='title'>Spindle speed:</div>
-              <div className='value'>{feedSpeedInfo[1]}</div>
+              <div className='value'>Not defined yet</div>
             </div>
           </div>
         </MenuItem>

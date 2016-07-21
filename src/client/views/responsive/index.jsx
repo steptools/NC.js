@@ -45,6 +45,8 @@ export default class ResponsiveView extends React.Component {
       selectedEntity: null,
       previouslySelectedEntities: [null],
       live: false,
+      mtc: {},
+      gcode: -1,
       line: -1,
       feedrate: null,
       spindlespeed: null,
@@ -259,10 +261,10 @@ export default class ResponsiveView extends React.Component {
     request.get(url).end(resCb);
 
     // get current gcode
-    url = '/v3/nc/state/gcode';
+    url = '/v3/nc/state/mtc';
     resCb = (err, res) => {
       if (!err && res.ok) {
-        this.setState({line: res.text});
+        this.setState({mtc: res.text});
       }
     };
     request.get(url).end(resCb);
