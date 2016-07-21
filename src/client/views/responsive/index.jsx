@@ -195,17 +195,17 @@ export default class ResponsiveView extends React.Component {
 
     // get the cache of tools
     url = '/v3/nc/tools/';
-    resCb = (err,res) => { //Callback function for response
+    resCb = (err, res) => { //Callback function for response
       if (!err && res.ok) {
         let tools = {};
         let json = JSON.parse(res.text);
 
         _.each(json, (tool)=> {
-          tool.icon = <span className='icon custom tool' />;
+          tool.icon = <span className='icon custom tool'/>;
           tools[tool.id] = tool;
         });
 
-        this.setState({'toolCache': tools});
+        this.setState({toolCache: tools});
       } else {
         console.log(err);
       }
@@ -216,15 +216,15 @@ export default class ResponsiveView extends React.Component {
     url = '/v3/nc/tools/' + this.state.ws;
     request
       .get(url)
-      .end((err,res) => {
+      .end((err, res) => {
         if (!err && res.ok) {
-          this.setState({'curtool': res.text});
+          this.setState({curtool: res.text});
         }
       });
 
     // get data for workpiece/tolerance view
     url = '/v3/nc/workpieces/';
-    resCb = (err,res) => { //Callback function for response
+    resCb = (err, res) => { //Callback function for response
       if (!err && res.ok) {
         // Node preprocessing
         let json = JSON.parse(res.text);
@@ -257,6 +257,16 @@ export default class ResponsiveView extends React.Component {
       }
     };
     request.get(url).end(resCb);
+
+    // get current gcode
+    url = '/v3/nc/state/gcode';
+    resCb = (err, res) => {
+      if (!err && res.ok) {
+        this.setState({line: res.text});
+      }
+    };
+    request.get(url).end(resCb);
+
     url = '/v3/nc/state/loop/start';
     request.get(url).end();
   }
