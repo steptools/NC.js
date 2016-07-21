@@ -100,9 +100,8 @@ export default class HeaderView extends React.Component {
   }
 
   render() {
-    console.log(this);
-
     let mtc = this.props.mtc;
+    //console.log(mtc);
     let live = null;
     if (mtc.live === true) {
       live = (

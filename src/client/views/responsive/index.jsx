@@ -68,6 +68,8 @@ export default class ResponsiveView extends React.Component {
     this.changeSpeed = this.changeSpeed.bind(this);
 
     this.openProperties = this.openProperties.bind(this);
+
+    this.updateMTC = this.updateMTC.bind(this);
   }
 
   addListeners() {
@@ -89,6 +91,8 @@ export default class ResponsiveView extends React.Component {
     this.props.app.socket.on('nc:speed', (speed) => {
       this.speedChanged(speed);
     });
+
+    this.props.app.actionManager.on('update-mtc', this.updateMTC);
   }
 
   componentWillMount() {
@@ -268,11 +272,12 @@ export default class ResponsiveView extends React.Component {
         }
       });
 
-    // get current mtc data
+    // get initial mtc data
     url = '/v3/nc/state/mtc';
     resCb = (err, res) => {
       if (!err && res.ok) {
-        this.setState({mtc: res.text});
+        console.log(JSON.parse(res.text));
+        this.setState({mtc: JSON.parse(res.text)});
       }
     };
     request.get(url).end(resCb);
@@ -341,6 +346,19 @@ export default class ResponsiveView extends React.Component {
     };
 
     request.get(url).end(requestCB);
+  }
+
+  updateMTC() {
+    console.log('mtc');
+    // get current mtc data
+    url = '/v3/nc/state/mtc';
+    resCb = (err, res) => {
+      if (!err && res.ok) {
+        console.log(JSON.parse(res.text));
+        this.setState({mtc: JSON.parse(res.text)});
+      }
+    };
+    request.get(url).end(resCb);
   }
 
   playpause() {

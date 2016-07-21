@@ -401,6 +401,7 @@ export default class NC extends THREE.EventDispatcher {
                 }
             });
         }
+        this.app.actionManager.emit('update-mtc');
         return alter;
     }
 
