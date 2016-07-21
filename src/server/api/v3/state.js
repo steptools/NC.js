@@ -14,6 +14,8 @@ let path = find.GetProjectName();
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
+
+var MTCHold = {};
 ///*******************************************************************\
 //|                                                                    |
 //|                       Helper Functions                             |
@@ -35,7 +37,6 @@ var MTListen = function() {
   var zOffset;
   var currentgcode;
   var feedrate;
-  console.log(find.GetProjectName());
 
   return new Promise(function(resolve) {
     let mtc = request.get('http://192.168.0.123:5000/current');
@@ -134,6 +135,8 @@ var _getDelta = function(ms, key, cb) {
 
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
+    MTCHold.feedrate = res[5];
+    MTCHold.gcode = res[4];
     if (findWS(res[4]) ) {
       console.log('keystate');
       ms.NextWS();
@@ -214,7 +217,6 @@ var parseGCodes = function() {
 
   fileRead.then(function(res) {
     res.shift();
-    console.log(res);
 
     var JSONContent = '{\"worksteps\" : [\n';
     _.each(res, function(code) {
@@ -225,7 +227,6 @@ var parseGCodes = function() {
     fs.writeFile(MTCfile, JSONContent, (err) => {
       console.log(err);
     });
-    console.log(JSONContent);
   });
 };
 
@@ -413,6 +414,10 @@ var _getDeltaState = function (req, res) {
   res.status(200).send(ms.GetDeltaJSON());
 };
 
+var _getMTCHold = function (req, res) {
+  res.status(200).send(MTCHold);
+}
+
 module.exports = function(globalApp, cb) {
   app = globalApp;
   app.router.get('/v3/nc/state/key', _getKeyState);
@@ -420,6 +425,7 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
+  app.router.get('/v3/nc/state/mtc', _getMTCHold);
   if (cb) {
     cb();
   }
