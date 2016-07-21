@@ -45,6 +45,7 @@ export default class ResponsiveView extends React.Component {
       selectedEntity: null,
       previouslySelectedEntities: [null],
       mtc: {},
+      live: false,
     };
 
     this.addBindings();
@@ -355,7 +356,22 @@ export default class ResponsiveView extends React.Component {
         let mtc = JSON.parse(res.text);
         //console.log(mtc);
         $('.header .info.gcode .value').html(mtc.gcode);
-        $('.header .item.feedrate .value').html(mtc.feedrate);
+        let e = $('.header .item.feedrate .value');
+        if (!isNaN(mtc.feedrate)) {
+          e.html(Math.round(mtc.feedrate * 100) / 100);
+          if (this.state.live === false) {
+            $('.header .info.live').addClass('active');
+            $('.header .info.live .value').html('Live');
+            this.setState({live: true});
+          }
+        } else {
+          e.html(mtc.feedrate);
+          if (this.state.live === true) {
+            $('.header .info.live.active').removeClass('active');
+            $('.header .info.live .value').html('Stopped');
+            this.setState({live: false});
+          }
+        }
       }
     };
     request.get(url).end(resCb);
