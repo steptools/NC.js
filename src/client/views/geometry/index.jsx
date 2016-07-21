@@ -18,6 +18,7 @@ export default class GeometryView extends React.Component{
     this.onShellLoad    = this.onShellLoad.bind(this);
     this.onModelAdd     = this.onModelAdd.bind(this);
     this.onModelRemove  = this.onModelRemove.bind(this)
+    this.zoomToFit      = this.zoomToFit.bind(this);
   }
   
   componentDidMount() {
@@ -89,6 +90,26 @@ export default class GeometryView extends React.Component{
     this.forceUpdate();
     this.animate(true);
     this.handleResize();
+  }
+  
+  zoomToFit(objects) {
+    if (!objects || objects.length === 0) return;
+    let object = objects[0];
+    let object3d = object.getObject3D(),
+      boundingBox = object.getBoundingBox(),
+      radius = boundingBox.size().length() * 0.5,
+      horizontalFOV = 2 * Math.atan(THREE.Math.degToRad(this.camera.fov * 0.5) * this.camera.aspect),
+      fov = Math.min(THREE.Math.degToRad(this.camera.fov), horizontalFOV),
+      dist = radius / Math.sin(fov * 0.5),
+      newTargetPosition = boundingBox.max.clone().
+      lerp(boundingBox.min, 0.5).
+      applyMatrix4(object3d.matrixWorld);
+    this.camera.position
+      .sub(this.controls.target)
+      .setLength(dist)
+      .add(newTargetPosition);
+    this.controls.target.copy(newTargetPosition);
+    this.invalidate();
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -173,6 +194,8 @@ export default class GeometryView extends React.Component{
     this.overlayScene.add(      model.getOverlay3D());
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
+    
+    this.zoomToFit([model]);
   }
 
   onModelRemove(event) {
