@@ -96,8 +96,23 @@ var MTListen = function() {
       coords[1] = parseInt(resCoords[1]);
       coords[2] = parseInt(resCoords[2]);
 
-      console.log(currentgcode);
-      resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate]);
+      //console.log(currentgcode);
+      let mtc = request.get('http://192.168.0.123:5000/');
+      mtc.end(function (err, res) {
+      parseXMLString.parseString(res.text, function (error, result) {
+        let ret = result['MTConnectDevices']['Devices'][0]['Device'][0]['Components'][0]['Controller'][0]['Components'][0]['Path'][0]['DataItems'][0]['DataItem'];
+        let feedrateUnits = _.find(ret, function(dataitem){
+          if(dataitem['$'].type === 'PATH_FEEDRATE'){
+            return true;
+          }
+          else{
+            return false;
+          }
+        });
+        resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate, feedrateUnits['$']['units']]);
+      })
+      })
+      //resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate, feedrateUnits]);
     });
   });
 };
@@ -134,10 +149,9 @@ var _getDelta = function(ms, key, cb) {
 
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
+    console.log(res);
     MTCHold.feedrate = 'Not defined';
     MTCHold.gcode = 'Not defined';
-    MTCHold.feedrate = 0;
-    MTCHold.gcode = 'default';
     MTCHold.feedrate = res[5];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
     if (findWS(res[4]) ) {
