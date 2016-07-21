@@ -135,7 +135,7 @@ var _getDelta = function(ms, key, cb) {
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
     MTCHold.feedrate = res[5];
-    MTCHold.gcode = res[4];
+    MTCHold.gcode = WSGCode['GCode'][res[4]];
     if (findWS(res[4]) ) {
       console.log('keystate');
       ms.NextWS();
@@ -259,6 +259,7 @@ var _loopInit = function(req, res) {
         WSGCode = JSON.parse(data.toString());
       }
     }
+    MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
 
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {
