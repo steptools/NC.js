@@ -14,6 +14,8 @@ let path = find.GetProjectName();
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
+
+var MTCHold = {};
 ///*******************************************************************\
 //|                                                                    |
 //|                       Helper Functions                             |
@@ -35,7 +37,6 @@ var MTListen = function() {
   var zOffset;
   var currentgcode;
   var feedrate;
-  console.log(find.GetProjectName());
 
   return new Promise(function(resolve) {
     let mtc = request.get('http://192.168.0.123:5000/current');
@@ -126,31 +127,15 @@ var findWS = function(current) {
 };
 
 //TODO: Get rid of this function and consolidate with endpoint functions
-var getDelta = function(ms, key) {
-  var change = false;
-  if (key) {
-    response = ms.GetKeystateJSON();
-  }
-
-  while (current < WSGCode['worksteps'][WSGCodeIndex - 1]) {
-    if (WSGCodeIndex >= WSGCode['worksteps'].length) {
-      WSGCodeIndex = 0;
-    } else {
-      WSGCodeIndex = WSGCodeIndex + 1;
-    }
-    change = true;
-  }
-  return change;
-};
-
-//TODO: Get rid of this function and consolidate with endpoint functions
-var _getDelta = function(ms, key, wsgcode, cb) {
+var _getDelta = function(ms, key, cb) {
   let holder = '';
   let theQuestion = MTListen();
   // let theAnswer = 42;
 
   theQuestion.then(function(res) {
     //console.log(findWS(res[4], wsgcode));
+    MTCHold.feedrate = res[5];
+    MTCHold.gcode = res[4];
     if (findWS(res[4]) ) {
       console.log('keystate');
       ms.NextWS();
@@ -191,7 +176,7 @@ var getToWS = function(wsId, ms, cb) {
 var loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
     app.logger.debug('Loop step ' + path);
-    _getDelta(ms, key, wsgcode, function(b) {
+    _getDelta(ms, key, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {
@@ -233,7 +218,6 @@ var parseGCodes = function() {
 
   fileRead.then(function(res) {
     res[0].shift();
-    console.log(res[0]);
 
     var JSONContent = '{\"worksteps\" : [\n';
     _.each(res[0], function(code) {
@@ -409,7 +393,7 @@ var _wsInit = function(req, res) {
           res.status(200).send('OK');
         }
     }
-    getDelta(ms, false, function(b) {
+    _getDelta(ms, false, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {
@@ -441,6 +425,10 @@ var _getDeltaState = function (req, res) {
   res.status(200).send(ms.GetDeltaJSON());
 };
 
+var _getMTCHold = function (req, res) {
+  res.status(200).send(MTCHold);
+}
+
 module.exports = function(globalApp, cb) {
   app = globalApp;
   app.router.get('/v3/nc/state/key', _getKeyState);
@@ -448,6 +436,7 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
+  app.router.get('/v3/nc/state/mtc', _getMTCHold);
   if (cb) {
     cb();
   }
