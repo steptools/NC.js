@@ -231,7 +231,7 @@ var parseGCodes = function() {
 		
     JSONContent = JSONContent + '\n\n\"GCode\" : [\n';
     _.each(res[1], function(code) {
-      JSONContent = JSONContent + '\"' + code.toString().substring(0, code.toString().length - 4) + '\",\n';
+      JSONContent = JSONContent + '\"' + code.toString().substring(0, code.toString().length - 1) + '\",\n';
     });
     JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + '\n]}';
 
