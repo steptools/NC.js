@@ -148,6 +148,8 @@ var _getDelta = function(ms, key, cb) {
     }
     holder.mtcoords = res[0];
     holder.offset = [res[1], res[2], res[3]];
+		holder.gcode = res[4];
+		holder.feed = res[5];
     let response = JSON.stringify(holder);
     //app.logger.debug('got ' + response);
     cb(response);
