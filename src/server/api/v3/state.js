@@ -210,6 +210,7 @@ var parseGCodes = function() {
 
   let fileRead = new Promise(function(resolve) {
     var MTCcontent = [];
+		var GCcontent = [];
     fs.readFile(GCodeFile, function(err, res) {
       var GCodes = null;
       if (res) {
@@ -222,27 +223,37 @@ var parseGCodes = function() {
             MTCcontent.push(lineNumber);
           }
         } else {
+					GCcontent.push(line);
           lineNumber++;
         }
       });
-      resolve(MTCcontent);
+      resolve([MTCcontent, GCcontent]);
     });
   });
 
   fileRead.then(function(res) {
-    res.shift();
-    console.log(res);
+    res[0].shift();
+    console.log(res[0]);
 
     var JSONContent = '{\"worksteps\" : [\n';
-    _.each(res, function(code) {
+    _.each(res[0], function(code) {
       JSONContent = JSONContent + code.toString() + ',\n';
+    });
+    JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + '\n],';
+
+    fs.writeFile(MTCfile, JSONContent, (err) => {
+      console.log(err);
+    });
+		
+    JSONContent = JSONContent + '\n\n\"GCode\" : [\n';
+    _.each(res[1], function(code) {
+      JSONContent = JSONContent + '\"' + code.toString().substring(0, code.toString().length - 4) + '\",\n';
     });
     JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + '\n]}';
 
     fs.writeFile(MTCfile, JSONContent, (err) => {
       console.log(err);
     });
-    console.log(JSONContent);
   });
 };
 
