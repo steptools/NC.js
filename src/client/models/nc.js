@@ -371,7 +371,7 @@ export default class NC extends THREE.EventDispatcher {
                         self._object3D.add(self.traceLine);
                         self._overlay3D.add(self.traceLine);
                         self.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
-                        console.log(self.traceLine);
+                        //console.log(self.traceLine);
                     if (obj.rendered !== false && obj.usage == "cutter") {
                         let transform = new THREE.Matrix4();
                         if (!geom.xform) return;
@@ -386,7 +386,7 @@ export default class NC extends THREE.EventDispatcher {
                         let mtposition = new THREE.Vector3(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
                         obj.object3D.position.copy(mtposition);
                         obj.object3D.quaternion.copy(quaternion);
-                        console.log(obj.object3D.position);
+                        //console.log(obj.object3D.position);
 
                         // we need to update all 3D properties so that
                         // annotations, overlays and objects are all updated

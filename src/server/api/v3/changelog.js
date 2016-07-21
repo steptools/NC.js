@@ -1,5 +1,4 @@
-"use strict";
-var StepNC = require('../../../../../STEPNode/build/Release/StepNode');
+'use strict';
 var fs = require('fs');
 
 ///*******************************************************************\
@@ -17,18 +16,18 @@ var fs = require('fs');
 //|                                                                    |
 //\*******************************************************************/
 
-var _getchangelog = function(req,res){
-    fs.readFile("changelog.md", "utf8", function(err,data){
-      if(err) {
-        return console.log(err);
-      }
-      res.status(200).send(data);
-    })
-
-
-}
+var _getchangelog = function(req,res) {
+  fs.readFile('changelog.md', 'utf8', function(err,data) {
+    if (err) {
+      return console.log(err);
+    }
+    res.status(200).send(data);
+  });
+};
 
 module.exports = function(app, cb) {
   app.router.get('/log', _getchangelog);
-  if (cb) cb();
+  if (cb) {
+    cb();
+  }
 };

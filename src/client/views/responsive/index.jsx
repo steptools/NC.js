@@ -34,7 +34,7 @@ export default class ResponsiveView extends React.Component {
       logstate : false,
       resize: false,
       changeSpeed: false,
-      playbackSpeed: 50,
+      playbackSpeed: 100,
       logtext : 'default',
       toolCache : [],
       curtool : '',
@@ -44,6 +44,10 @@ export default class ResponsiveView extends React.Component {
       workplanCache: {},
       selectedEntity: null,
       previouslySelectedEntities: [null],
+      live: false,
+      line: -1,
+      feedrate: null,
+      spindlespeed: null,
     };
 
     this.addBindings();

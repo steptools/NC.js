@@ -1,5 +1,4 @@
-"use strict";
-var StepNC = require('../../../../../STEPNode/build/Release/StepNode');
+'use strict';
 var file = require('./file');
 
 ///*******************************************************************\
@@ -16,7 +15,7 @@ var file = require('./file');
 //|                                                                    |
 //\*******************************************************************/
 
-let _getGeometry = function(req , res){
+let _getGeometry = function(req , res) {
   let ms = file.ms;
 
   if(req.params.type === "shell"){

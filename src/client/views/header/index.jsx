@@ -126,6 +126,8 @@ export default class HeaderView extends React.Component {
   render() {
     let feedSpeedInfo = this.getFeedSpeedInfo();
 
+    console.log(this);
+
     const headerMenu = (
       <Menu
         mode='horizontal'
