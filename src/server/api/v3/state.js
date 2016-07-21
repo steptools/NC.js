@@ -53,7 +53,6 @@ var MTListen = function() {
         });
         resCoords = pathtag.Samples[0].PathPosition[0]._.split(' ');
         feedrate = pathtag['Samples'][0]['PathFeedrate'][1]['_'];
-        console.log(feedrate);
 
         if (pathtag['Events'][0]['Block']) {
           currentgcode = pathtag['Events'][0]['Block'][0]['_'];
@@ -137,6 +136,8 @@ var _getDelta = function(ms, key, cb) {
     //console.log(findWS(res[4], wsgcode));
     MTCHold.feedrate = 'Not defined';
     MTCHold.gcode = 'Not defined';
+    MTCHold.feedrate = 0;
+    MTCHold.gcode = 'default';
     MTCHold.feedrate = res[5];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
     if (findWS(res[4]) ) {
@@ -198,7 +199,7 @@ var parseGCodes = function() {
 
   let fileRead = new Promise(function(resolve) {
     var MTCcontent = [];
-		var GCcontent = [];
+    var GCcontent = [];
     fs.readFile(GCodeFile, function(err, res) {
       var GCodes = null;
       if (res) {
@@ -211,7 +212,7 @@ var parseGCodes = function() {
             MTCcontent.push(lineNumber);
           }
         } else {
-					GCcontent.push(line);
+          GCcontent.push(line);
           lineNumber++;
         }
       });
@@ -231,7 +232,7 @@ var parseGCodes = function() {
     fs.writeFile(MTCfile, JSONContent, (err) => {
       console.log(err);
     });
-		
+
     JSONContent = JSONContent + '\n\n\"GCode\" : [\n';
     _.each(res[1], function(code) {
       JSONContent = JSONContent + '\"' + code.toString().substring(0, code.toString().length - 1) + '\",\n';
@@ -241,7 +242,7 @@ var parseGCodes = function() {
     fs.writeFile(MTCfile, JSONContent, (err) => {
       console.log(err);
     });
-		MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
+    MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
   });
 };
 
@@ -261,7 +262,7 @@ var _loopInit = function(req, res) {
     } else {
       if (data) {
         WSGCode = JSON.parse(data.toString());
-				MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
+        MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
       }
     }
 
@@ -432,7 +433,7 @@ var _getDeltaState = function (req, res) {
 
 var _getMTCHold = function (req, res) {
   res.status(200).send(MTCHold);
-}
+};
 
 module.exports = function(globalApp, cb) {
   app = globalApp;
