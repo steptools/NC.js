@@ -77,7 +77,7 @@ export default class GeometryView extends React.Component{
     });
     this.controls.addEventListener("start", () => {
       this.continuousRendering = true;
-      if (this.props.isCadView) {
+      if (this.props.viewType === 'cadjs') {
         this.props.lockedCb(false);
       }
     });
@@ -113,38 +113,23 @@ export default class GeometryView extends React.Component{
   }
 
   componentWillUpdate(nextProps, nextState) {
-    // Unhighlight anything that's not being shown
-    if ((this.props.selectedEntity !== null &&
-        this.props.selectedEntity.type === 'tolerance')) {
-      
-      let workpiece = this.props.toleranceCache[this.props.selectedEntity.workpiece];
-      
-      if (workpiece.workingsteps.indexOf(this.props.ws) >= 0 ) {
 
-        if (nextProps.selectedEntity === null ||
-            nextProps.selectedEntity !== this.props.selectedEntity ||
-            this.props.ws !== nextProps.ws) {
+    // TODO: unhighlight faces when necessary
+    if (this.props.ws !== nextProps.ws && nextProps.ws > 0) {
           
-            this.highlightFaces(this.props.selectedEntity, this.props.manager.getRootModels(), true);
-        }
-      }
-    }
-    // now highlight any tolerances present in current workingstep
-    if (nextProps.selectedEntity !== null &&
-        nextProps.selectedEntity.type === 'tolerance') {
+      // now highlight any tolerances present in current workingstep
+      let workingstep = nextProps.workingstepCache[nextProps.ws];
 
-      let workpiece = nextProps.toleranceCache[nextProps.selectedEntity.workpiece];
+      let workpiece = nextProps.toleranceCache[workingstep.toBe.id];
+
       // check if the selected tolerance/wp is used in the current WS
-      if (workpiece.workingsteps.indexOf(nextProps.ws) >= 0) {
-          
-        let highlightColor = {
-          r: 1.0,
-          g: 0,
-          b: 1.0
-        };
+      let highlightColor = {
+        r: 1.0,
+        g: 0,
+        b: 1.0
+      };
 
-        this.highlightFaces(nextProps.selectedEntity, nextProps.manager.getRootModels(), false, highlightColor);
-      }
+      this.highlightFaces(workpiece, nextProps.manager.getRootModels(), false, highlightColor);
     }
   }
 
@@ -317,41 +302,57 @@ export default class GeometryView extends React.Component{
   }
 
   highlightFaces(entity, objs, unhighlight, newColor) {
+
+    let tols = [];
+    if (entity.type === 'tolerance') {
+      tols.push(entity);
+    }
+    else if (entity.type === 'workpiece') {
+      tols = tols.concat(entity.children);
+    }
+    
+    if (objs.length <= 0) {
+      return;
+    }
+    
     let shells = _.filter(_.values(objs[0]._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
-    _.each(shells, (shell) => {
-      if (shell && shell.model._geometry) {
-        let faces = shell.model._geometry.getAttribute('faces');
-        let colors = shell.model._geometry.getAttribute('color');
 
-        let indices = _.map(entity.faces, (id) => faces.array[id]);
+    _.each(tols, (tol) => {
+      _.each(shells, (shell) => {
+        if (shell && shell.model._geometry) {
+          let faces = shell.model._geometry.getAttribute('faces');
+          let colors = shell.model._geometry.getAttribute('color');
 
-        if (!unhighlight && !this.state.oldColors[shell.id]) {
-          let oldColors = this.state.oldColors;
-          oldColors[shell.id] = colors.clone();
-          this.setState({'oldColors': oldColors});
-        }
+          let indices = _.map(tol.faces, (id) => faces.array[id]);
 
-        _.each(indices, (index) => {
-          if (index) {
-            for (let i = index.start; i < index.end; i += 3) {
-              
-              if (unhighlight) {
-                colors.array[i] = this.state.oldColors[shell.id].array[i];
-                colors.array[i + 1] = this.state.oldColors[shell.id].array[i + 1];
-                colors.array[i + 2] = this.state.oldColors[shell.id].array[i + 2];
-              }
-              else {
-                colors.array[i] = newColor.r;
-                colors.array[i + 1] = newColor.g;
-                colors.array[i + 2] = newColor.b;
+          if (!unhighlight && !this.state.oldColors[shell.id]) {
+            let oldColors = this.state.oldColors;
+            oldColors[shell.id] = colors.clone();
+            this.setState({'oldColors': oldColors});
+          }
+
+          _.each(indices, (index) => {
+            if (index) {
+              for (let i = index.start; i < index.end; i += 3) {
+
+                if (unhighlight) {
+                  colors.array[i] = this.state.oldColors[shell.id].array[i];
+                  colors.array[i + 1] = this.state.oldColors[shell.id].array[i + 1];
+                  colors.array[i + 2] = this.state.oldColors[shell.id].array[i + 2];
+                }
+                else {
+                  colors.array[i] = newColor.r;
+                  colors.array[i + 1] = newColor.g;
+                  colors.array[i + 2] = newColor.b;
+                }
               }
             }
-          }
-        });
-        
-        colors.needsUpdate = true;
-        this.invalidate();
-      }
+          });
+
+          colors.needsUpdate = true;
+          this.invalidate();
+        }
+      });
     });
   }
 

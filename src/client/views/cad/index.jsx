@@ -98,7 +98,7 @@ export default class CADView extends React.Component {
             resize={this.props.resize}
             toleranceCache={this.props.toleranceCache}
             ws={this.props.ws}
-            isCadView={true}
+            workingstepCache={this.props.workingstepCache}
             parentSelector='#cadjs-container'
             viewType='cadjs'
             />
