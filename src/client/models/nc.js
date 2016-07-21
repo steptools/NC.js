@@ -23,13 +23,13 @@ export default class NC extends THREE.EventDispatcher {
         this._objects = [];
         this.type = 'nc';
 
-        this.traceNum = 5000;
+        this.traceNum = 0;
         var trace = new THREE.BufferGeometry();
         this.tracePoint = new Float32Array(this.traceNum * 3);
         trace.addAttribute('position', new THREE.BufferAttribute(this.tracePoint, 3));
         this.traceLine = new THREE.Line(trace, new THREE.LineBasicMaterial({
             color: 0xffa07a,
-            linewidth: 2
+            linewidth: 20
         }));
 				this.traceLine.visible = true;
 
@@ -39,8 +39,8 @@ export default class NC extends THREE.EventDispatcher {
         this._overlay3D = new THREE.Object3D();
 				this._object3D.add(this.traceLine);
 				this._overlay3D.add(this.traceLine);
-				
-				
+
+
         this._annotation3D = new THREE.Object3D();
         this.state = {
             selected:       false,
@@ -277,7 +277,7 @@ export default class NC extends THREE.EventDispatcher {
         let alter = false;
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
-        console.log(delta.next);
+        //console.log(delta.next);
         if (delta.next){
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
@@ -368,6 +368,10 @@ export default class NC extends THREE.EventDispatcher {
                 }
                 let obj = self._objects[geom.id];
                 if(obj !== undefined) {
+                        self._object3D.add(self.traceLine);
+                        self._overlay3D.add(self.traceLine);
+                        self.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
+                        console.log(self.traceLine);
                     if (obj.rendered !== false && obj.usage == "cutter") {
                         let transform = new THREE.Matrix4();
                         if (!geom.xform) return;
@@ -378,16 +382,11 @@ export default class NC extends THREE.EventDispatcher {
                         transform.decompose(position, quaternion, scale);
 
 
-												
+
                         let mtposition = new THREE.Vector3(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
                         obj.object3D.position.copy(mtposition);
                         obj.object3D.quaternion.copy(quaternion);
                         console.log(obj.object3D.position);
-
-
-												self._object3D.add(self.traceLine);
-                        self._overlay3D.add(self.traceLine);
-                        self.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
 
                         // we need to update all 3D properties so that
                         // annotations, overlays and objects are all updated

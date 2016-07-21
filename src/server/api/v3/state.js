@@ -37,6 +37,7 @@ var MTListen = function() {
   var yOffset;
   var zOffset;
   var currentgcode;
+	var feedrate;
   console.log(find.GetProjectName());
 
   return new Promise(function(resolve, reject) {
@@ -55,6 +56,8 @@ var MTListen = function() {
         });
         resCoords = pathtag.Samples[0].PathPosition[0]._.split(" ");
 
+				 feedrate = pathtag["Samples"][0]["PathFeedrate"][0]["_"];
+				console.log(feedrate);
 
         if (pathtag["Events"][0]["Block"]) {
           currentgcode = pathtag["Events"][0]["Block"][0]["_"];
@@ -104,7 +107,7 @@ var MTListen = function() {
       coords[2] = parseInt(resCoords[2]);
 
       console.log(currentgcode);
-      resolve([coords, xOffset, yOffset, zOffset, currentgcode]);
+      resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate]);
     });
   });
 }
@@ -133,7 +136,7 @@ var findWS = function(current) {
 	}
 	  return change;
 }
-		
+
 //TODO: Get rid of this function and consolidate with endpoint functions if possible
 var getDelta = function(ms, key, cb) {
   var response = "";
@@ -252,22 +255,22 @@ var parseGCodes = function() {
 			resolve(MTCcontent);
 		});
 	});
-	
+
 	fileRead.then(function(res) {
 		res.shift();
 		console.log(res);
-	
+
 		var JSONContent = "{\"worksteps\" : [\n";
 		_.each(res, function(code){
 			JSONContent = JSONContent + code.toString() + ",\n";
 		});
 		JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + "\n]}";
-	
+
 		fs.writeFile(MTCfile, JSONContent, (err) => {console.log(err)} );
 		console.log(JSONContent);
 	});
 
-	
+
 }
 
 var _getWorkingstep = function() {
