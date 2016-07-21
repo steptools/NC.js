@@ -239,8 +239,10 @@ var parseGCodes = function() {
 
 	let fileRead = new Promise(function(resolve, reject) {
 		var MTCcontent = [];
-  	fs.readFile(GCodeFile, function(err, data) {
-			var GCodes = data.toString().split("\n");
+  	fs.readFile(GCodeFile, function(err, res) {
+      if (res) {
+			  var GCodes = data.toString().split("\n");
+      }
 			_.each(GCodes, function(line) {
 				if (line[0] == "(") {
 					if (line.substring(1, 12) == "WORKINGSTEP") {
