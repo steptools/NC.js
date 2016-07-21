@@ -303,7 +303,9 @@ var _loopInit = function(req, res) {
 				WSGCode = parseGCodes();
 		}
 		else {
-				WSGCode = JSON.parse(data.toString());
+      if (data) {
+        WSGCode = JSON.parse(data.toString());
+      }
 		}
     if (req.params.loopstate === undefined) {
       if (loopStates[path] === true) {

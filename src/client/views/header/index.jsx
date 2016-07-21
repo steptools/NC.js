@@ -44,12 +44,30 @@ function getIcon(type, data) {
   }
 }
 
+class Button extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    let icon = getIcon(this.props.eventKey);
+    if (this.props.icon) {
+      icon = getIcon(this.props.icon);
+    }
+    return (
+      <MenuItem {...this.props} className='button'>
+        <div className={icon}/>
+        {this.props.children}
+      </MenuItem>
+    );
+  }
+}
+
 export default class HeaderView extends React.Component {
   constructor(props) {
     super(props);
 
     this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
-    this.updateSpeed = this.updateSpeed.bind(this);
     this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
   }
 
