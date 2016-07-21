@@ -278,7 +278,7 @@ export default class NC extends THREE.EventDispatcher {
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
         //console.log(delta.next);
-        if (delta.next){
+        if (delta.next) {
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
             // console.log("Keyframe recieved");

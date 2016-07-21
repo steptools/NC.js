@@ -349,10 +349,9 @@ export default class ResponsiveView extends React.Component {
   }
 
   updateMTC() {
-    console.log('mtc');
     // get current mtc data
-    url = '/v3/nc/state/mtc';
-    resCb = (err, res) => {
+    let url = '/v3/nc/state/mtc';
+    let resCb = (err, res) => {
       if (!err && res.ok) {
         console.log(JSON.parse(res.text));
         this.setState({mtc: JSON.parse(res.text)});
