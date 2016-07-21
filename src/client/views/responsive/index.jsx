@@ -352,27 +352,54 @@ export default class ResponsiveView extends React.Component {
     // get current mtc data
     let url = '/v3/nc/state/mtc';
     let resCb = (err, res) => {
-      if (!err && res.ok) {
-        let mtc = JSON.parse(res.text);
-        //console.log(mtc);
-        $('.header .info.gcode .value').html(mtc.gcode);
-        let e = $('.header .item.feedrate .value');
-        if (!isNaN(mtc.feedrate)) {
-          e.html(Math.round(mtc.feedrate * 100) / 100);
-          if (this.state.live === false) {
-            $('.header .info.live').addClass('active');
-            $('.header .info.live .value').html('Live');
-            this.setState({live: true});
+      if (err || !res.ok) {
+        return;
+      }
+      let mtc = JSON.parse(res.text);
+      // populate the header
+      $('.header .info.gcode .value').html(mtc.gcode);
+
+      let e = $('.header .item.spindlespeed .value');
+      let icon = $('.header .item.spindlespeed .icon');
+      if (!isNaN(mtc.spindlespeed)) {
+        let ss = Math.abs(mtc.spindlespeed) + ' ' + 'units';
+        if (mtc.spindlespeed > 0) {
+          ss += ' (CCW)';
+          if (icon.hasClass('glyphicons-rotate-left') === false) {
+            icon.removeClass();
+            icon.addClass('icon glyphicons glyphicons-rotate-left');
           }
         } else {
-          e.html(mtc.feedrate);
-          if (this.state.live === true) {
-            $('.header .info.live.active').removeClass('active');
-            $('.header .info.live .value').html('Stopped');
-            this.setState({live: false});
+          ss += ' (CW)';
+          if (icon.hasClass('glyphicons-rotate-right') === false) {
+            icon.removeClass();
+            icon.addClass('icon glyphicons glyphicons-rotate-right');
           }
         }
-        e = $('.header .item.spindlespeed .value').html(mtc.spindlespeed);
+        e.html(ss);
+      } else {
+        e.html(mtc.spindlespeed);
+        if (icon.hasClass('glyphicons-refresh') === false) {
+          icon.removeClass();
+          icon.addClass('icon glyphicons glyphicons-refresh');
+        }
+      }
+
+      e = $('.header .item.feedrate .value');
+      if (!isNaN(mtc.feedrate)) {
+        e.html((Math.round(mtc.feedrate * 100) / 100) + ' ' + mtc.feedrateUnits);
+        if (this.state.live === false) {
+          $('.header .info.live').addClass('active');
+          $('.header .info.live .value').html('Live');
+          this.setState({live: true});
+        }
+      } else {
+        e.html(mtc.feedrate);
+        if (this.state.live === true) {
+          $('.header .info.live.active').removeClass('active');
+          $('.header .info.live .value').html('Stopped');
+          this.setState({live: false});
+        }
       }
     };
     request.get(url).end(resCb);
