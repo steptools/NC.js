@@ -292,11 +292,11 @@ export default class NC extends THREE.EventDispatcher {
                 geom.rendered = false;
             });
 
-            var oldannotations =_.values(this._loader._annotations);
-            this._loader._annotations = _.filter(oldannotations, (oldannotation) => {
-                oldannotation.removeFromScene();
-								return true;
+            var oldannotations = this._loader._annotations;
+            _.each(oldannotations, (value, key) => {
+                value.removeFromScene();
             });
+            this._loader._annotations = oldannotations;
 
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
