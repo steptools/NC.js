@@ -126,7 +126,7 @@ export default class HeaderView extends React.Component {
             <div className={getIcon('spindlespeed')}/>
             <div className='text'>
               <div className='title'>Spindle speed:</div>
-              <div className='value'>Not defined</div>
+              <div className='value'>1200 RPM</div>
             </div>
           </div>
         </MenuItem>

@@ -111,7 +111,8 @@ var MTListen = function() {
               return false;
             }
           });
-          resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate, feedrateUnits['$']['units']]);
+          feedrateUnits = feedrateUnits['$']['units'];
+          resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate, feedrateUnits]);
         });
       });
     });
