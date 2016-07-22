@@ -129,12 +129,12 @@ export default class NC extends THREE.EventDispatcher {
             });
             model.addEventListener("annotationMakeVisible", (event)=>{
               _.each(model._addedGeometry, (line)=>{
-                obj.annotation3D.add(line);
+                this._annotation3D.add(line);
               });
             });
             model.addEventListener("annotationMakeNonVisible", (event)=>{
               _.each(model._addedGeometry, (line)=>{
-                obj.annotation3D.remove(line);
+                this._annotation3D.remove(line);
               });
             });
         }
@@ -292,11 +292,10 @@ export default class NC extends THREE.EventDispatcher {
                 geom.rendered = false;
             });
 
-            var oldannotations = this._loader._annotations;
-            _.each(oldannotations, (value, key) => {
-                value.removeFromScene();
+            var oldannotations = this._annotation3D.children;
+            _.each(oldannotations, (anno) => {
+                this._annotation3D.remove(anno);
             });
-            this._loader._annotations = oldannotations;
 
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
