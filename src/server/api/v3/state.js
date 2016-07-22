@@ -1,5 +1,5 @@
 "use strict";
-var StepNC = require('../../../../../STEPNode/build/Release/StepNC');
+var StepNC = require('../../../../../STEPNode/build/Release/StepNode');
 var file = require('./file');
 var step = require('./step');
 var find = file.find;

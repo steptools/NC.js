@@ -1,3 +1,11 @@
+Version 1.5.0
+
+Features:
+
+Bugfixes:
+
+- Make & make-release now ends properly when webpack fails
+
 Version 1.4.0
 
 Features:
@@ -6,14 +14,13 @@ Features:
 - Lowlighted Workpieces if no Tolerances are present
 - Added a back button to the properties pane that backtracks through previously viewed entities
 - Selecting a tolerance highlights relevant faces when the associated workingstep is active
-- Added menu item to display speed and feedrate for workingsteps
+- Added displays for speed and feedrate of workingsteps in header and properties pane
+- Added value of the tolerance to its title in the tolerance view
+- Associate workpieces and workingsteps and display this relationship in properties pane
 
 Bugfixes:
 
 - View no longer starts upside down on initial load
-
-Reverted:
-
 
 Version 1.3.0
 
@@ -41,7 +48,7 @@ Bugfixes:
 - Part and toolpath geometry move with fixture when needed
 - Clicking on workingstep/workplan works with properties pane again
 - Workplan will now close correctly nodes that were open before moving to a previous workingstep
-- Fixed toggled parent nodes to always highlight if they have an active child regardless 
+- Fixed toggled parent nodes to always highlight if they have an active child regardless
 of the state of the child
 - Remove warning on load queue when loading machine tool
 
