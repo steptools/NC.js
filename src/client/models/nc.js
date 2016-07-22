@@ -133,7 +133,6 @@ export default class NC extends THREE.EventDispatcher {
               });
             });
             model.addEventListener("annotationMakeNonVisible", (event)=>{
-                console.log(model);
               _.each(model._addedGeometry, (line)=>{
                 this._annotation3D.remove(line);
               });
