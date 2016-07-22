@@ -106,6 +106,7 @@ export default class HeaderView extends React.Component {
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
       >
+        <MenuItem disabled key='mtc' className='info mtc'/>
         <MenuItem disabled key='live' className='info live'>
           <div className='item'>
             <div className={getIcon('live')}/>
