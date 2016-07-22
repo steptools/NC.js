@@ -259,7 +259,7 @@ export default class DataLoader extends THREE.EventDispatcher {
             let newpath = req.baseURL;
             if(newpath[newpath.length - 1] === '/')
                 newpath = newpath.substring(0 , newpath.length - 1);
-            data.url = newpath + '/geometry/' + req.path + '/shell';
+            data.url = newpath + '/geometry/' + req.path;
         }
         else if (data.type === "annotation") {
             let newpath = (req.baseURL).split('state')[0];
@@ -274,7 +274,6 @@ export default class DataLoader extends THREE.EventDispatcher {
         let nc = new NC(null, null, null, this);
         
         let color = DataLoader.parseColor('7d7d7d');
-        // TODO: don't hardcode this if possible
         let transform = DataLoader.parseXform( [
             1, 0, 0, 0,
             0, 1, 0, 0,
@@ -291,7 +290,6 @@ export default class DataLoader extends THREE.EventDispatcher {
             return;
         }
 
-        // TODO: not hardcoded
         let boundingBox = new THREE.Box3();
 
         let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);

@@ -109,15 +109,13 @@ export default class PropertiesPane extends React.Component {
       this.props.propertiesCb(this.props.tools[entity.tool]);
     } else if (event.key === 'preview') {
       this.setState({'preview': true});
-      /*
       this.props.manager.dispatchEvent({
-          type: 'setModel',
-          viewType: 'preview',
-          path: "", // TODO: not hardcode this
-          baseURL: this.props.manager.app.services.api_endpoint + this.props.manager.app.services.version + '/nc',
-          modelType: 'previewShell'
-      });
-      */
+        type: 'setModel',
+        viewType: 'preview',
+        path: entity.id,
+        baseURL: this.props.manager.app.services.api_endpoint + this.props.manager.app.services.version + '/nc',
+        modelType: 'previewShell'
+      });  
     }
     
     // some other menu item clicked, no need to do anything
