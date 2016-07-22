@@ -101,8 +101,8 @@ export default class PropertiesPane extends React.Component {
 
   selectWS(event, entity) {
     if (event.key === 'goto') {
-      let url = '/v3/nc/state/ws/' + entity.id;
-      request.get(url).end();
+      //let url = '/v3/nc/state/ws/' + entity.id;
+      //request.get(url).end();
     } else if (event.key === 'tool') {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
@@ -224,7 +224,7 @@ export default class PropertiesPane extends React.Component {
     this.properties.push(
       <MenuItem
         key='goto'
-        disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
+        disabled= {true}
         className='property goto'
       >
         Go to Workingstep
