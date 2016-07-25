@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 var md = require('node-markdown').Markdown;
 import Menu, {Item as MenuItem} from 'rc-menu';
