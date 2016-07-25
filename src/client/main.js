@@ -35,7 +35,7 @@ class CADApp extends THREE.EventDispatcher {
     this.socket = undefined;
     if (this.config.socket) {
       // Establish socket connection
-      let socketURL = this.services.api_endpoint + this.services.socket;
+      let socketURL = this.services.apiEndpoint + this.services.socket;
       this.socket = io(socketURL, {});
       // Connect to the socket server
       this.socket.on('connect', function () {
@@ -68,7 +68,7 @@ class CADApp extends THREE.EventDispatcher {
     this.cadManager.dispatchEvent({
       type: 'setModel',
       path: 'state/key',
-      baseURL: this.services.api_endpoint + this.services.version,
+      baseURL: this.services.apiEndpoint + this.services.version,
       modelType: 'nc',
     });
   }
