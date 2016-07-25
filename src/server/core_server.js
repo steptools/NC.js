@@ -19,6 +19,7 @@ function CoreServer() {
         .parse(process.argv);
     this.config = configurator(opts.config, opts.environment);
     this.port = opts.port || this.config.port || 8080;
+		this.machineURL = this.config.machineURL;
 
     // set up machine tool option
     if(opts.tool)

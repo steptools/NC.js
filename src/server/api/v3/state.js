@@ -119,7 +119,7 @@ var MTListen = function() {
   });
 };
 
-var findWS = function(current) {
+var findWS = function(current, ms) {
   var change = false;
 
   if (current >= WSGCode['worksteps'][WSGCodeIndex]) {
@@ -127,19 +127,21 @@ var findWS = function(current) {
       WSGCodeIndex = 0;
     } else {
       WSGCodeIndex = WSGCodeIndex + 1;
+			ms.NextWS();
     }
     console.log('GCODE Switched!');
     return true;
   }
-
+	/*
   while (current < WSGCode['worksteps'][WSGCodeIndex - 1]) {
     if (WSGCodeIndex >= WSGCode['worksteps'].length) {
       WSGCodeIndex = 0;
     } else {
       WSGCodeIndex = WSGCodeIndex + 1;
+			ms.NextWS();
     }
     change = true;
-  }
+  }*/
   return change;
 };
 
@@ -155,9 +157,9 @@ var _getDelta = function(ms, key, cb) {
     MTCHold.feedrate = res[5];
     MTCHold.feedrateUnits = res[6];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
-    if (findWS(res[4]) ) {
+    if (findWS(res[4], ms) ) {
       console.log('keystate');
-      ms.NextWS();
+      //ms.NextWS();
       holder = JSON.parse(ms.GetKeystateJSON());
       holder.next = true;
     } else {
@@ -223,8 +225,8 @@ var parseGCodes = function() {
       _.each(GCodes, function(line) {
         if (line[0] === '(') {
           if (line.substring(1, 12) === 'WORKINGSTEP') {
-            console.log(lineNumber);
             MTCcontent.push(lineNumber);
+						
           }
         } else {
           GCcontent.push(line);
