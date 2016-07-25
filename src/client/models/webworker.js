@@ -774,12 +774,9 @@ let messageHandler = function(e) {
     // using arrow function to bind 'this' to the higher-level 'self'
     let loadCb = (res) => {
         //TODO: MAKE THIS LESS HARDCODED
-        if (parts[parts.length - 2] === "state") {
-            let file = parts[parts.length - 2] + '/' + parts[parts.length - 1];
-            self.postMessage({type : "loadComplete", file: file });
-        }
-        else {
-            self.postMessage({ type: "loadComplete", file: parts[parts.length - 2] });
+        let file = parts.slice(-2, -1).join('/');
+        if (file === 'state') {
+            file = parts.slice(-2).join('/');
         }
         // What did we get back
         switch(e.data.type) {
@@ -802,6 +799,11 @@ let messageHandler = function(e) {
                         colorsData:     [],
                         values:         []
                     };
+                }
+
+                file = dataJSON.id;
+                if (e.data.type === 'previewShell') {
+                    file = 'preview-' + parts.slice(-1);
                 }
                 self.postMessage({
                     type: "parseComplete",
@@ -833,6 +835,8 @@ let messageHandler = function(e) {
                 throw Error("DataLoader.webworker - Invalid request type: " + e.data.type);
                 break;
         }
+
+        self.postMessage({type : "loadComplete", file: file });
     }
     
     // define a callback for the "progress" event
