@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import {Treebeard} from 'react-treebeard';
 import ts from '../tree_style.jsx';

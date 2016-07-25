@@ -12,6 +12,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ResponsiveView from './views/responsive';
 
+/*************************************************************************/
+
 class CADApp extends THREE.EventDispatcher {
   constructor() {
     super();
@@ -89,6 +91,8 @@ class CADApp extends THREE.EventDispatcher {
     this.addEventListener('user:login', this.handleLogin.bind(this));
   }
 }
+
+/*************************************************************************/
 
 // Invoke the new app
 module.exports = new CADApp();

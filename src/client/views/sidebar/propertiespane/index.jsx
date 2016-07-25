@@ -1,8 +1,6 @@
-// TODO: styleguide compliant
 import React from 'react';
 import Menu,{Item as MenuItem} from 'rc-menu';
 import request from 'superagent';
-import _ from 'lodash';
 
 function getIcon(type, data) {
   if (!data) {
@@ -292,16 +290,16 @@ export default class PropertiesPane extends React.Component {
     if (entity.workingsteps.length > 0) {
       title = 'Used in Workingsteps:';
       steps = (<div className='list'>
-        {entity.workingsteps.map((step) => 
+        {entity.workingsteps.map((step) =>
           this.renderNode(this.props.workingsteps[step])
         )}
       </div>);
     } else {
       title = 'Not used in any workingsteps.';
     }
-    
+
     title = (<div className='title'>{title}</div>);
-    
+
     this.properties.push (
       <MenuItem disabled key='workingsteps' className='property children'>
         {title}
@@ -309,12 +307,12 @@ export default class PropertiesPane extends React.Component {
       </MenuItem>
     );
   }
-  
+
   renderWorkpieces(entity) {
     if (entity.type !== 'workingstep') {
       return null;
     }
-    
+
     let asIs, toBe, delta;
 
     if (entity.asIs.id !== 0) {

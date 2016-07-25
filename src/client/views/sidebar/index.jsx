@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import Menu, {Item as MenuItem} from 'rc-menu';
 import WorkingstepList from './workingstepslist';
