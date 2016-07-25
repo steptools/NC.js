@@ -115,7 +115,7 @@ export default class GeometryView extends React.Component{
   componentWillUpdate(nextProps, nextState) {
 
     // TODO: unhighlight faces when necessary
-    if (this.props.ws !== nextProps.ws && nextProps.ws > 0) {
+    if (nextProps.ws > 0) {
           
       // now highlight any tolerances present in current workingstep
       let workingstep = nextProps.workingstepCache[nextProps.ws];
@@ -162,6 +162,7 @@ export default class GeometryView extends React.Component{
   }
 
   onShellLoad(event) {
+    this.forceUpdate();
     // Get around the fact that viewerControls calls change a bunch at startup
     this.invalidate(event);
   }
