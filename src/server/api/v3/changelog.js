@@ -18,7 +18,7 @@ var fs = require('fs');
 //\*******************************************************************/
 
 var _getchangelog = function(req,res){
-    fs.readFile("changelog.md", "utf8", function(err,data){
+    fs.readFile("CHANGELOG.md", "utf8", function(err,data){
       if(err) {
         return console.log(err);
       }
