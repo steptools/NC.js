@@ -1,27 +1,25 @@
-"use strict";
+'use strict';
 let StepNC = require('../../../../../STEPNode/build/Release/StepNode');
-let fs = require("fs");
+let fs = require('fs');
 
+function init(path, machinetool) {
+  fs.accessSync(path, fs.R_OK , () => process.exit());
+  this.apt = new StepNC.AptStepMaker();
+  this.find = new StepNC.Finder();
+  this.tol = new StepNC.Tolerance();
 
-function init(path, machinetool){
-	fs.accessSync(path, fs.R_OK , (err) => {
-  		process.exit();
-	});
-	this.apt = new StepNC.AptStepMaker();
-	this.find = new StepNC.Finder();
-	this.tol = new StepNC.Tolerance();
+  this.apt.OpenProject(path);
+  this.find.OpenProject(path);
 
-	this.apt.OpenProject(path);
-	this.find.OpenProject(path);
-
-	this.ms = new StepNC.machineState(path);
-	if(machinetool !== ""){
-		if(!this.ms.LoadMachine(machinetool))
-			console.log("ERROR: Machinetool was not loaded");
-		else
-			console.log("Loaded Machine Successfully")
-	}
-	return;
+  this.ms = new StepNC.machineState(path);
+  if (machinetool !== '') {
+    if (!this.ms.LoadMachine(machinetool)) {
+      console.log('ERROR: Machinetool was not loaded');
+    } else {
+      console.log('Loaded Machine SUccessfully');
+    }
+  }
+  return;
 }
 
 module.exports.init = init;
