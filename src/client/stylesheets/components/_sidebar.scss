@@ -43,11 +43,9 @@ $icons: '../icons/';
             
             .icon {
                 margin-right: 8px;
+                width: auto;
+                min-width: 30px;
             }
-            
-            /*.textbox {
-                flex-grow: 1;
-            }*/
             
             .setup-textbox{
                 display: table;
@@ -455,7 +453,7 @@ $icons: '../icons/';
         display: inline-block;
         text-align: center;
         height: 30px;
-        min-width: 30px;
+        width: 30px;
     }
 
     &.workpiece {
