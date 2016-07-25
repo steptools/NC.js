@@ -128,7 +128,6 @@ export default class DataLoader extends THREE.EventDispatcher {
         req.callback = callback;
         // Push onto the queue and send out a message
         this._queue.push(req);
-        console.log(req);
         if (req.type === 'previewShell') {
             this.dispatchEvent({ type: 'addRequest', path: 'preview-' + req.path});
         }

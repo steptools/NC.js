@@ -109,10 +109,22 @@ export default class PropertiesPane extends React.Component {
       this.props.propertiesCb(this.props.tools[entity.tool]);
     } else if (event.key === 'preview') {
       this.setState({'preview': true});
+
+      let prevId;
+      if (entity.type === 'workingstep') {
+        prevId = entity.toBe.id;
+      }
+      else if (entity.type === 'tolerance') {
+        prevId = entity.workpiece;
+      }
+      else {
+        prevId = entity.id;
+      }
+
       this.props.manager.dispatchEvent({
         type: 'setModel',
         viewType: 'preview',
-        path: entity.id,
+        path: prevId,
         baseURL: this.props.manager.app.services.api_endpoint + this.props.manager.app.services.version + '/nc',
         modelType: 'previewShell'
       });  
