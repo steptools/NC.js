@@ -18,6 +18,7 @@ var file = require('./file');
 
 let _getGeometry = function(req , res){
   let ms = file.ms;
+  let find = file.find;
 
   if(req.params.type === "shell"){
     res.status(200).send(ms.GetGeometryJSON(req.params.uuid , "MESH"));
