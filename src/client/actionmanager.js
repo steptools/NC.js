@@ -7,11 +7,13 @@
 let LOG_ALL_ACTIONS = false;
 
 if (LOG_ALL_ACTIONS) {
-  console.info(`
+  console.info(
+    `
     The action manager is currently set to log all messages.
 
     To disable this setting, set LOG_ALL_ACTIONS to false in actionmanager.js
-    `);
+    `
+  );
 }
 
 

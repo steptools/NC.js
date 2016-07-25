@@ -46,43 +46,38 @@ function getToWS(wsId, ms, cb) {
 
 function loop(ms, key) {
   if (loopStates[path] === true) {
-    //app.logger.debug("Loop step " + path);
+    //app.logger.debug('Loop step ' + path);
     let rc = ms.AdvanceState();
     if (rc === 0) {  // OK
-      //app.logger.debug("OK...");
+      //app.logger.debug('OK...');
       getDelta(ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
-          if (loopTimer !== undefined)
-              clearTimeout(loopTimer);
-          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
-        }
-        else {
-          // app.logger.debug("playback speed is zero, no timeout set");
+          if (loopTimer !== undefined) {
+            clearTimeout(loopTimer);
+          }
+          loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
         }
       });
-    }
-    else if (rc == 1) {   // SWITCH
-      // app.logger.debug("SWITCH...");
+    } else if (rc === 1) {   // SWITCH
+      // app.logger.debug('SWITCH...');
       let old = getWorkingstep();
       getNext(ms, function() {
         loop(ms, true);
       });
-      let setup = sameSetup(getWorkingstep(),old);
-      if (!setup){
+      let setup = sameSetup(getWorkingstep(), old);
+      if (!setup) {
         loopStates[path] = false;
-        update("pause");
-        loop(ms,false);
+        update('pause');
+        loop(ms, false);
       }
       getDelta(ms, false, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
-          if (loopTimer !== undefined)
-              clearTimeout(loopTimer);
-          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
-        }
-        else {
-          // app.logger.debug("playback speed is zero, no timeout set");
+          if (loopTimer !== undefined) {
+            clearTimeout(loopTimer);
+          }
+          loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
         }
       });
     }
@@ -102,170 +97,146 @@ function sameSetup(newid, oldid) {
 /***************************** Endpoint Functions *****************************/
 
 function _loopInit(req, res) {
-  // app.logger.debug("loopstate is " + req.params.loopstate);
-    if (req.params.loopstate === undefined) {
-      if (loopStates[path] === true) {
-        res.status(200).send(JSON.stringify({'state': "play", 'speed': playbackSpeed}));
-      }
-      else {
-        res.status(200).send(JSON.stringify({'state': "pause", 'speed': playbackSpeed}));
-      }
+  // app.logger.debug('loopstate is ' + req.params.loopstate);
+  if (req.params.loopstate === undefined) {
+    if (loopStates[path] === true) {
+      res.status(200).send(JSON.stringify({
+        'state': 'play',
+        'speed': playbackSpeed,
+      }));
+    } else {
+      res.status(200).send(JSON.stringify({
+        'state': 'pause',
+        'speed': playbackSpeed,
+      }));
     }
-    else
-    {
-      let loopstate = req.params.loopstate;
-      var ms = file.ms;
-      if (typeof(loopStates[path]) === 'undefined') {
+  } else {
+    let loopstate = req.params.loopstate;
+    var ms = file.ms;
+    if (typeof loopStates[path] === 'undefined') {
+      loopStates[path] = false;
+    }
+
+    switch (loopstate) {
+      case 'start':
+        if (loopStates[path] === true) {
+          res.status(200).send('Already running');
+          return;
+        }
+        // app.logger.debug('Looping ' + path);
+        loopStates[path] = true;
+        res.status(200).send('OK');
+        update('play');
+        loop(ms, false);
+        break;
+      case 'stop':
+        if (loopStates[path] === false) {
+          res.status(200).send('Already stopped');
+          return;
+        }
         loopStates[path] = false;
-      }
+        update('pause');
+        res.status(200).send('OK');
+        break;
+      default:
+        if (isNaN(parseFloat(loopstate)) || !isFinite(loopstate)) {
+          break;
+        }
+        let newSpeed = Number(loopstate);
 
-      switch (loopstate) {
-        case "start":
-          if (loopStates[path] === true) {
-            res.status(200).send("Already running");
-            return;
-          }
-          // app.logger.debug("Looping " + path);
-          loopStates[path] = true;
-          res.status(200).send("OK");
-          update("play");
+        if (Number(playbackSpeed) !== newSpeed) {
+          playbackSpeed = newSpeed;
+          // app.logger.debug('Changing speed to ' + newSpeed);
+        }
+
+        if (loopStates[path] === true) {
           loop(ms, false);
-          break;
-        case "stop":
-          if (loopStates[path] === false) {
-            res.status(200).send("Already stopped");
-            return;
-          }
-          loopStates[path] = false;
-          update("pause");
-          res.status(200).send("OK");
-          break;
-        default:
-          if (!isNaN(parseFloat(loopstate)) && isFinite(loopstate)) {
-            let newSpeed = Number(loopstate);
-
-            if (Number(playbackSpeed) !== newSpeed) {
-              playbackSpeed = newSpeed;
-              // app.logger.debug("Changing speed to " + newSpeed);
-            }
-
-            if (loopStates[path] === true) {
-              loop(ms, false);
-              res.status(200).send(JSON.stringify({"state": "play", "speed": playbackSpeed}));
-            }
-            else {
-              res.status(200).send(JSON.stringify({"state": "pause", "speed": playbackSpeed}));
-            }
-            updateSpeed(playbackSpeed);
-          }
-          else {
-            // untested case
-          }
-      }
+          res.status(200).send(JSON.stringify({
+            'state': 'play',
+            'speed': playbackSpeed,
+          }));
+        } else {
+          res.status(200).send(JSON.stringify({
+            'state': 'pause',
+            'speed': playbackSpeed,
+          }));
+        }
+        updateSpeed(playbackSpeed);
     }
+  }
 }
 
 function _wsInit(req, res) {
   if (req.params.command) {
     let command = req.params.command;
     var ms = file.ms;
-    if (typeof(loopStates[path]) === 'undefined') {
+    if (typeof loopStates[path] === 'undefined') {
       loopStates[path] = false;
     }
 
-    switch(command) {
-      case "next":
-        var temp = loopStates[path];
-        loopStates[path] = true;
-        if (temp) {
-        getNext(ms, function() {
-        loop(ms, true);
-        });
+    switch (command) {
+      case 'next':
+        if (loopStates[path]) {
+          getNext(ms, () => loop(ms, true));
+        } else {
+          loop(ms, false);
+          getNext(ms, () => loop(ms, true));
+          update('pause');
         }
-        else{
-          loop(ms,false);
-          getNext(ms, function() {
-          loop(ms, true);
-          });
-          loopStates[path] = false;
-          update("pause");
-        }
-        res.status(200).send("OK");
+        res.status(200).send('OK');
         break;
-      case "prev":
-        var temp = loopStates[path];
-        loopStates[path] = true;
-        if (temp) {
-        getPrev(ms, function() {
-        loop(ms, true);
-        });
+      case 'prev':
+        if (loopStates[path]) {
+          getPrev(ms, () => loop(ms, true));
+        } else {
+          loop(ms, false);
+          getPrev(ms, () => loop(ms, true));
+          update('pause');
         }
-        else{
-          loop(ms,false);
-          getPrev(ms, function() {
-          loop(ms, true);
-          });
-          loopStates[path] = false;
-          update("pause");
-        }
-        res.status(200).send("OK");
+        res.status(200).send('OK');
         break;
-        default:
-          if (!isNaN(parseFloat(command)) && isFinite(command)) {
-            let ws = Number(command);
-            temp = loopStates[path];
-            loopStates[path] = true;
-            if (temp) {
-            getToWS(ws, ms, function() {
-            loop(ms, true);
-            });
-            loopStates[path] = false;
-            update("pause");
-            }
-            else{
-              loop(ms,false);
-              getToWS(ws, ms, function() {
-              loop(ms, true);
-              });
-              loopStates[path] = false;
-              update("pause");
-            }
-            res.status(200).send("OK");
-              }
-              else {
-                // untested case
-              }
+      default:
+        if (isNaN(parseFloat(command) || !isFinite(command))) {
+          break;
+        }
+        let ws = Number(command);
+        if (!loopStates[path]) {
+          loop(ms, false);
+        }
+        getToWS(ws, ms, () => loop(ms, true));
+        loopStates[path] = false;
+        update('pause');
+        res.status(200).send('OK');
+    }
+
+    getDelta(ms, false, function(b) {
+      app.ioServer.emit('nc:delta', JSON.parse(b));
+      if (playbackSpeed > 0) {
+        if (loopTimer !== undefined) {
+          clearTimeout(loopTimer);
+        }
+        loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
       }
-      getDelta(ms, false, function(b) {
-        app.ioServer.emit('nc:delta', JSON.parse(b));
-        if (playbackSpeed > 0) {
-          if (loopTimer !== undefined)
-              clearTimeout(loopTimer);
-          loopTimer = setTimeout(function () { loop(ms, false); }, 50 / (playbackSpeed / 200));
-        }
-        else {
-          // app.logger.debug("playback speed is zero, no timeout set");
-        }
-      });
+    });
   }
 }
 
 function _getKeyState(req, res) {
-    var ms = file.ms;
-    if (ms === undefined) {
-      res.status(404).send("Machine state could not be found");
-      return;
-    }
-    res.status(200).send(ms.GetKeystateJSON());
+  var ms = file.ms;
+  if (ms === undefined) {
+    res.status(404).send('Machine state could not be found');
+    return;
+  }
+  res.status(200).send(ms.GetKeystateJSON());
 }
 
 function _getDeltaState(req, res) {
-    var ms = file.ms;
-    if (ms === undefined) {
-      res.status(404).send("Machine state could not be found");
-      return;
-    }
-    res.status(200).send(ms.GetDeltaJSON());
+  var ms = file.ms;
+  if (ms === undefined) {
+    res.status(404).send('Machine state could not be found');
+    return;
+  }
+  res.status(200).send(ms.GetDeltaJSON());
 }
 
 module.exports = function(globalApp, cb) {
@@ -275,6 +246,7 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
+
   if (cb) {
     cb();
   }
