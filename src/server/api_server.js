@@ -13,7 +13,7 @@ let jade = require('jade');
 let CoreServer = require('./core_server');
 let util = require('util');
 
-/************************* Support Site *********************************/
+/**************************** Support Site ************************************/
 
 var COOKIE_SECRET = 'imhotep';
 var app;
@@ -168,7 +168,7 @@ APIServer.prototype.run = function() {
   });
 };
 
-/************************** Run the server ******************************/
+/***************************** Run the server *********************************/
 
 app = new APIServer();
 app.run();
