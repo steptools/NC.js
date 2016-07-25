@@ -5,6 +5,7 @@ import request from 'superagent';
 import CADView from '../cad';
 import HeaderView from '../header';
 import SidebarView from '../sidebar';
+import MobileSidebar from '../mobilesidebar';
 import FooterView	from '../footer';
 import {Markdown as md} from 'node-markdown';
 
@@ -22,6 +23,7 @@ export default class ResponsiveView extends React.Component {
 
     this.state = {
       guiMode: tempGuiMode,
+      msGuiMode: false,
       svmode: 'ws',
       ws: -1,
       svtree: {
@@ -57,6 +59,7 @@ export default class ResponsiveView extends React.Component {
     this.updateWS = this.updateWorkingstep.bind(this);
 
     this.handleResize = this.handleResize.bind(this);
+    this.toggleMobileSidebar = this.toggleMobileSidebar.bind(this);
 
     this.cbWS = this.cbWS.bind(this);
 
@@ -272,6 +275,10 @@ export default class ResponsiveView extends React.Component {
     this.setState({resize: false});
   }
 
+  toggleMobileSidebar(newMode) {
+    this.setState({msGuiMode: newMode});
+  }
+
   openProperties(node, backtrack) {
     let currEntity = this.state.selectedEntity;
     let prevEntities = this.state.previouslySelectedEntities;
@@ -393,7 +400,7 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
-    let HV, SV, FV;
+    let HV, SV, SO, FV;
     if (this.state.guiMode === 0) {
       HV = (
         <HeaderView
@@ -446,6 +453,10 @@ export default class ResponsiveView extends React.Component {
         />
       );
     } else {
+      if (this.state.msGuiMode === true)
+          SO = (
+            <MobileSidebar />
+          );
       FV = (
         <FooterView
           cadManager={this.props.app.cadManager}
@@ -458,6 +469,8 @@ export default class ResponsiveView extends React.Component {
             (newWSText) => this.setState({wstext: newWSText})
           }
           ppbutton={this.state.ppbutton}
+          cbMobileSidebar={this.toggleMobileSidebar}
+          msGuiMode={this.state.msGuiMode}
         />
       );
     }
@@ -493,6 +506,7 @@ export default class ResponsiveView extends React.Component {
 
     return (
       <div style={{height:'100%'}}>
+        {SO}
         {HV}
         {SV}
         <div id='cadview-container' style={cadviewStyle}>
