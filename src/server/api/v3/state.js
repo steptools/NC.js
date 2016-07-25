@@ -44,13 +44,12 @@ function getToWS(wsId, ms, cb) {
   cb();
 }
 
-
 function loop(ms, key) {
   if (loopStates[path] === true) {
-    //app.logger.debug("Loop step " + path);
+    //app.logger.debug('Loop step ' + path);
     let rc = ms.AdvanceState();
     if (rc === 0) {  // OK
-      //app.logger.debug("OK...");
+      //app.logger.debug('OK...');
       getDelta(ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
@@ -59,11 +58,11 @@ function loop(ms, key) {
           }
           loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
         } else {
-          // app.logger.debug("playback speed is zero, no timeout set");
+          // app.logger.debug('playback speed is zero, no timeout set');
         }
       });
     } else if (rc === 1) {   // SWITCH
-      // app.logger.debug("SWITCH...");
+      // app.logger.debug('SWITCH...');
       let old = _getWorkingstep();
       getNext(ms, function() {
         loop(ms, true);
@@ -82,7 +81,7 @@ function loop(ms, key) {
           }
           loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
         } else {
-          // app.logger.debug("playback speed is zero, no timeout set");
+          // app.logger.debug('playback speed is zero, no timeout set');
         }
       });
     }
@@ -102,7 +101,7 @@ function _sameSetup(newid, oldid) {
 /***************************** Endpoint Functions *****************************/
 
 function _loopInit(req, res) {
-  // app.logger.debug("loopstate is " + req.params.loopstate);
+  // app.logger.debug('loopstate is ' + req.params.loopstate);
   if (req.params.loopstate === undefined) {
     if (loopStates[path] === true) {
       res
@@ -132,7 +131,7 @@ function _loopInit(req, res) {
           res.status(200).send('Already running');
           return;
         }
-        // app.logger.debug("Looping " + path);
+        // app.logger.debug('Looping ' + path);
         loopStates[path] = true;
         res.status(200).send('OK');
         update('play');
@@ -155,7 +154,7 @@ function _loopInit(req, res) {
         let newSpeed = Number(loopstate);
         if (Number(playbackSpeed) !== newSpeed) {
           playbackSpeed = newSpeed;
-          // app.logger.debug("Changing speed to " + newSpeed);
+          // app.logger.debug('Changing speed to ' + newSpeed);
         }
 
         if (loopStates[path] === true) {
@@ -188,10 +187,10 @@ function _wsInit(req, res) {
   if (typeof loopStates[path] === 'undefined') {
     loopStates[path] = false;
   }
-
+  let temp;
   switch (command) {
     case 'next':
-      let temp = loopStates[path];
+      temp = loopStates[path];
       loopStates[path] = true;
       if (temp) {
         getNext(ms, () => loop(ms, true));
@@ -204,7 +203,7 @@ function _wsInit(req, res) {
       res.status(200).send('OK');
       break;
     case 'prev':
-      let temp = loopStates[path];
+      temp = loopStates[path];
       loopStates[path] = true;
       if (temp) {
         getPrev(ms, () => loop(ms, true));
