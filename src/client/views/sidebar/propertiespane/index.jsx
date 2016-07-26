@@ -99,6 +99,8 @@ export default class PropertiesPane extends React.Component {
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
   }
+  
+  
 
   selectWS(event, entity) {
     if (event.key === 'goto') {

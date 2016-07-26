@@ -159,6 +159,8 @@ $icons: '../icons/';
     -ms-transition: -ms-transform ease 250ms;
     -o-transition: -o-transform ease 250ms;
     transition: transform ease 250ms;
+    border-top: 2px solid #333333;
+    border-bottom: 2px solid #333333;
 
     overflow-x: visible;
 
@@ -172,7 +174,8 @@ $icons: '../icons/';
 
     .preview-container {
         position: absolute;
-        border: solid 2px #F8F8F8;
+        border: solid 2px #333333;
+        top: -2px;
         width: $sidebarWidth;
         height: $sidebarWidth;
         z-index: -10;
@@ -199,7 +202,7 @@ $icons: '../icons/';
 
             &:hover {
                 cursor: pointer;
-                color: #F8F8F8;
+                color: #2BAEE9;
             }
         }
 
