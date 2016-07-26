@@ -287,20 +287,23 @@ export default class DataLoader extends THREE.EventDispatcher {
         ], true);
         
         // Is this a shell
-        if(data.usage === 'cutter')
-        {
+        if(data.usage === 'cutter') {
             color = DataLoader.parseColor("FF530D");
         }
-        if(data.usage === 'fixture' && this._app.services.machine.dir === ''){
+        if(data.usage === 'fixture' && this._app.services.machine.dir === '') {
             return;
+        }
+        if (data.usage === undefined) {
+            data.usage = 'tobe';
         }
 
         let boundingBox = new THREE.Box3();
 
         let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);
-        nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
-        
+
         shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
+        
+        nc.addModel(shell, data.usage, 'shell', data.id, transform, shell.getBoundingBox());
         
         req.callback(undefined, nc);
     }

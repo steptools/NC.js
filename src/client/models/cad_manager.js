@@ -131,8 +131,8 @@ export default class CADManager extends THREE.EventDispatcher {
         return _.flatten(selected);
     }
 
-    getRootModels() {
-        return _.values(this._models);
+    getRootModel(key) {
+        return this._models[key];
     }
 
     modelCount() {

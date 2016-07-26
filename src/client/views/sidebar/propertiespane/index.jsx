@@ -107,7 +107,7 @@ export default class PropertiesPane extends React.Component {
     } else if (event.key === 'tool') {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
-    } else if (event.key === 'preview') {
+    } else if (event.key === 'preview' && !this.state.preview) {
       this.setState({'preview': true});
 
       let prevId;
@@ -456,6 +456,7 @@ export default class PropertiesPane extends React.Component {
           resize={this.props.resize}
           isCadView={false}
           toleranceCache={this.props.toleranceCache}
+          locked={false}
           parentSelector='.preview-container'
           viewType='preview'
         />
