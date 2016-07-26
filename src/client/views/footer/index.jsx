@@ -140,6 +140,9 @@ export default class FooterView extends React.Component {
 
     soTouchMove(info)
     {
+        info.preventDefault();
+        info.stopPropagation();
+
         let fv = $('.Footer-bar');
         if(soy > 0)
         {
