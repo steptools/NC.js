@@ -128,19 +128,19 @@ export default class GeometryView extends React.Component{
         b: 1.0
       };
 
-      let modelKey = workingstep.toBe.id;
       let faces = [];
       if (this.props.viewType === 'cadjs') {
-        modelKey = 'state/key';
         _.each(workpiece.children, (tol) => {
           faces = faces.concat(tol.faces);
         });
       }
-      else if (this.props.entity.type === 'tolerance') {
-        faces = faces.concat(this.props.entity.faces);
+
+      this.highlightFaces(faces, nextProps.manager.getRootModel('state/key'), false, highlightColor);
+
+      if (nextProps.selectedEntity && nextProps.selectedEntity.type === 'tolerance') {
+        this.highlightFaces(nextProps.selectedEntity.faces, nextProps.manager.getRootModel(nextProps.selectedEntity.workpiece), false, highlightColor);
       }
 
-      this.highlightFaces(faces, nextProps.manager.getRootModel(modelKey), false, highlightColor);
     }
   }
 
