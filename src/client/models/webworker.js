@@ -714,10 +714,12 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
     });
     // Do we signal that we are all done
     if (signalFinish) {
+        let file = parts[parts.length - 2];
+        
         self.postMessage({
             type: "workerFinish",
             workerID: workerID,
-            file: parts[parts.length - 2]
+            file: file
         });
     }
 }
@@ -803,7 +805,13 @@ let messageHandler = function(e) {
 
                 file = dataJSON.id;
                 if (e.data.type === 'previewShell') {
-                    file = 'preview-' + parts.slice(-1);
+                    file = 'preview-';
+                    if (parts[parts.length - 1] === 'tool') {
+                        file = file + parts[parts.length - 2] + '/tool';
+                    }
+                    else {
+                        file = file + parts[parts.length - 1];
+                    }
                     _.each(dataJSON, (dat) => {
                         if (_.has(dat, 'id'))
                         processShellJSON(url, workerID, dat, true);
