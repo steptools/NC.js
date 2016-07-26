@@ -29,7 +29,7 @@ let _getGeometry = function(req , res){
     return;
   }
   else if (req.params.type === 'tool') {
-    let toolId = Number(req.params.id); // find.??(Number(req.params.eid));
+    let toolId = find.GetToolWorkpiece(Number(req.params.id));
     res.status(200).send(find.GetGeometryJSON(toolId));
     return;
   }
