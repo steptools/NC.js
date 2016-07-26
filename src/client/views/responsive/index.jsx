@@ -6,7 +6,6 @@ import CADView from '../cad';
 import HeaderView from '../header';
 import SidebarView from '../sidebar';
 import FooterView	from '../footer';
-import {Markdown as md} from 'node-markdown';
 
 export default class ResponsiveView extends React.Component {
   constructor(props) {
@@ -43,6 +42,7 @@ export default class ResponsiveView extends React.Component {
       workplanCache: {},
       selectedEntity: null,
       previouslySelectedEntities: [null],
+      preview: false,
     };
 
     this.addBindings();
@@ -56,6 +56,8 @@ export default class ResponsiveView extends React.Component {
     this.updateWS = this.updateWorkingstep.bind(this);
 
     this.handleResize = this.handleResize.bind(this);
+    this.handleKeydown = this.handleKeydown.bind(this);
+    this.handleKeyup = this.handleKeyup.bind(this);
 
     this.cbWS = this.cbWS.bind(this);
 
@@ -63,6 +65,7 @@ export default class ResponsiveView extends React.Component {
     this.changeSpeed = this.changeSpeed.bind(this);
 
     this.openProperties = this.openProperties.bind(this);
+    this.openPreview = this.openPreview.bind(this);
   }
 
   addListeners() {
@@ -109,6 +112,8 @@ export default class ResponsiveView extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
+    window.addEventListener('keydown', this.handleKeydown);
+    window.addEventListener('keyup', this.handleKeyup);
 
     // set a temp variable for the workingstep cache
     let workingstepCache = {};
@@ -245,6 +250,8 @@ export default class ResponsiveView extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('keydown', this.handleKeydown);
+    window.removeEventListener('keyup', this.handleKeyup);
   }
 
   handleResize() {
@@ -258,6 +265,62 @@ export default class ResponsiveView extends React.Component {
 
     this.setState({resize: true});
     this.setState({resize: false});
+  }
+
+  handleKeydown(e) {
+    //console.log('I\'m a keydown event in ResponsiveView! ', e, this);
+    //console.log(e.keyCode);
+    //console.log(this);
+    window.removeEventListener('keydown', this.handleKeydown);
+
+    switch (e.keyCode) {
+      case 27: // ESC
+        if (this.state.preview === true) {
+          this.openPreview(false);
+        } else {
+          this.openProperties(null);
+        }
+        break;
+    }
+    /*
+    // Go to special viewing postion on 'a'
+    case 97:
+        //console.log(this.camera);
+        this.alignToolView(this.props.manager.getSelected());
+        this.invalidate();
+        break;
+    // Explode on 'x' key pressed
+    case 120:
+        this.props.manager.explode(10);
+        break;
+    // Unexplode on 's' key pressed
+    case 115:
+        this.props.manager.explode(-10);
+        break;
+    // 'q' reset all elements
+    case 113:
+        this.props.manager.clear();
+        break;
+    // 'o' to toggle transparency
+    case 111:
+        this.props.manager.toggleOpacity();
+        break;
+    // 'z' to zoomToFit
+    case 122:
+        let objs = this.props.manager.getSelected();
+        this.zoomToFit(objs);
+        break;
+    // 'j' hide/show element
+    case 106:
+        this.props.manager.toggleVisibility();
+        break;
+    }
+    this.invalidate({ tree: true });
+    */
+  }
+
+  handleKeyup() {
+    window.addEventListener('keydown', this.handleKeydown);
   }
 
   openProperties(node, backtrack) {
@@ -280,6 +343,12 @@ export default class ResponsiveView extends React.Component {
         previouslySelectedEntities: prevEntities,
         selectedEntity: node,
       });
+    }
+  }
+
+  openPreview(state) {
+    if (state === true || state === false && state !== this.state.preview) {
+      this.setState({preview: state});
     }
   }
 
@@ -431,6 +500,8 @@ export default class ResponsiveView extends React.Component {
           openProperties={this.openProperties}
           selectedEntity={this.state.selectedEntity}
           previouslySelectedEntities={this.state.previouslySelectedEntities}
+          preview={this.state.preview}
+          openPreview={this.openPreview}
         />
       );
     } else {

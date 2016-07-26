@@ -1,9 +1,8 @@
 // TODO: styleguide compliant
 import React from 'react';
 import Menu,{Item as MenuItem} from 'rc-menu';
-import GeometryView from '../../geometry'
+import GeometryView from '../../geometry';
 import request from 'superagent';
-import _ from 'lodash';
 
 function getIcon(type, data) {
   if (!data) {
@@ -91,7 +90,7 @@ export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {entity: null, preview: false};
+    this.state = {entity: null};
 
     this.properties = [];
 
@@ -99,8 +98,6 @@ export default class PropertiesPane extends React.Component {
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
   }
-  
-  
 
   selectWS(event, entity) {
     if (event.key === 'goto') {
@@ -109,8 +106,8 @@ export default class PropertiesPane extends React.Component {
     } else if (event.key === 'tool') {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
-    } else if (event.key === 'preview' && !this.state.preview) {
-      this.setState({'preview': true});
+    } else if (event.key === 'preview' && this.props.preview === false) {
+      this.props.previewCb(true);
 
       let prevId;
       if (entity.type === 'workingstep') {
@@ -124,22 +121,23 @@ export default class PropertiesPane extends React.Component {
         prevId = entity.id;
       }
 
+      let url = this.props.manager.app.services.api_endpoint
+        + this.props.manager.app.services.version + '/nc';
       this.props.manager.dispatchEvent({
         type: 'setModel',
         viewType: 'preview',
         path: prevId,
-        baseURL: this.props.manager.app.services.api_endpoint + this.props.manager.app.services.version + '/nc',
-        modelType: 'previewShell'
-      });  
+        baseURL: url,
+        modelType: 'previewShell',
+      });
     }
-    
     // some other menu item clicked, no need to do anything
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.entity !== nextProps.entity ||
         nextProps.entity === null) {
-      this.setState({'preview': false});
+      this.props.previewCb(false);
     }
   }
 
@@ -249,13 +247,13 @@ export default class PropertiesPane extends React.Component {
       );
     }
   }
-  
+
   renderPreviewButton(entity) {
     if (entity.type === 'workplan' || entity.type === 'selective' ||
         entity.type === 'workplan-setup') {
       return;
     }
-    
+
     this.properties.push(
       <MenuItem
         key='preview'
@@ -341,16 +339,16 @@ export default class PropertiesPane extends React.Component {
     if (entity.workingsteps.length > 0) {
       title = 'Used in Workingsteps:';
       steps = (<div className='list'>
-        {entity.workingsteps.map((step) => 
+        {entity.workingsteps.map((step) =>
           this.renderNode(this.props.workingsteps[step])
         )}
       </div>);
     } else {
       title = 'Not used in any workingsteps.';
     }
-    
+
     title = (<div className='title'>{title}</div>);
-    
+
     this.properties.push (
       <MenuItem disabled key='workingsteps' className='property children'>
         {title}
@@ -358,12 +356,12 @@ export default class PropertiesPane extends React.Component {
       </MenuItem>
     );
   }
-  
+
   renderWorkpieces(entity) {
     if (entity.type !== 'workingstep') {
       return null;
     }
-    
+
     let asIs, toBe, delta;
 
     if (entity.asIs &&
@@ -452,16 +450,16 @@ export default class PropertiesPane extends React.Component {
       </MenuItem>
     );
   }
-  
+
   renderPreview(entity) {
     if (entity === null) {
       return null;
     }
-    
+
     let cName = 'preview-container';
     let content;
-    
-    if (this.state.preview) {
+
+    if (this.props.preview === true) {
       cName = cName + ' visible';
 
       content = (
@@ -478,7 +476,7 @@ export default class PropertiesPane extends React.Component {
         />
       );
     }
-    
+
     return (
       <div className='preview'>
         <div className='preview-cover' />
@@ -486,8 +484,8 @@ export default class PropertiesPane extends React.Component {
           <span
             className={'preview-exit ' + getIcon('exit')}
             onClick={() => {
-                this.setState({'preview': false});
-              }}
+              this.props.previewCb(false);
+            }}
           />
           {content}
         </div>
@@ -579,7 +577,7 @@ export default class PropertiesPane extends React.Component {
               className={'title-exit ' + getIcon('exit')}
               onClick={() => {
                 this.props.propertiesCb(null);
-                this.setState({'preview': false});
+                this.props.previewCb(false);
               }}
             />
           </div>
