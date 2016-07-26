@@ -146,7 +146,7 @@ export default class GeometryView extends React.Component{
   componentWillUnmount() {      
     this.props.manager.removeEventListener("model:add", this.onModelAdd);
     this.props.manager.removeEventListener("model:remove", this.onModelRemove);
-    this.props.manager.removeEventListener("shellLoad", this.invalidate);
+    this.props.manager.removeEventListener("shellLoad", this.onShellLoad);
     this.props.manager.removeEventListener("annotationLoad", this.invalidate);
     this.props.manager.removeEventListener("invalidate", this.invalidate);
   }
