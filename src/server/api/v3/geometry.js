@@ -28,6 +28,11 @@ let _getGeometry = function(req , res){
     res.status(200).send(ms.GetGeometryJSON(req.params.uuid , "POLYLINE"));
     return;
   }
+  else if (req.params.type === 'tool') {
+    let toolId = Number(req.params.eid); // find.??(Number(req.params.eid));
+    res.status(200).send(find.GetGeometryJSON(toolId));
+    return;
+  }
   else if (!req.params.type && req.params.eid) {
     res.status(200).send(find.GetGeometryJSON(Number(req.params.eid)));
     return;

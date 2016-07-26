@@ -115,9 +115,10 @@ export default class PropertiesPane extends React.Component {
       let prevId;
       if (entity.type === 'workingstep') {
         prevId = entity.toBe.id;
-      }
-      else if (entity.type === 'tolerance') {
+      } else if (entity.type === 'tolerance') {
         prevId = entity.workpiece;
+      } else if (entity.type === 'tool') {
+        prevId = entity.id + '/tool';
       }
       else {
         prevId = entity.id;
@@ -251,7 +252,7 @@ export default class PropertiesPane extends React.Component {
   
   renderPreviewButton(entity) {
     if (entity.type === 'workplan' || entity.type === 'selective' ||
-        entity.type === 'workplan-setup' || entity.type === 'tool') {
+        entity.type === 'workplan-setup') {
       return;
     }
     
@@ -365,7 +366,9 @@ export default class PropertiesPane extends React.Component {
     
     let asIs, toBe, delta;
 
-    if (entity.asIs.id !== 0) {
+    if (entity.asIs &&
+        entity.asIs.id !== 0 &&
+        this.props.toleranceCache[entity.asIs.id]) {
       asIs = this.renderNode(this.props.toleranceCache[entity.asIs.id]);
       if (asIs) {
         asIs = (
@@ -375,7 +378,9 @@ export default class PropertiesPane extends React.Component {
         );
       }
     }
-    if (entity.toBe.id !== 0) {
+    if (entity.toBe &&
+        entity.toBe.id !== 0 &&
+        this.props.toleranceCache[entity.asIs.id]) {
       toBe = this.renderNode(this.props.toleranceCache[entity.toBe.id]);
       if (toBe) {
         toBe = (
@@ -385,7 +390,9 @@ export default class PropertiesPane extends React.Component {
         );
       }
     }
-    if (entity.delta.id !== 0) {
+    if (entity.delta &&
+        entity.delta.id !== 0 &&
+        this.props.toleranceCache[entity.delta.id]) {
       delta = this.renderNode(this.props.toleranceCache[entity.delta.id]);
       if (delta) {
         delta = (
