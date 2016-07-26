@@ -138,7 +138,6 @@ export default class PropertiesPane extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.entity !== nextProps.entity ||
         nextProps.entity === null) {
-      console.log('hiding preview');
       this.setState({'preview': false});
     }
   }
@@ -252,7 +251,7 @@ export default class PropertiesPane extends React.Component {
   
   renderPreviewButton(entity) {
     if (entity.type === 'workplan' || entity.type === 'selective' ||
-        entity.type === 'workplan-setup') {
+        entity.type === 'workplan-setup' || entity.type === 'tool') {
       return;
     }
     
