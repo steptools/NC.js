@@ -66,14 +66,13 @@ export default class Shape extends THREE.EventDispatcher {
         this._annotations = source._annotations;
         // Need to clone all child shapes
         this._children = [];
-        let self = this;
         for (let i = 0; i < source._children.length; i++) {
             // Clone the child shape
             let shapeID = source._children[i]._id;
             let shape = new Shape(shapeID, this._assembly, this, source._children[i]._transform, this._unit);
             // Bubble the shapeLoaded event
-            shape.addEventListener("shapeLoaded", function (event) {
-                self.dispatchEvent({type: "shapeLoaded", shell: event.shell});
+            shape.addEventListener("shapeLoaded", (event) => {
+                this.dispatchEvent({type: "shapeLoaded", shell: event.shell});
             });
             // Add the child shape to the scene graph
             this._object3D.add(shape.getObject3D());
@@ -84,11 +83,10 @@ export default class Shape extends THREE.EventDispatcher {
     }
 
     addChild(childShape) {
-        let self = this;
         this._children.push(childShape);
         // Bubble the shapeLoaded event
-        childShape.addEventListener("shapeLoaded", function (event) {
-            self.dispatchEvent({type: "shapeLoaded", shell: event.shell});
+        childShape.addEventListener("shapeLoaded", (event) => {
+            this.dispatchEvent({type: "shapeLoaded", shell: event.shell});
         });
         // Add of the child shape to the scene graph
         this._object3D.add(childShape.getObject3D());
@@ -97,20 +95,18 @@ export default class Shape extends THREE.EventDispatcher {
     }
 
     addAnnotation(annotation) {
-        let self = this;
         this._annotations.push(annotation);
-        annotation.addEventListener("annotationEndLoad", function (event) {
+        annotation.addEventListener("annotationEndLoad", (event) => {
             let anno = event.annotation;
-            self.addAnnotationGeometry(anno.getGeometry());
+            this.addAnnotationGeometry(anno.getGeometry());
         });
     }
 
     addShell(shell) {
-        let self = this;
         this._shells.push(shell);
-        shell.addEventListener("shellEndLoad", function (event) {
+        shell.addEventListener("shellEndLoad", (event) => {
             let shell = event.shell;
-            self.addShellGeometry(shell.getGeometry());
+            this.addShellGeometry(shell.getGeometry());
         });
     }
 
@@ -250,17 +246,16 @@ export default class Shape extends THREE.EventDispatcher {
 
     // Good
     toggleOpacity() {
-        let self = this;
-        function setOpacity(opacity) {
-            self.state.opacity = opacity;
-            self._object3D.traverse(function (object) {
+        let setOpacity = (opacity) => {
+            this.state.opacity = opacity;
+            this._object3D.traverse(function (object) {
                 if (object.material && object.material.uniforms.opacity) {
                     object.material.transparent = opacity < 1;
                     object.material.depthWrite = opacity === 1;
                     object.material.uniforms['opacity'].value = opacity;
                 }
             });
-        }
+        };
 
         if (this.state.opacity === 0.5) {
             setOpacity(1);
