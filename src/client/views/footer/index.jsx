@@ -30,6 +30,10 @@ export default class FooterView extends React.Component {
         this.soMouseUp = this.soMouseUp.bind(this);
         this.soMouseLeave = this.soMouseLeave.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.soTouchStart = this.soTouchStart.bind(this);
+        this.soTouchEnd = this.soTouchEnd.bind(this);
+        this.soTouchCancel = this.soTouchCancel.bind(this);
+        this.soTouchMove = this.soTouchMove.bind(this);
     }
 
     btnClicked(info){
@@ -90,6 +94,59 @@ export default class FooterView extends React.Component {
             fv.css("top", newTop+"px");
         }
     }
+
+    soTouchStart(info)
+    {
+        let fv = $('.Footer-bar');
+        soy=(fv.offset().top+fv.height())-info.touches[0].pageY;
+    }
+
+    soTouchEnd(info)
+    {
+        let fv = $('.Footer-bar');
+        let currentMSGuiMode=this.props.msGuiMode;
+
+        if(soy > 0)
+        {
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fv.height()*2))
+            {
+                this.props.cbMobileSidebar(true);
+                currentMSGuiMode=true;
+            }
+            else if((this.props.msGuiMode === true) && (fv.offset().top > fv.height()))
+            {
+                this.props.cbMobileSidebar(false);
+                currentMSGuiMode=false;
+            }
+        }
+
+        if(currentMSGuiMode === false)
+        {
+            fv.css("top", "unset");
+            fv.css("bottom", "0px");
+        }
+        if(currentMSGuiMode === true)
+        {
+            fv.css("bottom", "unset");
+            fv.css("top", "0px");
+        }
+        soy=0;
+    }
+
+    soTouchCancel(info)
+    {
+        soTouchEnd(info);
+    }
+
+    soTouchMove(info)
+    {
+        let fv = $('.Footer-bar');
+        if(soy > 0)
+        {
+            let newTop=info.touches[0].pageY-soy;
+            fv.css("top", newTop+"px");
+        }
+    }
     
     render() {
         //if(this.props.guiMode == 0)
@@ -99,7 +156,11 @@ export default class FooterView extends React.Component {
             onMouseDown={this.soMouseDown}
             onMouseUp={this.soMouseUp}
             onMouseLeave={this.soMouseLeave}
-            onMouseMove={this.onMouseMove}>
+            onMouseMove={this.onMouseMove}
+            onTouchStart={this.soTouchStart}
+            onTouchEnd={this.soTouchEnd}
+            onTouchCancel={this.soTouchCancel}
+            onTouchMove={this.soTouchMove}>
 			<div className="op-text">{this.props.wstext}</div>
             <div className="footer-buttons">
                 <ButtonImage onBtnClick={this.bbBtnClicked} icon="step-backward"/>
