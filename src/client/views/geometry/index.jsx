@@ -92,9 +92,8 @@ export default class GeometryView extends React.Component{
     this.handleResize();
   }
   
-  zoomToFit(objects) {
-    if (!objects || objects.length === 0) return;
-    let object = objects[0];
+  zoomToFit(object) {
+    if (!object) return;
     let object3d = object.getObject3D(),
       boundingBox = object.getBoundingBox(),
       radius = boundingBox.size().length() * 0.5,
@@ -129,7 +128,19 @@ export default class GeometryView extends React.Component{
         b: 1.0
       };
 
-      this.highlightFaces(workpiece, nextProps.manager.getRootModels(), false, highlightColor);
+      let modelKey = workingstep.toBe.id;
+      let faces = [];
+      if (this.props.viewType === 'cadjs') {
+        modelKey = 'state/key';
+        _.each(workpiece.children, (tol) => {
+          faces = faces.concat(tol.faces);
+        });
+      }
+      else if (this.props.entity.type === 'tolerance') {
+        faces = faces.concat(this.props.entity.faces);
+      }
+
+      this.highlightFaces(faces, nextProps.manager.getRootModel(modelKey), false, highlightColor);
     }
   }
 
@@ -155,8 +166,8 @@ export default class GeometryView extends React.Component{
     if (this.props.resize)
         this.handleResize();
 
-    if (this.props.locked) {
-        this.alignToolView(this.props.manager.getRootModels());
+    if (this.props.locked && this.props.viewType === 'cadjs') {
+        this.alignToolView(this.props.manager.getRootModel('state/key'));
         this.invalidate();
     }
   }
@@ -173,7 +184,7 @@ export default class GeometryView extends React.Component{
     }
     
     //This is where the NC model is being loaded into the CADview
-    let model = this.props.manager._models[event.path];
+    let model = this.props.manager.getRootModel(event.path);
     // Add the model to the scene
     this.annotationScene.add(   model.getAnnotation3D());
     this.geometryScene.add(     model.getObject3D());
@@ -181,7 +192,7 @@ export default class GeometryView extends React.Component{
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
     
-    this.zoomToFit([model]);
+    this.zoomToFit(model);
   }
 
   onModelRemove(event) {
@@ -223,16 +234,16 @@ export default class GeometryView extends React.Component{
     return rtn;
   }
 
-  alignToolView(objects) {
+  alignToolView(object) {
     
-    if (objects[0] === undefined) return;
+    if (object === undefined) return;
 
     // find the orientation of the referenced object
-    let tool = _.find(_.values(objects[0]._objects), {'usage': 'cutter', 'rendered': true});
-    let part = _.find(_.values(objects[0]._objects), {'usage': 'tobe', 'rendered': true});
+    let tool = _.find(_.values(object._objects), {'usage': 'cutter', 'rendered': true});
+    let part = _.find(_.values(object._objects), {'usage': 'tobe', 'rendered': true});
     if (part === undefined)
-      part = _.find(_.values(objects[0]._objects), {'usage': 'asis', 'rendered': true});
-
+      part = _.find(_.values(object._objects), {'usage': 'asis', 'rendered': true});
+    
     let partPos = new THREE.Vector3().setFromMatrixPosition(part.object3D.matrixWorld);
     let toolBox = tool.model.getBoundingBox().clone();
       
@@ -250,7 +261,7 @@ export default class GeometryView extends React.Component{
 
     // now calculate which side we want to view from
     // TODO: make sure fixtures work properly with changes to underlying stuff, and with machines loaded
-    let fixture = _.find(_.values(objects[0]._objects), {'usage': 'fixture', 'rendered': true});
+    let fixture = _.find(_.values(object._objects), {'usage': 'fixture', 'rendered': true});
     let newPos = new THREE.Vector3();
     if (fixture !== undefined) {
       let fixtureMax = fixture.bbox.max.clone();
@@ -302,58 +313,50 @@ export default class GeometryView extends React.Component{
 
   }
 
-  highlightFaces(entity, objs, unhighlight, newColor) {
+  highlightFaces(faces, object, unhighlight, newColor) {
 
-    let tols = [];
-    if (entity.type === 'tolerance') {
-      tols.push(entity);
-    }
-    else if (entity.type === 'workpiece') {
-      tols = tols.concat(entity.children);
-    }
-    
-    if (objs.length <= 0) {
+    if (!object) {
       return;
     }
     
-    let shells = _.filter(_.values(objs[0]._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
+    console.log(object);
+    
+    let shells = _.filter(_.values(object._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
 
-    _.each(tols, (tol) => {
-      _.each(shells, (shell) => {
-        if (shell && shell.model._geometry) {
-          let faces = shell.model._geometry.getAttribute('faces');
-          let colors = shell.model._geometry.getAttribute('color');
+    _.each(shells, (shell) => {
+      if (shell && shell.model._geometry) {
+        let modelFaces = shell.model._geometry.getAttribute('faces');
+        let colors = shell.model._geometry.getAttribute('color');
 
-          let indices = _.map(tol.faces, (id) => faces.array[id]);
+        let indices = _.map(faces, (id) => modelFaces.array[id]);
 
-          if (!unhighlight && !this.state.oldColors[shell.id]) {
-            let oldColors = this.state.oldColors;
-            oldColors[shell.id] = colors.clone();
-            this.setState({'oldColors': oldColors});
-          }
+        if (!unhighlight && !this.state.oldColors[shell.id]) {
+          let oldColors = this.state.oldColors;
+          oldColors[shell.id] = colors.clone();
+          this.setState({'oldColors': oldColors});
+        }
 
-          _.each(indices, (index) => {
-            if (index) {
-              for (let i = index.start; i < index.end; i += 3) {
+        _.each(indices, (index) => {
+          if (index) {
+            for (let i = index.start; i < index.end; i += 3) {
 
-                if (unhighlight) {
-                  colors.array[i] = this.state.oldColors[shell.id].array[i];
-                  colors.array[i + 1] = this.state.oldColors[shell.id].array[i + 1];
-                  colors.array[i + 2] = this.state.oldColors[shell.id].array[i + 2];
-                }
-                else {
-                  colors.array[i] = newColor.r;
-                  colors.array[i + 1] = newColor.g;
-                  colors.array[i + 2] = newColor.b;
-                }
+              if (unhighlight) {
+                colors.array[i] = this.state.oldColors[shell.id].array[i];
+                colors.array[i + 1] = this.state.oldColors[shell.id].array[i + 1];
+                colors.array[i + 2] = this.state.oldColors[shell.id].array[i + 2];
+              }
+              else {
+                colors.array[i] = newColor.r;
+                colors.array[i + 1] = newColor.g;
+                colors.array[i + 2] = newColor.b;
               }
             }
-          });
+          }
+        });
 
-          colors.needsUpdate = true;
-          this.invalidate();
-        }
-      });
+        colors.needsUpdate = true;
+        this.invalidate();
+      }
     });
   }
 
@@ -362,8 +365,8 @@ export default class GeometryView extends React.Component{
       this.animate(false);
     });
     if (this.continuousRendering === true || this.shouldRender === true || forceRendering === true) {
-      if (this.props.locked)
-        this.alignToolView(this.props.manager.getRootModels());
+      if (this.props.locked && this.props.viewType === 'cadjs')
+        this.alignToolView(this.props.manager.getRootModel('state/key'));
       this.shouldRender = false;
       this.drawScene();
       this.controls.update();
