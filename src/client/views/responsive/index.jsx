@@ -269,8 +269,8 @@ export default class ResponsiveView extends React.Component {
 
   handleKeydown(e) {
     //console.log('I\'m a keydown event in ResponsiveView! ', e, this);
-    console.log(e.keyCode);
-    console.log(this);
+    //console.log(e.keyCode);
+    //console.log(this);
     window.removeEventListener('keydown', this.handleKeydown);
 
     switch (e.keyCode) {
