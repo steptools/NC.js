@@ -73,6 +73,11 @@ export default class NC extends THREE.EventDispatcher {
                 //This is where the shell gets sent when its loaded so that the full mesh can be added to the 3D objects
                 let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
                 let mesh = new THREE.Mesh(event.shell.getGeometry(), material, false);
+                
+                if (obj.bbox.isEmpty()) {
+                    obj.bbox = event.shell.getBoundingBox();
+                }
+                
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 mesh.userData = obj;

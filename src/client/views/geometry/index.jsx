@@ -319,8 +319,6 @@ export default class GeometryView extends React.Component{
       return;
     }
     
-    console.log(object);
-    
     let shells = _.filter(_.values(object._objects), _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
 
     _.each(shells, (shell) => {
