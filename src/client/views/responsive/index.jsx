@@ -224,6 +224,9 @@ export default class ResponsiveView extends React.Component {
             _.each(node.children, nodeCheck);
           } else {
             node.leaf = true;
+            if (node.type === 'tolerance') {
+              node.workingsteps = json[node.workpiece].workingsteps;
+            }
           }
 
           wps[node.id] = node;
