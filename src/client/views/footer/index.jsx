@@ -83,7 +83,34 @@ export default class FooterView extends React.Component {
     }
 
     soMouseLeave(info){
-        onMouseUp(info);
+        let fv = $('.Footer-bar');
+        let currentMSGuiMode=this.props.msGuiMode;
+
+        if(soy > 0)
+        {
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fv.height()*2))
+            {
+                this.props.cbMobileSidebar(true);
+                currentMSGuiMode=true;
+            }
+            else if((this.props.msGuiMode === true) && (fv.offset().top > fv.height()))
+            {
+                this.props.cbMobileSidebar(false);
+                currentMSGuiMode=false;
+            }
+        }
+
+        if(currentMSGuiMode === false)
+        {
+            fv.css("top", "unset");
+            fv.css("bottom", "0px");
+        }
+        if(currentMSGuiMode === true)
+        {
+            fv.css("bottom", "unset");
+            fv.css("top", "0px");
+        }
+        soy=0;
     }
 
     onMouseMove(info){
@@ -135,7 +162,34 @@ export default class FooterView extends React.Component {
 
     soTouchCancel(info)
     {
-        soTouchEnd(info);
+        let fv = $('.Footer-bar');
+        let currentMSGuiMode=this.props.msGuiMode;
+
+        if(soy > 0)
+        {
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fv.height()*2))
+            {
+                this.props.cbMobileSidebar(true);
+                currentMSGuiMode=true;
+            }
+            else if((this.props.msGuiMode === true) && (fv.offset().top > fv.height()))
+            {
+                this.props.cbMobileSidebar(false);
+                currentMSGuiMode=false;
+            }
+        }
+
+        if(currentMSGuiMode === false)
+        {
+            fv.css("top", "unset");
+            fv.css("bottom", "0px");
+        }
+        if(currentMSGuiMode === true)
+        {
+            fv.css("bottom", "unset");
+            fv.css("top", "0px");
+        }
+        soy=0;
     }
 
     soTouchMove(info)
