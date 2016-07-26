@@ -172,7 +172,7 @@ $icons: '../icons/';
 
     .preview-container {
         position: absolute;
-        border: solid 2px #F8F8F8;
+        border: solid 2px #666666;
         width: $sidebarWidth;
         height: $sidebarWidth;
         z-index: -10;
@@ -199,7 +199,7 @@ $icons: '../icons/';
 
             &:hover {
                 cursor: pointer;
-                color: #F8F8F8;
+                color: #2BAEE9;
             }
         }
 
