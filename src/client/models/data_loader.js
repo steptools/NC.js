@@ -301,9 +301,9 @@ export default class DataLoader extends THREE.EventDispatcher {
 
         let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);
 
+        nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
         shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
         
-        nc.addModel(shell, data.usage, 'shell', data.id, transform, shell.getBoundingBox());
         
         req.callback(undefined, nc);
     }
