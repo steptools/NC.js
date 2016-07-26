@@ -268,11 +268,13 @@ export default class ResponsiveView extends React.Component {
   }
 
   handleKeydown(e) {
-    console.log('I\'m a keydown event in ResponsiveView! ', e, this);
+    //console.log('I\'m a keydown event in ResponsiveView! ', e, this);
+    console.log(e.keyCode);
+    console.log(this);
     window.removeEventListener('keydown', this.handleKeydown);
 
     switch (e.keyCode) {
-      case 27:
+      case 27: // ESC
         if (this.state.preview === true) {
           this.openPreview(false);
         } else {
@@ -280,6 +282,41 @@ export default class ResponsiveView extends React.Component {
         }
         break;
     }
+    /*
+    // Go to special viewing postion on 'a'
+    case 97:
+        //console.log(this.camera);
+        this.alignToolView(this.props.manager.getSelected());
+        this.invalidate();
+        break;
+    // Explode on 'x' key pressed
+    case 120:
+        this.props.manager.explode(10);
+        break;
+    // Unexplode on 's' key pressed
+    case 115:
+        this.props.manager.explode(-10);
+        break;
+    // 'q' reset all elements
+    case 113:
+        this.props.manager.clear();
+        break;
+    // 'o' to toggle transparency
+    case 111:
+        this.props.manager.toggleOpacity();
+        break;
+    // 'z' to zoomToFit
+    case 122:
+        let objs = this.props.manager.getSelected();
+        this.zoomToFit(objs);
+        break;
+    // 'j' hide/show element
+    case 106:
+        this.props.manager.toggleVisibility();
+        break;
+    }
+    this.invalidate({ tree: true });
+    */
   }
 
   handleKeyup() {

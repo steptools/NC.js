@@ -2,17 +2,14 @@
  * Manage the drawing context/canvas as a React View
  */
 
-"use strict";
+'use strict';
 
-
-let _                   = require('lodash');
-import React            from 'react';
-import LoadQueueView    from '../load_queue';
-import GeometryView     from '../geometry';
+import React from 'react';
+import LoadQueueView from '../load_queue';
+import GeometryView from '../geometry';
 
 // Import shaders
 require('./shaders/VelvetyShader');
-
 
 /*************************************************************************/
 
@@ -22,17 +19,18 @@ class ViewButton extends React.Component {
   }
 
   render() {
-    let icon = "unlock";
-    if (this.props.locked)
-      icon = "lock";
+    let icon = 'unlock';
+    if (this.props.locked) {
+      icon = 'lock';
+    }
 
-    return <div className="resetview">
+    return <div className='resetview'>
       <span
-        className={"glyphicons glyphicons-eye-open" + (this.props.locked ? ' locked' : '')}
+        className={'glyphicons glyphicons-eye-open' + (this.props.locked ? ' locked' : '')}
         onClick={this.props.alignCb}
       />
       <span
-        className={"lock glyphicons glyphicons-" + icon + (this.props.locked ? ' locked' : '')}
+        className={'lock glyphicons glyphicons-' + icon + (this.props.locked ? ' locked' : '')}
         onClick = {this.props.toggleLock}
       />
     </div>;
@@ -42,16 +40,17 @@ class ViewButton extends React.Component {
 /*************************************************************************/
 
 export default class CADView extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            lockedView: true,
-            oldColors: {},
-        };
+  constructor(props) {
+    super(props);
+    this.state = {
+        lockedView: true,
+        oldColors: {},
+    };
 
-        this.onMouseUp = this.onMouseUp.bind(this);
-        this.lockedCb = this.lockedCb.bind(this);
-    }
+    this.onMouseUp = this.onMouseUp.bind(this);
+    this.lockedCb = this.lockedCb.bind(this);
+    this.alignView = this.alignView.bind(this);
+  }
 
     // Handle all object selection needs
     handleSelection(obj, event) {
@@ -84,6 +83,11 @@ export default class CADView extends React.Component {
     lockedCb(state){
       this.setState({'lockedView' : state});
     }
+    
+    alignView(geom) {
+      this.refs.alignGeomView.alignToolView(geom);
+      this.refs.alignGeomView.invalidate();
+    }
 
     render() {
       return <div id='cadjs-container'>
@@ -104,8 +108,7 @@ export default class CADView extends React.Component {
             />
           <ViewButton
             alignCb={() => {
-              this.refs.alignGeomView.alignToolView(this.props.manager.getRootModel('state/key'));
-              this.refs.alignGeomView.invalidate();
+              this.alignView(this.props.manager.getRootModel('state/key'));
             }}
             toggleLock={() => {this.setState({'lockedView': !this.state.lockedView});}}
             locked = {this.state.lockedView}
