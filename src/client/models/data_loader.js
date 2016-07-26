@@ -286,25 +286,31 @@ export default class DataLoader extends THREE.EventDispatcher {
             0, 0, 0, 1,
         ], true);
         
-        // Is this a shell
-        if(data.usage === 'cutter') {
-            color = DataLoader.parseColor("FF530D");
-        }
-        if(data.usage === 'fixture' && this._app.services.machine.dir === '') {
-            return;
-        }
-        if (data.usage === undefined) {
-            data.usage = 'tobe';
-        }
+        console.log(data.data);
 
-        let boundingBox = new THREE.Box3();
+        _.each(data.data, (dat) => {
+            if (_.has(dat, 'id')) {
+                return;
+            }
+            // Is this a shell
+            if(dat.usage === 'cutter' ) {
+                color = DataLoader.parseColor("FF530D");
+            }
+            if (dat.usage === 'fixture' && this._app.services.machine.dir === '') {
+                return;
+            }
+            if (dat.usage === undefined) {
+                dat.usage = 'tobe';
+            }
 
-        let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);
+            let boundingBox = new THREE.Box3();
 
-        nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
-        shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
-        
-        
+            let shell = new Shell(dat.id, nc, nc, dat.size, color, boundingBox);
+
+            nc.addModel(shell, dat.usage, 'shell', dat.id, transform, boundingBox);
+            shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
+        });
+
         req.callback(undefined, nc);
     }
 

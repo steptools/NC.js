@@ -804,6 +804,17 @@ let messageHandler = function(e) {
                 file = dataJSON.id;
                 if (e.data.type === 'previewShell') {
                     file = 'preview-' + parts.slice(-1);
+                    _.each(dataJSON, (dat) => {
+                        if (_.has(dat, 'id'))
+                        processShellJSON(url, workerID, dat, true);
+                    });
+                    
+                    self.postMessage({
+                        type: "parseComplete",
+                        file: parts[parts.length - 2]
+                    });
+                    
+                    break;
                 }
                 self.postMessage({
                     type: "parseComplete",
