@@ -106,10 +106,8 @@ export default class PropertiesPane extends React.Component {
     } else if (event.key === 'tool') {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
-    } else if (event.key === 'preview' && !this.state.preview) {
-      console.log(this);
-      this.setState({'preview': true});
-      console.log(this);
+    } else if (event.key === 'preview' && this.props.preview === false) {
+      this.props.previewCb(true);
 
       let prevId;
       if (entity.type === 'workingstep') {
@@ -136,7 +134,7 @@ export default class PropertiesPane extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.entity !== nextProps.entity ||
         nextProps.entity === null) {
-      this.setState({'preview': false});
+      this.props.previewCb(false);
     }
   }
 
@@ -452,7 +450,7 @@ export default class PropertiesPane extends React.Component {
     let cName = 'preview-container';
     let content;
 
-    if (this.state.preview) {
+    if (this.props.preview === true) {
       cName = cName + ' visible';
 
       content = (
@@ -477,7 +475,7 @@ export default class PropertiesPane extends React.Component {
           <span
             className={'preview-exit ' + getIcon('exit')}
             onClick={() => {
-              this.setState({'preview': false});
+              this.props.previewCb(false);
             }}
           />
           {content}
@@ -570,7 +568,7 @@ export default class PropertiesPane extends React.Component {
               className={'title-exit ' + getIcon('exit')}
               onClick={() => {
                 this.props.propertiesCb(null);
-                this.setState({'preview': false});
+                this.props.previewCb(false);
               }}
             />
           </div>

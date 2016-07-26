@@ -6,7 +6,6 @@ import CADView from '../cad';
 import HeaderView from '../header';
 import SidebarView from '../sidebar';
 import FooterView	from '../footer';
-import {Markdown as md} from 'node-markdown';
 
 export default class ResponsiveView extends React.Component {
   constructor(props) {
@@ -43,6 +42,7 @@ export default class ResponsiveView extends React.Component {
       workplanCache: {},
       selectedEntity: null,
       previouslySelectedEntities: [null],
+      preview: false,
     };
 
     this.addBindings();
@@ -65,6 +65,7 @@ export default class ResponsiveView extends React.Component {
     this.changeSpeed = this.changeSpeed.bind(this);
 
     this.openProperties = this.openProperties.bind(this);
+    this.openPreview = this.openPreview.bind(this);
   }
 
   addListeners() {
@@ -267,8 +268,18 @@ export default class ResponsiveView extends React.Component {
   }
 
   handleKeydown(e) {
-    console.log('I\'m a keydown event in ResponsiveView! ', e);
+    console.log('I\'m a keydown event in ResponsiveView! ', e, this);
     window.removeEventListener('keydown', this.handleKeydown);
+
+    switch (e.keyCode) {
+      case 27:
+        if (this.state.preview === true) {
+          this.openPreview(false);
+        } else {
+          this.openProperties(null);
+        }
+        break;
+    }
   }
 
   handleKeyup() {
@@ -295,6 +306,12 @@ export default class ResponsiveView extends React.Component {
         previouslySelectedEntities: prevEntities,
         selectedEntity: node,
       });
+    }
+  }
+
+  openPreview(state) {
+    if (state === true || state === false && state !== this.state.preview) {
+      this.setState({preview: state});
     }
   }
 
@@ -446,6 +463,8 @@ export default class ResponsiveView extends React.Component {
           openProperties={this.openProperties}
           selectedEntity={this.state.selectedEntity}
           previouslySelectedEntities={this.state.previouslySelectedEntities}
+          preview={this.state.preview}
+          openPreview={this.openPreview}
         />
       );
     } else {
