@@ -56,6 +56,8 @@ export default class ResponsiveView extends React.Component {
     this.updateWS = this.updateWorkingstep.bind(this);
 
     this.handleResize = this.handleResize.bind(this);
+    this.handleKeydown = this.handleKeydown.bind(this);
+    this.handleKeyup = this.handleKeyup.bind(this);
 
     this.cbWS = this.cbWS.bind(this);
 
@@ -109,6 +111,8 @@ export default class ResponsiveView extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
+    window.addEventListener('keydown', this.handleKeydown);
+    window.addEventListener('keyup', this.handleKeyup);
 
     // set a temp variable for the workingstep cache
     let workingstepCache = {};
@@ -245,6 +249,8 @@ export default class ResponsiveView extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('keydown', this.handleKeydown);
+    window.removeEventListener('keyup', this.handleKeyup);
   }
 
   handleResize() {
@@ -258,6 +264,15 @@ export default class ResponsiveView extends React.Component {
 
     this.setState({resize: true});
     this.setState({resize: false});
+  }
+
+  handleKeydown(e) {
+    console.log('I\'m a keydown event in ResponsiveView! ', e);
+    window.removeEventListener('keydown', this.handleKeydown);
+  }
+
+  handleKeyup() {
+    window.addEventListener('keydown', this.handleKeydown);
   }
 
   openProperties(node, backtrack) {

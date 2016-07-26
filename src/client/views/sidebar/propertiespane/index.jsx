@@ -1,9 +1,8 @@
 // TODO: styleguide compliant
 import React from 'react';
 import Menu,{Item as MenuItem} from 'rc-menu';
-import GeometryView from '../../geometry'
+import GeometryView from '../../geometry';
 import request from 'superagent';
-import _ from 'lodash';
 
 function getIcon(type, data) {
   if (!data) {
@@ -91,7 +90,7 @@ export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {entity: null, preview: false};
+    this.state = {entity: null};
 
     this.properties = [];
 
@@ -99,8 +98,6 @@ export default class PropertiesPane extends React.Component {
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
   }
-  
-  
 
   selectWS(event, entity) {
     if (event.key === 'goto') {
@@ -110,28 +107,29 @@ export default class PropertiesPane extends React.Component {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
     } else if (event.key === 'preview' && !this.state.preview) {
+      console.log(this);
       this.setState({'preview': true});
+      console.log(this);
 
       let prevId;
       if (entity.type === 'workingstep') {
         prevId = entity.toBe.id;
-      }
-      else if (entity.type === 'tolerance') {
+      } else if (entity.type === 'tolerance') {
         prevId = entity.workpiece;
-      }
-      else {
+      } else {
         prevId = entity.id;
       }
 
+      let url = this.props.manager.app.services.api_endpoint
+        + this.props.manager.app.services.version + '/nc';
       this.props.manager.dispatchEvent({
         type: 'setModel',
         viewType: 'preview',
         path: prevId,
-        baseURL: this.props.manager.app.services.api_endpoint + this.props.manager.app.services.version + '/nc',
-        modelType: 'previewShell'
-      });  
+        baseURL: url,
+        modelType: 'previewShell',
+      });
     }
-    
     // some other menu item clicked, no need to do anything
   }
 
@@ -248,13 +246,13 @@ export default class PropertiesPane extends React.Component {
       );
     }
   }
-  
+
   renderPreviewButton(entity) {
     if (entity.type === 'workplan' || entity.type === 'selective' ||
         entity.type === 'workplan-setup' || entity.type === 'tool') {
       return;
     }
-    
+
     this.properties.push(
       <MenuItem
         key='preview'
@@ -340,16 +338,16 @@ export default class PropertiesPane extends React.Component {
     if (entity.workingsteps.length > 0) {
       title = 'Used in Workingsteps:';
       steps = (<div className='list'>
-        {entity.workingsteps.map((step) => 
+        {entity.workingsteps.map((step) =>
           this.renderNode(this.props.workingsteps[step])
         )}
       </div>);
     } else {
       title = 'Not used in any workingsteps.';
     }
-    
+
     title = (<div className='title'>{title}</div>);
-    
+
     this.properties.push (
       <MenuItem disabled key='workingsteps' className='property children'>
         {title}
@@ -357,12 +355,12 @@ export default class PropertiesPane extends React.Component {
       </MenuItem>
     );
   }
-  
+
   renderWorkpieces(entity) {
     if (entity.type !== 'workingstep') {
       return null;
     }
-    
+
     let asIs, toBe, delta;
 
     if (entity.asIs.id !== 0) {
@@ -445,15 +443,15 @@ export default class PropertiesPane extends React.Component {
       </MenuItem>
     );
   }
-  
+
   renderPreview(entity) {
     if (entity === null) {
       return null;
     }
-    
+
     let cName = 'preview-container';
     let content;
-    
+
     if (this.state.preview) {
       cName = cName + ' visible';
 
@@ -471,7 +469,7 @@ export default class PropertiesPane extends React.Component {
         />
       );
     }
-    
+
     return (
       <div className='preview'>
         <div className='preview-cover' />
@@ -479,8 +477,8 @@ export default class PropertiesPane extends React.Component {
           <span
             className={'preview-exit ' + getIcon('exit')}
             onClick={() => {
-                this.setState({'preview': false});
-              }}
+              this.setState({'preview': false});
+            }}
           />
           {content}
         </div>
