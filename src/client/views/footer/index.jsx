@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Menu from 'rc-menu';
 import _ from 'lodash';
+import MobileSidebar from '../mobilesidebar';
 
 import ReactTooltip from 'react-tooltip';
 
@@ -47,22 +48,24 @@ export default class FooterView extends React.Component {
     }
 
     soMouseDown(info){
-        let fv = $('.Footer-bar');
-        soy=(fv.offset().top+fv.height())-info.clientY;
+        let fv = $('.Footer-container');
+        let fb = $('.Footer-bar');
+        soy=(fv.offset().top+fb.height())-info.clientY;
     }
 
     soMouseUp(info){
-        let fv = $('.Footer-bar');
+        let fv = $('.Footer-container');
+        let fb = $('.Footer-bar');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
         {
-            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fv.height()*2))
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fb.height()*2))
             {
                 this.props.cbMobileSidebar(true);
                 currentMSGuiMode=true;
             }
-            else if((this.props.msGuiMode === true) && (fv.offset().top > fv.height()))
+            else if((this.props.msGuiMode === true) && (fv.offset().top > fb.height()))
             {
                 this.props.cbMobileSidebar(false);
                 currentMSGuiMode=false;
@@ -72,28 +75,33 @@ export default class FooterView extends React.Component {
         if(currentMSGuiMode === false)
         {
             fv.css("top", "unset");
+            //fv.animate({scrollTop: (window.innerHeight-fv.height())}, 5000);
             fv.css("bottom", "0px");
+            fv.css("height", "unset");
         }
         if(currentMSGuiMode === true)
         {
             fv.css("bottom", "unset");
+            //fv.animate({scrollTop: 0}, 5000);
             fv.css("top", "0px");
+            fv.css("height", "100%");
         }
         soy=0;
     }
 
     soMouseLeave(info){
-        let fv = $('.Footer-bar');
+        let fv = $('.Footer-container');
+        let fb = $('.Footer-bar');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
         {
-            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fv.height()*2))
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fb.height()*2))
             {
                 this.props.cbMobileSidebar(true);
                 currentMSGuiMode=true;
             }
-            else if((this.props.msGuiMode === true) && (fv.offset().top > fv.height()))
+            else if((this.props.msGuiMode === true) && (fv.offset().top > fb.height()))
             {
                 this.props.cbMobileSidebar(false);
                 currentMSGuiMode=false;
@@ -104,17 +112,19 @@ export default class FooterView extends React.Component {
         {
             fv.css("top", "unset");
             fv.css("bottom", "0px");
+            fv.css("height", "unset");
         }
         if(currentMSGuiMode === true)
         {
             fv.css("bottom", "unset");
             fv.css("top", "0px");
+            fv.css("height", "100%");
         }
         soy=0;
     }
 
     onMouseMove(info){
-        let fv = $('.Footer-bar');
+        let fv = $('.Footer-container');
         if(soy > 0)
         {
             let newTop=info.clientY-soy;
@@ -124,23 +134,25 @@ export default class FooterView extends React.Component {
 
     soTouchStart(info)
     {
-        let fv = $('.Footer-bar');
-        soy=(fv.offset().top+fv.height())-info.touches[0].pageY;
+        let fv = $('.Footer-container');
+        let fb = $('.Footer-bar');
+        soy=(fv.offset().top+fb.height())-info.touches[0].pageY;
     }
 
     soTouchEnd(info)
     {
-        let fv = $('.Footer-bar');
+        let fv = $('.Footer-container');
+        let fb = $('.Footer-bar');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
         {
-            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fv.height()*2))
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fb.height()*2))
             {
                 this.props.cbMobileSidebar(true);
                 currentMSGuiMode=true;
             }
-            else if((this.props.msGuiMode === true) && (fv.offset().top > fv.height()))
+            else if((this.props.msGuiMode === true) && (fv.offset().top > fb.height()))
             {
                 this.props.cbMobileSidebar(false);
                 currentMSGuiMode=false;
@@ -151,28 +163,31 @@ export default class FooterView extends React.Component {
         {
             fv.css("top", "unset");
             fv.css("bottom", "0px");
+            fv.css("height", "unset");
         }
         if(currentMSGuiMode === true)
         {
             fv.css("bottom", "unset");
             fv.css("top", "0px");
+            fv.css("height", "100%");
         }
         soy=0;
     }
 
     soTouchCancel(info)
     {
-        let fv = $('.Footer-bar');
+        let fv = $('.Footer-container');
+        let fb = $('.Footer-bar');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
         {
-            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fv.height()*2))
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fb.height()*2))
             {
                 this.props.cbMobileSidebar(true);
                 currentMSGuiMode=true;
             }
-            else if((this.props.msGuiMode === true) && (fv.offset().top > fv.height()))
+            else if((this.props.msGuiMode === true) && (fv.offset().top > fb.height()))
             {
                 this.props.cbMobileSidebar(false);
                 currentMSGuiMode=false;
@@ -183,11 +198,13 @@ export default class FooterView extends React.Component {
         {
             fv.css("top", "unset");
             fv.css("bottom", "0px");
+            fv.css("height", "unset");
         }
         if(currentMSGuiMode === true)
         {
             fv.css("bottom", "unset");
             fv.css("top", "0px");
+            fv.css("height", "100%");
         }
         soy=0;
     }
@@ -197,7 +214,7 @@ export default class FooterView extends React.Component {
         info.preventDefault();
         info.stopPropagation();
 
-        let fv = $('.Footer-bar');
+        let fv = $('.Footer-container');
         if(soy > 0)
         {
             let newTop=info.touches[0].pageY-soy;
@@ -208,22 +225,31 @@ export default class FooterView extends React.Component {
     render() {
         //if(this.props.guiMode == 0)
             //return null;
+        let SO;
+        SO = (
+            <MobileSidebar />
+          );
+
         let ppbtntxt = this.props.ppbutton;
-		return (<div className="Footer-bar"
-            onMouseDown={this.soMouseDown}
-            onMouseUp={this.soMouseUp}
-            onMouseLeave={this.soMouseLeave}
-            onMouseMove={this.onMouseMove}
-            onTouchStart={this.soTouchStart}
-            onTouchEnd={this.soTouchEnd}
-            onTouchCancel={this.soTouchCancel}
-            onTouchMove={this.soTouchMove}>
-			<div className="op-text">{this.props.wstext}</div>
-            <div className="footer-buttons">
-                <ButtonImage onBtnClick={this.bbBtnClicked} icon="step-backward"/>
-                <ButtonImage onBtnClick={this.btnClicked} icon={ppbtntxt}/>
-                <ButtonImage onBtnClick={this.ffBtnClicked} icon="step-forward"/>
+		return (<div className="Footer-container">
+            <div className="Footer-bar"
+                onMouseDown={this.soMouseDown}
+                onMouseUp={this.soMouseUp}
+                onMouseLeave={this.soMouseLeave}
+                onMouseMove={this.onMouseMove}
+                onTouchStart={this.soTouchStart}
+                onTouchEnd={this.soTouchEnd}
+                onTouchCancel={this.soTouchCancel}
+                onTouchMove={this.soTouchMove}>
+    			<div className="op-text">{this.props.wstext}</div>
+                <div className="footer-buttons">
+                    <ButtonImage onBtnClick={this.bbBtnClicked} icon="step-backward"/>
+                    <ButtonImage onBtnClick={this.btnClicked} icon={ppbtntxt}/>
+                    <ButtonImage onBtnClick={this.ffBtnClicked} icon="step-forward"/>
+                </div>
             </div>
-        </div>);
+            {SO}
+        </div>
+        );
     }
 }

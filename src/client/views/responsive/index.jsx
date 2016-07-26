@@ -5,7 +5,6 @@ import request from 'superagent';
 import CADView from '../cad';
 import HeaderView from '../header';
 import SidebarView from '../sidebar';
-import MobileSidebar from '../mobilesidebar';
 import FooterView	from '../footer';
 import {Markdown as md} from 'node-markdown';
 
@@ -400,7 +399,7 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
-    let HV, SV, SO, FV;
+    let HV, SV, FV;
     if (this.state.guiMode === 0) {
       HV = (
         <HeaderView
@@ -453,10 +452,6 @@ export default class ResponsiveView extends React.Component {
         />
       );
     } else {
-      if (this.state.msGuiMode === true)
-          SO = (
-            <MobileSidebar />
-          );
       FV = (
         <FooterView
           cadManager={this.props.app.cadManager}
@@ -506,7 +501,6 @@ export default class ResponsiveView extends React.Component {
 
     return (
       <div style={{height:'100%'}}>
-        {SO}
         {HV}
         {SV}
         <div id='cadview-container' style={cadviewStyle}>

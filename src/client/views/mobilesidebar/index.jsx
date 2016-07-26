@@ -9,11 +9,9 @@ export default class MobileSidebar extends React.Component {
   }
 
   render() {
-
     return (
       <div className="mobile-sidebar">
         <p>Sidebar Overview</p>
-      </div>
-    );
+      </div>);
   }
 }

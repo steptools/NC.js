@@ -1,34 +1,39 @@
-.footer-bar {
+.Footer-container {
+    
     position: absolute;
-    height: 10vmin;
-    width: 100%;
-    font-family: sans-serif;
-    font-size: 8vmin;
-    color: 222222;
     bottom: 0;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,1));
-    z-index: 99;
-    flex-flow: row nowrap;
-    display: flex;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
 
-    .op-text {
-        flex: 20;
-        overflow-y: hidden;
-    }
-
-    .footer-buttons {
-        background: green;
+    .footer-bar {
+        position: relative;
+        height: 10vmin;
+        width: 100%;
+        font-family: sans-serif;
+        font-size: 8vmin;
+        color: 222222;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,1));
+        z-index: 99;
+        flex-flow: row nowrap;
         display: flex;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
 
-        .button-icon {
-            flex: 1;
-            padding: 0.5vmin;
-            height: 10vmin;
+        .op-text {
+            flex: 20;
+            overflow-y: hidden;
+        }
+
+        .footer-buttons {
+            background: green;
+            display: flex;
+
+            .button-icon {
+                flex: 1;
+                padding: 0.5vmin;
+                height: 10vmin;
+            }
         }
     }
 }
