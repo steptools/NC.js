@@ -133,6 +133,14 @@ export default class PropertiesPane extends React.Component {
     // some other menu item clicked, no need to do anything
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.entity !== nextProps.entity ||
+        nextProps.entity === null) {
+      console.log('hiding preview');
+      this.setState({'preview': false});
+    }
+  }
+
   renderActive(entity) {
     if (entity.type !== 'workingstep' && entity.type !== 'tolerance') {
       return;
@@ -451,7 +459,7 @@ export default class PropertiesPane extends React.Component {
       content = (
         <GeometryView
           manager={this.props.manager}
-          selectedEntity={this.props.entity}
+          selectedEntity={entity}
           guiMode={this.props.guiMode}
           resize={this.props.resize}
           isCadView={false}

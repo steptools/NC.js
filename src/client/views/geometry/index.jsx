@@ -113,34 +113,39 @@ export default class GeometryView extends React.Component{
 
   componentWillUpdate(nextProps, nextState) {
 
+    let highlightColor = {
+      r: 1.0,
+      g: 0,
+      b: 1.0
+    };
+    
     // TODO: unhighlight faces when necessary
     if (nextProps.ws > 0) {
           
       // now highlight any tolerances present in current workingstep
       let workingstep = nextProps.workingstepCache[nextProps.ws];
 
+      // check if the selected tolerance/wp is used in the current WS
       let workpiece = nextProps.toleranceCache[workingstep.toBe.id];
 
-      // check if the selected tolerance/wp is used in the current WS
-      let highlightColor = {
-        r: 1.0,
-        g: 0,
-        b: 1.0
-      };
-
-      let faces = [];
       if (this.props.viewType === 'cadjs') {
+        let faces = [];
         _.each(workpiece.children, (tol) => {
           faces = faces.concat(tol.faces);
         });
+        this.highlightFaces(faces, nextProps.manager.getRootModel('state/key'), false, highlightColor);
       }
-
-      this.highlightFaces(faces, nextProps.manager.getRootModel('state/key'), false, highlightColor);
-
-      if (nextProps.selectedEntity && nextProps.selectedEntity.type === 'tolerance') {
-        this.highlightFaces(nextProps.selectedEntity.faces, nextProps.manager.getRootModel(nextProps.selectedEntity.workpiece), false, highlightColor);
-      }
-
+    }
+    
+    if (this.props.viewType === 'preview' &&
+        nextProps.selectedEntity &&
+        nextProps.selectedEntity.type === 'tolerance') {
+      this.highlightFaces(
+        nextProps.selectedEntity.faces,
+        nextProps.manager.getRootModel(nextProps.selectedEntity.workpiece),
+        false,
+        highlightColor
+      );
     }
   }
 
