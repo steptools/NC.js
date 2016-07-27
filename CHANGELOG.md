@@ -1,3 +1,14 @@
+Version 1.5.1
+
+Features:
+
+- Back button in preview pane is now always visible
+- Removed the inactive indicator on some preview panes
+
+Bugfixes:
+
+- Fixtures now load when there is a machine
+
 Version 1.5.0
 
 Features:
