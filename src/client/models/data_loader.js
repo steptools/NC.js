@@ -304,7 +304,6 @@ export default class DataLoader extends THREE.EventDispatcher {
         nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
         shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
         
-        
         req.callback(undefined, nc);
     }
 
