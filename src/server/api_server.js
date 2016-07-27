@@ -47,7 +47,8 @@ APIServer.prototype._setExpress = function() {
   this.express.disable('x-powered-by');
   // prevents caching in Edge
   this.express.use(function noCache(req, res, next) {
-    if (req.headers['user-agent'].includes('Edge')) {
+    let browser = req.headers['user-agent'];
+    if (browser.includes('Edge') || browser.includes('rv')) {
       res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.header('Pragma', 'no-cache');
       res.header('Expires', 0);
