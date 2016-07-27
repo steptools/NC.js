@@ -28,11 +28,12 @@ module.exports = function(environment) {
             "upload": true
           },
           "file" : {
-            "dir": "./models/boxywfixture.stpnc"
+            "dir": "./model.stpnc"
           },
           "machine" : {
-            "dir" : "./models/okuma_M560-V.xml"
+            "dir" : ""
           }
+
     };
     try {
         config.env = environment;
