@@ -274,10 +274,11 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'tolerance') {
       return;
     }
+    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
         <div className={getIcon('tolerance type')}/>
-        Type: {entity.tolType} Tolerance
+        Type: {prettyType}
       </MenuItem>
     );
     this.properties.push(
