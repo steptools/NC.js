@@ -49,7 +49,7 @@ function hasActiveChildren(node, id) {
 const Container = (props) => {
   let node = props.node;
   node.icon = getNodeIcon(node);
-  
+
   let innerName = 'inner';
   let outerName = 'node';
   if (hasActiveChildren(node, props.decorators.ws) === 'active') {
