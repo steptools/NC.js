@@ -212,7 +212,7 @@ export default class ResponsiveView extends React.Component {
 
     // get data for workpiece/tolerance view
     url = '/v3/nc/workpieces/';
-    resCb = (err,res) => { //Callback function for response
+    resCb = (err, res) => { //Callback function for response
       if (!err && res.ok) {
         // Node preprocessing
         let json = JSON.parse(res.text);

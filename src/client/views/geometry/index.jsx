@@ -12,11 +12,14 @@ export default class GeometryView extends React.Component {
 
     this.invalidate = this.invalidate.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
+    this.alignCamera = this.alignCamera.bind(this);
+    this.alignFixture = this.alignFixture.bind(this);
     this.highlightFaces = this.highlightFaces.bind(this);
     this.onShellLoad = this.onShellLoad.bind(this);
     this.onModelAdd = this.onModelAdd.bind(this);
     this.onModelRemove = this.onModelRemove.bind(this);
     this.zoomToFit = this.zoomToFit.bind(this);
+    this.addListeners = this.addListeners.bind(this);
   }
 
   componentDidMount() {
@@ -57,6 +60,15 @@ export default class GeometryView extends React.Component {
       canvas: this.renderer.domElement,
     });
 
+    this.addListeners();
+
+    // SCREEN RESIZE
+    this.forceUpdate();
+    this.animate(true);
+    this.handleResize();
+  }
+
+  addListeners() {
     // CONTROL EVENT HANDLERS
     this.controls.addEventListener('change', (options) => {
       let x0 = this.sceneCenter;
@@ -84,11 +96,6 @@ export default class GeometryView extends React.Component {
       this.invalidate();
       this.continuousRendering = false;
     });
-
-    // SCREEN RESIZE
-    this.forceUpdate();
-    this.animate(true);
-    this.handleResize();
   }
 
   zoomToFit(object) {
@@ -97,7 +104,12 @@ export default class GeometryView extends React.Component {
     }
     let object3d = object.getObject3D();
     let boundingBox = object.getBoundingBox();
-    let radius = boundingBox.size().length() * 0.5;
+    let radius = 0;
+    if (this.props.viewType === 'preview') {
+      radius = boundingBox.size().length() * 0.75;
+    } else {
+      radius = boundingBox.size().length() * 0.5;
+    }
     let fovRad = THREE.Math.degToRad(this.camera.fov * 0.5);
     let horizontalFOV = 2 * Math.atan(fovRad * this.camera.aspect);
     let fov = Math.min(THREE.Math.degToRad(this.camera.fov), horizontalFOV);
@@ -213,9 +225,9 @@ export default class GeometryView extends React.Component {
     //This is where the NC model is being loaded into the CADview
     let model = this.props.manager.getRootModel(event.path);
     // Add the model to the scene
-    this.annotationScene.add(   model.getAnnotation3D());
-    this.geometryScene.add(     model.getObject3D());
-    this.overlayScene.add(      model.getOverlay3D());
+    this.annotationScene.add(model.getAnnotation3D());
+    this.geometryScene.add(model.getObject3D());
+    this.overlayScene.add(model.getOverlay3D());
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
 
@@ -312,38 +324,50 @@ export default class GeometryView extends React.Component {
       {'usage': 'fixture', 'rendered': true}
     );
     let newPos = new THREE.Vector3();
-    if (fixture !== undefined) {
-      let fixtureMax = fixture.bbox.max.clone();
-      let fixtureMin = fixture.bbox.min.clone();
-      let fixtureDiag = fixtureMax.clone().sub(fixtureMin);
+    this.alignFixture(fixture, newUp, newPos);
 
-      let fixturePos = fixture.object3D.position.clone();
+    // TODO: See if we can actually use the tool in calculations
+    // zoom to fit just the part
+    let newTargetPosition = this.alignCamera(part, tool, toolBox);
 
-      let fixLen = GeometryView.getAxisVector(fixtureDiag);
+    this.controls.target.copy(newTargetPosition);
+    this.controls.alignTop(newUp, newPos);
+  }
 
-      newPos.crossVectors(fixLen, newUp);
-      if (newPos.length() === 0) {
-        if (newUp.x === 0) {
-          newPos.x = 1;
-        } else {
-          newPos.y = 1;
-        }
-      }
-
-      // make sure the fixture is facing away from us
-      // if it would block view of the part
-      if (fixturePos.dot(newPos) < 0) {
-        newPos.negate();
-      }
-    } else { // we have no fixture
+  alignFixture(fixture, newUp, newPos) {
+    if (fixture === undefined) {
       newPos.crossVectors(newUp, new THREE.Vector3(1, 0, 0));
       if (newPos.length() === 0) {
         newPos.crossVectors(newUp, new THREE.Vector3(0, 1, 0));
       }
+      return;
     }
 
-    // TODO: See if we can actually use the tool in calculations
-    // zoom to fit just the part
+    let fixtureMax = fixture.bbox.max.clone();
+    let fixtureMin = fixture.bbox.min.clone();
+    let fixtureDiag = fixtureMax.clone().sub(fixtureMin);
+
+    let fixturePos = fixture.object3D.position.clone();
+
+    let fixLen = GeometryView.getAxisVector(fixtureDiag);
+
+    newPos.crossVectors(fixLen, newUp);
+    if (newPos.length() === 0) {
+      if (newUp.x === 0) {
+        newPos.x = 1;
+      } else {
+        newPos.y = 1;
+      }
+    }
+
+    // make sure the fixture is facing away from us
+    // if it would block view of the part
+    if (fixturePos.dot(newPos) < 0) {
+      newPos.negate();
+    }
+  }
+
+  alignCamera(part, tool, toolBox) {
     let boundingBox = new THREE.Box3()
       .union(part.bbox)
       .union(toolBox.applyMatrix4(tool.object3D.matrixWorld));
@@ -359,10 +383,8 @@ export default class GeometryView extends React.Component {
         .sub(this.controls.target)
         .setLength(dist)
         .add(newTargetPosition);
-    this.controls.target.copy(newTargetPosition);
 
-    this.controls.alignTop(newUp, newPos);
-
+    return newTargetPosition;
   }
 
   highlightFaces(faces, object, unhighlight, newColor) {

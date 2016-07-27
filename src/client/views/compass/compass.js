@@ -98,10 +98,14 @@ export default class CompassView extends React.Component {
   }
 
   render() {
-    let style={'top': '30px', 'zIndex': '100'};
-
+    let cName = 'cube';
+    if (this.props.parentSelector.includes('.preview-container')) {
+      cName += ' preview';
+    } else if (this.props.parentSelector.includes('#cadjs-container')) {
+      cName += ' cadjs';
+    }
     return (
-      <div className="cube" style={style}>
+      <div className={cName}>
         <div className="cube-face cube-face-front">
           <span className="cube-face-label">Front</span>
           <div className="cube-button cube-face-button" data-x="0" data-y="0" data-z="0"></div>

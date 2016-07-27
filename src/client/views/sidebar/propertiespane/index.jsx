@@ -176,21 +176,14 @@ export default class PropertiesPane extends React.Component {
       this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('active')}/>
-          Status: Active
+          Running
         </MenuItem>
       );
-    } else if (entity.enabled === true) {
-      this.properties.push(
-        <MenuItem disabled key='active' className='property active'>
-          <div className={getIcon('inactive')}/>
-          Status: Inactive
-        </MenuItem>
-      );
-    } else {
+    } else if (entity.enabled !== true) {
       this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('disabled')}/>
-          Status: Disabled
+          Disabled
         </MenuItem>
       );
     }
@@ -303,10 +296,11 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'tolerance') {
       return;
     }
+    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
         <div className={getIcon('tolerance type')}/>
-        Type: {entity.tolType} Tolerance
+        Type: {prettyType}
       </MenuItem>
     );
     this.properties.push(
@@ -573,22 +567,14 @@ export default class PropertiesPane extends React.Component {
       <div className={entityData.paneName}>
         {this.renderPreview(entityData.entity)}
         <div className='titlebar'>
-          <span
-            className={'title-back ' + getIcon('back')}
-            onClick={() => {
-              this.props.propertiesCb(entityData.previousEntity, true);
-            }}
-            onMouseOut={() => {
-              $('.title-back.icon').removeClass('visible');
-            }}
-          />
           <div className='titleinfo'>
             <span
-              className={entityData.titleIcon}
-              onMouseOver={() => {
-                $('.title-back.icon').addClass('visible');
+              className={'title-back ' + getIcon('back')}
+              onClick={() => {
+                this.props.propertiesCb(entityData.previousEntity, true);
               }}
             />
+            <span className={entityData.titleIcon} />
             <span className='title'>
               <div className='type'>{entityData.type}</div>
               <div className='name'>{entityData.name}</div>

@@ -8,17 +8,19 @@ var find = file.find;
 /****************************** Helper Functions ******************************/
 
 function getTolerance(id) {
-  let name = tol.GetToleranceType(id);
+  let name = apt.SetNameGet(id);
+  let temp = tol.GetToleranceType(id);
   let tolType;
-  if (name) {
-    name = name.replace(/_/g, ' ').toLowerCase();
-    tolType = name.split(' ')[0];
+  if (temp) {
+    temp = temp.replace(/_/g, ' ').toLowerCase();
+    tolType = temp.split(' ')[0];
   }
 
   return {
     'id': id,
     'type': 'tolerance',
     'name': name,
+    'tolTypeName': temp,
     'toleranceType': tolType,
     'value': tol.GetToleranceValue(id),
     'unit' : tol.GetToleranceUnit(id),
@@ -114,9 +116,9 @@ function _getWps(req, res) {
 }
 
 module.exports = function(app, cb) {
-  app.router.get('/v3/nc/tolerances/:wsId',_getWsTols);
-  app.router.get('/v3/nc/tolerances/',_getTols);
-  app.router.get('/v3/nc/workpieces/',_getWps);
+  app.router.get('/v3/nc/tolerances/:wsId', _getWsTols);
+  app.router.get('/v3/nc/tolerances/', _getTols);
+  app.router.get('/v3/nc/workpieces/', _getWps);
 
   if (cb) {
     cb();

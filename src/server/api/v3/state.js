@@ -94,7 +94,7 @@ function sameSetup(newid, oldid) {
   return (step.getSetupFromId(newid) === step.getSetupFromId(oldid));
 }
 
-function handleWSInit(command) {
+function handleWSInit(command, res) {
   let temp = loopStates[path];
   loopStates[path] = true;
   if (!temp) {
@@ -113,7 +113,7 @@ function handleWSInit(command) {
         loopStates[path] = false;
         update('pause');
       }
-      res.status(200).send('OK');
+      res.sendStatus(200);
       break;
     case 'prev':
       if (temp) {
@@ -127,7 +127,7 @@ function handleWSInit(command) {
         loopStates[path] = false;
         update('pause');
       }
-      res.status(200).send('OK');
+      res.sendStatus(200);
       break;
     default:
       if (isNaN(parseFloat(command))
@@ -146,7 +146,7 @@ function handleWSInit(command) {
       }
       loopStates[path] = false;
       update('pause');
-      res.status(200).send('OK');
+      res.sendStatus(200);
   }
 }
 
@@ -181,7 +181,7 @@ function _loopInit(req, res) {
         }
         // app.logger.debug('Looping ' + path);
         loopStates[path] = true;
-        res.status(200).send('OK');
+        res.sendStatus(200);
         update('play');
         loop(ms, false);
         break;
@@ -192,7 +192,7 @@ function _loopInit(req, res) {
         }
         loopStates[path] = false;
         update('pause');
-        res.status(200).send('OK');
+        res.sendStatus(200);
         break;
       default:
         if (isNaN(parseFloat(loopstate)) || !isFinite(loopstate)) {
@@ -222,7 +222,7 @@ function _loopInit(req, res) {
   }
 }
 
-var _wsInit = function(req) {
+var _wsInit = function(req, res) {
   if (!req.params.command) {
     return;
   }
@@ -230,7 +230,7 @@ var _wsInit = function(req) {
     loopStates[path] = false;
   }
 
-  handleWSInit(req.params.command);
+  handleWSInit(req.params.command, res);
 
   getDelta(file.ms, false, function(b) {
     app.ioServer.emit('nc:delta', JSON.parse(b));
