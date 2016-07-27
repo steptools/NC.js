@@ -142,15 +142,31 @@ export default class GeometryView extends React.Component {
       }
     }
 
-    if (this.props.viewType === 'preview' &&
-        nextProps.selectedEntity &&
+    if (this.props.viewType === 'preview') {
+
+      // unhighlight old faces first if we're switching entities
+      if (this.props.selectedEntity &&
+          this.props.selectedEntity.type === 'tolerance' &&
+          this.props.selectedEntity !== nextProps.selectedEntity) {
+        
+        this.highlightFaces(
+          this.props.selectedEntity.faces,
+          this.props.manager.getRootModel(this.props.selectedEntity.workpiece),
+          true
+        );
+      }
+      
+      // then highlight new faces
+      if (nextProps.selectedEntity &&
         nextProps.selectedEntity.type === 'tolerance') {
-      this.highlightFaces(
-        nextProps.selectedEntity.faces,
-        nextProps.manager.getRootModel(nextProps.selectedEntity.workpiece),
-        false,
-        highlightColor
-      );
+
+        this.highlightFaces(
+          nextProps.selectedEntity.faces,
+          nextProps.manager.getRootModel(nextProps.selectedEntity.workpiece),
+          false,
+          highlightColor
+        );
+      }
     }
   }
 
