@@ -17,6 +17,7 @@ export default class GeometryView extends React.Component {
     this.onModelAdd = this.onModelAdd.bind(this);
     this.onModelRemove = this.onModelRemove.bind(this);
     this.zoomToFit = this.zoomToFit.bind(this);
+    this.addListeners = this.addListeners.bind(this);
   }
 
   componentDidMount() {
@@ -57,6 +58,15 @@ export default class GeometryView extends React.Component {
       canvas: this.renderer.domElement,
     });
 
+    this.addListeners();
+
+    // SCREEN RESIZE
+    this.forceUpdate();
+    this.animate(true);
+    this.handleResize();
+  }
+
+  addListeners() {
     // CONTROL EVENT HANDLERS
     this.controls.addEventListener('change', (options) => {
       let x0 = this.sceneCenter;
@@ -84,11 +94,6 @@ export default class GeometryView extends React.Component {
       this.invalidate();
       this.continuousRendering = false;
     });
-
-    // SCREEN RESIZE
-    this.forceUpdate();
-    this.animate(true);
-    this.handleResize();
   }
 
   zoomToFit(object) {
