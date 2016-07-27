@@ -104,7 +104,12 @@ export default class GeometryView extends React.Component {
     }
     let object3d = object.getObject3D();
     let boundingBox = object.getBoundingBox();
-    let radius = boundingBox.size().length() * 0.5;
+    let radius = 0;
+    if (this.props.viewType === 'preview') {
+      radius = boundingBox.size().length() * 0.75;
+    } else {
+      radius = boundingBox.size().length() * 0.5;
+    }
     let fovRad = THREE.Math.degToRad(this.camera.fov * 0.5);
     let horizontalFOV = 2 * Math.atan(fovRad * this.camera.aspect);
     let fov = Math.min(THREE.Math.degToRad(this.camera.fov), horizontalFOV);

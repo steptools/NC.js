@@ -2,6 +2,8 @@ Version 1.5.2
 
 Features:
 
+- Improved the preview pane ui
+
 Bugfixes:
 
 - Fixed issues with functionality and application flow in Edge
