@@ -120,7 +120,7 @@ export default class PropertiesPane extends React.Component {
         prevId = entity.id;
       }
 
-      let url = this.props.manager.app.services.api_endpoint
+      let url = this.props.manager.app.services.apiEndpoint
         + this.props.manager.app.services.version + '/nc';
       this.props.manager.dispatchEvent({
         type: 'setModel',
