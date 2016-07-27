@@ -154,21 +154,14 @@ export default class PropertiesPane extends React.Component {
       this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('active')}/>
-          Status: Active
+          Running
         </MenuItem>
       );
-    } else if (entity.enabled === true) {
-      this.properties.push(
-        <MenuItem disabled key='active' className='property active'>
-          <div className={getIcon('inactive')}/>
-          Status: Inactive
-        </MenuItem>
-      );
-    } else {
+    } else if (entity.enabled !== true) {
       this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('disabled')}/>
-          Status: Disabled
+          Disabled
         </MenuItem>
       );
     }
