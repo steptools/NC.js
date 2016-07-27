@@ -104,7 +104,12 @@ export default class GeometryView extends React.Component {
     }
     let object3d = object.getObject3D();
     let boundingBox = object.getBoundingBox();
-    let radius = boundingBox.size().length() * 0.5;
+    let radius = 0;
+    if (this.props.viewType === 'preview') {
+      radius = boundingBox.size().length() * 0.75;
+    } else {
+      radius = boundingBox.size().length() * 0.5;
+    }
     let fovRad = THREE.Math.degToRad(this.camera.fov * 0.5);
     let horizontalFOV = 2 * Math.atan(fovRad * this.camera.aspect);
     let fov = Math.min(THREE.Math.degToRad(this.camera.fov), horizontalFOV);
@@ -204,9 +209,9 @@ export default class GeometryView extends React.Component {
     //This is where the NC model is being loaded into the CADview
     let model = this.props.manager.getRootModel(event.path);
     // Add the model to the scene
-    this.annotationScene.add(   model.getAnnotation3D());
-    this.geometryScene.add(     model.getObject3D());
-    this.overlayScene.add(      model.getOverlay3D());
+    this.annotationScene.add(model.getAnnotation3D());
+    this.geometryScene.add(model.getObject3D());
+    this.overlayScene.add(model.getOverlay3D());
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
 

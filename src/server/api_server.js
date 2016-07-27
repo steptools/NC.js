@@ -45,6 +45,13 @@ util.inherits(APIServer, CoreServer);
 APIServer.prototype._setExpress = function() {
   this.express = express();
   this.express.disable('x-powered-by');
+  // prevents caching (nexessary for Edge)
+  this.express.use(function noCache(req, res, next) {
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.header('Expires', 0);
+    next();
+  });
   this.express.use(
     require('serve-favicon')
     (__dirname + '/../../public/img/favicon.ico')
@@ -104,7 +111,10 @@ APIServer.prototype._setRoutes = function(cb) {
  */
 APIServer.prototype._setSite = function() {
   var self = this;
-  var endpoint = this.config.host ? this.config.protocol + '://' + this.config.host + ':' + app.port : '';
+  var endpoint = '';
+  if (this.config.host) {
+    endpoint = this.config.protocol + '://' + this.config.host + ':' + app.port;
+  }
   var services = {
     apiEndpoint: endpoint,
     socket: '',
