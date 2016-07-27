@@ -106,7 +106,7 @@ APIServer.prototype._setSite = function() {
   var self = this;
   var endpoint = this.config.host ? this.config.protocol + '://' + this.config.host + ':' + app.port : '';
   var services = {
-    api_endpoint: endpoint,
+    apiEndpoint: endpoint,
     socket: "",
     version: '/v3',
     machine: self.machinetool,
