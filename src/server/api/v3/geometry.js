@@ -5,12 +5,16 @@ var file = require('./file');
 
 function _getGeometry(req, res) {
   let ms = file.ms;
+  let find = file.find;
 
   if (req.params.type === 'shell') {
     res.status(200).send(ms.GetGeometryJSON(req.params.uuid , 'MESH'));
     return;
   } else if (req.params.type === 'annotation') {
     res.status(200).send(ms.GetGeometryJSON(req.params.uuid , 'POLYLINE'));
+    return;
+  } else if (!req.params.type && req.params.eid) {
+    res.status(200).send(find.GetGeometryJSON(Number(req.params.eid)));
     return;
   }
   res.status(200).send(ms.GetGeometryJSON());
@@ -20,7 +24,7 @@ function _getGeometry(req, res) {
 module.exports = function(app, cb) {
   app.router.get('/v3/nc/geometry', _getGeometry);
   app.router.get('/v3/nc/geometry/:uuid/:type', _getGeometry);
-
+  app.router.get('/v3/nc/geometry/:eid', _getGeometry);
   if (cb) {
     cb();
   }

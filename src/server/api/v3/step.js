@@ -56,6 +56,7 @@ function exeFromId(id) {
   } else {
     ws.enabled = false;
   }
+
   if (find.IsWorkingstep(id)) {
     ws.type = 'workingstep';
     ws.tool = find.GetWorkingstepTool(id);
@@ -118,10 +119,9 @@ function _getSetup(req, res) {
 }
 
 module.exports = function(app, cb) {
-  app.router.get('/v3/nc/workplan/:wsId',_getExeFromId);
-  app.router.get('/v3/nc/workplan',_getMwp);
+  app.router.get('/v3/nc/workplan/:wsId', _getExeFromId);
+  app.router.get('/v3/nc/workplan', _getMwp);
   app.router.get('/v3/nc/setup/:wsId', _getSetup);
-
   if (cb) {
     cb();
   }

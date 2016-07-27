@@ -7,7 +7,7 @@ npm-debug.log
 src/client/fonts/*
 src/client/stylesheets/fonts/*
 *.stpnc
-*.mtc
 *.min
+*.mtc
 config.js
 models/

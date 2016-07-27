@@ -1,19 +1,20 @@
 /* Copyright G. Hemingway 2015 */
 'use strict';
 
-let http = require('http');
-let path = require('path');
-let io = require('socket.io');
-let ioSession = require('socket.io-express-session');
-let expSession = require('express-session');
-let express = require('express');
-let bodyParser = require('body-parser');
-let cookieParser = require('cookie-parser');
-let jade = require('jade');
-let CoreServer = require('./core_server');
-let util = require('util');
+var http = require('http');
+var path = require('path');
+var io = require('socket.io');
+var ioSession = require('socket.io-express-session');
+var expSession = require('express-session');
+var express = require('express');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var jade = require('jade');
+var CoreServer = require('./core_server');
+var util = require('util');
+var fs = require('fs');
 
-/**************************** Support Site ************************************/
+/************************* Support Site *********************************/
 
 var COOKIE_SECRET = 'imhotep';
 var app;
@@ -73,7 +74,7 @@ APIServer.prototype._setSocket = function() {
   this.server = http.Server(this.express);
   this.ioServer = io(this.server, {});
   this.ioServer.use(ioSession(this.session));
-  this.ioServer.on('connection', function (socket) {
+  this.ioServer.on('connection', function(socket) {
     socket.on('disconnect', function() {});
   });
 };
@@ -84,15 +85,13 @@ APIServer.prototype._setSocket = function() {
 APIServer.prototype._setRoutes = function(cb) {
   var self = this;
   require('./api/v3/step')(self, function() {
-    require('./api/v3/state')(self, function () {
-      require('./api/v3/tool')(self, function () {
-        require('./api/v3/tolerances')(self, function () {
-          require('./api/v3/geometry')(self, function () {
-            require('./api/v3/changelog')(self, function() {
-              if (cb) {
-                cb();
-              }
-            });
+    require('./api/v3/state')(self, function() {
+      require('./api/v3/tool')(self, function() {
+        require('./api/v3/tolerances')(self, function() {
+          require('./api/v3/geometry')(self, function() {
+            if (cb) {
+              cb();
+            }
           });
         });
       });
@@ -113,17 +112,21 @@ APIServer.prototype._setSite = function() {
     apiEndpoint: endpoint,
     socket: '',
     version: '/v3',
+    machine: self.config.machine,
   };
   // Serve the root client framework - customized as needed
-  var _serveRoot = function (req, res) {
+  var _serveRoot = function(req, res) {
+    var change = fs.readFileSync('CHANGELOG.md', 'utf8');
     var appConfig = {
       title: 'NC.js',
       source: '/js/main.js',
       services: services,
       config: self.config.client,
+      changelog: change,
     };
     res.render('base.jade', appConfig);
   };
+  res.render('base.jade', appConfig);
 
   this.router.get('/', _serveRoot);
   this.router.get('*', function(req, res) {
@@ -136,34 +139,17 @@ APIServer.prototype._setSite = function() {
  */
 APIServer.prototype.run = function() {
   var self = this;
-  this.server.listen(app.port, function () {
+  this.server.listen(app.port, function() {
     self.logger.info('CAD.js API Server listening on: ' + app.port);
   });
 
 
   process.openStdin().addListener('data', function(inputData) {
-    if (self.server !== null && self.server !== 'undefined') {
+    if ((self.server !== null) && (self.server !== 'undefined')) {
       inputData=inputData.toString().trim().toLowerCase();
       if (inputData.length === 0) {
         process.exit(0);
       }
-      // to add a confirmation message before closing the server,
-      // uncomment all the code below and remove above if statement
-      /*
-      if (!exiting) {
-        if (inputData === 'quit' || inputData === 'q' || inputData === 'exit') {
-          console.log('Are you sure? [y/n]');
-          exiting = true;
-        }
-      } else {
-        if (inputData === 'yes' || inputData === 'y') {
-          self.server.close(() => console.log('Server exiting...'));
-          process.exit(0);
-          //console.log("**pretends to exit**");
-        }
-        exiting = false;
-      }
-      */
     }
   });
 };

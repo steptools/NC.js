@@ -42,6 +42,7 @@ export default class SidebarView extends React.Component {
 
   render() {
     let properties = <PropertiesPane
+      app={this.props.app}
       entity={this.props.selectedEntity}
       previousEntities={this.props.previouslySelectedEntities}
       pid={this.props.pid}
@@ -49,7 +50,12 @@ export default class SidebarView extends React.Component {
       propertiesCb={this.props.openProperties}
       tools={this.props.toolCache}
       workingsteps={this.props.workingstepCache}
+      resize={this.props.resize}
       toleranceCache={this.props.toleranceCache}
+      guiMode={this.props.guiMode}
+      manager={this.props.cadManager}
+      preview={this.props.preview}
+      previewCb={this.props.openPreview}
     />;
 
     const tabs = (

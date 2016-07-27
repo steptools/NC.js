@@ -26,7 +26,6 @@ setStyleTransform._transformPropertyNames = [
 export default class CompassView extends React.Component {
   constructor(props) {
     super(props);
-    this.compassParent = $('#' + this.props.compassParentId);
     this.controls = this.props.controls;
     this.camera = this.props.camera;
     this.update = this.update.bind(this);
@@ -37,8 +36,7 @@ export default class CompassView extends React.Component {
     let defaultUpVector = new THREE.Vector3(0,1,0);
 
     this.$cubeButtons.on('mouseenter', function () {
-      self
-        .$cubeButtons
+      self.$cubeButtons
         .removeClass('hover')
         .filter('[data-group="' + $(this).attr('data-group') + '"]')
         .addClass('hover');
@@ -52,9 +50,10 @@ export default class CompassView extends React.Component {
       } else {
         upVector = defaultUpVector;
       }
-      eulerOrder = this.dataset.order;
       if (typeof this.dataset.order === 'undefined') {
         eulerOrder = 'XYZ';
+      } else {
+        eulerOrder = this.dataset.order;
       }
 
       let conversionFactor = Math.PI / 180.0;
@@ -70,10 +69,10 @@ export default class CompassView extends React.Component {
   }
 
   componentDidMount() {
-    this.compassCube = document.getElementById('compass-cube');
+    this.compassCube = $(this.props.parentSelector + ' .cube')[0];
     this.compassCubeMatrix = new THREE.Matrix4();
     this.props.dispatcher.addEventListener('render:update', this.update);
-    this.$cubeButtons = $('.cube-button');
+    this.$cubeButtons = $(this.props.parentSelector + ' .cube-button');
     this.bindEvents();
   }
 
@@ -87,47 +86,35 @@ export default class CompassView extends React.Component {
     let lookTarget = this.controls.target;
     let matrix = new THREE.Matrix4();
     let roundedMatrix;
-
     matrix.lookAt(lookTarget, lookFrom, up);
     this.compassCubeMatrix.getInverse(matrix);
-    roundedMatrix = Array.prototype.map.call(
-      this.compassCubeMatrix.elements,
+    roundedMatrix = Array.prototype.map.call(this.compassCubeMatrix.elements,
       function (v) {
         return v.toFixed(3);
       }
     );
-    setStyleTransform(
-      this.compassCube,
-      'perspective(300px) matrix3d(' + roundedMatrix.join() + ')'
-    );
+    let transform = 'perspective(300px) matrix3d(' + roundedMatrix.join() + ')';
+    setStyleTransform(this.compassCube, transform);
   }
 
   render() {
-    let style = {
-      'top': '30px',
-      'zIndex': '100',
-    };
+    let style={'top': '30px', 'zIndex': '100'};
 
     return (
-      <div id="compass-cube" className="cube" style={style}>
+      <div className="cube" style={style}>
         <div className="cube-face cube-face-front">
           <span className="cube-face-label">Front</span>
-          <div
-            className="cube-button cube-face-button"
-            data-x="0"
-            data-y="0"
-            data-z="0"
-          />
+          <div className="cube-button cube-face-button" data-x="0" data-y="0" data-z="0"></div>
 
-          <div className="cube-face-edge cube-face-edge-top cube-button cube-button-face-edge" data-group="front-top" data-x="45" data-y="0" data-z="0" data-order="YXZ"></div>
-          <div className="cube-face-edge cube-face-edge-right cube-button cube-button-face-edge" data-group="front-right" data-x="0" data-y="45" data-z="0" data-order="YXZ"></div>
-          <div className="cube-face-edge cube-face-edge-bottom cube-button cube-button-face-edge" data-group="front-bottom" data-x="-45" data-y="0" data-z="0" data-order="YXZ"></div>
-          <div className="cube-face-edge cube-face-edge-left cube-button cube-button-face-edge" data-group="front-left" data-x="0" data-y="-45" data-z="0" data-order="YXZ"></div>
+          <div className="cube-face-edge cube-face-edge-top cube-button cube-button-face-edge" data-group="front-top" data-x="45" data-y="0"data-z="0" data-order="YXZ"></div>
+          <div className="cube-face-edge cube-face-edge-right cube-button cube-button-face-edge" data-group="front-right" data-x="0" data-y="45"data-z="0" data-order="YXZ"></div>
+          <div className="cube-face-edge cube-face-edge-bottom cube-button cube-button-face-edge" data-group="front-bottom" data-x="-45" data-y="0"data-z="0" data-order="YXZ"></div>
+          <div className="cube-face-edge cube-face-edge-left cube-button cube-button-face-edge" data-group="front-left" data-x="0" data-y="-45"data-z="0" data-order="YXZ"></div>
 
-          <div className="cube-face-corner cube-face-corner-top-right cube-button cube-button-face-corner" data-group="front-top-right" data-x="45" data-y="45" data-z="0" data-order="YXZ"></div>
-          <div className="cube-face-corner cube-face-corner-bottom-right cube-button cube-button-face-corner" data-group="front-bottom-right" data-x="-45" data-y="45" data-z="0" data-order="YXZ"></div>
-          <div className="cube-face-corner cube-face-corner-bottom-left cube-button cube-button-face-corner" data-group="front-bottom-left" data-x="-45" data-y="-45" data-z="0" data-order="YXZ"></div>
-          <div className="cube-face-corner cube-face-corner-top-left cube-button cube-button-face-corner" data-group="front-top-left" data-x="45" data-y="-45" data-z="0" data-order="YXZ"></div>
+          <div className="cube-face-corner cube-face-corner-top-right cube-button cube-button-face-corner" data-group="front-top-right" data-x="45"data-y="45" data-z="0" data-order="YXZ"></div>
+          <div className="cube-face-corner cube-face-corner-bottom-right cube-button cube-button-face-corner" data-group="front-bottom-right"data-x="-45" data-y="45" data-z="0" data-order="YXZ"></div>
+          <div className="cube-face-corner cube-face-corner-bottom-left cube-button cube-button-face-corner" data-group="front-bottom-left"data-x="-45" data-y="-45" data-z="0" data-order="YXZ"></div>
+          <div className="cube-face-corner cube-face-corner-top-left cube-button cube-button-face-corner" data-group="front-top-left" data-x="45"data-y="-45" data-z="0" data-order="YXZ"></div>
         </div>
         <div className="cube-face cube-face-back">
           <span className="cube-face-label">Back</span>
@@ -205,6 +192,5 @@ export default class CompassView extends React.Component {
 }
 
 CompassView.propTypes = {
-  compassParentId: React.PropTypes.string.isRequired,
   dispatcher: React.PropTypes.object.isRequired,
 };

@@ -5,7 +5,6 @@
 require('./stylesheets/base.scss');
 require('bootstrap-webpack');
 let io = require('socket.io-client');
-let jwtDecode = require('jwt-decode');
 let actionManager = require('./actionmanager');
 import CADManager from './models/cad_manager';
 import React from 'react';
@@ -20,22 +19,13 @@ class CADApp extends THREE.EventDispatcher {
     let $body = $('body');
     this.services = $body.data('services');
     this.config = $body.data('config');
-    // Set state
-    this.state = {
-      token: window.localStorage.getItem('user:token'),
-      user: undefined,
-    };
-    if (this.state.token) {
-      this.handleLogin({token: this.state.token});
-    } else {
-      this.addEventListener('user:login', this.handleLogin.bind(this));
-    }
+    this.changelog = $body.data('changelog');
 
     // Setup socket
     this.socket = undefined;
     if (this.config.socket) {
       // Establish socket connection
-      let socketURL = this.services.apiEndpoint + this.services.socket;
+      let socketURL = this.services.api_endpoint + this.services.socket;
       this.socket = io(socketURL, {});
       // Connect to the socket server
       this.socket.on('connect', function () {
@@ -58,6 +48,7 @@ class CADApp extends THREE.EventDispatcher {
         />
       </div>
     );
+
     ReactDOM.render(
       view,
       document.getElementById('primary-view'), function () {
@@ -67,28 +58,11 @@ class CADApp extends THREE.EventDispatcher {
 
     this.cadManager.dispatchEvent({
       type: 'setModel',
+      viewType: 'cadjs',
       path: 'state/key',
-      baseURL: this.services.apiEndpoint + this.services.version,
+      baseURL: this.services.api_endpoint + this.services.version,
       modelType: 'nc',
     });
-  }
-
-  handleLogin(ev) {
-    // Set app state
-    window.localStorage.setItem('user:token', ev.token);
-    this.state.token = ev.token;
-    this.state.user = jwtDecode(this.state.token);
-    this.removeEventListener('user:login', this.handleLogin.bind(this));
-    this.addEventListener('user:logout', this.handleLogout.bind(this));
-  }
-
-  handleLogout() {
-    // Update logged out state
-    window.localStorage.setItem('user:token', undefined);
-    this.state.token = undefined;
-    this.state.user = undefined;
-    this.removeEventListener('user:logout', this.handleLogout.bind(this));
-    this.addEventListener('user:login', this.handleLogin.bind(this));
   }
 }
 
