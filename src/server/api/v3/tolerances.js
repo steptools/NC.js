@@ -9,18 +9,18 @@ var find = file.find;
 
 function getTolerance(id) {
   let name = apt.SetNameGet(id);
-  let temp = tol.GetToleranceType(id);
+  let tolTypeName = tol.GetToleranceType(id);
   let tolType;
-  if (temp) {
-    temp = temp.replace(/_/g, ' ').toLowerCase();
-    tolType = temp.split(' ')[0];
+  if (tolTypeName) {
+    tolTypeName = tolTypeName.replace(/_/g, ' ').toLowerCase();
+    tolType = tolTypeName.split(' ')[0];
   }
 
   return {
     'id': id,
     'type': 'tolerance',
     'name': name,
-    'tolTypeName': temp,
+    'tolTypeName': tolTypeName,
     'toleranceType': tolType,
     'value': tol.GetToleranceValue(id),
     'unit' : tol.GetToleranceUnit(id),

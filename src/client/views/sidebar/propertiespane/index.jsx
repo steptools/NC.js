@@ -21,6 +21,8 @@ function getIcon(type, data) {
       return 'icon custom tool';
     case 'workpiece':
       return 'icon custom workpiece';
+    case 'diameter':
+      return 'icon custom diameter';
     case 'tolerance':
       if (data) {
         return 'icon custom tolerance ' + data;
@@ -42,6 +44,7 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-ban-circle';
     case 'time':
       return 'icon glyphicons glyphicons-clock';
+    case 'length':
     case 'distance':
       return 'icon glyphicons glyphicons-ruler';
     case 'feedrate':
@@ -485,6 +488,40 @@ export default class PropertiesPane extends React.Component {
     );
   }
 
+  //TODO: corner radius icon
+  //      diameter icon
+  //      length icon
+  renderTools(entity){
+    if(entity.type !== 'tool'){
+      return null;
+    }
+    if(entity.cornerRadius.toFixed(0) !== '0'){
+      this.properties.push (
+        <MenuItem disabled key='tRadius' className='property children'>
+          Corner Radius: {entity.cornerRadius.toFixed(2)} {entity.cornerRadiusUnit}
+        </MenuItem>
+      );
+    }
+
+    if(entity.diameter){
+      this.properties.push (
+        <MenuItem disabled key='tDiameter' className='property children'>
+          <div className={getIcon('diameter')}/>
+          Diameter: {entity.diameter} {entity.diameterUnit}
+        </MenuItem>
+      );
+    }
+
+    if(entity.length){
+      this.properties.push (
+        <MenuItem disabled key='tLength' className='property children'>
+          <div className={getIcon('length')}/>
+          Tool Length: {entity.length} {entity.lengthUnit}
+        </MenuItem>
+      );
+    }
+  }
+
   renderProperties(entity) {
     this.properties = [];
     if (entity === null) {
@@ -498,6 +535,7 @@ export default class PropertiesPane extends React.Component {
     this.renderWorkingstep(entity);
     this.renderWorkpieces(entity);
     this.renderGoto(entity);
+    this.renderTools(entity);
     this.renderTolerance(entity);
     this.renderWorkingsteps(entity);
     this.renderChildren(entity);
