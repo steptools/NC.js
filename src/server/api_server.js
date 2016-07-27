@@ -104,7 +104,10 @@ APIServer.prototype._setRoutes = function(cb) {
  */
 APIServer.prototype._setSite = function() {
   var self = this;
-  var endpoint = this.config.host ? this.config.protocol + '://' + this.config.host + ':' + app.port : '';
+  var endpoint = '';
+  if (this.config.host) {
+    endpoint = this.config.protocol + '://' + this.config.host + ':' + app.port;
+  }
   var services = {
     apiEndpoint: endpoint,
     socket: '',

@@ -415,9 +415,10 @@ export default class GeometryView extends React.Component {
     window.requestAnimationFrame(() => {
       this.animate(false);
     });
-    if (this.continuousRendering === true
-      || this.shouldRender === true
-      || forceRendering === true) {
+    let shouldAnimate = this.continuousRendering === true;
+    shouldAnimate &= this.shouldRender === true;
+    shouldAnimate &= forceRendering === true;
+    if (shouldAnimate) {
       if (this.props.locked && this.props.viewType === 'cadjs') {
         this.alignToolView(this.props.manager.getRootModel('state/key'));
       }
