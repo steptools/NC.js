@@ -1,4 +1,3 @@
-// TODO: styleguide compliant
 import React from 'react';
 import Menu,{Item as MenuItem} from 'rc-menu';
 import GeometryView from '../../geometry';
@@ -116,12 +115,11 @@ export default class PropertiesPane extends React.Component {
         prevId = entity.workpiece;
       } else if (entity.type === 'tool') {
         prevId = entity.id + '/tool';
-      }
-      else {
+      } else {
         prevId = entity.id;
       }
 
-      let url = this.props.manager.app.services.api_endpoint
+      let url = this.props.manager.app.services.apiEndpoint
         + this.props.manager.app.services.version + '/nc';
       this.props.manager.dispatchEvent({
         type: 'setModel',
