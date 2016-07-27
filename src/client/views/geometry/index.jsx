@@ -4,32 +4,30 @@ import React from 'react';
 import ViewerControls   from './viewer_controls';
 import CompassView      from '../compass/compass';
 
-export default class GeometryView extends React.Component{
+export default class GeometryView extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      oldColors: {}
-    };
+    this.state = {oldColors: {}};
 
-    this.invalidate     = this.invalidate.bind(this);
+    this.invalidate = this.invalidate.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
     this.highlightFaces = this.highlightFaces.bind(this);
-    this.onShellLoad    = this.onShellLoad.bind(this);
-    this.onModelAdd     = this.onModelAdd.bind(this);
-    this.onModelRemove  = this.onModelRemove.bind(this)
-    this.zoomToFit      = this.zoomToFit.bind(this);
+    this.onShellLoad = this.onShellLoad.bind(this);
+    this.onModelAdd = this.onModelAdd.bind(this);
+    this.onModelRemove = this.onModelRemove.bind(this);
+    this.zoomToFit = this.zoomToFit.bind(this);
   }
-  
+
   componentDidMount() {
     // RENDERER
     this.canvasParent = $(this.props.parentSelector);
     this.canvas = $(this.props.parentSelector + ' .cadjs-canvas');
-    
+
     this.renderer = new THREE.WebGLRenderer({
-        canvas: this.canvas[0],
-        antialias: true,
-        alpha: false
+      canvas: this.canvas[0],
+      antialias: true,
+      alpha: false,
     });
     this.renderer.setClearColor(new THREE.Color(0x000000), 1);
     this.renderer.sortObjects = true;
@@ -56,7 +54,7 @@ export default class GeometryView extends React.Component{
     this.controls =  new ViewerControls({
       viewer: this,
       camera: this.camera,
-      canvas: this.renderer.domElement
+      canvas: this.renderer.domElement,
     });
 
     // CONTROL EVENT HANDLERS

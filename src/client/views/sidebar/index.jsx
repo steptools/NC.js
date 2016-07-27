@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import Menu, {Item as MenuItem} from 'rc-menu';
 import WorkingstepList from './workingstepslist';
@@ -42,6 +41,7 @@ export default class SidebarView extends React.Component {
   }
 
   render() {
+    console.log(this);
     let properties = <PropertiesPane
       app={this.props.app}
       entity={this.props.selectedEntity}

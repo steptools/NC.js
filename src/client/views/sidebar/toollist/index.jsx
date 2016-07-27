@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import _ from 'lodash';
 

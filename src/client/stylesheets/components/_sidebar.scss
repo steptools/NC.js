@@ -307,8 +307,9 @@ $icons: '../icons/';
                 }
                 
                 .list {
-                    cursor: pointer;
+                    cursor: default;
                     .node {
+                        cursor: pointer;
                         width: 100%;
                         display: inline-flex;
                         align-items: center;

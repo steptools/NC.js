@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 'use-strict';
 
 import React from 'react';
