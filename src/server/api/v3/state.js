@@ -94,6 +94,62 @@ function sameSetup(newid, oldid) {
   return (step.getSetupFromId(newid) === step.getSetupFromId(oldid));
 }
 
+function handleWSInit(command) {
+  let temp = loopStates[path];
+  loopStates[path] = true;
+  if (!temp) {
+    loop(file.ms, false);
+  }
+  switch (command) {
+    case 'next':
+      if (temp) {
+        getNext(file.ms, function() {
+          loop(file.ms, true);
+        });
+      } else {
+        getNext(file.ms, function() {
+          loop(file.ms, true);
+        });
+        loopStates[path] = false;
+        update('pause');
+      }
+      res.status(200).send('OK');
+      break;
+    case 'prev':
+      if (temp) {
+        getPrev(file.ms, function() {
+          loop(file.ms, true);
+        });
+      } else {
+        getPrev(file.ms, function() {
+          loop(file.ms, true);
+        });
+        loopStates[path] = false;
+        update('pause');
+      }
+      res.status(200).send('OK');
+      break;
+    default:
+      if (isNaN(parseFloat(command))
+        || !isFinite(command)) {
+        break;
+      }
+      let ws = Number(command);
+      if (temp) {
+        getToWS(ws, file.ms, function() {
+          loop(file.ms, true);
+        });
+      } else {
+        getToWS(ws, file.ms, function() {
+          loop(file.ms, true);
+        });
+      }
+      loopStates[path] = false;
+      update('pause');
+      res.status(200).send('OK');
+  }
+}
+
 /***************************** Endpoint Functions *****************************/
 
 function _loopInit(req, res) {
@@ -166,84 +222,27 @@ function _loopInit(req, res) {
   }
 }
 
-var _wsInit = function(req, res) {
-  if (req.params.command) {
-    let command = req.params.command;
-    var ms = file.ms;
-    if (typeof loopStates[path] === 'undefined') {
-      loopStates[path] = false;
-    }
-
-    switch (command) {
-      case 'next':
-        var temp = loopStates[path];
-        loopStates[path] = true;
-        if (temp) {
-          getNext(ms, function() {
-            loop(ms, true);
-          });
-        } else {
-          loop(ms,false);
-          getNext(ms, function() {
-            loop(ms, true);
-          });
-          loopStates[path] = false;
-          update('pause');
-        }
-        res.status(200).send('OK');
-        break;
-      case 'prev':
-        var temp = loopStates[path];
-        loopStates[path] = true;
-        if (temp) {
-          getPrev(ms, function() {
-            loop(ms, true);
-          });
-        } else {
-          loop(ms,false);
-          getPrev(ms, function() {
-            loop(ms, true);
-          });
-          loopStates[path] = false;
-          update('pause');
-        }
-        res.status(200).send('OK');
-        break;
-      default:
-        if (isNaN(parseFloat(command)) || !isFinite(command)) {
-          break;
-        }
-        let ws = Number(command);
-        temp = loopStates[path];
-        loopStates[path] = true;
-        if (temp) {
-          getToWS(ws, ms, function() {
-            loop(ms, true);
-          });
-          loopStates[path] = false;
-          update('pause');
-        } else {
-          loop(ms,false);
-          getToWS(ws, ms, function() {
-            loop(ms, true);
-          });
-          loopStates[path] = false;
-          update('pause');
-        }
-        res.status(200).send('OK');
-    }
-    getDelta(ms, false, function(b) {
-      app.ioServer.emit('nc:delta', JSON.parse(b));
-      if (playbackSpeed > 0) {
-        if (loopTimer !== undefined) {
-          clearTimeout(loopTimer);
-        }
-        loopTimer = setTimeout(function () {
-          loop(ms, false);
-        }, 50 / (playbackSpeed / 200));
-      }
-    });
+var _wsInit = function(req) {
+  if (!req.params.command) {
+    return;
   }
+  if (typeof loopStates[path] === 'undefined') {
+    loopStates[path] = false;
+  }
+
+  handleWSInit(req.params.command);
+
+  getDelta(file.ms, false, function(b) {
+    app.ioServer.emit('nc:delta', JSON.parse(b));
+    if (playbackSpeed > 0) {
+      if (loopTimer !== undefined) {
+        clearTimeout(loopTimer);
+      }
+      loopTimer = setTimeout(function () {
+        loop(file.ms, false);
+      }, 50 / (playbackSpeed / 200));
+    }
+  });
 };
 
 function _getKeyState(req, res) {
