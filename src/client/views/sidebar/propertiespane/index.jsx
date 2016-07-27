@@ -545,26 +545,24 @@ export default class PropertiesPane extends React.Component {
       <div className={entityData.paneName}>
         {this.renderPreview(entityData.entity)}
         <div className='titlebar'>
-          <div className='titleinfo'>
-            <span
-              className={'title-back ' + getIcon('back')}
-              onClick={() => {
-                this.props.propertiesCb(entityData.previousEntity, true);
-              }}
-            />
-            <span className={entityData.titleIcon} />
-            <span className='title'>
-              <div className='type'>{entityData.type}</div>
-              <div className='name'>{entityData.name}</div>
-            </span>
-            <span
-              className={'title-exit ' + getIcon('exit')}
-              onClick={() => {
-                this.props.propertiesCb(null);
-                this.props.previewCb(false);
-              }}
-            />
-          </div>
+          <span
+            className={'title-back ' + getIcon('back')}
+            onClick={() => {
+              this.props.propertiesCb(entityData.previousEntity, true);
+            }}
+          />
+          <span className={entityData.titleIcon} />
+          <span className='title'>
+            <div className='type'>{entityData.type}</div>
+            <div className='name'>{entityData.name}</div>
+          </span>
+          <span
+            className={'title-exit ' + getIcon('exit')}
+            onClick={() => {
+              this.props.propertiesCb(null);
+              this.props.previewCb(false);
+            }}
+          />
         </div>
         {this.renderProperties(entityData.entity)}
       </div>

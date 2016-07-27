@@ -45,11 +45,13 @@ util.inherits(APIServer, CoreServer);
 APIServer.prototype._setExpress = function() {
   this.express = express();
   this.express.disable('x-powered-by');
-  // prevents caching (nexessary for Edge)
+  // prevents caching in Edge
   this.express.use(function noCache(req, res, next) {
-    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.header('Pragma', 'no-cache');
-    res.header('Expires', 0);
+    if (req.headers['user-agent'].includes('Edge')) {
+      res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.header('Pragma', 'no-cache');
+      res.header('Expires', 0);
+    }
     next();
   });
   this.express.use(

@@ -356,15 +356,35 @@ $icons: '../icons/';
         cursor: default;
         display: flex;
         align-items: center;
-        justify-content: right;
+        justify-content: center;
         padding: 5px;
         border-bottom: 1px solid #DDDDDD;
         
-        .titleinfo {
-            display: flex;
-            align-items: center;
-            justify-content: right;
+        .title {
             flex-grow: 1;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+
+            .type {
+                border-bottom: 2px solid #666666;
+            }
+            
+            .name {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                
+                position: relative;
+                right: 0px;
+                //-webkit-transition: right 3s;
+                //-moz-transition: right 3s;
+                //transition: right 3s;
+            }
+            
+            &:hover .name{
+                //right: 0%;
+            }
         }
         
         .icon {
@@ -384,18 +404,6 @@ $icons: '../icons/';
         
         .title-exit.icon {
             margin-left: 8px;
-        }
-        
-        
-        
-        .title {
-            flex-grow: 1;
-            font-size: 14px;
-            font-weight: bold;
-
-            .type {
-                border-bottom: 2px solid #666666;
-            }
         }
     }
 
