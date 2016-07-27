@@ -133,8 +133,30 @@ export default class PropertiesPane extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.entity !== nextProps.entity ||
-        nextProps.entity === null) {
+    
+    let old_wp, new_wp;
+    
+    if (this.props.entity) {
+      if (this.props.entity.type === 'workpiece') {
+        old_wp = this.props.entity.id;
+      } else if (this.props.entity.type === 'tolerance') {
+        old_wp = this.props.entity.workpiece;
+      } else if (this.props.entity.type === 'workingstep') {
+        old_wp = this.props.entity.toBe.id;
+      }
+    }
+    
+    if (nextProps.entity) {
+      if (nextProps.entity.type === 'workpiece') {
+        new_wp = nextProps.entity.id;
+      } else if (nextProps.entity.type === 'tolerance') {
+        new_wp = nextProps.entity.workpiece;
+      } else if (nextProps.entity.type === 'workingstep') {
+        new_wp = nextProps.entity.toBe.id;
+      }
+    }
+    
+    if (!nextProps.entity || new_wp !== old_wp) {
       this.props.previewCb(false);
     }
   }
