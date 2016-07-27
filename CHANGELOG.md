@@ -1,3 +1,10 @@
+Version 1.5.2
+
+Features:
+
+Bugfixes:
+- Fixed issues with functionality and application flow in Edge
+
 Version 1.5.1
 
 Features:
