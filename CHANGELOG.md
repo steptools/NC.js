@@ -3,6 +3,8 @@ Version 1.5.0
 Features:
 
 - Added a preview pane that displays geometry related to the currently selected workpiece/tolerance
+- Back button in preview pane is now always visible
+- Removed the inactive indicator on some preview panes
 
 Bugfixes:
 
