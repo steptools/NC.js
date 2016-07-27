@@ -55,7 +55,6 @@ class CADApp extends THREE.EventDispatcher {
         // Dispatch setModel to the CADManager
       }
     );
-
     this.cadManager.dispatchEvent({
       type: 'setModel',
       viewType: 'cadjs',

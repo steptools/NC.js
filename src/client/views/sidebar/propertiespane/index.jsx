@@ -115,8 +115,7 @@ export default class PropertiesPane extends React.Component {
         prevId = entity.workpiece;
       } else if (entity.type === 'tool') {
         prevId = entity.id + '/tool';
-      }
-      else {
+      } else {
         prevId = entity.id;
       }
 
