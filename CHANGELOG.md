@@ -8,6 +8,7 @@ Features:
 Bugfixes:
 
 - Fixtures now load when there is a machine
+- Tolerances now have accurate names and types
 
 Version 1.5.0
 
