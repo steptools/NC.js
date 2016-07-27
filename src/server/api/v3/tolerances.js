@@ -114,9 +114,9 @@ function _getWps(req, res) {
 }
 
 module.exports = function(app, cb) {
-  app.router.get('/v3/nc/tolerances/:wsId',_getWsTols);
-  app.router.get('/v3/nc/tolerances/',_getTols);
-  app.router.get('/v3/nc/workpieces/',_getWps);
+  app.router.get('/v3/nc/tolerances/:wsId', _getWsTols);
+  app.router.get('/v3/nc/tolerances/', _getTols);
+  app.router.get('/v3/nc/workpieces/', _getWps);
 
   if (cb) {
     cb();

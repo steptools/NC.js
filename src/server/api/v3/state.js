@@ -113,7 +113,7 @@ function handleWSInit(command, res) {
         loopStates[path] = false;
         update('pause');
       }
-      res.status(200).send('OK');
+      res.sendStatus(200);
       break;
     case 'prev':
       if (temp) {
@@ -127,7 +127,7 @@ function handleWSInit(command, res) {
         loopStates[path] = false;
         update('pause');
       }
-      res.status(200).send('OK');
+      res.sendStatus(200);
       break;
     default:
       if (isNaN(parseFloat(command))
@@ -146,7 +146,7 @@ function handleWSInit(command, res) {
       }
       loopStates[path] = false;
       update('pause');
-      res.status(200).send('OK');
+      res.sendStatus(200);
   }
 }
 
@@ -181,7 +181,7 @@ function _loopInit(req, res) {
         }
         // app.logger.debug('Looping ' + path);
         loopStates[path] = true;
-        res.status(200).send('OK');
+        res.sendStatus(200);
         update('play');
         loop(ms, false);
         break;
@@ -192,7 +192,7 @@ function _loopInit(req, res) {
         }
         loopStates[path] = false;
         update('pause');
-        res.status(200).send('OK');
+        res.sendStatus(200);
         break;
       default:
         if (isNaN(parseFloat(loopstate)) || !isFinite(loopstate)) {
