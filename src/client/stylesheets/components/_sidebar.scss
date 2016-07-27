@@ -351,9 +351,8 @@ $icons: '../icons/';
     }
 
     .titlebar {
-        width: calc(100% + 38px);
+        width: 100%;
         position: relative;
-        right: 38px;
         cursor: default;
         display: flex;
         align-items: center;
@@ -368,28 +367,15 @@ $icons: '../icons/';
             flex-grow: 1;
         }
         
+        .icon {
+            &:hover:not(.title-icon) {
+                cursor: pointer;
+                color: #2BAEE9;
+            }
+        }
+        
         .title-back.icon {
-            cursor: pointer;
-            padding-right: 8px;
-            background-color: rgba(#F8F8F8, 1);
-            color: #2BAEE9;
-            -webkit-transition: -webkit-transform ease 250ms;
-            -moz-transition: -moz-transform ease 250ms;
-            -ms-transition: -ms-transform ease 250ms;
-            -o-transition: -o-transform ease 250ms;
-            transition: transform ease 250ms;
-            
-            &:before {
-                align-self: stretch;
-            }
-            
-            &.visible {
-                -webkit-transform: translateX(100%);
-                -moz-transform: translateX(100%);
-                -ms-transform: translateX(100%);
-                -o-transform: translateX(100%);
-                transform: translateX(100%);
-            }
+            margin-right: 8px;
         }
         
         .title-icon.icon {
@@ -398,12 +384,9 @@ $icons: '../icons/';
         
         .title-exit.icon {
             margin-left: 8px;
-            
-            &:hover {
-                cursor: pointer;
-                color: #2BAEE9;
-            }
         }
+        
+        
         
         .title {
             flex-grow: 1;
