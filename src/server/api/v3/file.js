@@ -15,7 +15,7 @@ function init(path, machinetool){
 	this.find.OpenProject(path);
 
 	this.ms = new StepNC.machineState(path);
-	if(machinetool !== ""){
+	if(machinetool !== null){
 		if(!this.ms.LoadMachine(machinetool))
 			console.log("ERROR: Machinetool was not loaded");
 		else

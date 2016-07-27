@@ -106,7 +106,7 @@ APIServer.prototype._setSite = function() {
         api_endpoint: endpoint,
         socket: "",
         version: '/v3',
-        machine: self.config.machine,
+        machine: self.machinetool,
     };
     // Serve the root client framework - customized as needed
     var _serveRoot = function (req, res) {
