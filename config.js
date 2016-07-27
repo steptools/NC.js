@@ -27,7 +27,6 @@ module.exports = function(environment) {
             "socket": true,
             "upload": true
           },
-					"machineURL": "http://192.168.0.123:5000",
           "file" : {
             "dir": "./boxy.stpnc"
           },
