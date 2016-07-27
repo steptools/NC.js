@@ -166,7 +166,7 @@ function _loopInit(req, res) {
   }
 }
 
-function _wsInit(req, res) {
+var _wsInit = function(req, res) {
   if (req.params.command) {
     let command = req.params.command;
     var ms = file.ms;
@@ -176,50 +176,75 @@ function _wsInit(req, res) {
 
     switch (command) {
       case 'next':
-        if (loopStates[path]) {
-          getNext(ms, () => loop(ms, true));
+        var temp = loopStates[path];
+        loopStates[path] = true;
+        if (temp) {
+          getNext(ms, function() {
+            loop(ms, true);
+          });
         } else {
-          loop(ms, false);
-          getNext(ms, () => loop(ms, true));
+          loop(ms,false);
+          getNext(ms, function() {
+            loop(ms, true);
+          });
+          loopStates[path] = false;
           update('pause');
         }
         res.status(200).send('OK');
         break;
       case 'prev':
-        if (loopStates[path]) {
-          getPrev(ms, () => loop(ms, true));
+        var temp = loopStates[path];
+        loopStates[path] = true;
+        if (temp) {
+          getPrev(ms, function() {
+            loop(ms, true);
+          });
         } else {
-          loop(ms, false);
-          getPrev(ms, () => loop(ms, true));
+          loop(ms,false);
+          getPrev(ms, function() {
+            loop(ms, true);
+          });
+          loopStates[path] = false;
           update('pause');
         }
         res.status(200).send('OK');
         break;
       default:
-        if (isNaN(parseFloat(command) || !isFinite(command))) {
+        if (isNaN(parseFloat(command)) || !isFinite(command)) {
           break;
         }
         let ws = Number(command);
-        if (!loopStates[path]) {
-          loop(ms, false);
+        temp = loopStates[path];
+        loopStates[path] = true;
+        if (temp) {
+          getToWS(ws, ms, function() {
+            loop(ms, true);
+          });
+          loopStates[path] = false;
+          update('pause');
+        } else {
+          loop(ms,false);
+          getToWS(ws, ms, function() {
+            loop(ms, true);
+          });
+          loopStates[path] = false;
+          update('pause');
         }
-        getToWS(ws, ms, () => loop(ms, true));
-        loopStates[path] = false;
-        update('pause');
         res.status(200).send('OK');
     }
-
     getDelta(ms, false, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {
           clearTimeout(loopTimer);
         }
-        loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+        loopTimer = setTimeout(function () {
+          loop(ms, false);
+        }, 50 / (playbackSpeed / 200));
       }
     });
   }
-}
+};
 
 function _getKeyState(req, res) {
   var ms = file.ms;
