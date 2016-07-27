@@ -108,6 +108,7 @@ APIServer.prototype._setSite = function() {
   if (this.config.host) {
     endpoint = this.config.protocol + '://' + this.config.host + ':' + app.port;
   }
+  console.log(endpoint);
   var services = {
     apiEndpoint: endpoint,
     socket: '',
@@ -126,7 +127,6 @@ APIServer.prototype._setSite = function() {
     };
     res.render('base.jade', appConfig);
   };
-  res.render('base.jade', appConfig);
 
   this.router.get('/', _serveRoot);
   this.router.get('*', function(req, res) {

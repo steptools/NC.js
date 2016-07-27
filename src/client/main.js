@@ -60,7 +60,7 @@ class CADApp extends THREE.EventDispatcher {
       type: 'setModel',
       viewType: 'cadjs',
       path: 'state/key',
-      baseURL: this.services.api_endpoint + this.services.version,
+      baseURL: this.services.apiEndpoint + this.services.version,
       modelType: 'nc',
     });
   }
