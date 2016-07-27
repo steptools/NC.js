@@ -7,6 +7,7 @@ Features:
 Bugfixes:
 
 - Make & make-release now ends properly when webpack fails
+- Made Fixture show up when machine tool was loaded from command line options
 
 Version 1.4.0
 
