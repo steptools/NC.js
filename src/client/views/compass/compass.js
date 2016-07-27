@@ -28,7 +28,6 @@ export default class CompassView extends React.Component {
     /* compassParentId, camera, controls */
     constructor(props) {
         super(props);
-        this.compassParent = $('#' + this.props.compassParentId);
         this.controls = this.props.controls;
         this.camera = this.props.camera;
         this.update = this.update.bind(this);
@@ -36,7 +35,7 @@ export default class CompassView extends React.Component {
 
     bindEvents() {
         let self = this,
-            defaultUpVector = new THREE.Vector3(0,1,0);
+        defaultUpVector = new THREE.Vector3(0,1,0);
 
         this.$cubeButtons.on('mouseenter', function () {
             self.$cubeButtons
@@ -66,10 +65,10 @@ export default class CompassView extends React.Component {
     }
 
     componentDidMount() {
-        this.compassCube = document.getElementById('compass-cube');
+        this.compassCube = $(this.props.parentSelector + ' .cube')[0];
         this.compassCubeMatrix = new THREE.Matrix4();
         this.props.dispatcher.addEventListener("render:update", this.update);
-        this.$cubeButtons = $('.cube-button');
+        this.$cubeButtons = $(this.props.parentSelector + ' .cube-button');
         this.bindEvents();
     }
 
@@ -94,7 +93,7 @@ export default class CompassView extends React.Component {
     render() {
         let style={"top": "30px", 'zIndex': '100'};
 
-        return <div id="compass-cube" className="cube" style={style}>
+        return <div className="cube" style={style}>
             <div className="cube-face cube-face-front">
                 <span className="cube-face-label">Front</span>
                 <div className="cube-button cube-face-button" data-x="0" data-y="0" data-z="0"></div>
@@ -184,6 +183,5 @@ export default class CompassView extends React.Component {
 }
 
 CompassView.propTypes = {
-    compassParentId: React.PropTypes.string.isRequired,
     dispatcher: React.PropTypes.object.isRequired
 };

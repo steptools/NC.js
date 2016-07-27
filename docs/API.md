@@ -79,9 +79,3 @@ Returns the tolerances associated with the current model
 > **/workpieces/**
 
 Returns all of the workpieces associated with the current model as well as all the tolerances associated with each workpiece
-
-### *Found in changelog.js*
----
-> **/log**
-
-Returns the content of changelog.md from the root directory

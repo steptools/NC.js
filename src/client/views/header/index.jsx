@@ -136,16 +136,9 @@ export default class HeaderView extends React.Component {
   componentDidMount() {
     let changes = document.getElementById('changes');
     let logbutton = document.getElementById('logbutton');
-    let chlog = new XMLHttpRequest();
-    chlog.open('GET', '/log');
-    chlog.onreadystatechange = function() {
-      if (chlog.readyState === 4 && chlog.status === 200) {
-        let res = chlog.responseText.toString();
-        changes.innerHTML = md(res);
-        logbutton.innerHTML = 'v' + md(res).split('\n')[0].split(' ')[1];
-      }
-    };
-    chlog.send();
+    let log = this.props.cadManager.app.changelog;
+    changes.innerHTML = md(log);
+    logbutton.innerHTML = 'v' + md(log).split('\n')[0].split(' ')[1];
   }
 
   getFeedSpeedInfo() {

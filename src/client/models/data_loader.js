@@ -24,12 +24,11 @@ export default class DataLoader extends THREE.EventDispatcher {
         this._shells = [];
         this._annotations = [];
 
-        let self = this;
         this._workers = [];     // List of workers
         while (this._workers.length < this._maxWorkers) {
             let worker = new Worker(config.workerPath);
-            worker.addEventListener('message', function (event) {
-                self.workerMessage(event);
+            worker.addEventListener('message', (event) => {
+                this.workerMessage(event);
             });
             this._freeWorkers.push(this._workers.length);
             this._workers.push(worker);
@@ -129,7 +128,12 @@ export default class DataLoader extends THREE.EventDispatcher {
         req.callback = callback;
         // Push onto the queue and send out a message
         this._queue.push(req);
-        this.dispatchEvent({ type: 'addRequest', path: req.path });
+        if (req.type === 'previewShell') {
+            this.dispatchEvent({ type: 'addRequest', path: 'preview-' + req.path});
+        }
+        else {
+            this.dispatchEvent({ type: 'addRequest', path: req.path });
+        }
     }
 
     sortQueue() {
@@ -201,8 +205,15 @@ export default class DataLoader extends THREE.EventDispatcher {
             case "shellLoad":
             //This is the case where the shell comes in with position, normals and colors vector after ProcessShellJSON
                 shell = this._shells[event.data.id+".json"];
-                if (!shell) {
-                    console.log('DataLoader.ShellLoad: invalid shell ID' + event.data.id);
+              
+                if (req.type === 'previewShell') {
+                    this.buildPreviewNC(event.data, req);
+                    this.dispatchEvent({
+                        type: "shellLoad",
+                        file: event.data.file
+                    });
+                } else if (!shell) {
+                    console.log('DataLoader.ShellLoad: invalid shell ID ' + event.data.id);
                 } else {
                     data = event.data.data;
                     // Remove the reference to the shell
@@ -248,6 +259,12 @@ export default class DataLoader extends THREE.EventDispatcher {
             if(newpath[newpath.length - 1] === '/')
                 newpath = newpath.substring(0 , newpath.length - 1);
             data.url = newpath + '/geometry/' + req.path + '/' + req.type;
+        } else if (data.type === 'previewShell') {
+            data.shellSize = req.shellSize;
+            let newpath = req.baseURL;
+            if(newpath[newpath.length - 1] === '/')
+                newpath = newpath.substring(0 , newpath.length - 1);
+            data.url = newpath + '/geometry/' + req.path;
         }
         else if (data.type === "annotation") {
             let newpath = (req.baseURL).split('state')[0];
@@ -256,6 +273,38 @@ export default class DataLoader extends THREE.EventDispatcher {
             data.url = newpath + '/geometry/' + req.path + '/' + req.type;
         }
         worker.postMessage(data);
+    }
+    
+    buildPreviewNC(data, req) {
+        let nc = new NC(null, null, null, this);
+        
+        let color = DataLoader.parseColor('7d7d7d');
+        let transform = DataLoader.parseXform( [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        ], true);
+        
+        // Is this a shell
+        if(data.usage === 'cutter') {
+            color = DataLoader.parseColor("FF530D");
+        }
+        if(data.usage === 'fixture' && this._app.services.machine.dir === '') {
+            return;
+        }
+        if (data.usage === undefined) {
+            data.usage = 'tobe';
+        }
+
+        let boundingBox = new THREE.Box3();
+
+        let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);
+
+        nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
+        shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
+        
+        req.callback(undefined, nc);
     }
 
     buildAssemblyJSON(jsonText, req) {
@@ -283,28 +332,30 @@ export default class DataLoader extends THREE.EventDispatcher {
     }
     //This is the initial load that then loads all shells below it
     buildNCStateJSON(jsonText, req) {
-        let self = this;
         let doc = JSON.parse(jsonText);
         //console.log('Process NC: ' + doc.project);
         let nc = new NC(doc.project, doc.workingstep, doc.time_in_workingstep, this);
-        _.each(doc.geom, function(geomData) {
-            let color = DataLoader.parseColor("7d7d7d");
+        _.each(doc.geom, (geomData) => {
+            let color = DataLoader.parseColor('7d7d7d');
             let transform = DataLoader.parseXform(geomData.xform, true);
             // Is this a shell
             if (_.has(geomData, 'shell')) {
-                if(geomData.usage === "cutter")
+                if(geomData.usage === 'cutter')
                 {
                     color = DataLoader.parseColor("FF530D");
+                }
+                if(geomData.usage === 'fixture' && this._app.services.machine.dir === ''){
+                    return;
                 }
                 let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
                 let shell = new Shell(geomData.id, nc, nc, geomData.size, color, boundingBox);
                 nc.addModel(shell, geomData.usage, 'shell', geomData.id, transform, boundingBox);
                 // Push the shell for later completion
-                self._shells[geomData.shell] = shell;
-                self.addRequest({
+                this._shells[geomData.shell] = shell;
+                this.addRequest({
                     path: geomData.shell.split('.')[0],
                     baseURL: req.base,
-                    type: "shell"
+                    type: 'shell'
                 });
             // Is this a polyline
             } else if (_.has(geomData, 'polyline')) {
@@ -312,37 +363,38 @@ export default class DataLoader extends THREE.EventDispatcher {
                 nc.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
                 // Push the annotation for later completion
                 let name = geomData.polyline.split('.')[0];
-                self._annotations[name] = annotation;
+                this._annotations[name] = annotation;
                 // console.log("ASDASD", req.base);
-                self.addRequest({
+                this.addRequest({
                     path: name,
                     baseURL: req.base,
-                    type: "annotation"
+                    type: 'annotation'
                 });
             } else {
                 console.log('No idea what we found: ' + geomData);
             }
         });
-        self._app.actionManager.emit('change-workingstep',doc.workingstep);
+        if (doc.workingstep) {
+            this._app.actionManager.emit('change-workingstep', doc.workingstep);
+        }
         req.callback(undefined, nc);
     }
 
     buildProductJSON(req, doc, assembly, id, isRoot) {
         // Create the product
-        let self = this;
         let productJSON = _.find(doc.products, { id: id });
         // Have we already seen this product
         if (!assembly.isChild(id)) {
             let product = new Product(id, assembly, productJSON.name, productJSON.step, isRoot);
             // Load child shapes first - MUST BE BEFORE CHILD PRODUCTS
             let identityTransform = (new THREE.Matrix4()).identity();
-            _.each(productJSON.shapes, function (shapeID) {
-                let shape = self.buildShapeJSON(req, doc, assembly, shapeID, undefined, identityTransform, isRoot);
+            _.each(productJSON.shapes, (shapeID) => {
+                let shape = this.buildShapeJSON(req, doc, assembly, shapeID, undefined, identityTransform, isRoot);
                 product.addShape(shape);
             });
             // Load child products
-            _.each(productJSON.children, function (childID) {
-                let child = self.buildProductJSON(req, doc, assembly, childID, false);
+            _.each(productJSON.children, (childID) => {
+                let child = this.buildProductJSON(req, doc, assembly, childID, false);
                 product.addChild(child);
             });
             return product;
@@ -355,26 +407,25 @@ export default class DataLoader extends THREE.EventDispatcher {
         // We are really only looking up stuff when non-root
         if (!isRoot) return assembly.getChild(id);
         // Ok, now let's really build some stuff
-        let self = this;
         let shapeJSON = _.find(doc.shapes, {id: id});
         let unit = shapeJSON.unit ? shapeJSON.unit : "unit 0.01";
         let shape = new Shape(id, assembly, parent, transform, unit, isRoot);
         // Load child shells
-        _.each(shapeJSON.shells, function (shellID) {
-            let shell = self.buildShellJSON(req, doc, shellID, assembly, shape);
+        _.each(shapeJSON.shells, (shellID) => {
+            let shell = this.buildShellJSON(req, doc, shellID, assembly, shape);
             shape.addShell(shell);
         });
         // Load Child annotations
-        _.each(shapeJSON.annotations, function (annotationID) {
-            let annotation = self.buildAnnotationJSON(req, doc, annotationID, assembly, shape);
+        _.each(shapeJSON.annotations, (annotationID) => {
+            let annotation = this.buildAnnotationJSON(req, doc, annotationID, assembly, shape);
             shape.addAnnotation(annotation);
         });
         // Load child shapes
-        _.each(shapeJSON.children, function (childJSON) {
+        _.each(shapeJSON.children, (childJSON) => {
             // Setup the child's transform
             let localTransform = DataLoader.parseXform(childJSON.xform, true);
             // Build the child
-            let child = self.buildShapeJSON(req, doc, assembly, childJSON.ref, shape, localTransform, isRoot);
+            let child = this.buildShapeJSON(req, doc, assembly, childJSON.ref, shape, localTransform, isRoot);
             shape.addChild(child);
         });
         return shape;

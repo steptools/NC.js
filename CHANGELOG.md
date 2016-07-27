@@ -2,6 +2,8 @@ Version 1.5.0
 
 Features:
 
+- Added a preview pane that displays geometry related to the currently selected workpiece/tolerance
+
 Bugfixes:
 
 - Make & make-release now ends properly when webpack fails
