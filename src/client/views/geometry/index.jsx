@@ -12,6 +12,8 @@ export default class GeometryView extends React.Component {
 
     this.invalidate = this.invalidate.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
+    this.alignCamera = this.alignCamera.bind(this);
+    this.alignFixture = this.alignFixture.bind(this);
     this.highlightFaces = this.highlightFaces.bind(this);
     this.onShellLoad = this.onShellLoad.bind(this);
     this.onModelAdd = this.onModelAdd.bind(this);
@@ -301,38 +303,50 @@ export default class GeometryView extends React.Component {
       {'usage': 'fixture', 'rendered': true}
     );
     let newPos = new THREE.Vector3();
-    if (fixture !== undefined) {
-      let fixtureMax = fixture.bbox.max.clone();
-      let fixtureMin = fixture.bbox.min.clone();
-      let fixtureDiag = fixtureMax.clone().sub(fixtureMin);
+    this.alignFixture(fixture, newUp, newPos);
 
-      let fixturePos = fixture.object3D.position.clone();
+    // TODO: See if we can actually use the tool in calculations
+    // zoom to fit just the part
+    let newTargetPosition = this.alignCamera(part, tool, toolBox);
 
-      let fixLen = GeometryView.getAxisVector(fixtureDiag);
+    this.controls.target.copy(newTargetPosition);
+    this.controls.alignTop(newUp, newPos);
+  }
 
-      newPos.crossVectors(fixLen, newUp);
-      if (newPos.length() === 0) {
-        if (newUp.x === 0) {
-          newPos.x = 1;
-        } else {
-          newPos.y = 1;
-        }
-      }
-
-      // make sure the fixture is facing away from us
-      // if it would block view of the part
-      if (fixturePos.dot(newPos) < 0) {
-        newPos.negate();
-      }
-    } else { // we have no fixture
+  alignFixture(fixture, newUp, newPos) {
+    if (fixture === undefined) {
       newPos.crossVectors(newUp, new THREE.Vector3(1, 0, 0));
       if (newPos.length() === 0) {
         newPos.crossVectors(newUp, new THREE.Vector3(0, 1, 0));
       }
+      return;
     }
 
-    // TODO: See if we can actually use the tool in calculations
-    // zoom to fit just the part
+    let fixtureMax = fixture.bbox.max.clone();
+    let fixtureMin = fixture.bbox.min.clone();
+    let fixtureDiag = fixtureMax.clone().sub(fixtureMin);
+
+    let fixturePos = fixture.object3D.position.clone();
+
+    let fixLen = GeometryView.getAxisVector(fixtureDiag);
+
+    newPos.crossVectors(fixLen, newUp);
+    if (newPos.length() === 0) {
+      if (newUp.x === 0) {
+        newPos.x = 1;
+      } else {
+        newPos.y = 1;
+      }
+    }
+
+    // make sure the fixture is facing away from us
+    // if it would block view of the part
+    if (fixturePos.dot(newPos) < 0) {
+      newPos.negate();
+    }
+  }
+
+  alignCamera(part, tool, toolBox) {
     let boundingBox = new THREE.Box3()
       .union(part.bbox)
       .union(toolBox.applyMatrix4(tool.object3D.matrixWorld));
@@ -348,10 +362,8 @@ export default class GeometryView extends React.Component {
         .sub(this.controls.target)
         .setLength(dist)
         .add(newTargetPosition);
-    this.controls.target.copy(newTargetPosition);
 
-    this.controls.alignTop(newUp, newPos);
-
+    return newTargetPosition;
   }
 
   highlightFaces(faces, object, unhighlight, newColor) {
