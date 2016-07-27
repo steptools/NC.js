@@ -1,3 +1,14 @@
+Version 1.5.1
+
+Features:
+
+- Back button in preview pane is now always visible
+- Removed the inactive indicator on some preview panes
+
+Bugfixes:
+
+- Fixtures now load when there is a machine
+
 Version 1.5.0
 
 Features:
@@ -9,6 +20,7 @@ Features:
 Bugfixes:
 
 - Make & make-release now ends properly when webpack fails
+- Made Fixture show up when machine tool was loaded from command line options
 
 Version 1.4.0
 
