@@ -90,7 +90,7 @@ export default class CADView extends React.Component {
   }
 
   render() {
-    console.log('rendering a CADView');
+    //console.log('rendering a CADView');
     return (
       <div id='cadjs-container'>
         <GeometryView

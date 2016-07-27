@@ -45,6 +45,13 @@ util.inherits(APIServer, CoreServer);
 APIServer.prototype._setExpress = function() {
   this.express = express();
   this.express.disable('x-powered-by');
+  // prevents caching (nexessary for Edge)
+  this.express.use(function noCache(req, res, next) {
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.header('Expires', 0);
+    next();
+  });
   this.express.use(
     require('serve-favicon')
     (__dirname + '/../../public/img/favicon.ico')
