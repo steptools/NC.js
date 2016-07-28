@@ -230,6 +230,7 @@ export default class ResponsiveView extends React.Component {
             node.leaf = true;
             if (node.type === 'tolerance') {
               node.workingsteps = json[node.workpiece].workingsteps;
+              node.highlighted = false;
             }
           }
 

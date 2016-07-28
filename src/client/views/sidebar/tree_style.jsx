@@ -70,8 +70,23 @@ const Container = (props) => {
   }
 
   let nodeName = node.name;
+  let highlightButton, highlightName;
   if (node.type === 'tolerance') {
     nodeName += ' - ' + node.value + node.unit;
+    if (node.highlighted) {
+      highlightName = 'open';
+    } else {
+      highlightName = 'close';
+    }
+    highlightButton = (
+      <span
+        className={'highlight-button glyphicons glyphicons-eye-' + highlightName}
+        onClick={(ev) => {
+          ev.stopPropagation();
+          ev.preventDefault();
+          node.highlighted = !node.highlighted
+        }}
+      />);
   }
   
   if (node.type === 'divider') {
@@ -100,6 +115,7 @@ const Container = (props) => {
         <span className='textbox'>
           {nodeName}
         </span>
+        {highlightButton}
       </div>
     </div>
   );
