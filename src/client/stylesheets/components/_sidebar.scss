@@ -249,8 +249,15 @@ $icons: '../icons/';
                 position: absolute;
                 right: 15px;
 
-                &:hover:not(&.button) {
-                    color: #777777;
+                &:not(.button) {
+                    padding: 3px;
+                    color: #F8F8F8;
+                    background-color: #333333;
+                    border-radius: 5px;
+
+                    &:hover {
+                        color: #28AEE9;
+                    }
                 }
             }
 
