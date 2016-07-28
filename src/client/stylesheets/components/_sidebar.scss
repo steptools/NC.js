@@ -244,6 +244,23 @@ $icons: '../icons/';
             align-items: center;
             white-space: normal;
 
+            .preview-icon {
+                font-size: 20px;
+                position: absolute;
+                right: 15px;
+
+                &:not(.button) {
+                    padding: 3px;
+                    color: #F8F8F8;
+                    background-color: #333333;
+                    border-radius: 5px;
+
+                    &:hover {
+                        color: #28AEE9;
+                    }
+                }
+            }
+
             &:hover:not(.rc-menu-item-disabled) {
                 cursor: pointer;
                 background-color: rgba(#2BAEE9, 0.5);
@@ -437,6 +454,17 @@ $icons: '../icons/';
         width: 100%;
         min-height: 38px;
         margin: 1px 0px;
+
+        &.divider {
+            align-items: center;
+            border-top: 2px solid #666666;
+            border-bottom: 2px solid #666666;
+
+            .textbox{
+                display: table;
+                margin: auto;
+            }
+        }
     }
 
     .node .toggle-hidden {
@@ -468,8 +496,8 @@ $icons: '../icons/';
         align-items: center;
         width: calc(100% - 15px);
         min-height: inherit;
-        
-        &:hover {
+
+        &:hover:not(.divider) {
             cursor: pointer;
             background-color: rgba(#2BAEE9, 0.5);
         }
