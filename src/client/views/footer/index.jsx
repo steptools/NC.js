@@ -53,22 +53,24 @@ export default class FooterView extends React.Component {
     soMouseDown(info){
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
-        soy=(fv.offset().top+fb.height())-info.clientY;
+        let db = $('.drawerbutton');
+        soy=(fv.offset().top+(db.height()+fb.height()))-info.clientY;
     }
 
     soMouseUp(info){
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
+        let db = $('.drawerbutton');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
         {
-            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fb.height()*2))
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > (db.height()+fb.height())*2))
             {
                 this.props.cbMobileSidebar(true);
                 currentMSGuiMode=true;
             }
-            else if((this.props.msGuiMode === true) && (fv.offset().top > fb.height()))
+            else if((this.props.msGuiMode === true) && (fv.offset().top > (db.height()+fb.height())))
             {
                 this.props.cbMobileSidebar(false);
                 currentMSGuiMode=false;
@@ -77,7 +79,7 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            let bottomPos=(window.innerHeight-fb.height());
+            let bottomPos=(window.innerHeight-(db.height()+fb.height()));
             fv.animate({top: bottomPos+"px"}, 500);
             //fv.css("height", "unset");
         }
@@ -92,16 +94,17 @@ export default class FooterView extends React.Component {
     soMouseLeave(info){
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
+        let db = $('.drawerbutton');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
         {
-            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fb.height()*2))
+            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > (db.height()+fb.height())*2))
             {
                 this.props.cbMobileSidebar(true);
                 currentMSGuiMode=true;
             }
-            else if((this.props.msGuiMode === true) && (fv.offset().top > fb.height()))
+            else if((this.props.msGuiMode === true) && (fv.offset().top > (db.height()+fb.height())))
             {
                 this.props.cbMobileSidebar(false);
                 currentMSGuiMode=false;
@@ -110,7 +113,7 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            let bottomPos=(window.innerHeight-fb.height());
+            let bottomPos=(window.innerHeight-(db.height()+fb.height()));
             fv.animate({top: bottomPos+"px"}, 500);
             //fv.css("height", "unset");
         }
@@ -138,7 +141,8 @@ export default class FooterView extends React.Component {
 
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
-        soy=(fv.offset().top+fb.height())-info.touches[0].pageY;
+        let db = $('.drawerbutton');
+        soy=(fv.offset().top+(db.height()+fb.height()))-info.touches[0].pageY;
         soy2=info.touches[0].pageY;
     }
 
@@ -149,6 +153,7 @@ export default class FooterView extends React.Component {
 
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
+        let db = $('.drawerbutton');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
@@ -167,7 +172,7 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            let bottomPos=(window.innerHeight-fb.height());
+            let bottomPos=(window.innerHeight-(db.height()+fb.height()));
             fv.animate({top: bottomPos+"px"}, 500);
             //fv.css("height", "unset");
         }
@@ -186,6 +191,7 @@ export default class FooterView extends React.Component {
 
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
+        let db = $('.drawerbutton');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
@@ -204,7 +210,7 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            let bottomPos=(window.innerHeight-fb.height());
+            let bottomPos=(window.innerHeight-(db.height()+fb.height()));
             fv.animate({top: bottomPos+"px"}, 500);
             //fv.css("height", "unset");
         }
@@ -238,6 +244,7 @@ export default class FooterView extends React.Component {
 
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
+        let db = $('.drawerbutton');
         let currentMSGuiMode=this.props.msGuiMode;
 
         currentMSGuiMode=!currentMSGuiMode;
@@ -245,7 +252,7 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            let bottomPos=(window.innerHeight-fb.height());
+            let bottomPos=(window.innerHeight-(db.height()+fb.height()));
             fv.animate({top: bottomPos+"px"}, 500);
             //fv.css("height", "unset");
         }
@@ -298,8 +305,12 @@ export default class FooterView extends React.Component {
             drawerbutton="glyphicons glyphicons-chevron-up";
 
 		return (<div className="Footer-container">
+            <div className="drawerbutton"
+                onClick={this.soClick}>
+                <span className={drawerbutton}></span>
+            </div>
             <div className="Footer-bar">
-                <div className="Footer-left"
+    			<div className="op-text"
                     onMouseDown={this.soMouseDown}
                     onMouseUp={this.soMouseUp}
                     onMouseLeave={this.soMouseLeave}
@@ -308,11 +319,7 @@ export default class FooterView extends React.Component {
                     onTouchEnd={this.soTouchEnd}
                     onTouchCancel={this.soTouchCancel}
                     onTouchMove={this.soTouchMove}>
-                    <div className="drawerbutton"
-                        onClick={this.soClick}>
-                        <span className={drawerbutton}></span>
-                    </div>
-        			<div className="op-text">{this.props.wstext}</div>
+                    {this.props.wstext}
                 </div>
                 <div className="footer-buttons">
                     <ButtonImage onBtnClick={this.bbBtnClicked} icon="step-backward"/>

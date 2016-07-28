@@ -4,9 +4,18 @@
     bottom: 0;
     width: 100%;
 
+    .drawerbutton {
+        width: 100%;
+        position: relative;
+        text-align: center;
+        font-size: 12px;
+        background: rgba(255,255,255,0.4);
+        z-index: 100;
+    }
+
     .footer-bar {
         position: relative;
-        height: 13vmin;
+        height: 10vmin;
         width: 100%;
         font-family: sans-serif;
         font-size: 8vmin;
@@ -21,27 +30,14 @@
         -webkit-user-select: none;
         -webkit-touch-callout: none;
 
-        .Footer-left {
-
+        .op-text {
             flex: 20;
             overflow-y: hidden;
-
-            .drawerbutton {
-                width: 100%;
-                position: relative;
-                text-align: center;
-                font-size: 12px;
-            }
-
-            .op-text {
-                overflow-y: hidden;
-            }
         }
 
         .footer-buttons {
-            background: green;
+            /*background: green;*/
             display: flex;
-            align-items: center;
 
             .button-icon {
                 flex: 1;

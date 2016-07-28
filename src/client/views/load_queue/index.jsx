@@ -83,7 +83,7 @@ export default class LoadQueueView extends React.Component {
   }
 
     render() {
-        let bottom={"bottom": "13vmin"};
+        let bottom={"bottom": "12vmin"};
         if(this.props.guiMode == 0)
             bottom={"bottom": "0"};
 
