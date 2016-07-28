@@ -4,6 +4,13 @@
     bottom: 0;
     width: 100%;
 
+    .drawerbutton {
+        width: 100%;
+        position: absolute;
+        z-index: 100;
+        text-align: center;
+    }
+
     .footer-bar {
         position: relative;
         height: 10vmin;

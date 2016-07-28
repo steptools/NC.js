@@ -37,6 +37,7 @@ export default class FooterView extends React.Component {
         this.soTouchEnd = this.soTouchEnd.bind(this);
         this.soTouchCancel = this.soTouchCancel.bind(this);
         this.soTouchMove = this.soTouchMove.bind(this);
+        this.soClick = this.soClick.bind(this);
     }
 
     btnClicked(info){
@@ -229,6 +230,32 @@ export default class FooterView extends React.Component {
             fv.css("top", newTop+"px");
         }
     }
+
+    soClick(info)
+    {
+        info.preventDefault();
+        info.stopPropagation();
+
+        let fv = $('.Footer-container');
+        let fb = $('.Footer-bar');
+        let currentMSGuiMode=this.props.msGuiMode;
+
+        currentMSGuiMode=!currentMSGuiMode;
+        this.props.cbMobileSidebar(currentMSGuiMode);
+
+        if(currentMSGuiMode === false)
+        {
+            let bottomPos=(window.innerHeight-fb.height());
+            fv.animate({top: bottomPos+"px"}, 500);
+            //fv.css("height", "unset");
+        }
+        if(currentMSGuiMode === true)
+        {
+            fv.animate({top: "0px"}, 500);
+            //fv.css("height", "100%");
+        }
+        soy=0;
+    }
     
     render() {
         //if(this.props.guiMode == 0)
@@ -262,7 +289,17 @@ export default class FooterView extends React.Component {
           );
 
         let ppbtntxt = this.props.ppbutton;
+        let drawerbutton;
+        if(this.props.msGuiMode)//drawer open
+            drawerbutton="glyphicons glyphicons-chevron-down";
+        else//drawer closed
+            drawerbutton="glyphicons glyphicons-chevron-up";
+
 		return (<div className="Footer-container">
+            <div className="drawerbutton"
+                onClick={this.soClick}>
+                <span className={drawerbutton}></span>
+            </div>
             <div className="Footer-bar"
                 onMouseDown={this.soMouseDown}
                 onMouseUp={this.soMouseUp}
