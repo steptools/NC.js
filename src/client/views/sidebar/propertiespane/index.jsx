@@ -100,7 +100,7 @@ export default class PropertiesPane extends React.Component {
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
   }
-  
+
   selectEntity(event, entity) {
     if (event.key === 'goto') {
       let url = '/v3/nc/state/ws/' + entity.id;
@@ -135,7 +135,7 @@ export default class PropertiesPane extends React.Component {
     }
     // some other menu item clicked, no need to do anything
   }
-  
+
   getWPForEntity(entity) {
     if (entity) {
       if (entity.type === 'workpiece') {
@@ -390,8 +390,8 @@ export default class PropertiesPane extends React.Component {
         onClick={(ev) => {
           ev.preventDefault();
           ev.stopPropagation();
-          this.selectEntity({'key': 'preview'}, node)}
-        }
+          this.selectEntity({'key': 'preview'}, node);
+        }}
       />);
     }
 
