@@ -92,10 +92,13 @@ export default class PropertiesPane extends React.Component {
     this.state = {previewEntity: null};
 
     this.properties = [];
+    this.titleNameWidth = 0;
 
     this.selectEntity = this.selectEntity.bind(this);
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
+    this.handleMouseEnter = this.handleMouseEnter.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
   }
   
   selectEntity(event, entity) {
@@ -147,17 +150,66 @@ export default class PropertiesPane extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    
-    let new_wp = this.getWPForEntity(nextProps.entity);
-    let prev_wp = this.getWPForEntity(this.state.previewEntity);
-
-    if (!nextProps.entity ||
-        (nextProps.entity !== this.props.entity && new_wp !== prev_wp)) {
+    if (!nextProps.entity) {
       this.props.previewCb(false);
+      return;
     }
-    else if (nextProps.entity !== this.props.entity && new_wp === prev_wp) {
-      this.setState({'previewEntity': nextProps.entity})
+
+    let newWP = this.getWPForEntity(nextProps.entity);
+    let prevWP = this.getWPForEntity(this.state.previewEntity);
+
+    if (nextProps.entity !== this.props.entity && newWP !== prevWP) {
+      this.props.previewCb(false);
+    } else if (nextProps.entity !== this.props.entity && newWP === prevWP) {
+      this.setState({'previewEntity': nextProps.entity});
     }
+  }
+
+  componentDidUpdate() {
+    // calculate the width of the name in title for scrolling
+    this.titleNameWidth = (function() {
+      var $temp = $('.title .name').clone().contents()
+        .wrap('<span id="content" style="font-weight:bold"/>').parent()
+        .appendTo('body');
+      var result = $temp.width();
+      $temp.remove();
+      return result;
+    })();
+  }
+
+  handleMouseEnter() {
+    if (!$('.title .name #content').length) {
+      $('.title .name').contents().wrap('<div id="content">');
+    }
+
+    let content = $('.title .name #content');
+    let containerWidth = $('.title .name').width();
+    let textWidth = this.titleNameWidth;
+
+    content.stop(true, false);
+    if (containerWidth >= textWidth) {
+      return;
+    }
+
+    let left = parseInt(content.css('left').slice(0, -2));
+    var dist = textWidth - containerWidth + left;
+    var time = dist * 40;
+    content.animate({left: -dist}, time, 'linear');
+  }
+
+  handleMouseLeave() {
+    if (!$('.title .name #content').length) {
+      return;
+    }
+
+    let content = $('.title .name #content');
+    content.stop(true, false);
+
+    let left = parseInt(content.css('left').slice(0, -2));
+    let time = (-left) * 40;
+    content.animate({left: 0}, time, 'linear', function() {
+      content.contents().unwrap();
+    });
   }
 
   renderActive(entity) {
@@ -298,7 +350,9 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'tolerance') {
       return;
     }
-    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
         <div className={getIcon('tolerance type')}/>
@@ -486,7 +540,7 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
 
-    let cName = 'preview-container';
+    let cName = 'container';
     let content;
 
     if (this.props.preview) {
@@ -501,7 +555,7 @@ export default class PropertiesPane extends React.Component {
           resize={this.props.resize}
           toleranceCache={this.props.toleranceCache}
           locked={false}
-          parentSelector='.preview-container'
+          parentSelector='#preview'
           viewType='preview'
         />
       );
@@ -509,8 +563,7 @@ export default class PropertiesPane extends React.Component {
 
     return (
       <div className='preview'>
-        <div className='preview-cover' />
-        <div className={cName} id='preview-container'>
+        <div className={cName} id='preview'>
           <span
             className={'preview-exit ' + getIcon('exit')}
             onClick={() => {
@@ -583,26 +636,28 @@ export default class PropertiesPane extends React.Component {
       <div className={entityData.paneName}>
         {this.renderPreview(entityData.entity)}
         <div className='titlebar'>
-          <div className='titleinfo'>
-            <span
-              className={'title-back ' + getIcon('back')}
-              onClick={() => {
-                this.props.propertiesCb(entityData.previousEntity, true);
-              }}
-            />
-            <span className={entityData.titleIcon} />
-            <span className='title'>
-              <div className='type'>{entityData.type}</div>
-              <div className='name'>{entityData.name}</div>
-            </span>
-            <span
-              className={'title-exit ' + getIcon('exit')}
-              onClick={() => {
-                this.props.propertiesCb(null);
-                this.props.previewCb(false);
-              }}
-            />
-          </div>
+          <span
+            className={'title-back ' + getIcon('back')}
+            onClick={() => {
+              this.props.propertiesCb(entityData.previousEntity, true);
+            }}
+          />
+          <span className={entityData.titleIcon} />
+          <span
+            className='title'
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
+          >
+            <div className='type'>{entityData.type}</div>
+            <div className='name'>{entityData.name}</div>
+          </span>
+          <span
+            className={'title-exit ' + getIcon('exit')}
+            onClick={() => {
+              this.props.propertiesCb(null);
+              this.props.previewCb(false);
+            }}
+          />
         </div>
         {this.renderProperties(entityData.entity)}
       </div>

@@ -8,6 +8,7 @@ Bugfixes:
 
 - Fixed issues with functionality and application flow in Edge
 - Tolerances now have accurate names and types
+- Styling fixes in the properties pane
 
 Version 1.5.1
 
