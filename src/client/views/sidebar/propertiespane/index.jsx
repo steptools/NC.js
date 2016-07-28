@@ -499,7 +499,7 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
 
-    let cName = 'preview-container';
+    let cName = 'container';
     let content;
 
     if (this.props.preview === true) {
@@ -514,7 +514,7 @@ export default class PropertiesPane extends React.Component {
           isCadView={false}
           toleranceCache={this.props.toleranceCache}
           locked={false}
-          parentSelector='.preview-container'
+          parentSelector='#preview'
           viewType='preview'
         />
       );
@@ -522,8 +522,7 @@ export default class PropertiesPane extends React.Component {
 
     return (
       <div className='preview'>
-        <div className='preview-cover' />
-        <div className={cName} id='preview-container'>
+        <div className={cName} id='preview'>
           <span
             className={'preview-exit ' + getIcon('exit')}
             onClick={() => {
