@@ -145,7 +145,7 @@ export default class PropertiesPane extends React.Component {
     }
     let active = false;
     if (entity.type === 'tolerance') {
-      active = (entity.tolerances && entity.tolerances[this.props.ws]);
+      active = (entity.workingsteps.indexOf(this.props.ws) > 0);
     } else if (entity.type === 'workingstep') {
       active = (this.props.ws === entity.id);
     }
@@ -157,7 +157,7 @@ export default class PropertiesPane extends React.Component {
           Running
         </MenuItem>
       );
-    } else if (entity.enabled !== true) {
+    } else if (entity.enabled !== true && entity.type === 'workingstep') {
       this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('disabled')}/>
