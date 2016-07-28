@@ -253,7 +253,7 @@ export default class FooterView extends React.Component {
                 onMouseDown={this.soMouseDown}
                 onMouseUp={this.soMouseUp}
                 onMouseLeave={this.soMouseLeave}
-                soMouseMove={this.soMouseMove}
+                onMouseMove={this.soMouseMove}
                 onTouchStart={this.soTouchStart}
                 onTouchEnd={this.soTouchEnd}
                 onTouchCancel={this.soTouchCancel}
