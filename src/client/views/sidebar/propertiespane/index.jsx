@@ -89,25 +89,26 @@ export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {entity: null};
+    this.state = {previewEntity: null};
 
     this.properties = [];
 
-    this.selectWS = this.selectWS.bind(this);
+    this.selectEntity = this.selectEntity.bind(this);
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
   }
-
-  selectWS(event, entity) {
+  
+  selectEntity(event, entity) {
     if (event.key === 'goto') {
       let url = '/v3/nc/state/ws/' + entity.id;
       request.get(url).end();
     } else if (event.key === 'tool') {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
-    } else if (event.key === 'preview' && this.props.preview === false) {
-      this.props.previewCb(true);
+    } else if (event.key === 'preview') {
 
+      this.setState({'previewEntity': entity});
+      this.props.previewCb(true);
       let prevId;
       if (entity.type === 'workingstep') {
         prevId = entity.toBe.id;
@@ -131,11 +132,31 @@ export default class PropertiesPane extends React.Component {
     }
     // some other menu item clicked, no need to do anything
   }
+  
+  getWPForEntity(entity) {
+    if (entity) {
+      if (entity.type === 'workpiece') {
+        return entity.id;
+      } else if (entity.type === 'tolerance') {
+        return entity.workpiece;
+      } else if (entity.type === 'workingstep') {
+        return entity.toBe.id;
+      }
+    }
+    return null;
+  }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.entity !== nextProps.entity ||
-        nextProps.entity === null) {
+    
+    let new_wp = this.getWPForEntity(nextProps.entity);
+    let prev_wp = this.getWPForEntity(this.state.previewEntity);
+
+    if (!nextProps.entity ||
+        (nextProps.entity !== this.props.entity && new_wp !== prev_wp)) {
       this.props.previewCb(false);
+    }
+    else if (nextProps.entity !== this.props.entity && new_wp === prev_wp) {
+      this.setState({'previewEntity': nextProps.entity})
     }
   }
 
@@ -241,7 +262,7 @@ export default class PropertiesPane extends React.Component {
 
   renderPreviewButton(entity) {
     if (entity.type === 'workplan' || entity.type === 'selective' ||
-        entity.type === 'workplan-setup') {
+        entity.type === 'workplan-setup' || entity.type === 'workingstep') {
       return;
     }
 
@@ -250,6 +271,9 @@ export default class PropertiesPane extends React.Component {
         key='preview'
         className='property button'
       >
+        <span
+          className='button preview-icon glyphicons glyphicons-new-window-alt'
+        />
         Preview
       </MenuItem>
     );
@@ -304,6 +328,19 @@ export default class PropertiesPane extends React.Component {
       icon = <span className={getIcon(node.type, node.toleranceType)}/>;
     }
 
+    let prevIcon;
+    if (node.type === 'tolerance' || node.type === 'workpiece') {
+      prevIcon = (<span
+        className='preview-icon glyphicons glyphicons-new-window-alt'
+        key='preview'
+        onClick={(ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          this.selectEntity({'key': 'preview'}, node)}
+        }
+      />);
+    }
+
     return (
       <div key={node.id}>
         <span
@@ -317,6 +354,7 @@ export default class PropertiesPane extends React.Component {
           <span className='textbox'>
             {node.name}
           </span>
+          {prevIcon}
         </span>
       </div>
     );
@@ -451,16 +489,16 @@ export default class PropertiesPane extends React.Component {
     let cName = 'preview-container';
     let content;
 
-    if (this.props.preview === true) {
+    if (this.props.preview) {
       cName = cName + ' visible';
 
       content = (
         <GeometryView
+          key={this.getWPForEntity(this.state.previewEntity)}
           manager={this.props.manager}
-          selectedEntity={entity}
+          selectedEntity={this.state.previewEntity}
           guiMode={this.props.guiMode}
           resize={this.props.resize}
-          isCadView={false}
           toleranceCache={this.props.toleranceCache}
           locked={false}
           parentSelector='.preview-container'
@@ -506,7 +544,7 @@ export default class PropertiesPane extends React.Component {
       <Menu
         className='properties'
         onClick={(event) => {
-          this.selectWS(event, entity);
+          this.selectEntity(event, entity);
         }}
       >
         {this.properties}
