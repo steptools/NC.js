@@ -3,11 +3,13 @@ Version 1.5.2
 Features:
 
 - Improved the preview pane ui
+- Display currently active tolerances at the top of the list view
 
 Bugfixes:
 
 - Fixed issues with functionality and application flow in Edge
 - Tolerances now have accurate names and types
+- Tolerance properly shows when active in properties pane
 
 Version 1.5.1
 
