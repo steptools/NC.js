@@ -146,19 +146,17 @@ export default class PropertiesPane extends React.Component {
     return null;
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     
     let new_wp = this.getWPForEntity(nextProps.entity);
-    let old_wp = this.getWPForEntity(this.props.entity);
     let prev_wp = this.getWPForEntity(this.state.previewEntity);
 
     if (!nextProps.entity ||
         (nextProps.entity !== this.props.entity && new_wp !== prev_wp)) {
-      console.log("closing preview");
-      console.log(nextProps.entity);
-      console.log(new_wp);
-      console.log(prev_wp);
       this.props.previewCb(false);
+    }
+    else if (nextProps.entity !== this.props.entity && new_wp === prev_wp) {
+      this.setState({'previewEntity': nextProps.entity})
     }
   }
 
