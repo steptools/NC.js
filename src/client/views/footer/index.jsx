@@ -296,20 +296,22 @@ export default class FooterView extends React.Component {
             drawerbutton="glyphicons glyphicons-chevron-up";
 
 		return (<div className="Footer-container">
-            <div className="drawerbutton"
-                onClick={this.soClick}>
-                <span className={drawerbutton}></span>
-            </div>
-            <div className="Footer-bar"
-                onMouseDown={this.soMouseDown}
-                onMouseUp={this.soMouseUp}
-                onMouseLeave={this.soMouseLeave}
-                onMouseMove={this.soMouseMove}
-                onTouchStart={this.soTouchStart}
-                onTouchEnd={this.soTouchEnd}
-                onTouchCancel={this.soTouchCancel}
-                onTouchMove={this.soTouchMove}>
-    			<div className="op-text">{this.props.wstext}</div>
+            <div className="Footer-bar">
+                <div className="Footer-left"
+                    onMouseDown={this.soMouseDown}
+                    onMouseUp={this.soMouseUp}
+                    onMouseLeave={this.soMouseLeave}
+                    onMouseMove={this.soMouseMove}
+                    onTouchStart={this.soTouchStart}
+                    onTouchEnd={this.soTouchEnd}
+                    onTouchCancel={this.soTouchCancel}
+                    onTouchMove={this.soTouchMove}>
+                    <div className="drawerbutton"
+                        onClick={this.soClick}>
+                        <span className={drawerbutton}></span>
+                    </div>
+        			<div className="op-text">{this.props.wstext}</div>
+                </div>
                 <div className="footer-buttons">
                     <ButtonImage onBtnClick={this.bbBtnClicked} icon="step-backward"/>
                     <ButtonImage onBtnClick={this.btnClicked} icon={ppbtntxt}/>
