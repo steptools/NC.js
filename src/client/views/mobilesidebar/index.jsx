@@ -1,6 +1,7 @@
 // NOTE: styleguide compliant
 import React from 'react';
 import _ from 'lodash';
+import SidebarView from '../sidebar';
 
 export default class MobileSidebar extends React.Component {
   constructor(props) {
@@ -9,9 +10,38 @@ export default class MobileSidebar extends React.Component {
   }
 
   render() {
+
+  	let SV = (
+        <SidebarView
+          cadManager={this.props.cadManager}
+          app={this.props.app}
+          actionManager={this.props.actionManager}
+          socket={this.props.socket}
+          mode={this.props.mode}
+          ws={this.props.ws}
+          tree={this.props.tree}
+          altmenu={this.props.altmenu}
+          cbMode={this.props.cbMode}
+          cbWS={this.props.cbWS}
+          cbTree={this.props.cbTree}
+          cbAltMenu={this.props.cbAltMenu}
+          toolCache={this.props.toolCache}
+          curtool={this.props.curtool}
+          toleranceList={this.props.toleranceList}
+          toleranceCache={this.props.toleranceCache}
+          workplanCache={this.props.workplanCache}
+          workingstepCache={this.props.workingstepCache}
+          workingstepList={this.props.workingstepList}
+          openProperties={this.props.openProperties}
+          selectedEntity={this.props.selectedEntity}
+          previouslySelectedEntities={this.props.previouslySelectedEntities}
+          isMobile={true}
+        />
+      );
+
     return (
       <div className="mobile-sidebar">
-        <p>Sidebar Overview</p>
+        {SV}
       </div>);
   }
 }

@@ -221,7 +221,30 @@ export default class FooterView extends React.Component {
             //return null;
         let SO;
         SO = (
-            <MobileSidebar />
+            <MobileSidebar
+                cadManager={this.props.cadManager}
+                app={this.props.app}
+                actionManager={this.props.actionManager}
+                socket={this.props.socket}
+                mode={this.props.mode}
+                ws={this.props.wsid}
+                tree={this.props.tree}
+                altmenu={this.props.altmenu}
+                cbMode={this.props.cbMode}
+                cbWS={this.props.cbWS}
+                cbTree={this.props.cbTree}
+                cbAltMenu={this.props.cbAltMenu}
+                toolCache={this.props.toolCache}
+                curtool={this.props.curtool}
+                toleranceList={this.props.toleranceList}
+                toleranceCache={this.props.toleranceCache}
+                workplanCache={this.props.workplanCache}
+                workingstepCache={this.props.workingstepCache}
+                workingstepList={this.props.workingstepList}
+                openProperties={this.props.openProperties}
+                selectedEntity={this.props.selectedEntity}
+                previouslySelectedEntities={this.props.previouslySelectedEntities}
+            />
           );
 
         let ppbtntxt = this.props.ppbutton;

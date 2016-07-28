@@ -449,6 +449,7 @@ export default class ResponsiveView extends React.Component {
           openProperties={this.openProperties}
           selectedEntity={this.state.selectedEntity}
           previouslySelectedEntities={this.state.previouslySelectedEntities}
+          isMobile={false}
         />
       );
     } else {
@@ -466,6 +467,30 @@ export default class ResponsiveView extends React.Component {
           ppbutton={this.state.ppbutton}
           cbMobileSidebar={this.toggleMobileSidebar}
           msGuiMode={this.state.msGuiMode}
+          //
+          app={this.props.app}
+          mode={this.state.svmode}
+          tree={this.state.svtree}
+          altmenu={this.state.svaltmenu}
+          cbMode={
+              (newMode) => this.setState({svmode: newMode})
+          }
+          cbTree={
+              (newTree) => this.setState({svtree: newTree})
+          }
+          cbAltMenu={
+              (newAltMenu) => this.setState({svaltmenu: newAltMenu})
+          }
+          toolCache={this.state.toolCache}
+          curtool={this.state.curtool}
+          toleranceList={this.state.toleranceList}
+          toleranceCache={this.state.toleranceCache}
+          workplanCache={this.state.workplanCache}
+          workingstepCache={this.state.workingstepCache}
+          workingstepList={this.state.workingstepList}
+          openProperties={this.openProperties}
+          selectedEntity={this.state.selectedEntity}
+          previouslySelectedEntities={this.state.previouslySelectedEntities}
         />
       );
     }
