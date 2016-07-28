@@ -74,17 +74,14 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            fv.css("top", "unset");
-            //fv.animate({scrollTop: (window.innerHeight-fv.height())}, 5000);
-            fv.css("bottom", "0px");
-            fv.css("height", "unset");
+            let bottomPos=(window.innerHeight-fb.height());
+            fv.animate({top: bottomPos+"px"}, 500);
+            //fv.css("height", "unset");
         }
         if(currentMSGuiMode === true)
         {
-            fv.css("bottom", "unset");
-            //fv.animate({scrollTop: 0}, 5000);
-            fv.css("top", "0px");
-            fv.css("height", "100%");
+            fv.animate({top: "0px"}, 500);
+            //fv.css("height", "100%");
         }
         soy=0;
     }
@@ -110,15 +107,14 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            fv.css("top", "unset");
-            fv.css("bottom", "0px");
-            fv.css("height", "unset");
+            let bottomPos=(window.innerHeight-fb.height());
+            fv.animate({top: bottomPos+"px"}, 500);
+            //fv.css("height", "unset");
         }
         if(currentMSGuiMode === true)
         {
-            fv.css("bottom", "unset");
-            fv.css("top", "0px");
-            fv.css("height", "100%");
+            fv.animate({top: "0px"}, 500);
+            //fv.css("height", "100%");
         }
         soy=0;
     }
@@ -161,15 +157,14 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            fv.css("top", "unset");
-            fv.css("bottom", "0px");
-            fv.css("height", "unset");
+            let bottomPos=(window.innerHeight-fb.height());
+            fv.animate({top: bottomPos+"px"}, 500);
+            //fv.css("height", "unset");
         }
         if(currentMSGuiMode === true)
         {
-            fv.css("bottom", "unset");
-            fv.css("top", "0px");
-            fv.css("height", "100%");
+            fv.animate({top: "0px"}, 500);
+            //fv.css("height", "100%");
         }
         soy=0;
     }
@@ -196,15 +191,14 @@ export default class FooterView extends React.Component {
 
         if(currentMSGuiMode === false)
         {
-            fv.css("top", "unset");
-            fv.css("bottom", "0px");
-            fv.css("height", "unset");
+            let bottomPos=(window.innerHeight-fb.height());
+            fv.animate({top: bottomPos+"px"}, 500);
+            //fv.css("height", "unset");
         }
         if(currentMSGuiMode === true)
         {
-            fv.css("bottom", "unset");
-            fv.css("top", "0px");
-            fv.css("height", "100%");
+            fv.animate({top: "0px"}, 500);
+            //fv.css("height", "100%");
         }
         soy=0;
     }
