@@ -29,9 +29,33 @@ export default class ToleranceList extends React.Component {
   }
 
   render() {
-    let tolList = this.props.toleranceList.map((id) => {
-      return this.props.toleranceCache[id];
+    
+    let tolList = [];
+    
+    if (this.props.curWS.toBe && this.props.curWS.toBe.id > 0) {
+      let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
+
+      if (wp.children && wp.children.length > 0) {
+        tolList.push({
+          name: 'Active Tolerances',
+          leaf: true,
+          type: 'divider',
+          id: -1,
+        });
+        tolList = tolList.concat(wp.children);
+      }
+    }
+    
+    tolList.push({
+      name: 'All Workpieces',
+      leaf: true,
+      type: 'divider',
+      id: -2,
     });
+    
+    tolList = tolList.concat(this.props.toleranceList.map((id) => {
+      return this.props.toleranceCache[id];
+    }));
 
     if (tolList.length <= 0) {
       return null;
