@@ -6,7 +6,9 @@ import MobileSidebar from '../mobilesidebar';
 
 import ReactTooltip from 'react-tooltip';
 
-let soy=0;
+let soy=0;//for detecting offset clicked from top of footerbar
+let soy2=0;//for detecting clicks
+let lastTouch=0;
 
 class ButtonImage extends React.Component{
   constructor(props){
@@ -130,25 +132,32 @@ export default class FooterView extends React.Component {
 
     soTouchStart(info)
     {
+        info.preventDefault();
+        info.stopPropagation();
+
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
         soy=(fv.offset().top+fb.height())-info.touches[0].pageY;
+        soy2=info.touches[0].pageY;
     }
 
     soTouchEnd(info)
     {
+        info.preventDefault();
+        info.stopPropagation();
+
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
         {
-            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fb.height()*2))
+            if(soy2-lastTouch > 0)
             {
                 this.props.cbMobileSidebar(true);
                 currentMSGuiMode=true;
             }
-            else if((this.props.msGuiMode === true) && (fv.offset().top > fb.height()))
+            else if(soy2-lastTouch < 0)
             {
                 this.props.cbMobileSidebar(false);
                 currentMSGuiMode=false;
@@ -171,18 +180,21 @@ export default class FooterView extends React.Component {
 
     soTouchCancel(info)
     {
+        info.preventDefault();
+        info.stopPropagation();
+
         let fv = $('.Footer-container');
         let fb = $('.Footer-bar');
         let currentMSGuiMode=this.props.msGuiMode;
 
         if(soy > 0)
         {
-            if((this.props.msGuiMode === false) && (window.innerHeight-fv.offset().top > fb.height()*2))
+            if(soy2-lastTouch > 0)
             {
                 this.props.cbMobileSidebar(true);
                 currentMSGuiMode=true;
             }
-            else if((this.props.msGuiMode === true) && (fv.offset().top > fb.height()))
+            else if(soy2-lastTouch < 0)
             {
                 this.props.cbMobileSidebar(false);
                 currentMSGuiMode=false;
@@ -207,6 +219,8 @@ export default class FooterView extends React.Component {
     {
         info.preventDefault();
         info.stopPropagation();
+
+        lastTouch=info.touches[0].pageY;
 
         let fv = $('.Footer-container');
         if(soy > 0)
