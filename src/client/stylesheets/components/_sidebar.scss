@@ -217,6 +217,23 @@ $icons: '../icons/';
         }
     }
 
+    .preview-icon {
+        font-size: 20px;
+        position: absolute;
+        right: 15px;
+
+        &:not(.preview-button) {
+            padding: 3px;
+            color: #F8F8F8;
+            background-color: #333333;
+            border-radius: 5px;
+
+            &:hover {
+                color: #28AEE9;
+            }
+        }
+    }
+
     .properties {
         height: calc(100% - 105px);
         width: 100%;
@@ -243,23 +260,6 @@ $icons: '../icons/';
             display: inline-flex;
             align-items: center;
             white-space: normal;
-
-            .preview-icon {
-                font-size: 20px;
-                position: absolute;
-                right: 15px;
-
-                &:not(.button) {
-                    padding: 3px;
-                    color: #F8F8F8;
-                    background-color: #333333;
-                    border-radius: 5px;
-
-                    &:hover {
-                        color: #28AEE9;
-                    }
-                }
-            }
 
             &:hover:not(.rc-menu-item-disabled) {
                 cursor: pointer;

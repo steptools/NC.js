@@ -271,10 +271,10 @@ export default class PropertiesPane extends React.Component {
         key='preview'
         className='button'
       >
-        <span
-          className='button preview-icon glyphicons glyphicons-new-window-alt'
-        />
         Preview
+        <span
+          className='preview-button preview-icon glyphicons glyphicons-new-window-alt'
+        />
       </MenuItem>
     );
   }
@@ -541,7 +541,7 @@ export default class PropertiesPane extends React.Component {
         className='buttons'
         mode='horizontal'
         onClick={(event) => {
-          this.selectWS(event, entity)
+          this.selectEntity(event, entity)
         }}
       >
         {this.buttons}
