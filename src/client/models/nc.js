@@ -382,8 +382,14 @@ export default class NC extends THREE.EventDispatcher {
                         transform.decompose(position, quaternion, scale);
 
 
-
-                        let mtposition = new THREE.Vector3(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
+                        let mtposition = new THREE.Vector3(delta.mtcoords[0] - delta.offset[0], delta.mtcoords[1] - delta.offset[1], delta.mtcoords[2] - delta.offset[2]);
+												
+												let trans = new THREE.Matrix3();
+												
+												trans.set(parseInt(delta.offset[6]), parseInt(delta.offset[7]), parseInt(delta.offset[8]), 0,1,0, parseInt(delta.offset[3]), parseInt(delta.offset[4]), parseInt(delta.offset[5]));
+												console.log(trans)
+												console.log(mtposition.applyMatrix3(trans));
+												
                         obj.object3D.position.copy(mtposition);
                         obj.object3D.quaternion.copy(quaternion);
                         //console.log(obj.object3D.position);

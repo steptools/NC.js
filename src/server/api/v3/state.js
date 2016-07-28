@@ -1,6 +1,8 @@
 'use strict';
 var file = require('./file');
 var find = file.find;
+var apt = file.apt;
+var step = require('./step');
 var request = require('superagent');
 var parseXMLString = require('xml2js');
 var _ = require('lodash');
@@ -62,35 +64,7 @@ var MTListen = function() {
         } else {
           currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
         }
-
-        let xTag = _.find(pathtag['Events'][0]['e:Variables'], function(tag) {
-          if (tag['$']['subType'] === 'x:WORKOFFSET_X_AXIS') {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        xOffset = parseInt(xTag['_']);
-
-        let yTag = _.find(pathtag['Events'][0]['e:Variables'], function(tag) {
-          if (tag['$']['subType'] === 'x:WORKOFFSET_X_AXIS') {
-            return true;
-          } else {
-            return false;
-          }
-        });
-
-        yOffset = parseInt(yTag['_']);
-
-        let zTag = _.find(pathtag['Events'][0]['e:Variables'], function(tag) {
-          if (tag['$']['subType'] === 'x:WORKOFFSET_X_AXIS') {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        zOffset = parseInt(zTag['_']);
-
+				
         currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
       });
 
@@ -166,9 +140,9 @@ var _getDelta = function(ms, key, cb) {
       holder.next = false;
     }
     holder.mtcoords = res[0];
-    holder.offset = [res[1], res[2], res[3]];
     holder.gcode = res[4];
     holder.feed = res[5];
+		holder.offset = apt.GetWorkplanSetup(step.getSetupFromId(holder['workingstep']));
     let response = JSON.stringify(holder);
     //app.logger.debug('got ' + response);
     cb(response);
