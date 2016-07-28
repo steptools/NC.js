@@ -225,7 +225,6 @@ export default class GeometryView extends React.Component {
   handleResize() {
     let width = this.canvasParent.innerWidth();
     let height = this.canvasParent.innerHeight();
-    console.log(this.canvasParent);
     this.renderer.setSize(width, height);
     this.camera.aspect = width / height;
     this.controls.handleResize();
