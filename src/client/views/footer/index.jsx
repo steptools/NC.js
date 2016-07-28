@@ -30,7 +30,7 @@ export default class FooterView extends React.Component {
         this.soMouseDown = this.soMouseDown.bind(this);
         this.soMouseUp = this.soMouseUp.bind(this);
         this.soMouseLeave = this.soMouseLeave.bind(this);
-        this.onMouseMove = this.onMouseMove.bind(this);
+        this.soMouseMove = this.soMouseMove.bind(this);
         this.soTouchStart = this.soTouchStart.bind(this);
         this.soTouchEnd = this.soTouchEnd.bind(this);
         this.soTouchCancel = this.soTouchCancel.bind(this);
@@ -119,7 +119,7 @@ export default class FooterView extends React.Component {
         soy=0;
     }
 
-    onMouseMove(info){
+    soMouseMove(info){
         let fv = $('.Footer-container');
         if(soy > 0)
         {
@@ -253,7 +253,7 @@ export default class FooterView extends React.Component {
                 onMouseDown={this.soMouseDown}
                 onMouseUp={this.soMouseUp}
                 onMouseLeave={this.soMouseLeave}
-                onMouseMove={this.onMouseMove}
+                soMouseMove={this.soMouseMove}
                 onTouchStart={this.soTouchStart}
                 onTouchEnd={this.soTouchEnd}
                 onTouchCancel={this.soTouchCancel}
