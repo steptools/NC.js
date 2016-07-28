@@ -59,6 +59,9 @@ export default class WorkplanList extends React.Component {
 
   render() {
     this.decorators.ws = this.props.ws;
+    if(this.props.isMobile)
+      ts.style.tree.base.height="100%";
+    
     return (
       <Treebeard
         data={this.props.workplanCache}

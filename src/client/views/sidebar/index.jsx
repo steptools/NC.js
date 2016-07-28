@@ -100,6 +100,7 @@ export default class SidebarView extends React.Component {
           ws={this.props.ws}
           workingstepCache={this.props.workingstepCache}
           workingstepList={this.props.workingstepList}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'wp') {
@@ -110,6 +111,7 @@ export default class SidebarView extends React.Component {
           ws={this.props.ws}
           workplanCache={this.props.workplanCache}
           propertyCb={this.props.openProperties}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'tolerance') {
@@ -120,6 +122,7 @@ export default class SidebarView extends React.Component {
           propertyCb={this.props.openProperties}
           toleranceCache={this.props.toleranceCache}
           toleranceList={this.props.toleranceList}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'tools') {
@@ -134,6 +137,7 @@ export default class SidebarView extends React.Component {
           }}
           tools={this.props.toolCache}
           curtool={this.props.curtool}
+          isMobile={this.props.isMobile}
         />
       );
     }
