@@ -364,26 +364,25 @@ $icons: '../icons/';
             flex-grow: 1;
             font-size: 14px;
             font-weight: bold;
-            white-space: nowrap;
             overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
 
             .type {
                 border-bottom: 2px solid #666666;
             }
             
             .name {
-                text-overflow: ellipsis;
-                overflow: hidden;
-                
                 position: relative;
-                right: 0px;
-                //-webkit-transition: right 3s;
-                //-moz-transition: right 3s;
-                //transition: right 3s;
-            }
-            
-            &:hover .name{
-                //right: 0%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                
+                #content {
+                    position: relative;
+                    //overflow: hidden;
+                    //white-space: nowrap;
+                }
             }
         }
         
