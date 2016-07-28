@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import _ from 'lodash';
 import request from 'superagent';
@@ -6,7 +5,6 @@ import CADView from '../cad';
 import HeaderView from '../header';
 import SidebarView from '../sidebar';
 import FooterView	from '../footer';
-import {Markdown as md} from 'node-markdown';
 
 export default class ResponsiveView extends React.Component {
   constructor(props) {
@@ -36,7 +34,6 @@ export default class ResponsiveView extends React.Component {
       resize: false,
       changeSpeed: false,
       playbackSpeed: 50,
-      logtext : 'default',
       toolCache : [],
       curtool : '',
       toleranceCache: [],
@@ -45,6 +42,7 @@ export default class ResponsiveView extends React.Component {
       workplanCache: {},
       selectedEntity: null,
       previouslySelectedEntities: [null],
+      preview: false,
     };
 
     this.addBindings();
@@ -59,6 +57,8 @@ export default class ResponsiveView extends React.Component {
 
     this.handleResize = this.handleResize.bind(this);
     this.toggleMobileSidebar = this.toggleMobileSidebar.bind(this);
+    this.handleKeydown = this.handleKeydown.bind(this);
+    this.handleKeyup = this.handleKeyup.bind(this);
 
     this.cbWS = this.cbWS.bind(this);
 
@@ -66,6 +66,7 @@ export default class ResponsiveView extends React.Component {
     this.changeSpeed = this.changeSpeed.bind(this);
 
     this.openProperties = this.openProperties.bind(this);
+    this.openPreview = this.openPreview.bind(this);
   }
 
   addListeners() {
@@ -112,6 +113,8 @@ export default class ResponsiveView extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
+    window.addEventListener('keydown', this.handleKeydown);
+    window.addEventListener('keyup', this.handleKeyup);
 
     // set a temp variable for the workingstep cache
     let workingstepCache = {};
@@ -163,17 +166,6 @@ export default class ResponsiveView extends React.Component {
     // get the project loopstate
     url = '/v3/nc/state/loop/';
     resCb = (error, response) => {
-      let log = '';
-      request
-        .get('/log')
-        .end((err, res) => {
-          if (!err && res.ok) {
-            log = md(res.text);
-          } else {
-            console.log(err);
-          }});
-      this.setState({'logtext' : log});
-
       if (!error && response.ok) {
         let stateObj = JSON.parse(response.text);
 
@@ -222,7 +214,7 @@ export default class ResponsiveView extends React.Component {
 
     // get data for workpiece/tolerance view
     url = '/v3/nc/workpieces/';
-    resCb = (err,res) => { //Callback function for response
+    resCb = (err, res) => { //Callback function for response
       if (!err && res.ok) {
         // Node preprocessing
         let json = JSON.parse(res.text);
@@ -259,6 +251,8 @@ export default class ResponsiveView extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('keydown', this.handleKeydown);
+    window.removeEventListener('keyup', this.handleKeyup);
   }
 
   handleResize() {
@@ -272,6 +266,24 @@ export default class ResponsiveView extends React.Component {
 
     this.setState({resize: true});
     this.setState({resize: false});
+  }
+
+  handleKeydown(e) {
+    window.removeEventListener('keydown', this.handleKeydown);
+
+    switch (e.keyCode) {
+      case 27: // ESC
+        if (this.state.preview === true) {
+          this.openPreview(false);
+        } else {
+          this.openProperties(null);
+        }
+        break;
+    }
+  }
+
+  handleKeyup() {
+    window.addEventListener('keydown', this.handleKeydown);
   }
 
   toggleMobileSidebar(newMode) {
@@ -298,6 +310,12 @@ export default class ResponsiveView extends React.Component {
         previouslySelectedEntities: prevEntities,
         selectedEntity: node,
       });
+    }
+  }
+
+  openPreview(state) {
+    if (state === true || state === false && state !== this.state.preview) {
+      this.setState({preview: state});
     }
   }
 
@@ -450,6 +468,8 @@ export default class ResponsiveView extends React.Component {
           selectedEntity={this.state.selectedEntity}
           previouslySelectedEntities={this.state.previouslySelectedEntities}
           isMobile={false}
+          preview={this.state.preview}
+          openPreview={this.openPreview}
         />
       );
     } else {
@@ -491,6 +511,8 @@ export default class ResponsiveView extends React.Component {
           openProperties={this.openProperties}
           selectedEntity={this.state.selectedEntity}
           previouslySelectedEntities={this.state.previouslySelectedEntities}
+          preview={this.state.preview}
+          openPreview={this.openPreview}
         />
       );
     }
@@ -539,6 +561,7 @@ export default class ResponsiveView extends React.Component {
             selectedEntity={this.state.selectedEntity}
             toleranceCache={this.state.toleranceCache}
             ws={this.state.ws}
+            workingstepCache={this.state.workingstepCache}
           />
         </div>
         {FV}

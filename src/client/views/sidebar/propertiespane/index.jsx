@@ -1,8 +1,7 @@
-// TODO: styleguide compliant
 import React from 'react';
 import Menu,{Item as MenuItem} from 'rc-menu';
+import GeometryView from '../../geometry';
 import request from 'superagent';
-import _ from 'lodash';
 
 function getIcon(type, data) {
   if (!data) {
@@ -90,24 +89,75 @@ export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {entity: null};
+    this.state = {previewEntity: null};
 
     this.properties = [];
 
-    this.selectWS = this.selectWS.bind(this);
+    this.selectEntity = this.selectEntity.bind(this);
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
   }
-
-  selectWS(event, entity) {
+  
+  selectEntity(event, entity) {
     if (event.key === 'goto') {
       let url = '/v3/nc/state/ws/' + entity.id;
       request.get(url).end();
     } else if (event.key === 'tool') {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
+    } else if (event.key === 'preview') {
+
+      this.setState({'previewEntity': entity});
+      this.props.previewCb(true);
+      let prevId;
+      if (entity.type === 'workingstep') {
+        prevId = entity.toBe.id;
+      } else if (entity.type === 'tolerance') {
+        prevId = entity.workpiece;
+      } else if (entity.type === 'tool') {
+        prevId = entity.id + '/tool';
+      } else {
+        prevId = entity.id;
+      }
+
+      let url = this.props.manager.app.services.apiEndpoint
+        + this.props.manager.app.services.version + '/nc';
+      this.props.manager.dispatchEvent({
+        type: 'setModel',
+        viewType: 'preview',
+        path: prevId,
+        baseURL: url,
+        modelType: 'previewShell',
+      });
     }
     // some other menu item clicked, no need to do anything
+  }
+  
+  getWPForEntity(entity) {
+    if (entity) {
+      if (entity.type === 'workpiece') {
+        return entity.id;
+      } else if (entity.type === 'tolerance') {
+        return entity.workpiece;
+      } else if (entity.type === 'workingstep') {
+        return entity.toBe.id;
+      }
+    }
+    return null;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    
+    let new_wp = this.getWPForEntity(nextProps.entity);
+    let prev_wp = this.getWPForEntity(this.state.previewEntity);
+
+    if (!nextProps.entity ||
+        (nextProps.entity !== this.props.entity && new_wp !== prev_wp)) {
+      this.props.previewCb(false);
+    }
+    else if (nextProps.entity !== this.props.entity && new_wp === prev_wp) {
+      this.setState({'previewEntity': nextProps.entity})
+    }
   }
 
   renderActive(entity) {
@@ -116,7 +166,7 @@ export default class PropertiesPane extends React.Component {
     }
     let active = false;
     if (entity.type === 'tolerance') {
-      active = (entity.tolerances && entity.tolerances[this.props.ws]);
+      active = (entity.workingsteps.indexOf(this.props.ws) > 0);
     } else if (entity.type === 'workingstep') {
       active = (this.props.ws === entity.id);
     }
@@ -125,21 +175,14 @@ export default class PropertiesPane extends React.Component {
       this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('active')}/>
-          Status: Active
+          Running
         </MenuItem>
       );
-    } else if (entity.enabled === true) {
-      this.properties.push(
-        <MenuItem disabled key='active' className='property active'>
-          <div className={getIcon('inactive')}/>
-          Status: Inactive
-        </MenuItem>
-      );
-    } else {
+    } else if (entity.enabled !== true && entity.type === 'workingstep') {
       this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('disabled')}/>
-          Status: Disabled
+          Disabled
         </MenuItem>
       );
     }
@@ -217,6 +260,25 @@ export default class PropertiesPane extends React.Component {
     }
   }
 
+  renderPreviewButton(entity) {
+    if (entity.type === 'workplan' || entity.type === 'selective' ||
+        entity.type === 'workplan-setup' || entity.type === 'workingstep') {
+      return;
+    }
+
+    this.properties.push(
+      <MenuItem
+        key='preview'
+        className='property button'
+      >
+        <span
+          className='button preview-icon glyphicons glyphicons-new-window-alt'
+        />
+        Preview
+      </MenuItem>
+    );
+  }
+
   renderGoto(entity) {
     if (entity.type !== 'workingstep') {
       return;
@@ -225,7 +287,7 @@ export default class PropertiesPane extends React.Component {
       <MenuItem
         key='goto'
         disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
-        className='property goto'
+        className='property button'
       >
         Go to Workingstep
       </MenuItem>
@@ -236,10 +298,11 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'tolerance') {
       return;
     }
+    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
         <div className={getIcon('tolerance type')}/>
-        Type: {entity.tolType} Tolerance
+        Type: {prettyType}
       </MenuItem>
     );
     this.properties.push(
@@ -265,6 +328,19 @@ export default class PropertiesPane extends React.Component {
       icon = <span className={getIcon(node.type, node.toleranceType)}/>;
     }
 
+    let prevIcon;
+    if (node.type === 'tolerance' || node.type === 'workpiece') {
+      prevIcon = (<span
+        className='preview-icon glyphicons glyphicons-new-window-alt'
+        key='preview'
+        onClick={(ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          this.selectEntity({'key': 'preview'}, node)}
+        }
+      />);
+    }
+
     return (
       <div key={node.id}>
         <span
@@ -278,6 +354,7 @@ export default class PropertiesPane extends React.Component {
           <span className='textbox'>
             {node.name}
           </span>
+          {prevIcon}
         </span>
       </div>
     );
@@ -292,16 +369,16 @@ export default class PropertiesPane extends React.Component {
     if (entity.workingsteps.length > 0) {
       title = 'Used in Workingsteps:';
       steps = (<div className='list'>
-        {entity.workingsteps.map((step) => 
+        {entity.workingsteps.map((step) =>
           this.renderNode(this.props.workingsteps[step])
         )}
       </div>);
     } else {
       title = 'Not used in any workingsteps.';
     }
-    
+
     title = (<div className='title'>{title}</div>);
-    
+
     this.properties.push (
       <MenuItem disabled key='workingsteps' className='property children'>
         {title}
@@ -309,15 +386,17 @@ export default class PropertiesPane extends React.Component {
       </MenuItem>
     );
   }
-  
+
   renderWorkpieces(entity) {
     if (entity.type !== 'workingstep') {
       return null;
     }
-    
+
     let asIs, toBe, delta;
 
-    if (entity.asIs.id !== 0) {
+    if (entity.asIs &&
+        entity.asIs.id !== 0 &&
+        this.props.toleranceCache[entity.asIs.id]) {
       asIs = this.renderNode(this.props.toleranceCache[entity.asIs.id]);
       if (asIs) {
         asIs = (
@@ -327,7 +406,9 @@ export default class PropertiesPane extends React.Component {
         );
       }
     }
-    if (entity.toBe.id !== 0) {
+    if (entity.toBe &&
+        entity.toBe.id !== 0 &&
+        this.props.toleranceCache[entity.asIs.id]) {
       toBe = this.renderNode(this.props.toleranceCache[entity.toBe.id]);
       if (toBe) {
         toBe = (
@@ -337,7 +418,9 @@ export default class PropertiesPane extends React.Component {
         );
       }
     }
-    if (entity.delta.id !== 0) {
+    if (entity.delta &&
+        entity.delta.id !== 0 &&
+        this.props.toleranceCache[entity.delta.id]) {
       delta = this.renderNode(this.props.toleranceCache[entity.delta.id]);
       if (delta) {
         delta = (
@@ -398,12 +481,55 @@ export default class PropertiesPane extends React.Component {
     );
   }
 
+  renderPreview(entity) {
+    if (entity === null) {
+      return null;
+    }
+
+    let cName = 'preview-container';
+    let content;
+
+    if (this.props.preview) {
+      cName = cName + ' visible';
+
+      content = (
+        <GeometryView
+          key={this.getWPForEntity(this.state.previewEntity)}
+          manager={this.props.manager}
+          selectedEntity={this.state.previewEntity}
+          guiMode={this.props.guiMode}
+          resize={this.props.resize}
+          toleranceCache={this.props.toleranceCache}
+          locked={false}
+          parentSelector='.preview-container'
+          viewType='preview'
+        />
+      );
+    }
+
+    return (
+      <div className='preview'>
+        <div className='preview-cover' />
+        <div className={cName} id='preview-container'>
+          <span
+            className={'preview-exit ' + getIcon('exit')}
+            onClick={() => {
+              this.props.previewCb(false);
+            }}
+          />
+          {content}
+        </div>
+      </div>
+    );
+  }
+
   renderProperties(entity) {
     this.properties = [];
     if (entity === null) {
       return null;
     }
 
+    this.renderPreviewButton(entity);
     this.renderActive(entity);
     this.renderTime(entity);
     this.renderDistance(entity);
@@ -418,7 +544,7 @@ export default class PropertiesPane extends React.Component {
       <Menu
         className='properties'
         onClick={(event) => {
-          this.selectWS(event, entity);
+          this.selectEntity(event, entity);
         }}
       >
         {this.properties}
@@ -455,23 +581,16 @@ export default class PropertiesPane extends React.Component {
 
     return (
       <div className={entityData.paneName}>
+        {this.renderPreview(entityData.entity)}
         <div className='titlebar'>
-          <span
-            className={'title-back ' + getIcon('back')}
-            onClick={() => {
-              this.props.propertiesCb(entityData.previousEntity, true);
-            }}
-            onMouseOut={() => {
-              $('.title-back.icon').removeClass('visible');
-            }}
-          />
           <div className='titleinfo'>
             <span
-              className={entityData.titleIcon}
-              onMouseOver={() => {
-                $('.title-back.icon').addClass('visible');
+              className={'title-back ' + getIcon('back')}
+              onClick={() => {
+                this.props.propertiesCb(entityData.previousEntity, true);
               }}
             />
+            <span className={entityData.titleIcon} />
             <span className='title'>
               <div className='type'>{entityData.type}</div>
               <div className='name'>{entityData.name}</div>
@@ -480,6 +599,7 @@ export default class PropertiesPane extends React.Component {
               className={'title-exit ' + getIcon('exit')}
               onClick={() => {
                 this.props.propertiesCb(null);
+                this.props.previewCb(false);
               }}
             />
           </div>

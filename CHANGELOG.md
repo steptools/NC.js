@@ -1,10 +1,37 @@
+Version 1.5.2
+
+Features:
+
+- Improved the preview pane ui
+
+Bugfixes:
+
+- Fixed issues with functionality and application flow in Edge
+- Tolerances now have accurate names and types
+
+Version 1.5.1
+
+Features:
+
+- Back button in preview pane is now always visible
+- Removed the inactive indicator on some preview panes
+
+Bugfixes:
+
+- Fixtures now load when there is a machine
+
 Version 1.5.0
 
 Features:
 
+- Added a preview pane that displays geometry related to the currently selected workpiece/tolerance
+- Back button in preview pane is now always visible
+- Removed the inactive indicator on some preview panes
+
 Bugfixes:
 
 - Make & make-release now ends properly when webpack fails
+- Made Fixture show up when machine tool was loaded from command line options
 
 Version 1.4.0
 

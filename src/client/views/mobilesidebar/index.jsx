@@ -36,6 +36,8 @@ export default class MobileSidebar extends React.Component {
           selectedEntity={this.props.selectedEntity}
           previouslySelectedEntities={this.props.previouslySelectedEntities}
           isMobile={true}
+          preview={this.props.preview}
+          openPreview={this.props.openPreview}
         />
       );
 

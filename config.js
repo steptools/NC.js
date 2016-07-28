@@ -33,6 +33,7 @@ module.exports = function(environment) {
           "machine" : {
             "dir" : ""
           }
+
     };
     try {
         config.env = environment;

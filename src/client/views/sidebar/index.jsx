@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import Menu, {Item as MenuItem} from 'rc-menu';
 import WorkingstepList from './workingstepslist';
@@ -43,6 +42,7 @@ export default class SidebarView extends React.Component {
 
   render() {
     let properties = <PropertiesPane
+      app={this.props.app}
       entity={this.props.selectedEntity}
       previousEntities={this.props.previouslySelectedEntities}
       pid={this.props.pid}
@@ -50,7 +50,12 @@ export default class SidebarView extends React.Component {
       propertiesCb={this.props.openProperties}
       tools={this.props.toolCache}
       workingsteps={this.props.workingstepCache}
+      resize={this.props.resize}
       toleranceCache={this.props.toleranceCache}
+      guiMode={this.props.guiMode}
+      manager={this.props.cadManager}
+      preview={this.props.preview}
+      previewCb={this.props.openPreview}
     />;
 
     const tabs = (
@@ -117,6 +122,7 @@ export default class SidebarView extends React.Component {
     } else if (this.props.mode === 'tolerance') {
       currentView = (
         <ToleranceList
+          curWS={this.props.workingstepCache[this.props.ws]}
           cbMode={this.props.cbMode}
           cbTree={this.props.cbTree}
           propertyCb={this.props.openProperties}
