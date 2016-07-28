@@ -49,6 +49,8 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-ruler';
     case 'feedrate':
       return 'icon glyphicons glyphicons-dashboard';
+    /*case 'cornerRadius':
+      return 'icon custom corner';*/
     case 'spindlespeed':
       if (data === 'CW') {
         return 'icon glyphicons glyphicons-rotate-right';
@@ -498,6 +500,7 @@ export default class PropertiesPane extends React.Component {
     if(entity.cornerRadius.toFixed(0) !== '0'){
       this.properties.push (
         <MenuItem disabled key='tRadius' className='property children'>
+          <div className={getIcon('cornerRadius')}/>
           Corner Radius: {entity.cornerRadius.toFixed(2)} {entity.cornerRadiusUnit}
         </MenuItem>
       );
