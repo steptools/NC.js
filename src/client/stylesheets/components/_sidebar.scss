@@ -148,9 +148,10 @@ $icons: '../icons/';
 
 .sidebar .properties-pane {
     z-index: 100;
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    height: calc(100% - #{$headerHeight});
+    height: 100%;
     position: absolute;
     top: 0;
     left: -100%;
@@ -211,8 +212,7 @@ $icons: '../icons/';
 
     .titlebar {
         width: 100%;
-        height: 53px;
-        position: relative;
+        max-height: 50px;
         cursor: default;
         display: flex;
         align-items: center;
@@ -283,11 +283,9 @@ $icons: '../icons/';
     }
 
     .properties {
-        height: 80%;
         width: 100%;
         padding-top: 5px;
         padding-bottom: 5px;
-        border-radius: 0px;
         overflow: auto;
         background-color: inherit;
         
@@ -409,11 +407,9 @@ $icons: '../icons/';
     }
 
     .button-dock {
-
-        height: 20%;
+        max-height: 50px;
 
         .rc-menu {
-            height: 100%;
             width: 100%;
             border-top: 1px solid #DDDDDD;
             position: relative;
@@ -452,63 +448,16 @@ $icons: '../icons/';
         }
     }
 
-    .titlebar {
-        width: 100%;
-        position: relative;
-        cursor: default;
-        display: flex;
-        align-items: center;
-        justify-content: right;
-        padding: 5px;
-        border-bottom: 1px solid #DDDDDD;
-
-
-
-        .titleinfo {
-            display: flex;
-            align-items: center;
-            justify-content: right;
-            flex-grow: 1;
-        }
-        
-        .icon {
-            &:hover:not(.title-icon) {
-                cursor: pointer;
-                color: #2BAEE9;
-            }
-        }
-        
-        .title-back.icon {
-            margin-right: 8px;
-        }
-        
-        .title-icon.icon {
-            margin-right: 8px;
-        }
-        
-        .title-exit.icon {
-            margin-left: 8px;
-        }
-        
-        
-        
-        .title {
-            flex-grow: 1;
-            font-size: 14px;
-            font-weight: bold;
-
-            .type {
-                border-bottom: 2px solid #666666;
-            }
-        }
-    }
-
     &.visible {
         -webkit-transform: translate3d(100%, 0, 0);
         -moz-transform: translate3d(100%, 0, 0);
         -ms-transform: translate3d(100%, 0, 0);
         -o-transform: translate3d(100%, 0, 0);
         transform: translate3d(100%, 0, 0);
+    }
+    
+    .rc-menu {
+        border-radius: 0px;
     }
 }
 
@@ -720,4 +669,15 @@ $icons: '../icons/';
     &.texture {
         background-image: url($icons + 'tolerance/texture.svg');
     }  
+}
+
+.mobile-sidebar {
+    .sidebar-menu-tabs {
+        border: none;
+        height: calc(#{$sidebarTabBarHeight} - 4px);
+    }
+    
+    .properties-pane {
+        border-top-color: #AFAFAF;
+    }
 }
