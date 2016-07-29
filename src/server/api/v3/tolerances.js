@@ -13,7 +13,14 @@ function getTolerance(id) {
   let tolType;
   if (tolTypeName) {
     tolTypeName = tolTypeName.replace(/_/g, ' ').toLowerCase();
+    tolTypeName = tolTypeName.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
     tolType = tolTypeName.split(' ')[0];
+  }
+
+  if(name.trim() === ''){
+    name = tolTypeName;
   }
 
   return {

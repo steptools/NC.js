@@ -20,7 +20,7 @@ export default class ToolList extends React.Component {
     return (
       <ol
         id={node.id}
-        type = {node.name}
+        type = {node.toolType}
         className={cName}
         onClick={() => this.props.propertyCb(node)}
         onMouseDown={function(e) {

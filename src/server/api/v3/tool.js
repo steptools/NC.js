@@ -26,6 +26,16 @@ function getWorkstepsForTool(exe, toolId) {
   }
 };
 
+function titleCase(str) {
+  return str
+    .toLowerCase()
+    .split('_')
+    .map(function(word) {
+        return word[0].toUpperCase() + word.slice(1);
+    })
+    .join(' ');
+}
+
 /***************************** Endpoint Functions *****************************/
 
 function _getTools(req, res) {
@@ -33,7 +43,16 @@ function _getTools(req, res) {
   let rtn = [];
   for (let id of toolList) {
     let name = find.GetToolPartName(id).replace(/_/g, ' ');
-    let toolType = find.GetToolType(id);
+    let toolType = titleCase(find.GetToolType(id));
+    if(name.trim() === '' || name === undefined){
+      if(toolType.trim() === '' || toolType === undefined){
+        name = 'Tool';
+        toolType = 'tool';
+      }
+      else{
+        name = toolType;
+      }
+    }
     let workingsteps = getWorkstepsForTool(find.GetMainWorkplan(), id);
     let enable = false;
     let d = find.GetToolDiameter(id);
