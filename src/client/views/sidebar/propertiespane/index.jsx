@@ -318,6 +318,8 @@ export default class PropertiesPane extends React.Component {
       return;
     }
 
+    let cName = 'preview-button preview-icon';
+    cName += ' glyphicons glyphicons-new-window-alt';
     this.buttons.push(
       <MenuItem
         key='preview'
@@ -325,7 +327,7 @@ export default class PropertiesPane extends React.Component {
       >
         Preview
         <span
-          className='preview-button preview-icon glyphicons glyphicons-new-window-alt'
+          className={cName}
         />
       </MenuItem>
     );
@@ -542,10 +544,11 @@ export default class PropertiesPane extends React.Component {
 
     let cName = 'container';
 
-    if(this.props.isMobile)
-        cName = cName + ' mobile';
-    else
+    if (this.props.isMobile) {
+      cName = cName + ' mobile';
+    } else {
       cName = cName + ' desktop';
+    }
 
     let content;
 
@@ -581,26 +584,26 @@ export default class PropertiesPane extends React.Component {
       </div>
     );
   }
-  
+
   renderButtons(entity) {
     this.buttons = [];
     if (entity === null) {
       return null;
     }
-    
+
     this.renderPreviewButton(entity);
     this.renderGoto(entity);
-    
+
     if (this.buttons.length <= 0) {
       return null;
     }
-    
+
     return (
       <Menu
         className='buttons'
         mode='horizontal'
         onClick={(event) => {
-          this.selectEntity(event, entity)
+          this.selectEntity(event, entity);
         }}
       >
         {this.buttons}
@@ -646,10 +649,11 @@ export default class PropertiesPane extends React.Component {
     if (entity !== null) {
       entityData.name = entity.name;
       entityData.type = entity.type[0].toUpperCase() + entity.type.slice(1);
-      if(this.props.isMobile)
+      if (this.props.isMobile) {
         entityData.paneName = entityData.paneName + ' mobile';
-      else
+      } else {
         entityData.paneName = entityData.paneName + ' desktop';
+      }
       entityData.paneName += ' visible';
       let icon;
       if (entity.type === 'tolerance') {
@@ -668,34 +672,36 @@ export default class PropertiesPane extends React.Component {
 
     return (
       <div className={entityData.paneName}>
-        {this.renderPreview(entityData.entity)}
-        <div className='titlebar'>
-          <span
-            className={'title-back ' + getIcon('back')}
-            onClick={() => {
-              this.props.propertiesCb(entityData.previousEntity, true);
-            }}
-          />
-          <span className={entityData.titleIcon} />
-          <span
-            className='title'
-            onMouseEnter={this.handleMouseEnter}
-            onMouseLeave={this.handleMouseLeave}
-          >
-            <div className='type'>{entityData.type}</div>
-            <div className='name'>{entityData.name}</div>
-          </span>
-          <span
-            className={'title-exit ' + getIcon('exit')}
-            onClick={() => {
-              this.props.propertiesCb(null);
-              this.props.previewCb(false);
-            }}
-          />
-        </div>
-        {this.renderProperties(entityData.entity)}
-        <div className='button-dock'>
-          {this.renderButtons(entityData.entity)}
+        <div className='properties-pane-container'>
+          {this.renderPreview(entityData.entity)}
+          <div className='titlebar'>
+            <span
+              className={'title-back ' + getIcon('back')}
+              onClick={() => {
+                this.props.propertiesCb(entityData.previousEntity, true);
+              }}
+            />
+            <span className={entityData.titleIcon} />
+            <span
+              className='title'
+              onMouseEnter={this.handleMouseEnter}
+              onMouseLeave={this.handleMouseLeave}
+            >
+              <div className='type'>{entityData.type}</div>
+              <div className='name'>{entityData.name}</div>
+            </span>
+            <span
+              className={'title-exit ' + getIcon('exit')}
+              onClick={() => {
+                this.props.propertiesCb(null);
+                this.props.previewCb(false);
+              }}
+            />
+          </div>
+          {this.renderProperties(entityData.entity)}
+          <div className='button-dock'>
+            {this.renderButtons(entityData.entity)}
+          </div>
         </div>
       </div>
     );
