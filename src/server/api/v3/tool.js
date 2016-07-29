@@ -26,6 +26,16 @@ function getWorkstepsForTool(exe, toolId) {
   }
 };
 
+function titleCase(str) {
+  return str
+    .toLowerCase()
+    .split('_')
+    .map(function(word) {
+        return word[0].toUpperCase() + word.slice(1);
+    })
+    .join(' ');
+}
+
 /***************************** Endpoint Functions *****************************/
 
 function _getTools(req, res) {
@@ -33,9 +43,24 @@ function _getTools(req, res) {
   let rtn = [];
   for (let id of toolList) {
     let name = find.GetToolPartName(id).replace(/_/g, ' ');
-    let toolType = find.GetToolType(id);
+    let toolType = titleCase(find.GetToolType(id));
+    if(name.trim() === '' || name === undefined){
+      if(toolType.trim() === '' || toolType === undefined){
+        name = 'Tool';
+        toolType = 'tool';
+      }
+      else{
+        name = toolType;
+      }
+    }
     let workingsteps = getWorkstepsForTool(find.GetMainWorkplan(), id);
     let enable = false;
+    let d = find.GetToolDiameter(id);
+    let dUnit = find.GetToolDiameterUnit(id);
+    let rad = find.GetToolCornerRadius(id);
+    let radUnit = find.GetToolCornerRadiusUnit(id);
+    let length = find.GetToolLength(id);
+    let lengthUnit = find.GetToolLengthUnit(id);
     for (let ws of workingsteps) {
       if (find.IsEnabled(ws)) {
         enable = true;
@@ -48,6 +73,12 @@ function _getTools(req, res) {
       'toolType': toolType,
       'workingsteps': workingsteps,
       'enabled' : enable,
+      'diameter' : d,
+      'diameterUnit' : dUnit,
+      'cornerRadius' : rad,
+      'cornerRadiusUnit': radUnit,
+      'length' : length,
+      'lengthUnit' : lengthUnit,
     });
   }
   res.status(200).send(rtn);
