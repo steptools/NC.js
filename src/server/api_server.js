@@ -65,7 +65,7 @@ var fs = require('fs');
 /************************* Support Site *********************************/
 
 var COOKIE_SECRET = 'imhotep';
-var app;
+var appp;
 
 function APIServer() {
   CoreServer.call(this);
@@ -165,7 +165,7 @@ APIServer.prototype._setSite = function() {
   var self = this;
   var endpoint = '';
   if (this.config.host) {
-    endpoint = this.config.protocol + '://' + this.config.host + ':' + app.port;
+    endpoint = this.config.protocol + '://' + this.config.host + ':' + appp.port;
   }
   var services = {
     apiEndpoint: endpoint,
@@ -197,8 +197,8 @@ APIServer.prototype._setSite = function() {
  */
 APIServer.prototype.run = function() {
   var self = this;
-  this.server.listen(app.port, function() {
-    self.logger.info('CAD.js API Server listening on: ' + app.port);
+  this.server.listen(appp.port, function() {
+    self.logger.info('CAD.js API Server listening on: ' + appp.port);
   });
 
 
@@ -214,5 +214,5 @@ APIServer.prototype.run = function() {
 
 /***************************** Run the server *********************************/
 
-app = new APIServer();
-app.run();
+appp = new APIServer();
+appp.run();
