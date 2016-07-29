@@ -172,7 +172,7 @@ $icons: '../icons/';
     }
 
     .preview .container {
-        z-index: -10;
+        
         position: absolute;
         padding: 0px;
         border: solid 2px #333333;
@@ -186,8 +186,13 @@ $icons: '../icons/';
         -o-transition: -o-transform ease 250ms;
         transition: transform ease 250ms;
 
+        &.desktop {
+            z-index: -10;
+        }
+
         &.mobile {
             left: -100%;
+            z-index: 200;
         }
 
         &.visible {
@@ -197,10 +202,6 @@ $icons: '../icons/';
             -ms-transform: translate3d(100%, 0, 0);
             -o-transform: translate3d(100%, 0, 0);
             transform: translate3d(100%, 0, 0);
-
-            &.mobile {
-                z-index: 200;
-            }
         }
 
         .preview-exit.icon {
