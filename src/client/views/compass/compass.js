@@ -99,7 +99,7 @@ export default class CompassView extends React.Component {
 
   render() {
     let cName = 'cube';
-    if (this.props.parentSelector.includes('.preview-container')) {
+    if (this.props.parentSelector.includes('#preview')) {
       cName += ' preview';
     } else if (this.props.parentSelector.includes('#cadjs-container')) {
       cName += ' cadjs';

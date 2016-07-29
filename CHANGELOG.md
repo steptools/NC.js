@@ -10,6 +10,7 @@ Bugfixes:
 - Fixed issues with functionality and application flow in Edge
 - Tolerances now have accurate names and types
 - Tolerance properly shows when active in properties pane
+- Styling fixes in the properties pane
 
 Version 1.5.1
 
