@@ -319,7 +319,7 @@ export default class FooterView extends React.Component {
                     onTouchEnd={this.soTouchEnd}
                     onTouchCancel={this.soTouchCancel}
                     onTouchMove={this.soTouchMove}>
-                    {this.props.wstext}
+                    <p>{this.props.wstext}</p>
                 </div>
                 <div className="footer-buttons">
                     <ButtonImage onBtnClick={this.bbBtnClicked} icon="step-backward"/>

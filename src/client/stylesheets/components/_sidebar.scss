@@ -609,6 +609,10 @@ $icons: '../icons/';
         background-image: url($icons + 'tolerance/circular_runout.svg');
     }
 
+    &.corner-radius {
+        background-image: url($icons + 'dimension/corner_radius.svg')
+    }
+
     &.circularity {
         background-image: url($icons + 'tolerance/circularity.svg');
     }

@@ -21,6 +21,8 @@ function getIcon(type, data) {
       return 'icon custom tool';
     case 'workpiece':
       return 'icon custom workpiece';
+    case 'diameter':
+      return 'icon custom diameter';
     case 'tolerance':
       if (data) {
         return 'icon custom tolerance ' + data;
@@ -42,10 +44,13 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-ban-circle';
     case 'time':
       return 'icon glyphicons glyphicons-clock';
+    case 'length':
     case 'distance':
       return 'icon glyphicons glyphicons-ruler';
     case 'feedrate':
       return 'icon glyphicons glyphicons-dashboard';
+    case 'cornerRadius':
+      return 'icon custom corner-radius';
     case 'spindlespeed':
       if (data === 'CW') {
         return 'icon glyphicons glyphicons-rotate-right';
@@ -352,13 +357,10 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'tolerance') {
       return;
     }
-    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
         <div className={getIcon('tolerance type')}/>
-        Type: {prettyType}
+        Type: {entity.tolTypeName}
       </MenuItem>
     );
     this.properties.push(
@@ -584,6 +586,38 @@ export default class PropertiesPane extends React.Component {
       </div>
     );
   }
+  
+  renderTools(entity){
+    if(entity.type !== 'tool'){
+      return null;
+    }
+    if(entity.cornerRadius.toFixed(0) !== '0'){
+      this.properties.push (
+        <MenuItem disabled key='tRadius' className='property children'>
+          <div className={getIcon('cornerRadius')}/>
+          Corner Radius: {entity.cornerRadius.toFixed(2)} {entity.cornerRadiusUnit}
+        </MenuItem>
+      );
+    }
+
+    if(entity.diameter){
+      this.properties.push (
+        <MenuItem disabled key='tDiameter' className='property children'>
+          <div className={getIcon('diameter')}/>
+          Diameter: {entity.diameter} {entity.diameterUnit}
+        </MenuItem>
+      );
+    }
+
+    if(entity.length){
+      this.properties.push (
+        <MenuItem disabled key='tLength' className='property children'>
+          <div className={getIcon('length')}/>
+          Tool Length: {entity.length} {entity.lengthUnit}
+        </MenuItem>
+      );
+    }
+  }
 
   renderButtons(entity) {
     this.buttons = [];
@@ -622,6 +656,8 @@ export default class PropertiesPane extends React.Component {
     this.renderDistance(entity);
     this.renderWorkingstep(entity);
     this.renderWorkpieces(entity);
+    this.renderGoto(entity);
+    this.renderTools(entity);
     this.renderTolerance(entity);
     this.renderWorkingsteps(entity);
     this.renderChildren(entity);
