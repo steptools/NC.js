@@ -35,7 +35,19 @@
 
         .op-text {
             flex: 20;
-            overflow-y: hidden;
+            white-space: nowrap;
+            overflow: hidden;
+
+            p {
+                display: inline-block;
+                padding-left: 100%;
+                animation: marquee 15s linear infinite;
+            }
+        }
+
+        @keyframes marquee {
+            0%   { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
         }
 
         .footer-buttons {
