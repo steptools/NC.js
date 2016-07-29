@@ -36,6 +36,7 @@ export default class ResponsiveView extends React.Component {
       toolCache : [],
       curtool : '',
       toleranceCache: [],
+      highlightedTolerances: [],
       workingstepCache: {},
       workingstepList: [],
       workplanCache: {},
@@ -65,6 +66,8 @@ export default class ResponsiveView extends React.Component {
 
     this.openProperties = this.openProperties.bind(this);
     this.openPreview = this.openPreview.bind(this);
+    
+    this.toggleHighlight = this.toggleHighlight.bind(this);
   }
 
   addListeners() {
@@ -230,7 +233,6 @@ export default class ResponsiveView extends React.Component {
             node.leaf = true;
             if (node.type === 'tolerance') {
               node.workingsteps = json[node.workpiece].workingsteps;
-              node.highlighted = false;
             }
           }
 
@@ -334,6 +336,20 @@ export default class ResponsiveView extends React.Component {
     };
 
     request.get(url).end(requestCB);
+  }
+  
+  toggleHighlight(id) {
+    let newTols;
+    
+    if (this.state.highlightedTolerances.indexOf(id) < 0) {
+      newTols = _.concat(this.state.highlightedTolerances, id);
+    } else {
+      newTols = _.without(this.state.highlightedTolerances, id);
+    }
+    
+    console.log(newTols);
+    
+    this.setState({ 'highlightedTolerances': newTols });
   }
 
   playpause() {
@@ -464,6 +480,8 @@ export default class ResponsiveView extends React.Component {
           previouslySelectedEntities={this.state.previouslySelectedEntities}
           preview={this.state.preview}
           openPreview={this.openPreview}
+          toggleHighlight={this.toggleHighlight}
+          highlightedTolerances={this.state.highlightedTolerances}
         />
       );
     } else {

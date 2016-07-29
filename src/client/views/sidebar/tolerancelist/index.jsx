@@ -11,10 +11,16 @@ export default class ToleranceList extends React.Component {
     this.onToggle = this.onToggle.bind(this);
     this.decorators = ts.decorators;
     this.decorators.propertyCb = this.props.propertyCb;
+    this.decorators.toggleHighlight = this.props.toggleHighlight;
+    this.decorators.highlightedTolerances = this.props.highlightedTolerances;
   }
 
   componentDidMount() {
     $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
+  }
+  
+  componentWillReceiveProps(nextProps) {
+    this.decorators.highlightedTolerances = nextProps.highlightedTolerances;
   }
 
   onToggle(node, toggled) {
@@ -67,6 +73,7 @@ export default class ToleranceList extends React.Component {
         onToggle={this.onToggle}
         style={ts.style}
         decorators={this.decorators}
+        toggleHighlight={this.props.toggleHighlight}
       />
     );
   }

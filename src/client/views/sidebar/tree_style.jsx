@@ -73,7 +73,7 @@ const Container = (props) => {
   let highlightButton, highlightName;
   if (node.type === 'tolerance') {
     nodeName += ' - ' + node.value + node.unit;
-    if (node.highlighted) {
+    if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
       highlightName = 'open';
     } else {
       highlightName = 'close';
@@ -84,7 +84,7 @@ const Container = (props) => {
         onClick={(ev) => {
           ev.stopPropagation();
           ev.preventDefault();
-          node.highlighted = !node.highlighted
+          props.decorators.toggleHighlight(node.id);
         }}
       />);
   }
