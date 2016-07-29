@@ -131,28 +131,28 @@ export default class GeometryView extends React.Component {
       g: 0,
       b: 1.0,
     };
+    
+    // unhighlight old faces
+    let faces = [];
+    _.each(this.props.highlightedTolerances, (tol) => {
+      let tolerance = nextProps.toleranceCache[tol];
+      faces = faces.concat(tolerance.faces);
+    });
+    this.highlightFaces(faces, nextProps.manager.getRootModel('state/key'), true);
 
-    // TODO: unhighlight faces when necessary
-    if (nextProps.ws > 0) {
-      // now highlight any tolerances present in current workingstep
-      let workingstep = nextProps.workingstepCache[nextProps.ws];
-
-      // check if the selected tolerance/wp is used in the current WS
-      let workpiece = nextProps.toleranceCache[workingstep.toBe.id];
-
-      if (this.props.viewType === 'cadjs') {
-        let faces = [];
-        _.each(workpiece.children, (tol) => {
-          faces = faces.concat(tol.faces);
-        });
-        this.highlightFaces(
-          faces,
-          nextProps.manager.getRootModel('state/key'),
-          false,
-          highlightColor
-        );
-      }
-    }
+    // now highlight tolerances selected
+    faces = [];
+    _.each(nextProps.highlightedTolerances, (tol) => {
+      let tolerance = nextProps.toleranceCache[tol];
+      faces = faces.concat(tolerance.faces);
+    });
+ 
+    this.highlightFaces(
+      faces,
+      nextProps.manager.getRootModel('state/key'),
+      false,
+      highlightColor
+    );
 
     if (this.props.viewType === 'preview') {
 
