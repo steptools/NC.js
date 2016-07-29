@@ -647,7 +647,6 @@ export default class PropertiesPane extends React.Component {
     this.renderDistance(entity);
     this.renderWorkingstep(entity);
     this.renderWorkpieces(entity);
-    this.renderGoto(entity);
     this.renderTools(entity);
     this.renderTolerance(entity);
     this.renderWorkingsteps(entity);
