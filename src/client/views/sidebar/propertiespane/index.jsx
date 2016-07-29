@@ -586,12 +586,12 @@ export default class PropertiesPane extends React.Component {
       </div>
     );
   }
-  
-  renderTools(entity){
-    if(entity.type !== 'tool'){
+
+  renderTools(entity) {
+    if (entity.type !== 'tool') {
       return null;
     }
-    if(entity.cornerRadius.toFixed(0) !== '0'){
+    if (entity.cornerRadius.toFixed(0) !== '0') {
       this.properties.push (
         <MenuItem disabled key='tRadius' className='property children'>
           <div className={getIcon('cornerRadius')}/>
@@ -600,7 +600,7 @@ export default class PropertiesPane extends React.Component {
       );
     }
 
-    if(entity.diameter){
+    if (entity.diameter) {
       this.properties.push (
         <MenuItem disabled key='tDiameter' className='property children'>
           <div className={getIcon('diameter')}/>
@@ -609,7 +609,7 @@ export default class PropertiesPane extends React.Component {
       );
     }
 
-    if(entity.length){
+    if (entity.length) {
       this.properties.push (
         <MenuItem disabled key='tLength' className='property children'>
           <div className={getIcon('length')}/>
