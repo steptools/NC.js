@@ -283,7 +283,7 @@ $icons: '../icons/';
     }
 
     .properties {
-        height: calc(100% - 104px);
+        height: 80%;
         width: 100%;
         padding-top: 5px;
         padding-bottom: 5px;
@@ -408,40 +408,46 @@ $icons: '../icons/';
         }
     }
 
-    .button-dock .rc-menu {
-        width: 100%;
-        border-top: 1px solid #DDDDDD;
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 0;
+    .button-dock {
 
-        .button {
-            width: 50%;
-            text-align: center;
-            padding: 10px;
-            margin: 5px;
-            background-color: #333333;
-            color: #F8F8F8;
-            border-bottom: 2px solid transparent;
-            cursor: default;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+        height: 20%;
 
-            &:hover:not(.rc-menu-item-disabled) {
-                cursor: pointer;
-                color: #2BAEE9;
+        .rc-menu {
+            height: 100%;
+            width: 100%;
+            border-top: 1px solid #DDDDDD;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+
+            .button {
+                width: 50%;
+                text-align: center;
+                padding: 10px;
+                margin: 5px;
                 background-color: #333333;
-                border-bottom-color: #2BAEE9;
-            }
+                color: #F8F8F8;
+                border-bottom: 2px solid transparent;
+                cursor: default;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
 
-            &.rc-menu-item-disabled {
-                opacity: 0.5;
+                &:hover:not(.rc-menu-item-disabled) {
+                    cursor: pointer;
+                    color: #2BAEE9;
+                    background-color: #333333;
+                    border-bottom-color: #2BAEE9;
+                }
+
+                &.rc-menu-item-disabled {
+                    opacity: 0.5;
+                }
             }
         }
     }
