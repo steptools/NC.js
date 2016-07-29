@@ -180,11 +180,18 @@ $icons: '../icons/';
         transition: transform ease 250ms;
 
         &.visible {
-            -webkit-transform: translate3d(100%, 0, 0);
-            -moz-transform: translate3d(100%, 0, 0);
-            -ms-transform: translate3d(100%, 0, 0);
-            -o-transform: translate3d(100%, 0, 0);
-            transform: translate3d(100%, 0, 0);
+            
+            &.desktop {
+                -webkit-transform: translate3d(100%, 0, 0);
+                -moz-transform: translate3d(100%, 0, 0);
+                -ms-transform: translate3d(100%, 0, 0);
+                -o-transform: translate3d(100%, 0, 0);
+                transform: translate3d(100%, 0, 0);
+            }
+
+            &.mobile {
+                z-index: 10000;
+            }
         }
 
         .preview-exit.icon {
