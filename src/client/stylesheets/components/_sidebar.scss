@@ -296,6 +296,7 @@ $icons: '../icons/';
         padding-bottom: 5px;
         overflow: auto;
         background-color: inherit;
+        flex-grow: 1;
         
         .icon {
             font-size: 24px;
