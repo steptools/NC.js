@@ -646,6 +646,10 @@ export default class PropertiesPane extends React.Component {
     if (entity !== null) {
       entityData.name = entity.name;
       entityData.type = entity.type[0].toUpperCase() + entity.type.slice(1);
+      if(this.props.isMobile)
+        entityData.paneName = entityData.paneName + ' mobile';
+      else
+        entityData.paneName = entityData.paneName + ' desktop';
       entityData.paneName += ' visible';
       let icon;
       if (entity.type === 'tolerance') {

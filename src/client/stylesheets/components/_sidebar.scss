@@ -151,7 +151,6 @@ $icons: '../icons/';
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: calc(100% - #{$headerHeight});
     position: absolute;
     top: 0;
     left: -100%;
@@ -163,6 +162,14 @@ $icons: '../icons/';
     -ms-transition: -ms-transform ease 250ms;
     -o-transition: -o-transform ease 250ms;
     transition: transform ease 250ms;
+
+    &.desktop {
+        height: calc(100% - #{$headerHeight});
+    }
+
+    &.mobile {
+        height: 100%;
+    }
 
     .preview .container {
         z-index: -10;
@@ -180,6 +187,7 @@ $icons: '../icons/';
         transition: transform ease 250ms;
 
         &.visible {
+
             &.desktop {
                 -webkit-transform: translate3d(100%, 0, 0);
                 -moz-transform: translate3d(100%, 0, 0);
