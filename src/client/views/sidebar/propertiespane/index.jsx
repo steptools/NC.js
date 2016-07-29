@@ -541,6 +541,12 @@ export default class PropertiesPane extends React.Component {
     }
 
     let cName = 'container';
+
+    if(this.props.isMobile)
+        cName = cName + ' mobile';
+    else
+      cName = cName + ' desktop';
+
     let content;
 
     if (this.props.preview) {

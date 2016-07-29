@@ -56,6 +56,7 @@ export default class SidebarView extends React.Component {
       manager={this.props.cadManager}
       preview={this.props.preview}
       previewCb={this.props.openPreview}
+      isMobile={this.props.isMobile}
     />;
 
     const tabs = (
