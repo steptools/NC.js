@@ -49,8 +49,8 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-ruler';
     case 'feedrate':
       return 'icon glyphicons glyphicons-dashboard';
-    /*case 'cornerRadius':
-      return 'icon custom corner';*/
+    case 'cornerRadius':
+      return 'icon custom corner-radius';
     case 'spindlespeed':
       if (data === 'CW') {
         return 'icon glyphicons glyphicons-rotate-right';
@@ -580,10 +580,7 @@ export default class PropertiesPane extends React.Component {
       </div>
     );
   }
-
-  //TODO: corner radius icon
-  //      diameter icon
-  //      length icon
+  
   renderTools(entity){
     if(entity.type !== 'tool'){
       return null;
