@@ -318,15 +318,15 @@ export default class PropertiesPane extends React.Component {
       return;
     }
 
-    this.properties.push(
+    this.buttons.push(
       <MenuItem
         key='preview'
-        className='property button'
+        className='button'
       >
-        <span
-          className='button preview-icon glyphicons glyphicons-new-window-alt'
-        />
         Preview
+        <span
+          className='preview-button preview-icon glyphicons glyphicons-new-window-alt'
+        />
       </MenuItem>
     );
   }
@@ -335,11 +335,11 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'workingstep') {
       return;
     }
-    this.properties.push(
+    this.buttons.push(
       <MenuItem
         key='goto'
         disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
-        className='property button'
+        className='button'
       >
         Go to Workingstep
       </MenuItem>
@@ -575,6 +575,32 @@ export default class PropertiesPane extends React.Component {
       </div>
     );
   }
+  
+  renderButtons(entity) {
+    this.buttons = [];
+    if (entity === null) {
+      return null;
+    }
+    
+    this.renderPreviewButton(entity);
+    this.renderGoto(entity);
+    
+    if (this.buttons.length <= 0) {
+      return null;
+    }
+    
+    return (
+      <Menu
+        className='buttons'
+        mode='horizontal'
+        onClick={(event) => {
+          this.selectEntity(event, entity)
+        }}
+      >
+        {this.buttons}
+      </Menu>
+    );
+  }
 
   renderProperties(entity) {
     this.properties = [];
@@ -582,13 +608,11 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
 
-    this.renderPreviewButton(entity);
     this.renderActive(entity);
     this.renderTime(entity);
     this.renderDistance(entity);
     this.renderWorkingstep(entity);
     this.renderWorkpieces(entity);
-    this.renderGoto(entity);
     this.renderTolerance(entity);
     this.renderWorkingsteps(entity);
     this.renderChildren(entity);
@@ -660,6 +684,9 @@ export default class PropertiesPane extends React.Component {
           />
         </div>
         {this.renderProperties(entityData.entity)}
+        <div className='button-dock'>
+          {this.renderButtons(entityData.entity)}
+        </div>
       </div>
     );
   }
