@@ -76,7 +76,7 @@ const Container = (props) => {
     if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
       highlightName = 'open';
     } else {
-      highlightName = 'close';
+      highlightName = 'close inactive';
     }
     highlightButton = (
       <span

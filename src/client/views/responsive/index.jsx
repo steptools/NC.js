@@ -354,8 +354,6 @@ export default class ResponsiveView extends React.Component {
       newTols = _.without(this.state.highlightedTolerances, id);
     }
     
-    console.log(newTols);
-    
     this.setState({ 'highlightedTolerances': newTols });
   }
 
