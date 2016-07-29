@@ -83,9 +83,6 @@ export default class LoadQueueView extends React.Component {
   }
 
     render() {
-        let bottom={"bottom": "12vmin"};
-        if(this.props.guiMode == 0)
-            bottom={"bottom": "0"};
 
     let items = this.state.queue.map(function(item, index) {
       return (
@@ -94,7 +91,7 @@ export default class LoadQueueView extends React.Component {
     });
     let style = items.length > 0 ? 'load-queue' : 'load-queue out';
     return (
-      <div className={style} style={bottom}>
+      <div className={style}>
         <div className="load-queue-header">
           <span>Downloads&nbsp;</span>
           <span>({items.length}):</span>

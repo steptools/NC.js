@@ -517,15 +517,7 @@ export default class ResponsiveView extends React.Component {
       );
     }
 
-    let cadviewBottom, cadviewStyle;
-
-    if (navigator.userAgent.match(/iPhone|iPad|iPod/i)
-          || (navigator.userAgent.indexOf('Chrome') === -1
-            && navigator.userAgent.indexOf('Safari') !== -1)) {
-      cadviewBottom = '10vmin';
-    } else {
-      cadviewBottom = '0px';
-    }
+    let cadviewStyle;
 
     // squish the cad view down to appropriate size
     if (this.state.guiMode === 0) {
@@ -534,15 +526,26 @@ export default class ResponsiveView extends React.Component {
         'left': '390px',
         'top': '90px',
         'bottom': '0px',
-        'right': '0px',
+        'right': '0px'
       };
     } else {
+      let cadviewHeight="80%";
+      let fv = $('.Footer-container');
+
+      if(typeof fv.offset() != 'undefined')
+      {
+        cadviewHeight=fv.offset().top;
+        cadviewHeight=cadviewHeight+"px";
+      }
+      else cadviewHeight="100%";
+
+
       cadviewStyle =
       {
-        'bottom': cadviewBottom,
+        'top': "0",
         'right': '0px',
         'width': '100%',
-        'top': '0px',
+        'height': cadviewHeight
       };
     }
 
