@@ -14,7 +14,9 @@ function getNodeIcon(node) {
   } else if (node.type === 'tolerance') {
     return <span className={'icon custom tolerance '+node.toleranceType} />;
   } else if (node.type === 'workpiece') {
-    return <span className='icon custom workpiece' />;
+    return <span className='icon custom workpiece'/>;
+  } else if (node.type === 'divider') {
+    return null;
   } else {
     return <span className='icon glyphicons glyphicons-question-sign'/>;
   }
@@ -71,6 +73,11 @@ const Container = (props) => {
   if (node.type === 'tolerance') {
     nodeName += ' - ' + node.value + node.unit;
   }
+  
+  if (node.type === 'divider') {
+    outerName += ' divider';
+    innerName += ' divider';
+  }
 
   return (
     <div
@@ -83,7 +90,11 @@ const Container = (props) => {
       />
       <div
         className={innerName}
-        onClick={() => props.decorators.propertyCb(node)}
+        onClick={() => {
+          if (!outerName.includes('divider')) {
+            props.decorators.propertyCb(node)
+          }
+        }}
       >
         {node.icon}
         <span className='textbox'>

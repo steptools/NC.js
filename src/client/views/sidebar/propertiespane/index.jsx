@@ -94,25 +94,29 @@ export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {entity: null};
+    this.state = {previewEntity: null};
 
     this.properties = [];
+    this.titleNameWidth = 0;
 
-    this.selectWS = this.selectWS.bind(this);
+    this.selectEntity = this.selectEntity.bind(this);
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
+    this.handleMouseEnter = this.handleMouseEnter.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
   }
-
-  selectWS(event, entity) {
+  
+  selectEntity(event, entity) {
     if (event.key === 'goto') {
       let url = '/v3/nc/state/ws/' + entity.id;
       request.get(url).end();
     } else if (event.key === 'tool') {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
-    } else if (event.key === 'preview' && this.props.preview === false) {
-      this.props.previewCb(true);
+    } else if (event.key === 'preview') {
 
+      this.setState({'previewEntity': entity});
+      this.props.previewCb(true);
       let prevId;
       if (entity.type === 'workingstep') {
         prevId = entity.toBe.id;
@@ -136,12 +140,81 @@ export default class PropertiesPane extends React.Component {
     }
     // some other menu item clicked, no need to do anything
   }
+  
+  getWPForEntity(entity) {
+    if (entity) {
+      if (entity.type === 'workpiece') {
+        return entity.id;
+      } else if (entity.type === 'tolerance') {
+        return entity.workpiece;
+      } else if (entity.type === 'workingstep') {
+        return entity.toBe.id;
+      }
+    }
+    return null;
+  }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.entity !== nextProps.entity ||
-        nextProps.entity === null) {
+    if (!nextProps.entity) {
       this.props.previewCb(false);
+      return;
     }
+
+    let newWP = this.getWPForEntity(nextProps.entity);
+    let prevWP = this.getWPForEntity(this.state.previewEntity);
+
+    if (nextProps.entity !== this.props.entity && newWP !== prevWP) {
+      this.props.previewCb(false);
+    } else if (nextProps.entity !== this.props.entity && newWP === prevWP) {
+      this.setState({'previewEntity': nextProps.entity});
+    }
+  }
+
+  componentDidUpdate() {
+    // calculate the width of the name in title for scrolling
+    this.titleNameWidth = (function() {
+      var $temp = $('.title .name').clone().contents()
+        .wrap('<span id="content" style="font-weight:bold"/>').parent()
+        .appendTo('body');
+      var result = $temp.width();
+      $temp.remove();
+      return result;
+    })();
+  }
+
+  handleMouseEnter() {
+    if (!$('.title .name #content').length) {
+      $('.title .name').contents().wrap('<div id="content">');
+    }
+
+    let content = $('.title .name #content');
+    let containerWidth = $('.title .name').width();
+    let textWidth = this.titleNameWidth;
+
+    content.stop(true, false);
+    if (containerWidth >= textWidth) {
+      return;
+    }
+
+    let left = parseInt(content.css('left').slice(0, -2));
+    var dist = textWidth - containerWidth + left;
+    var time = dist * 40;
+    content.animate({left: -dist}, time, 'linear');
+  }
+
+  handleMouseLeave() {
+    if (!$('.title .name #content').length) {
+      return;
+    }
+
+    let content = $('.title .name #content');
+    content.stop(true, false);
+
+    let left = parseInt(content.css('left').slice(0, -2));
+    let time = (-left) * 40;
+    content.animate({left: 0}, time, 'linear', function() {
+      content.contents().unwrap();
+    });
   }
 
   renderActive(entity) {
@@ -150,7 +223,7 @@ export default class PropertiesPane extends React.Component {
     }
     let active = false;
     if (entity.type === 'tolerance') {
-      active = (entity.tolerances && entity.tolerances[this.props.ws]);
+      active = (entity.workingsteps.indexOf(this.props.ws) > 0);
     } else if (entity.type === 'workingstep') {
       active = (this.props.ws === entity.id);
     }
@@ -162,7 +235,7 @@ export default class PropertiesPane extends React.Component {
           Running
         </MenuItem>
       );
-    } else if (entity.enabled !== true) {
+    } else if (entity.enabled !== true && entity.type === 'workingstep') {
       this.properties.push(
         <MenuItem disabled key='active' className='property active'>
           <div className={getIcon('disabled')}/>
@@ -246,7 +319,7 @@ export default class PropertiesPane extends React.Component {
 
   renderPreviewButton(entity) {
     if (entity.type === 'workplan' || entity.type === 'selective' ||
-        entity.type === 'workplan-setup') {
+        entity.type === 'workplan-setup' || entity.type === 'workingstep') {
       return;
     }
 
@@ -255,6 +328,9 @@ export default class PropertiesPane extends React.Component {
         key='preview'
         className='property button'
       >
+        <span
+          className='button preview-icon glyphicons glyphicons-new-window-alt'
+        />
         Preview
       </MenuItem>
     );
@@ -279,7 +355,9 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'tolerance') {
       return;
     }
-    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
         <div className={getIcon('tolerance type')}/>
@@ -309,6 +387,19 @@ export default class PropertiesPane extends React.Component {
       icon = <span className={getIcon(node.type, node.toleranceType)}/>;
     }
 
+    let prevIcon;
+    if (node.type === 'tolerance' || node.type === 'workpiece') {
+      prevIcon = (<span
+        className='preview-icon glyphicons glyphicons-new-window-alt'
+        key='preview'
+        onClick={(ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          this.selectEntity({'key': 'preview'}, node)}
+        }
+      />);
+    }
+
     return (
       <div key={node.id}>
         <span
@@ -322,6 +413,7 @@ export default class PropertiesPane extends React.Component {
           <span className='textbox'>
             {node.name}
           </span>
+          {prevIcon}
         </span>
       </div>
     );
@@ -453,22 +545,22 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
 
-    let cName = 'preview-container';
+    let cName = 'container';
     let content;
 
-    if (this.props.preview === true) {
+    if (this.props.preview) {
       cName = cName + ' visible';
 
       content = (
         <GeometryView
+          key={this.getWPForEntity(this.state.previewEntity)}
           manager={this.props.manager}
-          selectedEntity={entity}
+          selectedEntity={this.state.previewEntity}
           guiMode={this.props.guiMode}
           resize={this.props.resize}
-          isCadView={false}
           toleranceCache={this.props.toleranceCache}
           locked={false}
-          parentSelector='.preview-container'
+          parentSelector='#preview'
           viewType='preview'
         />
       );
@@ -476,8 +568,7 @@ export default class PropertiesPane extends React.Component {
 
     return (
       <div className='preview'>
-        <div className='preview-cover' />
-        <div className={cName} id='preview-container'>
+        <div className={cName} id='preview'>
           <span
             className={'preview-exit ' + getIcon('exit')}
             onClick={() => {
@@ -547,7 +638,7 @@ export default class PropertiesPane extends React.Component {
       <Menu
         className='properties'
         onClick={(event) => {
-          this.selectWS(event, entity);
+          this.selectEntity(event, entity);
         }}
       >
         {this.properties}
@@ -586,26 +677,28 @@ export default class PropertiesPane extends React.Component {
       <div className={entityData.paneName}>
         {this.renderPreview(entityData.entity)}
         <div className='titlebar'>
-          <div className='titleinfo'>
-            <span
-              className={'title-back ' + getIcon('back')}
-              onClick={() => {
-                this.props.propertiesCb(entityData.previousEntity, true);
-              }}
-            />
-            <span className={entityData.titleIcon} />
-            <span className='title'>
-              <div className='type'>{entityData.type}</div>
-              <div className='name'>{entityData.name}</div>
-            </span>
-            <span
-              className={'title-exit ' + getIcon('exit')}
-              onClick={() => {
-                this.props.propertiesCb(null);
-                this.props.previewCb(false);
-              }}
-            />
-          </div>
+          <span
+            className={'title-back ' + getIcon('back')}
+            onClick={() => {
+              this.props.propertiesCb(entityData.previousEntity, true);
+            }}
+          />
+          <span className={entityData.titleIcon} />
+          <span
+            className='title'
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
+          >
+            <div className='type'>{entityData.type}</div>
+            <div className='name'>{entityData.name}</div>
+          </span>
+          <span
+            className={'title-exit ' + getIcon('exit')}
+            onClick={() => {
+              this.props.propertiesCb(null);
+              this.props.previewCb(false);
+            }}
+          />
         </div>
         {this.renderProperties(entityData.entity)}
       </div>
