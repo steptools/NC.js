@@ -1,7 +1,7 @@
 $icons: '../icons/';
 
 .sidebar {
-    width: $sidebarWidth;
+    width: 390px;
     height: 100%;
     background-color: #DDDDDD;
     position: relative;
@@ -149,11 +149,11 @@ $icons: '../icons/';
 .sidebar .properties-pane {
     z-index: 100;
     display: block;
-    width: $sidebarWidth;
+    width: 100%;
     height: calc(100% - #{$headerHeight});
     position: absolute;
     top: 0;
-    left: $sidebarWidth*-1;
+    left: -100%;
     background-color: #F8F8F8;
     border-top: 2px solid #333333;
     border-bottom: 2px solid #333333;
@@ -169,8 +169,8 @@ $icons: '../icons/';
         padding: 0px;
         border: solid 2px #333333;
         border-top: none;
-        width: $sidebarWidth;
-        height: $sidebarWidth;
+        width: 100%;
+        height: 100%;
 
         -webkit-transition: -webkit-transform ease 250ms;
         -moz-transition: -moz-transform ease 250ms;
@@ -179,11 +179,11 @@ $icons: '../icons/';
         transition: transform ease 250ms;
 
         &.visible {
-            -webkit-transform: translate3d($sidebarWidth, 0, 0);
-            -moz-transform: translate3d($sidebarWidth, 0, 0);
-            -ms-transform: translate3d($sidebarWidth, 0, 0);
-            -o-transform: translate3d($sidebarWidth, 0, 0);
-            transform: translate3d($sidebarWidth, 0, 0);
+            -webkit-transform: translate3d(100%, 0, 0);
+            -moz-transform: translate3d(100%, 0, 0);
+            -ms-transform: translate3d(100%, 0, 0);
+            -o-transform: translate3d(100%, 0, 0);
+            transform: translate3d(100%, 0, 0);
         }
 
         .preview-exit.icon {
@@ -498,11 +498,11 @@ $icons: '../icons/';
     }
 
     &.visible {
-        -webkit-transform: translate3d($sidebarWidth, 0, 0);
-        -moz-transform: translate3d($sidebarWidth, 0, 0);
-        -ms-transform: translate3d($sidebarWidth, 0, 0);
-        -o-transform: translate3d($sidebarWidth, 0, 0);
-        transform: translate3d($sidebarWidth, 0, 0);
+        -webkit-transform: translate3d(100%, 0, 0);
+        -moz-transform: translate3d(100%, 0, 0);
+        -ms-transform: translate3d(100%, 0, 0);
+        -o-transform: translate3d(100%, 0, 0);
+        transform: translate3d(100%, 0, 0);
     }
 }
 

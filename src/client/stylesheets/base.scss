@@ -6,7 +6,6 @@ body {
     height: 100%;
 }
 $headerHeight: 90px;
-$sidebarWidth: 390px;//also change in sidebar render
 $sidebarTabBarHeight: 110px;
 $sidebarTabHeight: calc(#{$sidebarTabBarHeight}/2 - 5px);
 $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabBarHeight});
