@@ -7,9 +7,16 @@ function init(path, machinetool) {
   this.apt = new StepNC.AptStepMaker();
   this.find = new StepNC.Finder();
   this.tol = new StepNC.Tolerance();
-
-  this.apt.OpenProject(path);
-  this.find.OpenProject(path);
+  fs.readFile("./resources/box.asar/model.stpnc",(err,data) => {
+  if (err) throw err;
+  fs.writeFile("temp.stpnc",data, (err) => {
+    if(err) {
+        throw err;
+    }
+  });
+});
+  this.apt.OpenProject("./temp.stpnc");
+  this.find.OpenProject("./temp.stpnc");
 
 	this.ms = new StepNC.machineState(path);
 	if(machinetool !== null){
