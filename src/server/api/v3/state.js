@@ -16,6 +16,7 @@ let path = find.GetProjectName();
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
+var states = [0, 0, 0];
 
 var MTCHold = {};
 ///*******************************************************************\
@@ -142,15 +143,12 @@ var _getDelta = function(ms, key, cb) {
     holder.mtcoords = res[0];
     holder.gcode = res[4];
     holder.feed = res[5];
-		let workplansetup = step.getSetupFromId(holder['workingstep']);
-		console.log(workplansetup);
-		if (workplansetup != 0) {
-			console.log("kay");
-			holder.offset = apt.GetWorkplanSetup(workplansetup);
-		}
-		else {
-			holder.offset = [0, 0, 0, 0, 0, 1, 1, 0, 0];
-		}
+    let workplansetup = step.getSetupFromId(holder['workingstep']);
+    if (workplansetup !== 0) {
+      holder.offset = apt.GetWorkplanSetup(workplansetup);
+    } else {
+      holder.offset = [0, 0, 0, 0, 0, 1, 1, 0, 0];
+    }
     let response = JSON.stringify(holder);
     //app.logger.debug('got ' + response);
     cb(response);
