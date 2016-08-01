@@ -56,6 +56,8 @@ export default class SidebarView extends React.Component {
       manager={this.props.cadManager}
       preview={this.props.preview}
       previewCb={this.props.openPreview}
+      toggleHighlight={this.props.toggleHighlight}
+      highlightedTolerances={this.props.highlightedTolerances}
       isMobile={this.props.isMobile}
     />;
 
@@ -129,6 +131,8 @@ export default class SidebarView extends React.Component {
           propertyCb={this.props.openProperties}
           toleranceCache={this.props.toleranceCache}
           toleranceList={this.props.toleranceList}
+          highlightedTolerances={this.props.highlightedTolerances}
+          toggleHighlight={this.props.toggleHighlight}
           isMobile={this.props.isMobile}
         />
       );
