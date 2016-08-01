@@ -53,7 +53,7 @@ export default class ToleranceList extends React.Component {
     }
     
     tolList.push({
-      name: 'All Workpieces',
+      name: 'Workpieces With Tolerances',
       leaf: true,
       type: 'divider',
       id: -2,

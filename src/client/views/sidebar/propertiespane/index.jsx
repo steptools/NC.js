@@ -218,15 +218,10 @@ export default class PropertiesPane extends React.Component {
   }
 
   renderActive(entity) {
-    if (entity.type !== 'workingstep' && entity.type !== 'tolerance') {
+    if (entity.type !== 'workingstep') {
       return;
     }
-    let active = false;
-    if (entity.type === 'tolerance') {
-      active = (entity.workingsteps.indexOf(this.props.ws) > 0);
-    } else if (entity.type === 'workingstep') {
-      active = (this.props.ws === entity.id);
-    }
+    let active = (this.props.ws === entity.id);
 
     if (active === true) {
       this.properties.push(
@@ -359,7 +354,7 @@ export default class PropertiesPane extends React.Component {
     }
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
-        <div className={getIcon('tolerance type')}/>
+        <div className={getIcon('tolerance', entity.toleranceType)}/>
         Type: {entity.tolTypeName}
       </MenuItem>
     );
