@@ -6,6 +6,7 @@ Features:
 
 Bugfixes:
 
+- Tolerance information on properties pane is fixed
 
 Version 1.5.2
 
