@@ -70,7 +70,6 @@ export default class ResponsiveView extends React.Component {
     this.openPreview = this.openPreview.bind(this);
     
     this.toggleHighlight = this.toggleHighlight.bind(this);
-    this.clearHighlight = this.clearHighlight.bind(this);
   }
 
   addListeners() {
@@ -315,8 +314,6 @@ export default class ResponsiveView extends React.Component {
         selectedEntity: node,
       });
     }
-    
-    this.setState({highlightedTolerances: []});
   }
 
   openPreview(state) {
@@ -350,10 +347,6 @@ export default class ResponsiveView extends React.Component {
     };
 
     request.get(url).end(requestCB);
-  }
-  
-  clearHighlight() {
-    this.setState({highlightedTolerances: []});
   }
   
   toggleHighlight(id) {
@@ -498,7 +491,6 @@ export default class ResponsiveView extends React.Component {
           preview={this.state.preview}
           openPreview={this.openPreview}
           toggleHighlight={this.toggleHighlight}
-          clearHighlight={this.clearHighlight}
           highlightedTolerances={this.state.highlightedTolerances}
         />
       );
