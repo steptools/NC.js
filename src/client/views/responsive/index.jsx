@@ -37,6 +37,7 @@ export default class ResponsiveView extends React.Component {
       toolCache : [],
       curtool : '',
       toleranceCache: [],
+      highlightedTolerances: [],
       workingstepCache: {},
       workingstepList: [],
       workplanCache: {},
@@ -67,6 +68,8 @@ export default class ResponsiveView extends React.Component {
 
     this.openProperties = this.openProperties.bind(this);
     this.openPreview = this.openPreview.bind(this);
+    
+    this.toggleHighlight = this.toggleHighlight.bind(this);
   }
 
   addListeners() {
@@ -254,7 +257,7 @@ export default class ResponsiveView extends React.Component {
     window.removeEventListener('keydown', this.handleKeydown);
     window.removeEventListener('keyup', this.handleKeyup);
   }
-
+  
   handleResize() {
     let innerWidth = window.innerWidth;
     let innerHeight = window.innerHeight;
@@ -326,9 +329,14 @@ export default class ResponsiveView extends React.Component {
       if (!error && response.ok) {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
+          let tols = [];
+          _.each(this.state.toleranceCache[workingstep.toBe.id].children, (t) => {
+            tols.push(t.id);
+          });
           this.setState({
             'ws': workingstep.id,
             'wstext':workingstep.name.trim(),
+            'highlightedTolerances': tols,
           });
 
           this.setState({'curtool': workingstep.tool});
@@ -339,6 +347,18 @@ export default class ResponsiveView extends React.Component {
     };
 
     request.get(url).end(requestCB);
+  }
+  
+  toggleHighlight(id) {
+    let newTols;
+    
+    if (this.state.highlightedTolerances.indexOf(id) < 0) {
+      newTols = _.concat(this.state.highlightedTolerances, id);
+    } else {
+      newTols = _.without(this.state.highlightedTolerances, id);
+    }
+    
+    this.setState({ 'highlightedTolerances': newTols });
   }
 
   playpause() {
@@ -470,6 +490,8 @@ export default class ResponsiveView extends React.Component {
           isMobile={false}
           preview={this.state.preview}
           openPreview={this.openPreview}
+          toggleHighlight={this.toggleHighlight}
+          highlightedTolerances={this.state.highlightedTolerances}
         />
       );
     } else {
@@ -565,6 +587,7 @@ export default class ResponsiveView extends React.Component {
             toleranceCache={this.state.toleranceCache}
             ws={this.state.ws}
             workingstepCache={this.state.workingstepCache}
+            highlightedTolerances={this.state.highlightedTolerances}
           />
         </div>
         {FV}

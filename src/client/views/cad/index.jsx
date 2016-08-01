@@ -105,6 +105,7 @@ export default class CADView extends React.Component {
           toleranceCache={this.props.toleranceCache}
           ws={this.props.ws}
           workingstepCache={this.props.workingstepCache}
+          highlightedTolerances={this.props.highlightedTolerances}
           parentSelector='#cadjs-container'
           viewType='cadjs'
         />
