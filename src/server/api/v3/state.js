@@ -8,6 +8,7 @@ var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
 let path = find.GetProjectName();
+let changed = false;
 
 /****************************** Helper Functions ******************************/
 
@@ -45,6 +46,7 @@ function getToWS(wsId, ms, cb) {
 }
 
 function loop(ms, key) {
+  //let changed = false;
   if (loopStates[path] === true) {
     //app.logger.debug('Loop step ' + path);
     let rc = ms.AdvanceState();
@@ -56,21 +58,25 @@ function loop(ms, key) {
           if (loopTimer !== undefined) {
             clearTimeout(loopTimer);
           }
-          loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+          if(changed){
+            changed = false;
+            loopTimer = setTimeout(() => loop(ms, true), 50/(playbackSpeed/200));
+          }
+          else{
+            loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+          }
         }
       });
-    } else if (rc === 1) {   // SWITCH
-      // app.logger.debug('SWITCH...');
-      let old = getWorkingstep();
-      getNext(ms, function() {
-        loop(ms, true);
-      });
-      let setup = sameSetup(getWorkingstep(), old);
+    } else if (rc === 1) {   // SWITCH Workingstep
+      let setup = sameSetup(ms.GetWSID(), ms.GetNextWSID());
       if (!setup) {
         loopStates[path] = false;
         update('pause');
-        loop(ms, false);
+        changed = true;
       }
+      getNext(ms, function() {
+        loop(ms, true);
+      });
       getDelta(ms, false, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
@@ -91,7 +97,7 @@ function getWorkingstep() {
 }
 
 function sameSetup(newid, oldid) {
-  return (step.getSetupFromId(newid) === step.getSetupFromId(oldid));
+  return (step.getSetupFromId(newid) === step.getSetupFromId(oldid)); //Finds the higher level container of the current workingstep
 }
 
 function handleWSInit(command, res) {
