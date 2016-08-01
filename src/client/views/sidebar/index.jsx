@@ -58,6 +58,7 @@ export default class SidebarView extends React.Component {
       previewCb={this.props.openPreview}
       toggleHighlight={this.props.toggleHighlight}
       highlightedTolerances={this.props.highlightedTolerances}
+      isMobile={this.props.isMobile}
     />;
 
     const tabs = (
@@ -107,6 +108,7 @@ export default class SidebarView extends React.Component {
           ws={this.props.ws}
           workingstepCache={this.props.workingstepCache}
           workingstepList={this.props.workingstepList}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'wp') {
@@ -117,6 +119,7 @@ export default class SidebarView extends React.Component {
           ws={this.props.ws}
           workplanCache={this.props.workplanCache}
           propertyCb={this.props.openProperties}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'tolerance') {
@@ -131,6 +134,7 @@ export default class SidebarView extends React.Component {
           highlightedTolerances={this.props.highlightedTolerances}
           toggleHighlight={this.props.toggleHighlight}
           clearHighlight={this.props.clearHighlight}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'tools') {
@@ -145,12 +149,17 @@ export default class SidebarView extends React.Component {
           }}
           tools={this.props.toolCache}
           curtool={this.props.curtool}
+          isMobile={this.props.isMobile}
         />
       );
     }
 
+    let SVWidth;
+    if(this.props.isMobile)
+      SVWidth={"width": "100%"};
+
     return (
-      <div className='sidebar'>
+      <div className='sidebar' style={SVWidth}>
         {properties}
         {tabs}
         {currentView}

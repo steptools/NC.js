@@ -20,6 +20,7 @@ export default class ResponsiveView extends React.Component {
 
     this.state = {
       guiMode: tempGuiMode,
+      msGuiMode: false,
       svmode: 'ws',
       ws: -1,
       svtree: {
@@ -56,6 +57,7 @@ export default class ResponsiveView extends React.Component {
     this.updateWS = this.updateWorkingstep.bind(this);
 
     this.handleResize = this.handleResize.bind(this);
+    this.toggleMobileSidebar = this.toggleMobileSidebar.bind(this);
     this.handleKeydown = this.handleKeydown.bind(this);
     this.handleKeyup = this.handleKeyup.bind(this);
 
@@ -288,6 +290,10 @@ export default class ResponsiveView extends React.Component {
     window.addEventListener('keydown', this.handleKeydown);
   }
 
+  toggleMobileSidebar(newMode) {
+    this.setState({msGuiMode: newMode});
+  }
+
   openProperties(node, backtrack) {
     let currEntity = this.state.selectedEntity;
     let prevEntities = this.state.previouslySelectedEntities;
@@ -488,6 +494,7 @@ export default class ResponsiveView extends React.Component {
           openProperties={this.openProperties}
           selectedEntity={this.state.selectedEntity}
           previouslySelectedEntities={this.state.previouslySelectedEntities}
+          isMobile={false}
           preview={this.state.preview}
           openPreview={this.openPreview}
           toggleHighlight={this.toggleHighlight}
@@ -508,19 +515,39 @@ export default class ResponsiveView extends React.Component {
             (newWSText) => this.setState({wstext: newWSText})
           }
           ppbutton={this.state.ppbutton}
+          cbMobileSidebar={this.toggleMobileSidebar}
+          msGuiMode={this.state.msGuiMode}
+          //
+          app={this.props.app}
+          mode={this.state.svmode}
+          tree={this.state.svtree}
+          altmenu={this.state.svaltmenu}
+          cbMode={
+              (newMode) => this.setState({svmode: newMode})
+          }
+          cbTree={
+              (newTree) => this.setState({svtree: newTree})
+          }
+          cbAltMenu={
+              (newAltMenu) => this.setState({svaltmenu: newAltMenu})
+          }
+          toolCache={this.state.toolCache}
+          curtool={this.state.curtool}
+          toleranceList={this.state.toleranceList}
+          toleranceCache={this.state.toleranceCache}
+          workplanCache={this.state.workplanCache}
+          workingstepCache={this.state.workingstepCache}
+          workingstepList={this.state.workingstepList}
+          openProperties={this.openProperties}
+          selectedEntity={this.state.selectedEntity}
+          previouslySelectedEntities={this.state.previouslySelectedEntities}
+          preview={this.state.preview}
+          openPreview={this.openPreview}
         />
       );
     }
 
-    let cadviewBottom, cadviewStyle;
-
-    if (navigator.userAgent.match(/iPhone|iPad|iPod/i)
-          || (navigator.userAgent.indexOf('Chrome') === -1
-            && navigator.userAgent.indexOf('Safari') !== -1)) {
-      cadviewBottom = '10vmin';
-    } else {
-      cadviewBottom = '0px';
-    }
+    let cadviewStyle;
 
     // squish the cad view down to appropriate size
     if (this.state.guiMode === 0) {
@@ -529,15 +556,26 @@ export default class ResponsiveView extends React.Component {
         'left': '390px',
         'top': '90px',
         'bottom': '0px',
-        'right': '0px',
+        'right': '0px'
       };
     } else {
+      let cadviewHeight="80%";
+      let fv = $('.Footer-container');
+
+      if(typeof fv.offset() != 'undefined')
+      {
+        cadviewHeight=fv.offset().top;
+        cadviewHeight=cadviewHeight+"px";
+      }
+      else cadviewHeight="100%";
+
+
       cadviewStyle =
       {
-        'bottom': cadviewBottom,
+        'top': "0",
         'right': '0px',
         'width': '100%',
-        'top': '0px',
+        'height': cadviewHeight
       };
     }
 
