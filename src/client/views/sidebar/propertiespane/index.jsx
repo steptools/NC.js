@@ -401,6 +401,7 @@ export default class PropertiesPane extends React.Component {
             ev.preventDefault();
             ev.stopPropagation();
             this.props.toggleHighlight(node.id);
+            this.selectEntity({key: 'preview'}, this.props.toleranceCache[node.workpiece]);
           }}
         />);
     } else if (node.type === 'workpiece') {

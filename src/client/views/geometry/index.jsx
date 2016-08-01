@@ -140,7 +140,7 @@ export default class GeometryView extends React.Component {
     // unhighlight old faces
     let faces = [];
     _.each(this.props.highlightedTolerances, (tol) => {
-      let tolerance = nextProps.toleranceCache[tol];
+      let tolerance = this.props.toleranceCache[tol];
       faces = faces.concat(tolerance.faces);
     });
     this.highlightFaces(faces, nextProps.manager.getRootModel(rootModelName), true);
