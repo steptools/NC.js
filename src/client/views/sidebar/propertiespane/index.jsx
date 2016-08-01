@@ -21,6 +21,8 @@ function getIcon(type, data) {
       return 'icon custom tool';
     case 'workpiece':
       return 'icon custom workpiece';
+    case 'diameter':
+      return 'icon custom diameter';
     case 'tolerance':
       if (data) {
         return 'icon custom tolerance ' + data;
@@ -42,10 +44,13 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-ban-circle';
     case 'time':
       return 'icon glyphicons glyphicons-clock';
+    case 'length':
     case 'distance':
       return 'icon glyphicons glyphicons-ruler';
     case 'feedrate':
       return 'icon glyphicons glyphicons-dashboard';
+    case 'cornerRadius':
+      return 'icon custom corner-radius';
     case 'spindlespeed':
       if (data === 'CW') {
         return 'icon glyphicons glyphicons-rotate-right';
@@ -92,10 +97,13 @@ export default class PropertiesPane extends React.Component {
     this.state = {previewEntity: null};
 
     this.properties = [];
+    this.titleNameWidth = 0;
 
     this.selectEntity = this.selectEntity.bind(this);
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
+    this.handleMouseEnter = this.handleMouseEnter.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
   }
   
   selectEntity(event, entity) {
@@ -147,17 +155,66 @@ export default class PropertiesPane extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    
-    let new_wp = this.getWPForEntity(nextProps.entity);
-    let prev_wp = this.getWPForEntity(this.state.previewEntity);
-
-    if (!nextProps.entity ||
-        (nextProps.entity !== this.props.entity && new_wp !== prev_wp)) {
+    if (!nextProps.entity) {
       this.props.previewCb(false);
+      return;
     }
-    else if (nextProps.entity !== this.props.entity && new_wp === prev_wp) {
-      this.setState({'previewEntity': nextProps.entity})
+
+    let newWP = this.getWPForEntity(nextProps.entity);
+    let prevWP = this.getWPForEntity(this.state.previewEntity);
+
+    if (nextProps.entity !== this.props.entity && newWP !== prevWP) {
+      this.props.previewCb(false);
+    } else if (nextProps.entity !== this.props.entity && newWP === prevWP) {
+      this.setState({'previewEntity': nextProps.entity});
     }
+  }
+
+  componentDidUpdate() {
+    // calculate the width of the name in title for scrolling
+    this.titleNameWidth = (function() {
+      var $temp = $('.title .name').clone().contents()
+        .wrap('<span id="content" style="font-weight:bold"/>').parent()
+        .appendTo('body');
+      var result = $temp.width();
+      $temp.remove();
+      return result;
+    })();
+  }
+
+  handleMouseEnter() {
+    if (!$('.title .name #content').length) {
+      $('.title .name').contents().wrap('<div id="content">');
+    }
+
+    let content = $('.title .name #content');
+    let containerWidth = $('.title .name').width();
+    let textWidth = this.titleNameWidth;
+
+    content.stop(true, false);
+    if (containerWidth >= textWidth) {
+      return;
+    }
+
+    let left = parseInt(content.css('left').slice(0, -2));
+    var dist = textWidth - containerWidth + left;
+    var time = dist * 40;
+    content.animate({left: -dist}, time, 'linear');
+  }
+
+  handleMouseLeave() {
+    if (!$('.title .name #content').length) {
+      return;
+    }
+
+    let content = $('.title .name #content');
+    content.stop(true, false);
+
+    let left = parseInt(content.css('left').slice(0, -2));
+    let time = (-left) * 40;
+    content.animate({left: 0}, time, 'linear', function() {
+      content.contents().unwrap();
+    });
   }
 
   renderActive(entity) {
@@ -266,15 +323,15 @@ export default class PropertiesPane extends React.Component {
       return;
     }
 
-    this.properties.push(
+    this.buttons.push(
       <MenuItem
         key='preview'
-        className='property button'
+        className='button'
       >
-        <span
-          className='button preview-icon glyphicons glyphicons-new-window-alt'
-        />
         Preview
+        <span
+          className='preview-button preview-icon glyphicons glyphicons-new-window-alt'
+        />
       </MenuItem>
     );
   }
@@ -283,11 +340,11 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'workingstep') {
       return;
     }
-    this.properties.push(
+    this.buttons.push(
       <MenuItem
         key='goto'
         disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
-        className='property button'
+        className='button'
       >
         Go to Workingstep
       </MenuItem>
@@ -298,11 +355,10 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'tolerance') {
       return;
     }
-    let prettyType = entity.tolTypeName.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
         <div className={getIcon('tolerance type')}/>
-        Type: {prettyType}
+        Type: {entity.tolTypeName}
       </MenuItem>
     );
     this.properties.push(
@@ -505,7 +561,7 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
 
-    let cName = 'preview-container';
+    let cName = 'container';
     let content;
 
     if (this.props.preview) {
@@ -521,7 +577,7 @@ export default class PropertiesPane extends React.Component {
           toleranceCache={this.props.toleranceCache}
           highlightedTolerances={this.props.highlightedTolerances}
           locked={false}
-          parentSelector='.preview-container'
+          parentSelector='#preview'
           viewType='preview'
         />
       );
@@ -529,8 +585,7 @@ export default class PropertiesPane extends React.Component {
 
     return (
       <div className='preview'>
-        <div className='preview-cover' />
-        <div className={cName} id='preview-container'>
+        <div className={cName} id='preview'>
           <span
             className={'preview-exit ' + getIcon('exit')}
             onClick={() => {
@@ -542,6 +597,64 @@ export default class PropertiesPane extends React.Component {
       </div>
     );
   }
+  
+  renderTools(entity){
+    if(entity.type !== 'tool'){
+      return null;
+    }
+    if(entity.cornerRadius.toFixed(0) !== '0'){
+      this.properties.push (
+        <MenuItem disabled key='tRadius' className='property children'>
+          <div className={getIcon('cornerRadius')}/>
+          Corner Radius: {entity.cornerRadius.toFixed(2)} {entity.cornerRadiusUnit}
+        </MenuItem>
+      );
+    }
+
+    if(entity.diameter){
+      this.properties.push (
+        <MenuItem disabled key='tDiameter' className='property children'>
+          <div className={getIcon('diameter')}/>
+          Diameter: {entity.diameter} {entity.diameterUnit}
+        </MenuItem>
+      );
+    }
+
+    if(entity.length){
+      this.properties.push (
+        <MenuItem disabled key='tLength' className='property children'>
+          <div className={getIcon('length')}/>
+          Tool Length: {entity.length} {entity.lengthUnit}
+        </MenuItem>
+      );
+    }
+  }
+
+  renderButtons(entity) {
+    this.buttons = [];
+    if (entity === null) {
+      return null;
+    }
+    
+    this.renderPreviewButton(entity);
+    this.renderGoto(entity);
+    
+    if (this.buttons.length <= 0) {
+      return null;
+    }
+    
+    return (
+      <Menu
+        className='buttons'
+        mode='horizontal'
+        onClick={(event) => {
+          this.selectEntity(event, entity)
+        }}
+      >
+        {this.buttons}
+      </Menu>
+    );
+  }
 
   renderProperties(entity) {
     this.properties = [];
@@ -549,13 +662,12 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
 
-    this.renderPreviewButton(entity);
     this.renderActive(entity);
     this.renderTime(entity);
     this.renderDistance(entity);
     this.renderWorkingstep(entity);
     this.renderWorkpieces(entity);
-    this.renderGoto(entity);
+    this.renderTools(entity);
     this.renderTolerance(entity);
     this.renderWorkingsteps(entity);
     this.renderChildren(entity);
@@ -603,28 +715,33 @@ export default class PropertiesPane extends React.Component {
       <div className={entityData.paneName}>
         {this.renderPreview(entityData.entity)}
         <div className='titlebar'>
-          <div className='titleinfo'>
-            <span
-              className={'title-back ' + getIcon('back')}
-              onClick={() => {
-                this.props.propertiesCb(entityData.previousEntity, true);
-              }}
-            />
-            <span className={entityData.titleIcon} />
-            <span className='title'>
-              <div className='type'>{entityData.type}</div>
-              <div className='name'>{entityData.name}</div>
-            </span>
-            <span
-              className={'title-exit ' + getIcon('exit')}
-              onClick={() => {
-                this.props.propertiesCb(null);
-                this.props.previewCb(false);
-              }}
-            />
-          </div>
+          <span
+            className={'title-back ' + getIcon('back')}
+            onClick={() => {
+              this.props.propertiesCb(entityData.previousEntity, true);
+            }}
+          />
+          <span className={entityData.titleIcon} />
+          <span
+            className='title'
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
+          >
+            <div className='type'>{entityData.type}</div>
+            <div className='name'>{entityData.name}</div>
+          </span>
+          <span
+            className={'title-exit ' + getIcon('exit')}
+            onClick={() => {
+              this.props.propertiesCb(null);
+              this.props.previewCb(false);
+            }}
+          />
         </div>
         {this.renderProperties(entityData.entity)}
+        <div className='button-dock'>
+          {this.renderButtons(entityData.entity)}
+        </div>
       </div>
     );
   }
