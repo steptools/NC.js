@@ -20,10 +20,6 @@ export default class ToleranceList extends React.Component {
   }
   
   componentWillReceiveProps(nextProps) {
-    if (nextProps.curWS !== this.props.curWS) {
-      this.props.clearHighlight();
-    }
-
     this.decorators.highlightedTolerances = nextProps.highlightedTolerances;
   }
 

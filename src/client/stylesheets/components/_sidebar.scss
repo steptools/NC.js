@@ -61,6 +61,23 @@ $icons: '../icons/';
     .disabled {
         opacity: 0.5;
     }
+
+
+    .highlight-button {
+
+        font-size: 20px;
+        margin-left: auto;
+        margin-right: 15px;
+
+        &.inactive {
+            opacity: 0.5;
+        }
+
+        &:hover {
+            opacity: 0.75;
+            color: #333333;
+        }
+    }
 }
 
 .sidebar .sidebar-menu-tabs {
@@ -454,21 +471,6 @@ $icons: '../icons/';
             }
         }
 
-        .highlight-button {
-
-            font-size: 20px;
-            margin-left: auto;
-            margin-right: 15px;
-
-            &.inactive {
-                opacity: 0.5;
-            }
-
-            &:hover {
-                opacity: 0.75;
-                color: #333333;
-            }
-        }
     }
 
     .node .toggle-hidden {

@@ -132,13 +132,22 @@ export default class GeometryView extends React.Component {
       b: 1.0,
     };
     
+    let rootModelName = 'state/key';
+    if (this.props.viewType === 'preview') {
+      rootModelName = this.props.selectedEntity.id;
+    }
+
     // unhighlight old faces
     let faces = [];
     _.each(this.props.highlightedTolerances, (tol) => {
       let tolerance = nextProps.toleranceCache[tol];
       faces = faces.concat(tolerance.faces);
     });
-    this.highlightFaces(faces, nextProps.manager.getRootModel('state/key'), true);
+    this.highlightFaces(faces, nextProps.manager.getRootModel(rootModelName), true);
+
+    if (this.props.viewType === 'preview') {
+      rootModelName = nextProps.selectedEntity.id;
+    }
 
     // now highlight tolerances selected
     faces = [];
@@ -149,7 +158,7 @@ export default class GeometryView extends React.Component {
  
     this.highlightFaces(
       faces,
-      nextProps.manager.getRootModel('state/key'),
+      nextProps.manager.getRootModel(rootModelName),
       false,
       highlightColor
     );
@@ -414,11 +423,11 @@ export default class GeometryView extends React.Component {
             return;
           }
           for (let i = index.start; i < index.end; i += 3) {
-            if (unhighlight) {
+            if (unhighlight && this.state.oldColors[shell.id]) {
               colors.array[i] = this.state.oldColors[shell.id].array[i];
               colors.array[i + 1] = this.state.oldColors[shell.id].array[i + 1];
               colors.array[i + 2] = this.state.oldColors[shell.id].array[i + 2];
-            } else {
+            } else if (!unhighlight) {
               colors.array[i] = newColor.r;
               colors.array[i + 1] = newColor.g;
               colors.array[i + 2] = newColor.b;

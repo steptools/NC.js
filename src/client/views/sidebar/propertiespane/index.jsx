@@ -328,17 +328,36 @@ export default class PropertiesPane extends React.Component {
       icon = <span className={getIcon(node.type, node.toleranceType)}/>;
     }
 
-    let prevIcon;
-    if (node.type === 'tolerance' || node.type === 'workpiece') {
-      prevIcon = (<span
-        className='preview-icon glyphicons glyphicons-new-window-alt'
-        key='preview'
-        onClick={(ev) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-          this.selectEntity({'key': 'preview'}, node)}
-        }
-      />);
+    let highlightButton, highlightName;
+
+    if (this.props.highlightedTolerances.indexOf(node.id) >= 0) {
+      highlightName = 'open';
+    } else {
+      highlightName = 'close inactive';
+    }
+
+
+    if (node.type === 'tolerance') {
+      highlightButton = (
+        <span
+          className={'highlight-button glyphicons glyphicons-eye-' + highlightName}
+          onClick={(ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.props.toggleHighlight(node.id);
+          }}
+        />);
+    } else if (node.type === 'workpiece') {
+      highlightButton = (
+        <span
+          key='preview'
+          className='preview-icon glyphicons glyphicons-new-window-alt'
+          onClick={(ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.selectEntity({key: 'preview'}, node)
+          }}
+        />);
     }
 
     return (
@@ -354,7 +373,7 @@ export default class PropertiesPane extends React.Component {
           <span className='textbox'>
             {node.name}
           </span>
-          {prevIcon}
+          {highlightButton}
         </span>
       </div>
     );
@@ -500,6 +519,7 @@ export default class PropertiesPane extends React.Component {
           guiMode={this.props.guiMode}
           resize={this.props.resize}
           toleranceCache={this.props.toleranceCache}
+          highlightedTolerances={this.props.highlightedTolerances}
           locked={false}
           parentSelector='.preview-container'
           viewType='preview'

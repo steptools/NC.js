@@ -326,9 +326,14 @@ export default class ResponsiveView extends React.Component {
       if (!error && response.ok) {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
+          let tols = [];
+          _.each(this.state.toleranceCache[workingstep.toBe.id].children, (t) => {
+            tols.push(t.id);
+          });
           this.setState({
             'ws': workingstep.id,
             'wstext':workingstep.name.trim(),
+            'highlightedTolerances': tols,
           });
 
           this.setState({'curtool': workingstep.tool});
