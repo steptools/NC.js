@@ -43,6 +43,8 @@ export default class ResponsiveView extends React.Component {
       selectedEntity: null,
       previouslySelectedEntities: [null],
       preview: false,
+      feedRate: 0,
+      spindleSpeed: 0,
     };
 
     this.addBindings();
@@ -87,6 +89,14 @@ export default class ResponsiveView extends React.Component {
     this.props.app.actionManager.on('simulate-setspeed', this.changeSpeed);
     this.props.app.socket.on('nc:speed', (speed) => {
       this.speedChanged(speed);
+    });
+
+    this.props.app.socket.on('nc:feed', (feed) => {
+      this.setState({'feedRate' : feed});
+    });
+
+    this.props.app.socket.on('nc:spindle', (spindle) => {
+      this.setState({'spindleSpeed' : spindle});
     });
   }
 
@@ -177,6 +187,8 @@ export default class ResponsiveView extends React.Component {
         }
 
         this.setState({'playbackSpeed': Number(stateObj.speed)});
+        this.setState({'spindleSpeed': Number(stateObj.spindle)});
+        this.setState({'feedRate': Number(stateObj.feed)});
       } else {
         console.log(error);
       }
@@ -435,6 +447,14 @@ export default class ResponsiveView extends React.Component {
           speed={this.state.playbackSpeed}
           ws={this.state.ws}
           workingstepCache={this.state.workingstepCache}
+          feedRate={this.state.feedRate}
+          spindleSpeed={this.state.spindleSpeed}
+          spindleUpdateCb={
+            (newSpindleSpeed) => this.setState({spindleSpeed: newSpindleSpeed})
+          }
+          feedUpdateCb={
+            (newFeedRate) => this.setState({feedRate: newFeedRate})
+          }
         />
       );
       SV = (

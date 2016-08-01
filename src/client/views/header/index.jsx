@@ -130,6 +130,8 @@ export default class HeaderView extends React.Component {
     this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
     this.updateSpeed = this.updateSpeed.bind(this);
     this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
+    this.updateSpindleSpeed = this.updateSpindleSpeed.bind(this);
+    this.updateFeedrate = this.updateFeedrate.bind(this);
   }
 
   componentDidMount() {
@@ -141,16 +143,16 @@ export default class HeaderView extends React.Component {
   }
 
   getFeedSpeedInfo() {
-    let curStep = this.props.workingstepCache[this.props.ws];
+    //let curStep = this.props.workingstepCache[this.props.ws];
     let fr = 'Not defined';
     let ss = 'Not defined';
     let ssIcon = null;
-    if (curStep && curStep.feedRate !== 0) {
-      fr = curStep.feedRate + ' ' + curStep.feedUnits;
+    if (this.props.feedRate !== undefined) {
+      fr = this.props.feedRate + ' ' + 'mm/min'//this.props.feedRateUnits;
     }
-    if (curStep && curStep.speed !== 0) {
-      ss = Math.abs(curStep.speed) + ' ' + curStep.speedUnits;
-      if (curStep.speed > 0) {
+    if (this.props.spindleSpeed !== 0) {
+      ss = Math.abs(this.props.spindleSpeed) + ' rev/min';
+      if (this.props.spindleSpeed > 0) {
         ss += ' (CCW)';
         ssIcom = getIcon('spindlespeed', 'CCW');
       } else {
@@ -165,6 +167,14 @@ export default class HeaderView extends React.Component {
 
   updateSpeed(info) {
     this.props.actionManager.emit('simulate-setspeed', info);
+  }
+
+  updateSpindleSpeed(info) {
+    this.props.spindleUpdateCb(info.speed);
+  }
+
+  updateFeedrate(info){
+    this.props.feedUpdateCb(info.feed);
   }
 
   simulateMenuItemClicked(info) {

@@ -69,7 +69,7 @@ APIServer.prototype._setExpress = function() {
     require('serve-static')
     (path.join(__dirname, '/../../public'))
   );
-  this.express.use(require('morgan')('tiny'));
+  //this.express.use(require('morgan')('tiny'));
   this.express.engine('jade', jade.__express);
   this.express.set('views', path.join(__dirname, '/views'));
   // Create the core router

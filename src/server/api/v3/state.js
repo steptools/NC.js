@@ -7,6 +7,8 @@ var app;
 var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
+let spindleSpeed;
+let feedRate;
 let path = find.GetProjectName();
 let changed = false;
 
@@ -46,12 +48,22 @@ function getToWS(wsId, ms, cb) {
 }
 
 function loop(ms, key) {
-  //let changed = false;
+  let spindleSpeedNew;
+  let feedRateNew;
   if (loopStates[path] === true) {
     //app.logger.debug('Loop step ' + path);
     let rc = ms.AdvanceState();
+    spindleSpeedNew = Number(ms.GetCurrentSpindleSpeed());
+    feedRateNew = Number(ms.GetCurrentFeedrate());
+    if(spindleSpeed !== spindleSpeedNew){
+      spindleSpeed = spindleSpeedNew;
+      app.ioServer.emit('nc:spindle', spindleSpeed);
+    }
+    if(feedRate !== feedRateNew){
+      feedRate = feedRateNew;
+      app.ioServer.emit('nc:feed', feedRate);
+    }
     if (rc === 0) {  // OK
-      //app.logger.debug('OK...');
       getDelta(ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
@@ -160,21 +172,28 @@ function handleWSInit(command, res) {
 
 function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
+  var ms = file.ms;
+  spindleSpeed = Number(ms.GetCurrentSpindleSpeed());
+  feedRate = Number(ms.GetCurrentFeedrate());
   if (req.params.loopstate === undefined) {
     if (loopStates[path] === true) {
       res.status(200).send(JSON.stringify({
         'state': 'play',
         'speed': playbackSpeed,
+        'spindle': spindleSpeed,
+        'feed': feedRate,
       }));
     } else {
       res.status(200).send(JSON.stringify({
         'state': 'pause',
         'speed': playbackSpeed,
+        'spindle': spindleSpeed,
+        'feed': feedRate,
       }));
     }
   } else {
     let loopstate = req.params.loopstate;
-    var ms = file.ms;
+    //var ms = file.ms;
     if (typeof loopStates[path] === 'undefined') {
       loopStates[path] = false;
     }
