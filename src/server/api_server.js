@@ -1,6 +1,5 @@
 /* Copyright G. Hemingway 2015 */
 'use strict';
-
 const {app, BrowserWindow} = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -47,7 +46,6 @@ app.on('activate', () => {
     createWindow()
   }
 });
-
 
 var http = require('http');
 var path = require('path');
