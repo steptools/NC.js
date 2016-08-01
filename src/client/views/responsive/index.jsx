@@ -406,6 +406,14 @@ export default class ResponsiveView extends React.Component {
       }
       let mtc = JSON.parse(res.text);
       // populate the header
+      let live = $('.header .info.live');
+      if (mtc.live === true && !live.hasClass('active')) {
+        live.addClass('active');
+        $('.header .info.live .value').html('Live');
+      } else if (mtc.live === false && live.hasClass('active')) {
+        live.removeClass('active');
+        $('.header .info.live .value').html('Stopped');
+      }
       $('.header .info.gcode .value').html(mtc.gcode);
       this.populateSpindleSpeed(mtc.spindlespeed);
       this.populateFeedRate(mtc.feedrate, mtc.feedrateUnits);

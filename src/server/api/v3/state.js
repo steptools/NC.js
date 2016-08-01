@@ -16,7 +16,8 @@ let path = find.GetProjectName();
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
-var states = [0, 0, 0];
+//var states = [0, 0, 0];
+let nextSequence = 0;
 
 var MTCHold = {};
 ///*******************************************************************\
@@ -40,6 +41,7 @@ var MTListen = function() {
   var zOffset;
   var currentgcode;
   var feedrate;
+  var live = false;
 
   return new Promise(function(resolve) {
     let mtc = request.get('http://192.168.0.123:5000/current');
@@ -65,8 +67,14 @@ var MTListen = function() {
         } else {
           currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
         }
-				
         currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
+
+        let header = result['MTConnectStreams']['Header'][0].$;
+        let next = header.nextSequence;
+        if (next !== nextSequence) {
+          nextSequence = next;
+          live = true;
+        }
       });
 
       var coords = [];
@@ -78,16 +86,15 @@ var MTListen = function() {
       mtc.end(function (err, res) {
         parseXMLString.parseString(res.text, function (error, result) {
           let ret = result['MTConnectDevices']['Devices'][0]['Device'][0]['Components'][0]['Controller'][0]['Components'][0]['Path'][0]['DataItems'][0]['DataItem'];
-          let feedrateUnits = _.find(ret, function(dataitem){
-            if(dataitem['$'].type === 'PATH_FEEDRATE'){
+          let feedrateUnits = _.find(ret, function(dataitem) {
+            if (dataitem['$'].type === 'PATH_FEEDRATE') {
               return true;
-            }
-            else{
+            } else {
               return false;
             }
           });
           feedrateUnits = feedrateUnits['$']['units'];
-          resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate, feedrateUnits]);
+          resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate, feedrateUnits, live]);
         });
       });
     });
@@ -124,12 +131,14 @@ var _getDelta = function(ms, key, cb) {
   let theQuestion = MTListen();
 
   theQuestion.then(function(res) {
+    //console.log(res);
     MTCHold.feedrate = 'Not defined';
     MTCHold.gcode = 'Not defined';
     MTCHold.spindleSpeed = 'Not defined';
     MTCHold.feedrate = res[5];
     MTCHold.feedrateUnits = res[6];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
+    MTCHold.live = res[7];
     if (findWS(res[4]) ) {
       console.log('keystate');
       ms.NextWS();
