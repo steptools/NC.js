@@ -1,3 +1,13 @@
+Version 1.6.0
+
+Features:
+
+- Added the ability to toggle tolerance highlighting in main view
+
+Bugfixes:
+
+-
+
 Version 1.5.2
 
 Features:
