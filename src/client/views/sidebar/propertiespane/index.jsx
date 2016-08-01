@@ -32,6 +32,10 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-adjust';
     case 'tolerance value':
       return 'icon glyphicons glyphicons-adjust-alt';
+    case 'tolerance upper':
+      return 'icon glyphicons glyphicons-plus';
+    case 'tolerance lower':
+      return 'icon glyphicons glyphicons-minus';
     case 'back':
       return 'icon glyphicons glyphicons-circle-arrow-left';
     case 'exit':
@@ -369,6 +373,34 @@ export default class PropertiesPane extends React.Component {
         Value: {entity.value}{entity.unit}
       </MenuItem>
     );
+
+    if (!entity.range || entity.range.flag === false) {
+      return;
+    }
+    let upper = entity.range.upper;
+    let lower = entity.range.lower;
+    if (Math.abs(upper) === Math.abs(lower)) {
+      console.log(entity.id);
+      this.properties.push(
+        <MenuItem disabled key='tolRange' className='property tolRange'>
+          <div className='icon custom letter'>&plusmn;</div>
+          Range: &plusmn; {Math.abs(upper)}{entity.unit}
+        </MenuItem>
+      );
+      return;
+    }
+    this.properties.push(
+      <MenuItem disabled key='tolUpper' className='property tolUpper'>
+        <div className={getIcon('tolerance upper')}/>
+        Upper: {upper}{entity.unit}
+      </MenuItem>
+    );
+    this.properties.push(
+      <MenuItem disabled key='tolLower' className='property tolLower'>
+        <div className={getIcon('tolerance lower')}/>
+        Lower: {lower}{entity.unit}
+      </MenuItem>
+    );
   }
 
   renderNode(node) {
@@ -414,7 +446,7 @@ export default class PropertiesPane extends React.Component {
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.selectEntity({key: 'preview'}, node)
+            this.selectEntity({key: 'preview'}, node);
           }}
         />);
     }

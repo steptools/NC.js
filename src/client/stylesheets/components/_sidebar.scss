@@ -345,13 +345,12 @@ $icons: '../icons/';
             background-color: inherit;
             
             .icon {
-                font-size: 24px;
                 margin-left: 3px;
                 margin-right: 11px;
                 
                 &.custom {
-                    width: 24px;
-                    height: 24px;
+                    font-size: 24px;
+                    line-height: 1em;
                 }
             }
 
