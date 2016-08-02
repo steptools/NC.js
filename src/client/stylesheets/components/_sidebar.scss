@@ -420,15 +420,14 @@ $icons: '../icons/';
                             }
 
                             .icon.preview {
-                                margin-left: 11px;
-                                margin-right: 3px;
+                                margin-left: 8px;
+                                margin-right: 5px;
                                 font-size: 20px;
                                 padding: 3px;
                                 color: #F8F8F8;
                                 background-color: #333333;
                                 border-radius: 5px;
                                 text-align: center;
-                                line-height: 26px;
                                 
                                 &:hover {
                                     color: #28AEE9;
@@ -461,6 +460,10 @@ $icons: '../icons/';
                             }
                         }
                     }
+                }
+                
+                &:not(.children) {
+                    line-height: 30px;
                 }
             }
         }
