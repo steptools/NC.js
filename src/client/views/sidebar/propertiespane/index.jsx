@@ -423,14 +423,18 @@ export default class PropertiesPane extends React.Component {
 
 
     if (node.type === 'tolerance') {
+      let cName = 'highlight-button glyphicons glyphicons-eye-' + highlightName;
       highlightButton = (
         <span
-          className={'highlight-button glyphicons glyphicons-eye-' + highlightName}
+          className={cName}
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.props.toggleHighlight(node.id);
-            this.selectEntity({key: 'preview'}, this.props.toleranceCache[node.workpiece]);
+            this.selectEntity(
+              {key: 'preview'},
+              this.props.toleranceCache[node.workpiece]
+            );
           }}
         />);
     } else if (node.type === 'workpiece') {
@@ -643,7 +647,8 @@ export default class PropertiesPane extends React.Component {
       this.properties.push (
         <MenuItem disabled key='tRadius' className='property children'>
           <div className={getIcon('cornerRadius')}/>
-          Corner Radius: {entity.cornerRadius.toFixed(2)} {entity.cornerRadiusUnit}
+          Corner Radius:
+          {entity.cornerRadius.toFixed(2)} {entity.cornerRadiusUnit}
         </MenuItem>
       );
     }
