@@ -65,10 +65,9 @@ $icons: '../icons/';
 
 
     .highlight-button {
-
         font-size: 20px;
-        margin-left: auto;
-        margin-right: 15px;
+        margin-right: 5px;
+        margin-left: 8px;
 
         &.inactive {
             opacity: 0.5;
@@ -357,7 +356,8 @@ $icons: '../icons/';
                     -ms-user-select: auto;
                     user-select: auto;
                 }
-
+                
+                /*
                 &.button {
                     width: 50%;
                     text-align: center;
@@ -384,7 +384,7 @@ $icons: '../icons/';
                     &.rc-menu-item-disabled {
                         opacity: 0.5;
                     }
-                }
+                }*/
                 
                 &.children {
                     cursor: default;
@@ -490,6 +490,7 @@ $icons: '../icons/';
                     background-color: #333333;
                     border-bottom: 2px solid #333333;
                     color: #F8F8F8;
+                    cursor: pointer;
                     -webkit-touch-callout: none;
                     -webkit-user-select: none;
                     -khtml-user-select: none;
@@ -543,7 +544,7 @@ $icons: '../icons/';
 
     }
 
-    .node .toggle-hidden {
+    &:not(.flat) .node .toggle-hidden {
         width: 15px;
     }
 
@@ -570,7 +571,7 @@ $icons: '../icons/';
     .node .inner {
         display: inline-flex;
         align-items: center;
-        width: calc(100% - 15px);
+        width: 100%;
         min-height: inherit;
         padding: 0px 5px;
 
@@ -585,8 +586,8 @@ $icons: '../icons/';
         font-size: 24px;
     }
 
-    .node .node-text {
-        width: calc(100% - 38px);
+    .node .textbox {
+        flex-grow: 1;
     }
     
     .node .running-node .inner {

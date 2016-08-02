@@ -325,12 +325,10 @@ export default class PropertiesPane extends React.Component {
     this.buttons.push(
       <MenuItem
         key='preview'
-        className='preview button'
+        className='button'
       >
         Preview
-        <span
-          className={'icon glyphicons glyphicons-new-window-alt'}
-        />
+        <span className={'icon glyphicons glyphicons-new-window-alt'}/>
       </MenuItem>
     );
   }

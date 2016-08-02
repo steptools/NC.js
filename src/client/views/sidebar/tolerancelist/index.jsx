@@ -16,7 +16,7 @@ export default class ToleranceList extends React.Component {
   }
 
   componentDidMount() {
-    $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
+    $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard flat');
   }
 
   componentWillReceiveProps(nextProps) {
