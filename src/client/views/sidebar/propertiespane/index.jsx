@@ -322,16 +322,14 @@ export default class PropertiesPane extends React.Component {
       return;
     }
 
-    let cName = 'preview-button preview-icon';
-    cName += ' glyphicons glyphicons-new-window-alt';
     this.buttons.push(
       <MenuItem
         key='preview'
-        className='button'
+        className='preview button'
       >
         Preview
         <span
-          className={cName}
+          className={'icon glyphicons glyphicons-new-window-alt'}
         />
       </MenuItem>
     );
@@ -441,7 +439,7 @@ export default class PropertiesPane extends React.Component {
       highlightButton = (
         <span
           key='preview'
-          className='preview-icon glyphicons glyphicons-new-window-alt'
+          className='icon preview glyphicons glyphicons-new-window-alt'
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();

@@ -320,23 +320,6 @@ $icons: '../icons/';
             }
         }
 
-        .preview-icon {
-            font-size: 20px;
-            position: absolute;
-            right: 15px;
-
-            &:not(.preview-button) {
-                padding: 3px;
-                color: #F8F8F8;
-                background-color: #333333;
-                border-radius: 5px;
-
-                &:hover {
-                    color: #28AEE9;
-                }
-            }
-        }
-
         .properties {
             z-index: 12;
             flex-grow: 1;
@@ -423,6 +406,7 @@ $icons: '../icons/';
                     
                     .list {
                         cursor: default;
+                        
                         .node {
                             cursor: pointer;
                             width: 100%;
@@ -430,6 +414,26 @@ $icons: '../icons/';
                             align-items: center;
                             padding: 4px 0px;
                             margin: 1px 0px;
+                            
+                            .textbox {
+                                flex-grow: 1;
+                            }
+
+                            .icon.preview {
+                                margin-left: 11px;
+                                margin-right: 3px;
+                                font-size: 20px;
+                                padding: 3px;
+                                color: #F8F8F8;
+                                background-color: #333333;
+                                border-radius: 5px;
+                                text-align: center;
+                                line-height: 26px;
+                                
+                                &:hover {
+                                    color: #28AEE9;
+                                }
+                            }
 
                             &.invalid {
                                 cursor: default;
