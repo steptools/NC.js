@@ -28,7 +28,7 @@ module.exports = function(environment) {
             "upload": true
           },
           "file" : {
-            "dir": "./temp.stpnc"
+            "dir": "./resources/box.asar/model.stpnc"
           },
           "machine" : {
             "dir" : ""

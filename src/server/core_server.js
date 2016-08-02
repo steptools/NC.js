@@ -38,7 +38,7 @@ function CoreServer() {
       'Step NC filepath to use [""]',
       ''
     );
-    .parse(process.argv);
+    //.parse(process.argv);
   this.config = configurator(opts.config, opts.environment);
   this.port = opts.port || this.config.port || 8080;
 

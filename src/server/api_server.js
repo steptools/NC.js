@@ -211,14 +211,23 @@ APIServer.prototype.run = function() {
 };
 
 /***************************** Run the server *********************************/
-
-fs.readFile("./resources/box.asar/model.stpnc",(err,data) => {
+var promise = new Promise(function(resolve,reject){
+  fs.readFile("./resources/box.asar/model.stpnc",(err,data) => {
     if (err) throw err;
       fs.writeFile("temp.stpnc",data, (err) => {
         if(err) {
-          throw err;
+            reject();
+            throw err;
         }
+        else{
+          resolve();
+        }
+
       });
     });
-appp = new APIServer();
-appp.run();
+
+});
+promise.then(() => {
+  appp = new APIServer();
+  appp.run();
+});
