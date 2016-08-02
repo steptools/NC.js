@@ -61,32 +61,30 @@ export default class FooterView extends React.Component {
   soMouseUp() {
     $('.Footer-bar .op-text').on('mousedown', this.soMouseDown);
 
-    let innerHeight = window.innerHeight;
     let fv = $('.Footer-container');
-    let fvOffset = fv.offset().top;
-    let fb = $('.Footer-bar').height();
-    let db = $('.drawerbutton').height();
+    let offset = fv.offset().top;
+    let height = $('.drawerbutton').height() + $('.Footer-bar').height();
     let currentMSGuiMode = this.props.msGuiMode;
 
     if (soy > 0) {
-      if (!currentMSGuiMode && (innerHeight - fvOffset) > ((db + fb) * 2)) {
+      if (!currentMSGuiMode && (window.innerHeight - offset) > (height * 2)) {
         this.props.cbMobileSidebar(true);
         currentMSGuiMode = true;
-      } else if (currentMSGuiMode && (fvOffset > (db + fb))) {
+      } else if (currentMSGuiMode && (offset > height)) {
         this.props.cbMobileSidebar(false);
         currentMSGuiMode = false;
       }
     }
 
     if (currentMSGuiMode === false) {
-      let bottomPos = (window.innerHeight - (db + fb));
+      let bottomPos = (window.innerHeight - height);
       fv.animate({top: bottomPos+'px'}, 500);
-      //fv.css('height', 'unset');
     }
     if (currentMSGuiMode === true) {
       fv.animate({top: '0px'}, 500);
     }
     soy = 0;
+
     $(window).off('mousemove');
     $(window).off('mouseup');
   }
