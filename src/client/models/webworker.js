@@ -812,14 +812,14 @@ let messageHandler = function(e) {
                     else {
                         file = file + parts[parts.length - 1];
                     }
-                    _.each(dataJSON, (dat) => {
-                        if (_.has(dat, 'id'))
-                        processShellJSON(url, workerID, dat, true);
-                    });
-                    
-                    self.postMessage({
-                        type: "parseComplete",
-                        file: parts[parts.length - 2]
+                    _.each(dataJSON, (dat, key) => {
+                        if (_.has(dat, 'id')) {
+                            processShellJSON(url, workerID, dat, (key === dataJSON.length - 1));
+                            self.postMessage({
+                                type: "parseComplete",
+                                file: dat.id,
+                            });
+                        }
                     });
                     
                     break;
