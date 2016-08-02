@@ -64,8 +64,6 @@ function loop(ms, key) {
       app.ioServer.emit('nc:feed', feedRate);
     }
     if (rc === 0) {  // OK
-      console.log("first delta \n" + i);
-      i = i+1;
       getDelta(ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
