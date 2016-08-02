@@ -20,6 +20,7 @@ export default class ResponsiveView extends React.Component {
 
     this.state = {
       guiMode: tempGuiMode,
+      msGuiMode: false,
       svmode: 'ws',
       ws: -1,
       svtree: {
@@ -36,12 +37,15 @@ export default class ResponsiveView extends React.Component {
       toolCache : [],
       curtool : '',
       toleranceCache: [],
+      highlightedTolerances: [],
       workingstepCache: {},
       workingstepList: [],
       workplanCache: {},
       selectedEntity: null,
       previouslySelectedEntities: [null],
       preview: false,
+      feedRate: 0,
+      spindleSpeed: 0,
     };
 
     this.addBindings();
@@ -55,6 +59,7 @@ export default class ResponsiveView extends React.Component {
     this.updateWS = this.updateWorkingstep.bind(this);
 
     this.handleResize = this.handleResize.bind(this);
+    this.toggleMobileSidebar = this.toggleMobileSidebar.bind(this);
     this.handleKeydown = this.handleKeydown.bind(this);
     this.handleKeyup = this.handleKeyup.bind(this);
 
@@ -65,6 +70,8 @@ export default class ResponsiveView extends React.Component {
 
     this.openProperties = this.openProperties.bind(this);
     this.openPreview = this.openPreview.bind(this);
+    
+    this.toggleHighlight = this.toggleHighlight.bind(this);
   }
 
   addListeners() {
@@ -85,6 +92,14 @@ export default class ResponsiveView extends React.Component {
     this.props.app.actionManager.on('simulate-setspeed', this.changeSpeed);
     this.props.app.socket.on('nc:speed', (speed) => {
       this.speedChanged(speed);
+    });
+
+    this.props.app.socket.on('nc:feed', (feed) => {
+      this.setState({'feedRate' : feed});
+    });
+
+    this.props.app.socket.on('nc:spindle', (spindle) => {
+      this.setState({'spindleSpeed' : spindle});
     });
   }
 
@@ -175,6 +190,8 @@ export default class ResponsiveView extends React.Component {
         }
 
         this.setState({'playbackSpeed': Number(stateObj.speed)});
+        this.setState({'spindleSpeed': Number(stateObj.spindle)});
+        this.setState({'feedRate': Number(stateObj.feed)});
       } else {
         console.log(error);
       }
@@ -252,7 +269,7 @@ export default class ResponsiveView extends React.Component {
     window.removeEventListener('keydown', this.handleKeydown);
     window.removeEventListener('keyup', this.handleKeyup);
   }
-
+  
   handleResize() {
     let innerWidth = window.innerWidth;
     let innerHeight = window.innerHeight;
@@ -282,6 +299,10 @@ export default class ResponsiveView extends React.Component {
 
   handleKeyup() {
     window.addEventListener('keydown', this.handleKeydown);
+  }
+
+  toggleMobileSidebar(newMode) {
+    this.setState({msGuiMode: newMode});
   }
 
   openProperties(node, backtrack) {
@@ -320,9 +341,14 @@ export default class ResponsiveView extends React.Component {
       if (!error && response.ok) {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
+          let tols = [];
+          _.each(this.state.toleranceCache[workingstep.toBe.id].children, (t) => {
+            tols.push(t.id);
+          });
           this.setState({
             'ws': workingstep.id,
             'wstext':workingstep.name.trim(),
+            'highlightedTolerances': tols,
           });
 
           this.setState({'curtool': workingstep.tool});
@@ -333,6 +359,18 @@ export default class ResponsiveView extends React.Component {
     };
 
     request.get(url).end(requestCB);
+  }
+  
+  toggleHighlight(id) {
+    let newTols;
+    
+    if (this.state.highlightedTolerances.indexOf(id) < 0) {
+      newTols = _.concat(this.state.highlightedTolerances, id);
+    } else {
+      newTols = _.without(this.state.highlightedTolerances, id);
+    }
+    
+    this.setState({ 'highlightedTolerances': newTols });
   }
 
   playpause() {
@@ -429,6 +467,14 @@ export default class ResponsiveView extends React.Component {
           speed={this.state.playbackSpeed}
           ws={this.state.ws}
           workingstepCache={this.state.workingstepCache}
+          feedRate={this.state.feedRate}
+          spindleSpeed={this.state.spindleSpeed}
+          spindleUpdateCb={
+            (newSpindleSpeed) => this.setState({spindleSpeed: newSpindleSpeed})
+          }
+          feedUpdateCb={
+            (newFeedRate) => this.setState({feedRate: newFeedRate})
+          }
         />
       );
       SV = (
@@ -461,8 +507,11 @@ export default class ResponsiveView extends React.Component {
           openProperties={this.openProperties}
           selectedEntity={this.state.selectedEntity}
           previouslySelectedEntities={this.state.previouslySelectedEntities}
+          isMobile={false}
           preview={this.state.preview}
           openPreview={this.openPreview}
+          toggleHighlight={this.toggleHighlight}
+          highlightedTolerances={this.state.highlightedTolerances}
         />
       );
     } else {
@@ -478,19 +527,41 @@ export default class ResponsiveView extends React.Component {
             (newWSText) => this.setState({wstext: newWSText})
           }
           ppbutton={this.state.ppbutton}
+          cbMobileSidebar={this.toggleMobileSidebar}
+          msGuiMode={this.state.msGuiMode}
+          //
+          app={this.props.app}
+          mode={this.state.svmode}
+          tree={this.state.svtree}
+          altmenu={this.state.svaltmenu}
+          cbMode={
+              (newMode) => this.setState({svmode: newMode})
+          }
+          cbTree={
+              (newTree) => this.setState({svtree: newTree})
+          }
+          cbAltMenu={
+              (newAltMenu) => this.setState({svaltmenu: newAltMenu})
+          }
+          toolCache={this.state.toolCache}
+          curtool={this.state.curtool}
+          toleranceList={this.state.toleranceList}
+          toleranceCache={this.state.toleranceCache}
+          workplanCache={this.state.workplanCache}
+          workingstepCache={this.state.workingstepCache}
+          workingstepList={this.state.workingstepList}
+          openProperties={this.openProperties}
+          selectedEntity={this.state.selectedEntity}
+          previouslySelectedEntities={this.state.previouslySelectedEntities}
+          preview={this.state.preview}
+          openPreview={this.openPreview}
+          toggleHighlight={this.toggleHighlight}
+          highlightedTolerances={this.state.highlightedTolerances}
         />
       );
     }
 
-    let cadviewBottom, cadviewStyle;
-
-    if (navigator.userAgent.match(/iPhone|iPad|iPod/i)
-          || (navigator.userAgent.indexOf('Chrome') === -1
-            && navigator.userAgent.indexOf('Safari') !== -1)) {
-      cadviewBottom = '10vmin';
-    } else {
-      cadviewBottom = '0px';
-    }
+    let cadviewStyle;
 
     // squish the cad view down to appropriate size
     if (this.state.guiMode === 0) {
@@ -499,15 +570,26 @@ export default class ResponsiveView extends React.Component {
         'left': '390px',
         'top': '90px',
         'bottom': '0px',
-        'right': '0px',
+        'right': '0px'
       };
     } else {
+      let cadviewHeight="80%";
+      let fv = $('.Footer-container');
+
+      if(typeof fv.offset() != 'undefined')
+      {
+        cadviewHeight=fv.offset().top;
+        cadviewHeight=cadviewHeight+"px";
+      }
+      else cadviewHeight="100%";
+
+
       cadviewStyle =
       {
-        'bottom': cadviewBottom,
+        'top': "0",
         'right': '0px',
         'width': '100%',
-        'top': '0px',
+        'height': cadviewHeight
       };
     }
 
@@ -527,6 +609,7 @@ export default class ResponsiveView extends React.Component {
             toleranceCache={this.state.toleranceCache}
             ws={this.state.ws}
             workingstepCache={this.state.workingstepCache}
+            highlightedTolerances={this.state.highlightedTolerances}
           />
         </div>
         {FV}

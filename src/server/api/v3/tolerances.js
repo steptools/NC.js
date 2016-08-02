@@ -19,7 +19,7 @@ function getTolerance(id) {
     tolType = tolTypeName.split(' ')[0];
   }
 
-  if(name.trim() === ''){
+  if (name.trim() === '') {
     name = tolTypeName;
   }
 
@@ -32,6 +32,7 @@ function getTolerance(id) {
     'value': tol.GetToleranceValue(id),
     'unit' : tol.GetToleranceUnit(id),
     'faces': tol.GetToleranceFaceAll(id),
+    'range': tol.GetTolerancePlusMinus(id),
   };
 }
 

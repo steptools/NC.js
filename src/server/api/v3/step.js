@@ -2,6 +2,7 @@
 'use strict';
 var file = require('./file');
 var find = file.find;
+var _ = require('lodash');
 
 /****************************** Helper Functions ******************************/
 
@@ -52,10 +53,20 @@ function exeFromId(id) {
     }
   }
 
+  if (!find.IsWorkingstep(id)) {
+    let children = find.GetNestedExecutableAll(id);
+    if (children !== undefined) {
+      ws.children = children.map(exeFromId);
+    }
+  }
+
   if (find.IsEnabled(id)) {
     ws.enabled = true;
   } else {
     ws.enabled = false;
+    _.each(ws.children, (child) => {
+      child.enabled = false;
+    });
   }
 
   if (find.IsWorkingstep(id)) {
@@ -73,10 +84,7 @@ function exeFromId(id) {
   } else if (find.IsWorkplan(id)) {
     ws.type = 'workplan';
   }
-  let children = find.GetNestedExecutableAll(id);
-  if (children !== undefined) {
-    ws.children = children.map(exeFromId);
-  }
+
   return ws;
 }
 
