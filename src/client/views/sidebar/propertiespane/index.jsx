@@ -644,11 +644,13 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
     if (entity.cornerRadius.toFixed(0) !== '0') {
+      let crData = 'Corner Radius: ';
+      crData += entity.cornerRadius.toFixed(2) + ' ';
+      crData += entity.cornerRadiusUnit;
       this.properties.push (
         <MenuItem disabled key='tRadius' className='property children'>
           <div className={getIcon('cornerRadius')}/>
-          Corner Radius:
-          {entity.cornerRadius.toFixed(2)} {entity.cornerRadiusUnit}
+          {crData}
         </MenuItem>
       );
     }
@@ -657,7 +659,7 @@ export default class PropertiesPane extends React.Component {
       this.properties.push (
         <MenuItem disabled key='tDiameter' className='property children'>
           <div className={getIcon('diameter')}/>
-          Diameter: {entity.diameter} {entity.diameterUnit}
+          Diameter: {entity.diameter}{entity.diameterUnit}
         </MenuItem>
       );
     }
