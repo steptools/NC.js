@@ -4,6 +4,7 @@ import MobileSidebar from '../mobilesidebar';
 let soy = 0; //for detecting offset clicked from top of footerbar
 let soy2 = 0; //for detecting clicks
 let lastTouch = 0;
+let dragged = false;
 
 class ButtonImage extends React.Component {
   constructor(props) {
@@ -46,15 +47,20 @@ export default class FooterView extends React.Component {
   }
 
   soMouseDown(info) {
+    $('.Footer-bar .op-text').off('mousedown');
+
     let fv = $('.Footer-container');
     let fb = $('.Footer-bar');
     let db = $('.drawerbutton');
     soy = (fv.offset().top + (db.height() + fb.height())) - info.clientY;
+
     $(window).on('mousemove', this.soMouseMove);
     $(window).on('mouseup', this.soMouseUp);
   }
 
   soMouseUp() {
+    $('.Footer-bar .op-text').on('mousedown', this.soMouseDown);
+
     let innerHeight = window.innerHeight;
     let fv = $('.Footer-container');
     let fvOffset = fv.offset().top;
@@ -79,7 +85,6 @@ export default class FooterView extends React.Component {
     }
     if (currentMSGuiMode === true) {
       fv.animate({top: '0px'}, 500);
-      //fv.css('height', '100%');
     }
     soy = 0;
     $(window).off('mousemove');
@@ -87,16 +92,19 @@ export default class FooterView extends React.Component {
   }
 
   soMouseMove(info) {
-    console.log('mousemove');
+    dragged = true;
     let fv = $('.Footer-container');
     let fb = $('.Footer-bar').height();
     let db = $('.drawerbutton').height();
     let maxTop = window.innerHeight - (fb + db);
     if (soy > 0) {
       let newTop = info.clientY - soy;
-      if (newTop >= 0 && newTop <= maxTop) {
-        fv.css('top', newTop+'px');
+      if (newTop < 0) {
+        newTop = 0;
+      } else if (newTop > maxTop) {
+        newTop = maxTop;
       }
+      fv.css('top', newTop+'px');
     }
   }
 
@@ -184,16 +192,24 @@ export default class FooterView extends React.Component {
     let db = $('.drawerbutton').height();
     let maxTop = window.innerHeight - (fb + db);
     if (soy > 0) {
-      let newTop = info.touches[0].pageY - soy;
-      if (newTop >= 0 && newTop <= maxTop) {
-        fv.css('top', newTop+'px');
+      let newTop = info.clientY - soy;
+      if (newTop < 0) {
+        newTop = 0;
+      } else if (newTop > maxTop) {
+        newTop = maxTop;
       }
+      fv.css('top', newTop+'px');
     }
   }
 
   soClick(info) {
     info.preventDefault();
     info.stopPropagation();
+
+    if (dragged === true) {
+      dragged = false;
+      return;
+    }
 
     let fv = $('.Footer-container');
     let fb = $('.Footer-bar');
