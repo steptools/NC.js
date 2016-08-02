@@ -124,7 +124,7 @@ export default class FooterView extends React.Component {
     let fv = $('.Footer-container');
     let fb = $('.Footer-bar');
     let db = $('.drawerbutton');
-    let currentMSGuiMode=this.props.msGuiMode;
+    let currentMSGuiMode = this.props.msGuiMode;
 
     if (soy > 0) {
       if (soy2 - lastTouch > 0) {
@@ -190,7 +190,7 @@ export default class FooterView extends React.Component {
     let db = $('.drawerbutton').height();
     let maxTop = window.innerHeight - (fb + db);
     if (soy > 0) {
-      let newTop = info.clientY - soy;
+      let newTop = info.touches[0].pageY - soy;
       if (newTop < 0) {
         newTop = 0;
       } else if (newTop > maxTop) {
