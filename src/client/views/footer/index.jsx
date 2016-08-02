@@ -294,6 +294,8 @@ export default class FooterView extends React.Component {
                 previouslySelectedEntities={this.props.previouslySelectedEntities}
                 preview={this.props.preview}
                 openPreview={this.props.openPreview}
+                toggleHighlight={this.props.toggleHighlight}
+                highlightedTolerances={this.props.highlightedTolerances}
             />
           );
 
