@@ -350,7 +350,6 @@ $icons: '../icons/';
                 
                 &.custom {
                     font-size: 24px;
-                    line-height: 1em;
                 }
             }
 
@@ -618,6 +617,7 @@ $icons: '../icons/';
     
     &.letter {
         font-size: 14px;
+        line-height: 20px;
         background-color: #333333;
         color: #FFFFFF;
     }
