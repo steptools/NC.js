@@ -11,6 +11,7 @@ let spindleSpeed;
 let feedRate;
 let path = find.GetProjectName();
 let changed = false;
+let justchanged = false;
 
 /****************************** Helper Functions ******************************/
 
@@ -85,6 +86,7 @@ function loop(ms, key) {
         loopStates[path] = false;
         update('pause');
         changed = true;
+        justchanged = true;
       }
       getNext(ms, function() {
         loop(ms, true);
