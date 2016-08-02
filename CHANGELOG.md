@@ -8,6 +8,7 @@ Bugfixes:
 
 - Tolerance information on properties pane is fixed
 - Disabled selectives now disable all their children
+- Mobile sidebar no longer crashes with new tolerance highlighting
 
 Version 1.5.2
 

@@ -18,7 +18,7 @@ export default class ToleranceList extends React.Component {
   componentDidMount() {
     $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
   }
-  
+
   componentWillReceiveProps(nextProps) {
     this.decorators.highlightedTolerances = nextProps.highlightedTolerances;
   }
@@ -35,9 +35,8 @@ export default class ToleranceList extends React.Component {
   }
 
   render() {
-    
     let tolList = [];
-    
+
     if (this.props.curWS.toBe && this.props.curWS.toBe.id > 0) {
       let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
 
@@ -51,14 +50,14 @@ export default class ToleranceList extends React.Component {
         tolList = tolList.concat(wp.children);
       }
     }
-    
+
     tolList.push({
       name: 'Workpieces With Tolerances',
       leaf: true,
       type: 'divider',
       id: -2,
     });
-    
+
     tolList = tolList.concat(this.props.toleranceList.map((id) => {
       return this.props.toleranceCache[id];
     }));
@@ -67,8 +66,9 @@ export default class ToleranceList extends React.Component {
       return null;
     }
 
-    if(this.props.isMobile)
-      ts.style.tree.base.height="100%";
+    if (this.props.isMobile) {
+      ts.style.tree.base.height = '100%';
+    }
 
     return (
       <Treebeard

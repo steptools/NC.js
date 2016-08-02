@@ -345,13 +345,11 @@ $icons: '../icons/';
             background-color: inherit;
             
             .icon {
-                font-size: 24px;
                 margin-left: 3px;
                 margin-right: 11px;
                 
                 &.custom {
-                    width: 24px;
-                    height: 24px;
+                    font-size: 24px;
                 }
             }
 
@@ -619,6 +617,7 @@ $icons: '../icons/';
     
     &.letter {
         font-size: 14px;
+        line-height: 20px;
         background-color: #333333;
         color: #FFFFFF;
     }
