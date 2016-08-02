@@ -507,6 +507,11 @@ $icons: '../icons/';
                     &.rc-menu-item-disabled {
                         opacity: 0.5;
                     }
+                    
+                    .icon {
+                        font-size: 20px;
+                        margin-left: 5px;
+                    }
                 }
             }
         }
