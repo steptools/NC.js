@@ -7,6 +7,7 @@ Features:
 Bugfixes:
 
 - Tolerance information on properties pane is fixed
+- Mobile sidebar no longer crashes with new tolerance highlighting
 
 Version 1.5.2
 
