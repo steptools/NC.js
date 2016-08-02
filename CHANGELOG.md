@@ -7,6 +7,7 @@ Features:
 Bugfixes:
 
 - Tolerance information on properties pane is fixed
+- Disabled selectives now disable all their children
 
 Version 1.5.2
 
