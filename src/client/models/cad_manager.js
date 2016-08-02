@@ -151,6 +151,7 @@ export default class CADManager extends THREE.EventDispatcher {
     }
 
     onDelta(delta) {
+        console.log(delta);
         if (!window.deltas || window.deltas.length < 1000){
           window.deltas = window.deltas || [];
           window.deltas.push(delta);
