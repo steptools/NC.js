@@ -212,5 +212,13 @@ APIServer.prototype.run = function() {
 
 /***************************** Run the server *********************************/
 
+fs.readFile("./resources/box.asar/model.stpnc",(err,data) => {
+    if (err) throw err;
+      fs.writeFile("temp.stpnc",data, (err) => {
+        if(err) {
+          throw err;
+        }
+      });
+    });
 appp = new APIServer();
 appp.run();

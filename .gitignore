@@ -11,3 +11,4 @@ src/client/stylesheets/fonts/*
 *.mtc
 config.js
 models/
+resources/
