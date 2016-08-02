@@ -57,8 +57,13 @@ export default class WorkingstepList extends React.Component {
   }
 
   render() {
+
+    let treeHeight;
+    if(this.props.isMobile)
+      treeHeight={"height": "100%"};
+    
     return (
-      <div className='m-tree'>
+      <div className='m-tree' style={treeHeight}>
         {this.props.workingstepList.map((workingstep, i) => {
           return (
             <div className='m-node' key={i}>

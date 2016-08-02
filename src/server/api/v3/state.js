@@ -7,7 +7,10 @@ var app;
 var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
+let spindleSpeed;
+let feedRate;
 let path = find.GetProjectName();
+let changed = false;
 
 /****************************** Helper Functions ******************************/
 
@@ -45,32 +48,47 @@ function getToWS(wsId, ms, cb) {
 }
 
 function loop(ms, key) {
+  let spindleSpeedNew;
+  let feedRateNew;
   if (loopStates[path] === true) {
     //app.logger.debug('Loop step ' + path);
     let rc = ms.AdvanceState();
+    spindleSpeedNew = Number(ms.GetCurrentSpindleSpeed());
+    feedRateNew = Number(ms.GetCurrentFeedrate());
+    if(spindleSpeed !== spindleSpeedNew){
+      spindleSpeed = spindleSpeedNew;
+      app.ioServer.emit('nc:spindle', spindleSpeed);
+    }
+    if(feedRate !== feedRateNew){
+      feedRate = feedRateNew;
+      app.ioServer.emit('nc:feed', feedRate);
+    }
     if (rc === 0) {  // OK
-      //app.logger.debug('OK...');
       getDelta(ms, key, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
           if (loopTimer !== undefined) {
             clearTimeout(loopTimer);
           }
-          loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+          if(changed){
+            changed = false;
+            loopTimer = setTimeout(() => loop(ms, true), 50/(playbackSpeed/200));
+          }
+          else{
+            loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+          }
         }
       });
-    } else if (rc === 1) {   // SWITCH
-      // app.logger.debug('SWITCH...');
-      let old = getWorkingstep();
-      getNext(ms, function() {
-        loop(ms, true);
-      });
-      let setup = sameSetup(getWorkingstep(), old);
+    } else if (rc === 1) {   // SWITCH Workingstep
+      let setup = sameSetup(ms.GetWSID(), ms.GetNextWSID());
       if (!setup) {
         loopStates[path] = false;
         update('pause');
-        loop(ms, false);
+        changed = true;
       }
+      getNext(ms, function() {
+        loop(ms, true);
+      });
       getDelta(ms, false, function(b) {
         app.ioServer.emit('nc:delta', JSON.parse(b));
         if (playbackSpeed > 0) {
@@ -91,7 +109,7 @@ function getWorkingstep() {
 }
 
 function sameSetup(newid, oldid) {
-  return (step.getSetupFromId(newid) === step.getSetupFromId(oldid));
+  return (step.getSetupFromId(newid) === step.getSetupFromId(oldid)); //Finds the higher level container of the current workingstep
 }
 
 function handleWSInit(command, res) {
@@ -154,21 +172,28 @@ function handleWSInit(command, res) {
 
 function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
+  var ms = file.ms;
+  spindleSpeed = Number(ms.GetCurrentSpindleSpeed());
+  feedRate = Number(ms.GetCurrentFeedrate());
   if (req.params.loopstate === undefined) {
     if (loopStates[path] === true) {
       res.status(200).send(JSON.stringify({
         'state': 'play',
         'speed': playbackSpeed,
+        'spindle': spindleSpeed,
+        'feed': feedRate,
       }));
     } else {
       res.status(200).send(JSON.stringify({
         'state': 'pause',
         'speed': playbackSpeed,
+        'spindle': spindleSpeed,
+        'feed': feedRate,
       }));
     }
   } else {
     let loopstate = req.params.loopstate;
-    var ms = file.ms;
+    //var ms = file.ms;
     if (typeof loopStates[path] === 'undefined') {
       loopStates[path] = false;
     }

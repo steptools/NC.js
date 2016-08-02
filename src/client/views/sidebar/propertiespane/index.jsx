@@ -32,6 +32,10 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-adjust';
     case 'tolerance value':
       return 'icon glyphicons glyphicons-adjust-alt';
+    case 'tolerance upper':
+      return 'icon glyphicons glyphicons-plus';
+    case 'tolerance lower':
+      return 'icon glyphicons glyphicons-minus';
     case 'back':
       return 'icon glyphicons glyphicons-circle-arrow-left';
     case 'exit':
@@ -105,7 +109,7 @@ export default class PropertiesPane extends React.Component {
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
   }
-  
+
   selectEntity(event, entity) {
     if (event.key === 'goto') {
       let url = '/v3/nc/state/ws/' + entity.id;
@@ -140,7 +144,7 @@ export default class PropertiesPane extends React.Component {
     }
     // some other menu item clicked, no need to do anything
   }
-  
+
   getWPForEntity(entity) {
     if (entity) {
       if (entity.type === 'workpiece') {
@@ -218,15 +222,10 @@ export default class PropertiesPane extends React.Component {
   }
 
   renderActive(entity) {
-    if (entity.type !== 'workingstep' && entity.type !== 'tolerance') {
+    if (entity.type !== 'workingstep') {
       return;
     }
-    let active = false;
-    if (entity.type === 'tolerance') {
-      active = (entity.workingsteps.indexOf(this.props.ws) > 0);
-    } else if (entity.type === 'workingstep') {
-      active = (this.props.ws === entity.id);
-    }
+    let active = (this.props.ws === entity.id);
 
     if (active === true) {
       this.properties.push(
@@ -323,6 +322,8 @@ export default class PropertiesPane extends React.Component {
       return;
     }
 
+    let cName = 'preview-button preview-icon';
+    cName += ' glyphicons glyphicons-new-window-alt';
     this.buttons.push(
       <MenuItem
         key='preview'
@@ -330,7 +331,7 @@ export default class PropertiesPane extends React.Component {
       >
         Preview
         <span
-          className='preview-button preview-icon glyphicons glyphicons-new-window-alt'
+          className={cName}
         />
       </MenuItem>
     );
@@ -357,7 +358,7 @@ export default class PropertiesPane extends React.Component {
     }
     this.properties.push(
       <MenuItem disabled key='tolType' className='property tolType'>
-        <div className={getIcon('tolerance type')}/>
+        <div className={getIcon('tolerance', entity.toleranceType)}/>
         Type: {entity.tolTypeName}
       </MenuItem>
     );
@@ -365,6 +366,34 @@ export default class PropertiesPane extends React.Component {
       <MenuItem disabled key='tolValue' className='property tolValue'>
         <div className={getIcon('tolerance value')}/>
         Value: {entity.value}{entity.unit}
+      </MenuItem>
+    );
+
+    if (!entity.range || entity.range.flag === false) {
+      return;
+    }
+    let upper = entity.range.upper;
+    let lower = entity.range.lower;
+    if (Math.abs(upper) === Math.abs(lower)) {
+      console.log(entity.id);
+      this.properties.push(
+        <MenuItem disabled key='tolRange' className='property tolRange'>
+          <div className='icon custom letter'>&plusmn;</div>
+          Range: &plusmn; {Math.abs(upper)}{entity.unit}
+        </MenuItem>
+      );
+      return;
+    }
+    this.properties.push(
+      <MenuItem disabled key='tolUpper' className='property tolUpper'>
+        <div className={getIcon('tolerance upper')}/>
+        Upper: {upper}{entity.unit}
+      </MenuItem>
+    );
+    this.properties.push(
+      <MenuItem disabled key='tolLower' className='property tolLower'>
+        <div className={getIcon('tolerance lower')}/>
+        Lower: {lower}{entity.unit}
       </MenuItem>
     );
   }
@@ -384,17 +413,37 @@ export default class PropertiesPane extends React.Component {
       icon = <span className={getIcon(node.type, node.toleranceType)}/>;
     }
 
-    let prevIcon;
-    if (node.type === 'tolerance' || node.type === 'workpiece') {
-      prevIcon = (<span
-        className='preview-icon glyphicons glyphicons-new-window-alt'
-        key='preview'
-        onClick={(ev) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-          this.selectEntity({'key': 'preview'}, node)}
-        }
-      />);
+    let highlightButton, highlightName;
+
+    if (this.props.highlightedTolerances.indexOf(node.id) >= 0) {
+      highlightName = 'open';
+    } else {
+      highlightName = 'close inactive';
+    }
+
+
+    if (node.type === 'tolerance') {
+      highlightButton = (
+        <span
+          className={'highlight-button glyphicons glyphicons-eye-' + highlightName}
+          onClick={(ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.props.toggleHighlight(node.id);
+            this.selectEntity({key: 'preview'}, this.props.toleranceCache[node.workpiece]);
+          }}
+        />);
+    } else if (node.type === 'workpiece') {
+      highlightButton = (
+        <span
+          key='preview'
+          className='preview-icon glyphicons glyphicons-new-window-alt'
+          onClick={(ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.selectEntity({key: 'preview'}, node);
+          }}
+        />);
     }
 
     return (
@@ -410,7 +459,7 @@ export default class PropertiesPane extends React.Component {
           <span className='textbox'>
             {node.name}
           </span>
-          {prevIcon}
+          {highlightButton}
         </span>
       </div>
     );
@@ -543,6 +592,13 @@ export default class PropertiesPane extends React.Component {
     }
 
     let cName = 'container';
+
+    if (this.props.isMobile) {
+      cName = cName + ' mobile';
+    } else {
+      cName = cName + ' desktop';
+    }
+
     let content;
 
     if (this.props.preview) {
@@ -556,6 +612,7 @@ export default class PropertiesPane extends React.Component {
           guiMode={this.props.guiMode}
           resize={this.props.resize}
           toleranceCache={this.props.toleranceCache}
+          highlightedTolerances={this.props.highlightedTolerances}
           locked={false}
           parentSelector='#preview'
           viewType='preview'
@@ -577,12 +634,12 @@ export default class PropertiesPane extends React.Component {
       </div>
     );
   }
-  
-  renderTools(entity){
-    if(entity.type !== 'tool'){
+
+  renderTools(entity) {
+    if (entity.type !== 'tool') {
       return null;
     }
-    if(entity.cornerRadius.toFixed(0) !== '0'){
+    if (entity.cornerRadius.toFixed(0) !== '0') {
       this.properties.push (
         <MenuItem disabled key='tRadius' className='property children'>
           <div className={getIcon('cornerRadius')}/>
@@ -591,7 +648,7 @@ export default class PropertiesPane extends React.Component {
       );
     }
 
-    if(entity.diameter){
+    if (entity.diameter) {
       this.properties.push (
         <MenuItem disabled key='tDiameter' className='property children'>
           <div className={getIcon('diameter')}/>
@@ -600,7 +657,7 @@ export default class PropertiesPane extends React.Component {
       );
     }
 
-    if(entity.length){
+    if (entity.length) {
       this.properties.push (
         <MenuItem disabled key='tLength' className='property children'>
           <div className={getIcon('length')}/>
@@ -615,20 +672,20 @@ export default class PropertiesPane extends React.Component {
     if (entity === null) {
       return null;
     }
-    
+
     this.renderPreviewButton(entity);
     this.renderGoto(entity);
-    
+
     if (this.buttons.length <= 0) {
       return null;
     }
-    
+
     return (
       <Menu
         className='buttons'
         mode='horizontal'
         onClick={(event) => {
-          this.selectEntity(event, entity)
+          this.selectEntity(event, entity);
         }}
       >
         {this.buttons}
@@ -675,6 +732,11 @@ export default class PropertiesPane extends React.Component {
     if (entity !== null) {
       entityData.name = entity.name;
       entityData.type = entity.type[0].toUpperCase() + entity.type.slice(1);
+      if (this.props.isMobile) {
+        entityData.paneName = entityData.paneName + ' mobile';
+      } else {
+        entityData.paneName = entityData.paneName + ' desktop';
+      }
       entityData.paneName += ' visible';
       let icon;
       if (entity.type === 'tolerance') {
@@ -693,34 +755,36 @@ export default class PropertiesPane extends React.Component {
 
     return (
       <div className={entityData.paneName}>
-        {this.renderPreview(entityData.entity)}
-        <div className='titlebar'>
-          <span
-            className={'title-back ' + getIcon('back')}
-            onClick={() => {
-              this.props.propertiesCb(entityData.previousEntity, true);
-            }}
-          />
-          <span className={entityData.titleIcon} />
-          <span
-            className='title'
-            onMouseEnter={this.handleMouseEnter}
-            onMouseLeave={this.handleMouseLeave}
-          >
-            <div className='type'>{entityData.type}</div>
-            <div className='name'>{entityData.name}</div>
-          </span>
-          <span
-            className={'title-exit ' + getIcon('exit')}
-            onClick={() => {
-              this.props.propertiesCb(null);
-              this.props.previewCb(false);
-            }}
-          />
-        </div>
-        {this.renderProperties(entityData.entity)}
-        <div className='button-dock'>
-          {this.renderButtons(entityData.entity)}
+        <div className='properties-pane-container'>
+          {this.renderPreview(entityData.entity)}
+          <div className='titlebar'>
+            <span
+              className={'title-back ' + getIcon('back')}
+              onClick={() => {
+                this.props.propertiesCb(entityData.previousEntity, true);
+              }}
+            />
+            <span className={entityData.titleIcon} />
+            <span
+              className='title'
+              onMouseEnter={this.handleMouseEnter}
+              onMouseLeave={this.handleMouseLeave}
+            >
+              <div className='type'>{entityData.type}</div>
+              <div className='name'>{entityData.name}</div>
+            </span>
+            <span
+              className={'title-exit ' + getIcon('exit')}
+              onClick={() => {
+                this.props.propertiesCb(null);
+                this.props.previewCb(false);
+              }}
+            />
+          </div>
+          {this.renderProperties(entityData.entity)}
+          <div className='button-dock'>
+            {this.renderButtons(entityData.entity)}
+          </div>
         </div>
       </div>
     );

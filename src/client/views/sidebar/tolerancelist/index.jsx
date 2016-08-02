@@ -11,10 +11,16 @@ export default class ToleranceList extends React.Component {
     this.onToggle = this.onToggle.bind(this);
     this.decorators = ts.decorators;
     this.decorators.propertyCb = this.props.propertyCb;
+    this.decorators.toggleHighlight = this.props.toggleHighlight;
+    this.decorators.highlightedTolerances = this.props.highlightedTolerances;
   }
 
   componentDidMount() {
     $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard');
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.decorators.highlightedTolerances = nextProps.highlightedTolerances;
   }
 
   onToggle(node, toggled) {
@@ -29,9 +35,8 @@ export default class ToleranceList extends React.Component {
   }
 
   render() {
-    
     let tolList = [];
-    
+
     if (this.props.curWS.toBe && this.props.curWS.toBe.id > 0) {
       let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
 
@@ -45,14 +50,14 @@ export default class ToleranceList extends React.Component {
         tolList = tolList.concat(wp.children);
       }
     }
-    
+
     tolList.push({
-      name: 'All Workpieces',
+      name: 'Workpieces With Tolerances',
       leaf: true,
       type: 'divider',
       id: -2,
     });
-    
+
     tolList = tolList.concat(this.props.toleranceList.map((id) => {
       return this.props.toleranceCache[id];
     }));
@@ -61,12 +66,17 @@ export default class ToleranceList extends React.Component {
       return null;
     }
 
+    if (this.props.isMobile) {
+      ts.style.tree.base.height = '100%';
+    }
+
     return (
       <Treebeard
         data={tolList}
         onToggle={this.onToggle}
         style={ts.style}
         decorators={this.decorators}
+        toggleHighlight={this.props.toggleHighlight}
       />
     );
   }
