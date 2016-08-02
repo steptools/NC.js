@@ -1,8 +1,8 @@
 .Footer-container {
-    
     position: absolute;
     bottom: 0;
     width: 100%;
+    cursor: default;
 
     .drawerbutton {
         height: 3vmin;
@@ -13,6 +13,7 @@
         background-color: #DDDDDD;
         z-index: 100;
         border-bottom: 1px solid rgba(102, 102, 102, 0.5);
+        cursor: pointer;
     }
 
     .Footer-bar {
@@ -51,7 +52,7 @@
         }
 
         .footer-buttons {
-
+            cursor: pointer;
             display: flex;
 
             .button-icon {
