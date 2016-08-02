@@ -27,7 +27,6 @@ export default class FooterView extends React.Component {
     this.bbBtnClicked = this.bbBtnClicked.bind(this);
     this.soMouseDown = this.soMouseDown.bind(this);
     this.soMouseUp = this.soMouseUp.bind(this);
-    this.soMouseLeave = this.soMouseLeave.bind(this);
     this.soMouseMove = this.soMouseMove.bind(this);
     this.soTouchStart = this.soTouchStart.bind(this);
     this.soTouchEnd = this.soTouchEnd.bind(this);
@@ -46,11 +45,13 @@ export default class FooterView extends React.Component {
     this.props.actionManager.emit('sim-b');
   }
 
-  soMouseDown() {
+  soMouseDown(info) {
     let fv = $('.Footer-container');
     let fb = $('.Footer-bar');
     let db = $('.drawerbutton');
     soy = (fv.offset().top + (db.height() + fb.height())) - info.clientY;
+    $(window).on('mousemove', this.soMouseMove);
+    $(window).on('mouseup', this.soMouseUp);
   }
 
   soMouseUp() {
@@ -58,14 +59,14 @@ export default class FooterView extends React.Component {
     let fv = $('.Footer-container');
     let fvOffset = fv.offset().top;
     let fb = $('.Footer-bar').height();
-    let db = $('.drawerbutton');
+    let db = $('.drawerbutton').height();
     let currentMSGuiMode = this.props.msGuiMode;
 
     if (soy > 0) {
-      if (!this.props.msGuiMode && (innerHeight - fvOffset) > ((db + fb) * 2)) {
+      if (!currentMSGuiMode && (innerHeight - fvOffset) > ((db + fb) * 2)) {
         this.props.cbMobileSidebar(true);
         currentMSGuiMode = true;
-      } else if (this.props.msGuiMode && (fvOffset > (db + fb))) {
+      } else if (currentMSGuiMode && (fvOffset > (db + fb))) {
         this.props.cbMobileSidebar(false);
         currentMSGuiMode = false;
       }
@@ -81,43 +82,21 @@ export default class FooterView extends React.Component {
       //fv.css('height', '100%');
     }
     soy = 0;
-  }
-
-  soMouseLeave() {
-    let innerHeight = window.innerHeight;
-    let fv = $('.Footer-container');
-    let fvOffset = fv.offset().top;
-    let fb = $('.Footer-bar').height();
-    let db = $('.drawerbutton');
-    let currentMSGuiMode = this.props.msGuiMode;
-
-    if (soy > 0) {
-      if (!this.props.msGuiMode && (innerHeight - fvOffset) > ((db + fb) * 2)) {
-        this.props.cbMobileSidebar(true);
-        currentMSGuiMode = true;
-      } else if (this.props.msGuiMode && (fvOffset > (db + fb))) {
-        this.props.cbMobileSidebar(false);
-        currentMSGuiMode = false;
-      }
-    }
-
-    if (currentMSGuiMode === false) {
-      let bottomPos = (window.innerHeight - (db.height() + fb.height()));
-      fv.animate({top: bottomPos+'px'}, 500);
-      //fv.css('height', 'unset');
-    }
-    if (currentMSGuiMode === true) {
-      fv.animate({top: '0px'}, 500);
-      //fv.css('height', '100%');
-    }
-    soy = 0;
+    $(window).off('mousemove');
+    $(window).off('mouseup');
   }
 
   soMouseMove(info) {
+    console.log('mousemove');
     let fv = $('.Footer-container');
+    let fb = $('.Footer-bar').height();
+    let db = $('.drawerbutton').height();
+    let maxTop = window.innerHeight - (fb + db);
     if (soy > 0) {
       let newTop = info.clientY - soy;
-      fv.css('top', newTop+'px');
+      if (newTop >= 0 && newTop <= maxTop) {
+        fv.css('top', newTop+'px');
+      }
     }
   }
 
@@ -127,7 +106,7 @@ export default class FooterView extends React.Component {
 
     let fv = $('.Footer-container').offset().top;
     let fb = $('.Footer-bar').height();
-    let db = $('.drawerbutton').heiht();
+    let db = $('.drawerbutton').height();
     soy = (fv + (db + fb)) - info.touches[0].pageY;
     soy2 = info.touches[0].pageY;
   }
@@ -201,9 +180,14 @@ export default class FooterView extends React.Component {
     lastTouch = info.touches[0].pageY;
 
     let fv = $('.Footer-container');
+    let fb = $('.Footer-bar').height();
+    let db = $('.drawerbutton').height();
+    let maxTop = window.innerHeight - (fb + db);
     if (soy > 0) {
       let newTop = info.touches[0].pageY - soy;
-      fv.css('top', newTop+'px');
+      if (newTop >= 0 && newTop <= maxTop) {
+        fv.css('top', newTop+'px');
+      }
     }
   }
 
@@ -229,6 +213,12 @@ export default class FooterView extends React.Component {
       //fv.css('height', '100%');
     }
     soy = 0;
+  }
+
+  componentDidMount() {
+    $('.Footer-bar .op-text').on('mousedown', this.soMouseDown);
+    $('.Footer-bar .op-text').on('click', this.soClick);
+    $('.drawerbutton').on('click', this.soClick);
   }
 
   render() {
@@ -277,17 +267,12 @@ export default class FooterView extends React.Component {
 
     return (
       <div className='Footer-container'>
-        <div className='drawerbutton'
-            onClick={this.soClick}>
+        <div className='drawerbutton'>
             <span className={drawerbutton}/>
         </div>
         <div className='Footer-bar'>
           <div
             className='op-text'
-            onMouseDown={this.soMouseDown}
-            onMouseUp={this.soMouseUp}
-            onMouseLeave={this.soMouseLeave}
-            onMouseMove={this.soMouseMove}
             onTouchStart={this.soTouchStart}
             onTouchEnd={this.soTouchEnd}
             onTouchCancel={this.soTouchCancel}
