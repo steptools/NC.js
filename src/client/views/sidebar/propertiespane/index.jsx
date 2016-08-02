@@ -63,6 +63,8 @@ function getIcon(type, data) {
       } else {
         return 'icon glyphicons glyphicons-refresh';
       }
+    case 'highlight':
+      return 'highlight-button glyphicons glyphicons-eye-' + data;
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -398,14 +400,15 @@ export default class PropertiesPane extends React.Component {
     );
   }
 
-  renderNode(node) {
+  renderNode(node, renderDisabled) {
     let cName = 'node';
     if (node.id === this.props.ws) {
       cName = 'node running-node';
-    } else {
-      if (node.enabled === false) {
-        cName = 'node disabled';
+    } else if (node.enabled === false) {
+      if (renderDisabled === false) {
+        return;
       }
+      cName = 'node disabled';
     }
 
     let icon = <span className={getIcon(node.type)}/>;
@@ -413,7 +416,8 @@ export default class PropertiesPane extends React.Component {
       icon = <span className={getIcon(node.type, node.toleranceType)}/>;
     }
 
-    let highlightButton, highlightName;
+    let highlightButton;
+    let highlightName;
 
     if (this.props.highlightedTolerances.indexOf(node.id) >= 0) {
       highlightName = 'open';
@@ -421,12 +425,10 @@ export default class PropertiesPane extends React.Component {
       highlightName = 'close inactive';
     }
 
-
     if (node.type === 'tolerance') {
-      let cName = 'highlight-button glyphicons glyphicons-eye-' + highlightName;
       highlightButton = (
         <span
-          className={cName}
+          className={getIcon('highlight', highlightName)}
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -477,11 +479,13 @@ export default class PropertiesPane extends React.Component {
     let title, steps;
     if (entity.workingsteps.length > 0) {
       title = 'Used in Workingsteps:';
-      steps = (<div className='list'>
-        {entity.workingsteps.map((step) =>
-          this.renderNode(this.props.workingsteps[step])
-        )}
-      </div>);
+      steps = (
+        <div className='list'>
+          {entity.workingsteps.map((step) =>
+            this.renderNode(this.props.workingsteps[step], false)
+          )}
+        </div>
+      );
     } else {
       title = 'Not used in any workingsteps.';
     }
