@@ -12,7 +12,6 @@ let feedRate;
 let path = find.GetProjectName();
 let changed = false;
 let justchanged = false;
-let i = 0;
 
 /****************************** Helper Functions ******************************/
 
@@ -53,7 +52,6 @@ function loop(ms, key) {
   let spindleSpeedNew;
   let feedRateNew;
   if (loopStates[path] === true) {
-    //app.logger.debug('Loop step ' + path);
     let rc = ms.AdvanceState();
     spindleSpeedNew = Number(ms.GetCurrentSpindleSpeed());
     feedRateNew = Number(ms.GetCurrentFeedrate());
@@ -107,12 +105,6 @@ function loop(ms, key) {
         });
       }
   }
-}
-
-function getWorkingstep() {
-  var ms = file.ms;
-  let keyjson = JSON.parse(ms.GetKeystateJSON());
-  return keyjson.workingstep;
 }
 
 function sameSetup(newid, oldid) {
@@ -205,10 +197,8 @@ function _loopInit(req, res) {
     if (typeof loopStates[path] === 'undefined') {
       loopStates[path] = false;
     }
-    console.log(loopstate);
     switch (loopstate) {
       case 'start':
-        console.log(loopStates[path]);
         if (loopStates[path] === true) {
           res.status(200).send('Already running');
           return;
