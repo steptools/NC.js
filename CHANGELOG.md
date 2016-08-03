@@ -7,6 +7,7 @@ Bugfixes:
 
 - Disabled workplans disable all children, not just immediate
 - Feedrate has proper rounding
+- Previewing a tool with multiple shells loads all shells in the tool
 
 Version 1.6.0
 
