@@ -55,6 +55,8 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-dashboard';
     case 'cornerRadius':
       return 'icon custom corner-radius';
+    case 'modifiers':
+      return 'icon glyphicons glyphicons-wrench';
     case 'spindlespeed':
       if (data === 'CW') {
         return 'icon glyphicons glyphicons-rotate-right';
@@ -370,6 +372,14 @@ export default class PropertiesPane extends React.Component {
         Value: {entity.value}{entity.unit}
       </MenuItem>
     );
+    if(entity.modifiers.length > 0){
+      this.properties.push(
+        <MenuItem disabled key='modifier' className='property modifier'>
+          <div className={getIcon('modifiers')}/>
+          Modifiers: {entity.modName}
+        </MenuItem>
+      );
+    }
 
     if (!entity.range || entity.range.flag === false) {
       return;
@@ -377,7 +387,6 @@ export default class PropertiesPane extends React.Component {
     let upper = entity.range.upper;
     let lower = entity.range.lower;
     if (Math.abs(upper) === Math.abs(lower)) {
-      console.log(entity.id);
       this.properties.push(
         <MenuItem disabled key='tolRange' className='property tolRange'>
           <div className='icon custom letter'>&plusmn;</div>
@@ -763,7 +772,6 @@ export default class PropertiesPane extends React.Component {
 
   render() {
     let entityData = this.getEntityData();
-
     return (
       <div className={entityData.paneName}>
         <div className='properties-pane-container'>
