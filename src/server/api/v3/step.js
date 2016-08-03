@@ -64,9 +64,7 @@ function exeFromId(id) {
     ws.enabled = true;
   } else {
     ws.enabled = false;
-    _.each(ws.children, (child) => {
-      child.enabled = false;
-    });
+    propagateDisabled(ws);
   }
 
   if (find.IsWorkingstep(id)) {
@@ -86,6 +84,15 @@ function exeFromId(id) {
   }
 
   return ws;
+}
+
+function propagateDisabled(ws) {
+  if (ws.children) {
+    _.each(ws.children, (child) => {
+      child.enabled = ws.enabled;
+      propagateDisabled(child);
+    });
+  }
 }
 
 
