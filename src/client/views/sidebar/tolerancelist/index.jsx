@@ -51,11 +51,64 @@ export default class ToleranceList extends React.Component {
       }
     }
 
+    let nextTols=[];
+    let upcomingWS=false;
+
+    for(let index in this.props.workingstepList)
+    {
+      if(this.props.workingstepList[index] < 0) continue;//not a ws
+      if(this.props.workingstepList[index] == this.props.curWS.id)
+      {
+        upcomingWS=true;
+        continue;
+      }
+      if(upcomingWS)
+      {
+        for(let key in this.props.toleranceCache)
+        {
+          for(let key2 in this.props.toleranceCache[key].workingsteps)
+          {
+            let goodID=true;
+            for(let index2 in tolList)
+            {
+              if(tolList[index2].id === this.props.toleranceCache[key].id)
+                goodID=false;
+            }
+            if((this.props.toleranceCache[key].workingsteps[key2] == this.props.workingstepList[index]) &&
+              ((this.props.toleranceCache[key].children) && (this.props.toleranceCache[key].children.length > 0)) &&
+              (goodID))
+                nextTols[nextTols.length]=this.props.toleranceCache[key];
+          }
+        }
+        break;
+      }
+    }
+
+    //add the upcoming tolerances to the tolList
+    let displayed=false;
+    for(let key in nextTols)
+    {
+      for(let key2 in nextTols[key].children)
+      {
+        if(!displayed)
+        {
+          tolList.push({
+            name: 'Upcoming Tolerances',
+            leaf: true,
+            type: 'divider',
+            id: -2,
+          });
+          displayed=true;
+        }
+        tolList=tolList.concat(nextTols[key].children[key2]);
+      }
+    }
+
     tolList.push({
       name: 'Workpieces With Tolerances',
       leaf: true,
       type: 'divider',
-      id: -2,
+      id: -3,
     });
 
     tolList = tolList.concat(this.props.toleranceList.map((id) => {
