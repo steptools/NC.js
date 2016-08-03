@@ -172,7 +172,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         let req, shell, anno;
         // console.log("Worker Data: " + event.data.file);
         // Find the request this message corresponds to
-        if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError"], event.data.type) != -1) {
+        if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError", "previewLoad"], event.data.type) != -1) {
             req = this._loading[event.data.workerID];
         }
         // Put worker back into the queue - if it is the time
@@ -202,17 +202,14 @@ export default class DataLoader extends THREE.EventDispatcher {
                     this.dispatchEvent({ type: "annotationLoad", file: event.data.file });
                 }
                 break;
+            case "previewLoad":
+                this.buildPreviewNCJSON(event.data.data, req);
+                break;
             case "shellLoad":
             //This is the case where the shell comes in with position, normals and colors vector after ProcessShellJSON
                 shell = this._shells[event.data.id+".json"];
-              
-                if (req.type === 'previewShell') {
-                    this.buildPreviewNC(event.data, req);
-                    this.dispatchEvent({
-                        type: "shellLoad",
-                        file: event.data.file
-                    });
-                } else if (!shell) {
+
+                if (!shell) {
                     console.log('DataLoader.ShellLoad: invalid shell ID ' + event.data.id);
                 } else {
                     data = event.data.data;
@@ -275,9 +272,10 @@ export default class DataLoader extends THREE.EventDispatcher {
         worker.postMessage(data);
     }
     
-    buildPreviewNC(data, req) {
+    buildPreviewNCJSON(data, req) {
         let nc = new NC(null, null, null, this);
         
+        // TODO: try to get actual transform data?
         let color = DataLoader.parseColor('7d7d7d');
         let transform = DataLoader.parseXform( [
             1, 0, 0, 0,
@@ -285,26 +283,27 @@ export default class DataLoader extends THREE.EventDispatcher {
             0, 0, 1, 0,
             0, 0, 0, 1,
         ], true);
-        
-        // Is this a shell
-        if(data.usage === 'cutter') {
-            color = DataLoader.parseColor("FF530D");
-        }
-        if(data.usage === 'fixture' && this._app.services.machine.dir === '') {
-            return;
-        }
-        if (data.usage === undefined) {
-            data.usage = 'tobe';
-        }
 
         let boundingBox = new THREE.Box3();
 
-        let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);
+        _.each(data, (geomData) => {
+            if (_.has(geomData, 'id')) {
+                if (geomData.usage === undefined) {
+                    geomData.usage = 'tobe';
+                }
 
-        nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
-        shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
-        
-        req.callback(undefined, nc);
+                let shell = new Shell(geomData.id, nc, nc, geomData.size, color, boundingBox);
+
+                nc.addModel(shell, geomData.usage, 'shell', geomData.id, transform, boundingBox);
+                // Push the shell for later completion
+                this._shells[geomData.id + ".json"] = shell;
+            }
+        });
+
+        // TODO: actually solve this race condition
+        setTimeout(() => {
+            req.callback(undefined, nc);
+        }, 1000);
     }
 
     buildAssemblyJSON(jsonText, req) {

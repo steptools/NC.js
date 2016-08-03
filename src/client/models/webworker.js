@@ -786,6 +786,49 @@ let messageHandler = function(e) {
                 processAnnotation(url, workerID, res.text);
                 break;
             case "previewShell":
+
+                if (parts[parts.length - 1] === 'tool') {
+                    file = parts[parts.length - 2];
+                }
+                else {
+                    file = parts[parts.length - 1];
+                }
+
+                let data;
+                try {
+                    data = JSON.parse(res.text);
+                }
+                catch (err) {
+                    console.log(err);
+                    console.log(res.text);
+                    data = [];
+                }
+
+                self.postMessage({
+                    type: "previewLoad",
+                    url: url,
+                    data: data,
+                    workerID: workerID,
+                });
+
+                _.each(data, (dataItem) => {
+                    self.postMessage({ type: "parseComplete", file: file });
+                    processShellJSON(url, workerID, dataItem, false);
+                });
+
+                file = 'preview-' + file;
+
+                if (parts[parts.length - 1] === 'tool') {
+                    file = file + '/tool';
+                }
+
+                self.postMessage({
+                    type: "workerFinish",
+                    workerID: workerID,
+                    file: file,
+                });
+
+                break;
             case "shell":
                 // Try to parse the JSON file
                 let dataJSON;
@@ -804,26 +847,6 @@ let messageHandler = function(e) {
                 }
 
                 file = dataJSON.id;
-                if (e.data.type === 'previewShell') {
-                    file = 'preview-';
-                    if (parts[parts.length - 1] === 'tool') {
-                        file = file + parts[parts.length - 2] + '/tool';
-                    }
-                    else {
-                        file = file + parts[parts.length - 1];
-                    }
-                    _.each(dataJSON, (dat, key) => {
-                        if (_.has(dat, 'id')) {
-                            processShellJSON(url, workerID, dat, (key === dataJSON.length - 1));
-                            self.postMessage({
-                                type: "parseComplete",
-                                file: dat.id,
-                            });
-                        }
-                    });
-                    
-                    break;
-                }
                 self.postMessage({
                     type: "parseComplete",
                     file: parts[parts.length - 2]
