@@ -143,7 +143,6 @@ export default class HeaderView extends React.Component {
   }
 
   getFeedSpeedInfo() {
-    //let curStep = this.props.workingstepCache[this.props.ws];
     let fr = 'Not defined';
     let ss = 'Not defined';
     let ssIcon = null;

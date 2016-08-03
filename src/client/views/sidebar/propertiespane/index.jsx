@@ -750,15 +750,7 @@ export default class PropertiesPane extends React.Component {
     };
 
     if (entity !== null) {
-      if(entity.type === 'tolerance'){
-        entityData.name = entity.name + (entity.rangeName ? entity.rangeName : '');
-        if(entity.modName){
-          entityData.name = entityData.name + ' ' + (entity.modName.length !== 0 ? entity.modName.join(' ') : '');
-        }
-      }
-      else{
-        entityData.name = entity.name;
-      }
+      entityData.name = entity.name;
       entityData.type = entity.type[0].toUpperCase() + entity.type.slice(1);
       if (this.props.isMobile) {
         entityData.paneName = entityData.paneName + ' mobile';

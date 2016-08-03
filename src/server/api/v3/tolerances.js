@@ -65,7 +65,6 @@ function getTolerance(id) {
   let modName;
   if(mods.length > 0){
     modName = mods.map((mod) => getModIcon(mod)).join(' ');
-    name = name + ' ' + modName;
   }
   if (!range || range.flag === false) {
     rangeName = '';  
@@ -73,11 +72,9 @@ function getTolerance(id) {
   else{
     if(Math.abs(range.upper) === Math.abs(range.lower)){
       rangeName = '\u00B1 ' + Math.abs(range.upper) + unit;
-      name = name + ' ' + rangeName;
     }
     else{
       rangeName = range.upper + ' ' + range.lower + ' ' + unit;
-      name = name + ' ' + rangeName;
     }
   }
 
@@ -91,7 +88,9 @@ function getTolerance(id) {
     'unit' : unit,
     'faces': tol.GetToleranceFaceAll(id),
     'range': range,
+    'rangeName': rangeName,
     'modifiers': mods,
+    'modName': modName,
   };
 }
 
