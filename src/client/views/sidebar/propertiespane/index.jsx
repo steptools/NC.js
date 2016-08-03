@@ -63,6 +63,8 @@ function getIcon(type, data) {
       } else {
         return 'icon glyphicons glyphicons-refresh';
       }
+    case 'highlight':
+      return 'highlight-button glyphicons glyphicons-eye-' + data;
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -398,14 +400,15 @@ export default class PropertiesPane extends React.Component {
     );
   }
 
-  renderNode(node) {
+  renderNode(node, renderDisabled) {
     let cName = 'node';
     if (node.id === this.props.ws) {
       cName = 'node running-node';
-    } else {
-      if (node.enabled === false) {
-        cName = 'node disabled';
+    } else if (node.enabled === false) {
+      if (renderDisabled === false) {
+        return;
       }
+      cName = 'node disabled';
     }
 
     let icon = <span className={getIcon(node.type)}/>;
@@ -413,7 +416,8 @@ export default class PropertiesPane extends React.Component {
       icon = <span className={getIcon(node.type, node.toleranceType)}/>;
     }
 
-    let highlightButton, highlightName;
+    let highlightButton;
+    let highlightName;
 
     if (this.props.highlightedTolerances.indexOf(node.id) >= 0) {
       highlightName = 'open';
@@ -421,16 +425,18 @@ export default class PropertiesPane extends React.Component {
       highlightName = 'close inactive';
     }
 
-
     if (node.type === 'tolerance') {
       highlightButton = (
         <span
-          className={'highlight-button glyphicons glyphicons-eye-' + highlightName}
+          className={getIcon('highlight', highlightName)}
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.props.toggleHighlight(node.id);
-            this.selectEntity({key: 'preview'}, this.props.toleranceCache[node.workpiece]);
+            this.selectEntity(
+              {key: 'preview'},
+              this.props.toleranceCache[node.workpiece]
+            );
           }}
         />);
     } else if (node.type === 'workpiece') {
@@ -473,11 +479,13 @@ export default class PropertiesPane extends React.Component {
     let title, steps;
     if (entity.workingsteps.length > 0) {
       title = 'Used in Workingsteps:';
-      steps = (<div className='list'>
-        {entity.workingsteps.map((step) =>
-          this.renderNode(this.props.workingsteps[step])
-        )}
-      </div>);
+      steps = (
+        <div className='list'>
+          {entity.workingsteps.map((step) =>
+            this.renderNode(this.props.workingsteps[step], false)
+          )}
+        </div>
+      );
     } else {
       title = 'Not used in any workingsteps.';
     }
@@ -640,10 +648,13 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
     if (entity.cornerRadius.toFixed(0) !== '0') {
+      let crData = 'Corner Radius: ';
+      crData += entity.cornerRadius.toFixed(2) + ' ';
+      crData += entity.cornerRadiusUnit;
       this.properties.push (
         <MenuItem disabled key='tRadius' className='property children'>
           <div className={getIcon('cornerRadius')}/>
-          Corner Radius: {entity.cornerRadius.toFixed(2)} {entity.cornerRadiusUnit}
+          {crData}
         </MenuItem>
       );
     }
@@ -652,7 +663,7 @@ export default class PropertiesPane extends React.Component {
       this.properties.push (
         <MenuItem disabled key='tDiameter' className='property children'>
           <div className={getIcon('diameter')}/>
-          Diameter: {entity.diameter} {entity.diameterUnit}
+          Diameter: {entity.diameter}{entity.diameterUnit}
         </MenuItem>
       );
     }

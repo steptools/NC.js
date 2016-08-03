@@ -70,7 +70,8 @@ const Container = (props) => {
   }
 
   let nodeName = node.name;
-  let highlightButton, highlightName;
+  let highlightButton;
+  let highlightName;
   if (node.type === 'tolerance') {
     nodeName += ' - ' + node.value + node.unit;
     if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
@@ -80,7 +81,7 @@ const Container = (props) => {
     }
     highlightButton = (
       <span
-        className={'highlight-button glyphicons glyphicons-eye-' + highlightName}
+        className={'highlight-button glyphicons glyphicons-eye-'+highlightName}
         onClick={(ev) => {
           ev.stopPropagation();
           ev.preventDefault();
@@ -88,7 +89,7 @@ const Container = (props) => {
         }}
       />);
   }
-  
+
   if (node.type === 'divider') {
     outerName += ' divider';
     innerName += ' divider';
@@ -107,7 +108,7 @@ const Container = (props) => {
         className={innerName}
         onClick={() => {
           if (!outerName.includes('divider')) {
-            props.decorators.propertyCb(node)
+            props.decorators.propertyCb(node);
           }
         }}
       >
