@@ -57,7 +57,7 @@ export default class ToleranceList extends React.Component {
     for(let index in this.props.workingstepList)
     {
       if(this.props.workingstepList[index] < 0) continue;//not a ws
-      if(this.props.workingstepList[index] == this.props.curWS.id)
+      if(this.props.workingstepList[index] === this.props.curWS.id)
       {
         upcomingWS=true;
         continue;
@@ -68,15 +68,8 @@ export default class ToleranceList extends React.Component {
         {
           for(let key2 in this.props.toleranceCache[key].workingsteps)
           {
-            let goodID=true;
-            for(let index2 in tolList)
-            {
-              if(tolList[index2].id === this.props.toleranceCache[key].id)
-                goodID=false;
-            }
-            if((this.props.toleranceCache[key].workingsteps[key2] == this.props.workingstepList[index]) &&
-              ((this.props.toleranceCache[key].children) && (this.props.toleranceCache[key].children.length > 0)) &&
-              (goodID))
+            if((this.props.toleranceCache[key].workingsteps[key2] === this.props.workingstepList[index]) &&
+              ((this.props.toleranceCache[key].children) && (this.props.toleranceCache[key].children.length > 0)))
                 nextTols[nextTols.length]=this.props.toleranceCache[key];
           }
         }
@@ -85,6 +78,7 @@ export default class ToleranceList extends React.Component {
     }
 
     //add the upcoming tolerances to the tolList
+    console.log(nextTols);
     let displayed=false;
     for(let key in nextTols)
     {
