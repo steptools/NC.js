@@ -76,9 +76,6 @@ export default class NC extends THREE.EventDispatcher {
                 
                 if (obj.bbox.isEmpty()) {
                     obj.bbox = event.shell.getBoundingBox();
-                    // Force recalc of bounding box
-                    delete this.boundingBox;
-                    this.getBoundingBox();
                 }
                 
                 mesh.castShadow = true;

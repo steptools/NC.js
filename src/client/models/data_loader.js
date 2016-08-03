@@ -172,7 +172,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         let req, shell, anno;
         // console.log("Worker Data: " + event.data.file);
         // Find the request this message corresponds to
-        if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError", "previewLoad"], event.data.type) != -1) {
+        if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError", "previewLoad", "previewEndLoad"], event.data.type) != -1) {
             req = this._loading[event.data.workerID];
         }
         // Put worker back into the queue - if it is the time
@@ -204,6 +204,9 @@ export default class DataLoader extends THREE.EventDispatcher {
                 break;
             case "previewLoad":
                 this.buildPreviewNCJSON(event.data.data, req);
+                break;
+            case "previewEndLoad":
+                req.cb();
                 break;
             case "shellLoad":
             //This is the case where the shell comes in with position, normals and colors vector after ProcessShellJSON
@@ -300,10 +303,9 @@ export default class DataLoader extends THREE.EventDispatcher {
             }
         });
 
-        // TODO: actually solve this race condition
-        setTimeout(() => {
+        req.cb = () => {
             req.callback(undefined, nc);
-        }, 1000);
+        };
     }
 
     buildAssemblyJSON(jsonText, req) {

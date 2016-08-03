@@ -823,6 +823,12 @@ let messageHandler = function(e) {
                 }
 
                 self.postMessage({
+                    type:"previewEndLoad",
+                    url: url,
+                    workerID: workerID,
+                })
+
+                self.postMessage({
                     type: "workerFinish",
                     workerID: workerID,
                     file: file,
