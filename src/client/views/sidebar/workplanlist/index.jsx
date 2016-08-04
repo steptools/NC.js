@@ -62,7 +62,6 @@ export default class WorkplanList extends React.Component {
       ts.style.tree.base.height = '100%';
     }
 
-    console.log(this.props.workplanCache);
     return (
       <Treebeard
         data={this.props.workplanCache}

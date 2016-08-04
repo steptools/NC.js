@@ -52,11 +52,6 @@ function hasActiveChildren(node, id) {
 
 function setToleranceInfo(node, props) {
   node.name += ' - ' + node.value + node.unit + ' ' + node.rangeName;
-  if (node.upcoming === true) {
-    //node.highlightButton = null;
-    //return;
-    //console.log(node);
-  }
 
   if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
     node.highlightName = 'open';
