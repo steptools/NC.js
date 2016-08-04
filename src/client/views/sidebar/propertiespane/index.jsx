@@ -484,14 +484,19 @@ export default class PropertiesPane extends React.Component {
         entity.type !== 'tolerance') {
       return null;
     }
-    let title, steps;
-    if (entity.workingsteps.length > 0) {
+    let title, steps, node;
+    let nodes = [];
+    for (let i = 0; i < entity.workingsteps.length; i++) {
+      node = this.props.workingsteps[entity.workingsteps[i]];
+      if (node.enabled === true) {
+        nodes.push(node);
+      }
+    }
+    if (nodes.length > 0) {
       title = 'Used in Workingsteps:';
       steps = (
         <div className='list'>
-          {entity.workingsteps.map((step) =>
-            this.renderNode(this.props.workingsteps[step], false)
-          )}
+          {nodes.map((val) => this.renderNode(val, false))}
         </div>
       );
     } else {
