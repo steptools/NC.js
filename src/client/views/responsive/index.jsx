@@ -238,27 +238,31 @@ export default class ResponsiveView extends React.Component {
         let nodeCheck = (n) => {
           let node = n;
 
-          if (node.wpType && node.children && node.children.length > 0) {
-            ids.push(node.id);
+          if (node.children && node.children.length > 0) {
             node.enabled = true;
             node.leaf = false;
             _.each(node.children, nodeCheck);
           } else {
-            if (node.type === 'tolerance') {
-              if(node.children.length > 0){
-                node.leaf = false;
-                node.enabled = true;
-                _.each(node.children, nodeCheck);
+            node.leaf = true;
+          }
+
+          if (node.wpType) {
+            ids.push(node.id);
+          }
+
+          if (node.type === 'tolerance') {
+            let workingsteps = [];
+            for (let i in json[node.workpiece].workingsteps) {
+              let ws = json[node.workpiece].workingsteps[i];
+              ws = this.state.workingstepCache[ws];
+              if (node.workpiece === ws.toBe.id) {
+                workingsteps.push(json[node.workpiece].workingsteps[i]);
               }
-              else{
-                node.leaf = true;
-              }
-              node.workingsteps = json[node.workpiece].workingsteps;
             }
-            else if(node.type === 'datum'){
-              node.leaf = true;
-              node.enabled = true;
-            }
+            node.workingsteps = workingsteps;
+          } else if (node.type === 'datum') {
+            node.leaf = true;
+            node.enabled = true;
           }
 
           wps[node.id] = node;
@@ -288,7 +292,7 @@ export default class ResponsiveView extends React.Component {
     window.removeEventListener('keydown', this.handleKeydown);
     window.removeEventListener('keyup', this.handleKeyup);
   }
-  
+
   handleResize() {
     let innerWidth = window.innerWidth;
     let innerHeight = window.innerHeight;
@@ -361,7 +365,8 @@ export default class ResponsiveView extends React.Component {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
           let tols = [];
-          _.each(this.state.toleranceCache[workingstep.toBe.id].children, (t) => {
+          let cache = this.state.toleranceCache[workingstep.toBe.id];
+          _.each(cache.children, (t) => {
             tols.push(t.id);
           });
           this.setState({
@@ -379,17 +384,17 @@ export default class ResponsiveView extends React.Component {
 
     request.get(url).end(requestCB);
   }
-  
+
   toggleHighlight(id) {
     let newTols;
-    
+
     if (this.state.highlightedTolerances.indexOf(id) < 0) {
       newTols = _.concat(this.state.highlightedTolerances, id);
     } else {
       newTols = _.without(this.state.highlightedTolerances, id);
     }
-    
-    this.setState({ 'highlightedTolerances': newTols });
+
+    this.setState({'highlightedTolerances': newTols});
   }
 
   playpause() {
@@ -589,26 +594,24 @@ export default class ResponsiveView extends React.Component {
         'left': '390px',
         'top': '90px',
         'bottom': '0px',
-        'right': '0px'
+        'right': '0px',
       };
     } else {
-      let cadviewHeight="80%";
+      let cadviewHeight = '80%';
       let fv = $('.Footer-container');
 
-      if(typeof fv.offset() != 'undefined')
-      {
+      if (typeof fv.offset() != 'undefined') {
         cadviewHeight=fv.offset().top;
-        cadviewHeight=cadviewHeight+"px";
+        cadviewHeight=cadviewHeight + 'px';
+      } else {
+        cadviewHeight = '100%';
       }
-      else cadviewHeight="100%";
 
-
-      cadviewStyle =
-      {
-        'top': "0",
+      cadviewStyle = {
+        'top': '0',
         'right': '0px',
         'width': '100%',
-        'height': cadviewHeight
+        'height': cadviewHeight,
       };
     }
 

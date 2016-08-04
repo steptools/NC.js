@@ -580,16 +580,15 @@ export default class PropertiesPane extends React.Component {
       }
     } else if (entity.type === 'tolerance') {
       if (children && children.length > 0) {
-        if(children.length === 1){
+        if (children.length === 1) {
           childrenTitle = 'Datum:';
-        }
-        else{
+        } else {
           childrenTitle = 'Datums:';
         }
       } else {
         childrenTitle = 'No datums defined.';
       }
-    }else if (children) {
+    } else if (children) {
       childrenTitle = 'Children:';
     } else {
       childrenTitle = 'No Children';

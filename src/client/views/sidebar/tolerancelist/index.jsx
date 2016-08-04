@@ -112,6 +112,7 @@ export default class ToleranceList extends React.Component {
         if (wsList[i] < 0 || !this.props.workingstepCache[wsList[i]].enabled) {
           continue;
         }
+        //console.log(this.props.workingstepCache[wsList[i]]);
         upcomingWS.push(wsList[i]);
         n--;
       } else if (n <= 0) {
