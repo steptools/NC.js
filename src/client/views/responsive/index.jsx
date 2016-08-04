@@ -244,9 +244,20 @@ export default class ResponsiveView extends React.Component {
             node.leaf = false;
             _.each(node.children, nodeCheck);
           } else {
-            node.leaf = true;
             if (node.type === 'tolerance') {
+              if(node.children.length > 0){
+                node.leaf = false;
+                node.enabled = true;
+                _.each(node.children, nodeCheck);
+              }
+              else{
+                node.leaf = true;
+              }
               node.workingsteps = json[node.workpiece].workingsteps;
+            }
+            else if(node.type === 'datum'){
+              node.leaf = true;
+              node.enabled = true;
             }
           }
 
