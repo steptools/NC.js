@@ -29,6 +29,13 @@ export default class ToleranceList extends React.Component {
     this.decorators.highlightedTolerances = nextProps.highlightedTolerances;
   }
 
+  componentWillUnmount() {
+    for (let i in this.props.workingstepCache) {
+      this.props.workingstepCache[i].leaf = true;
+      delete this.props.workingstepCache[i].children;
+    }
+  }
+
   onToggle(node, toggled) {
     if (this.state.cursor) {
       this.state.cursor.active = false;

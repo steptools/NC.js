@@ -118,7 +118,6 @@ function setNodeInfo(props) {
 
 const Container = (props) => {
   let node = setNodeInfo(props);
-  //console.log(node);
 
   return (
     <div
