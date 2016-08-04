@@ -335,9 +335,9 @@ export default class NC extends THREE.EventDispatcher {
                 }
                 let obj = this._objects[geom.id];
                 if(obj !== undefined) {
-                        self._object3D.add(self.traceLine);
-                        self._overlay3D.add(self.traceLine);
-                        self.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
+                        this._object3D.add(self.traceLine);
+                        this._overlay3D.add(self.traceLine);
+                        this.getPathTrace(delta.mtcoords[0], delta.mtcoords[1], delta.mtcoords[2]);
                         //console.log(self.traceLine);
                     if (obj.rendered !== false && obj.usage == "cutter") {
                         let transform = new THREE.Matrix4();
