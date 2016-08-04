@@ -10,6 +10,7 @@ let playbackSpeed = 100;
 let spindleSpeed;
 let feedRate;
 let path = find.GetProjectName();
+let changed=false;
 
 /****************************** Helper Functions ******************************/
 
@@ -48,6 +49,13 @@ function getToWS(wsId, ms, cb) {
 
 function loop(ms, key) {
   if (loopStates[path] === true) {
+    if(changed)
+    {
+      changed=false;
+      getNext(ms, function() {
+        loop(ms, true);
+      });
+    }
     //spindle speed and feedrate
     let spindleSpeedNew;
     let feedRateNew;
@@ -73,16 +81,19 @@ function loop(ms, key) {
     });
     //change the working step
     let rc = ms.AdvanceState();
-    console.log(rc);
     if (rc === 1) {
       let setup = sameSetup(ms.GetWSID(), ms.GetNextWSID());
       if (!setup) {
         loopStates[path] = false;
         update('pause');
+        changed=true;
       }
-      getNext(ms, function() {
-        loop(ms, true);
-      });
+      else
+      {
+        getNext(ms, function() {
+          loop(ms, true);
+        });
+      }
     }
   }
 }
@@ -94,19 +105,28 @@ function sameSetup(newid, oldid) {
 function handleWSInit(command, res) {
   let temp = loopStates[path];
   loopStates[path] = true;
-  if (!temp) {
+  /*if (!temp) {
     loop(file.ms, false);
-  }
+  }*/
   switch (command) {
     case 'next':
       if (temp) {
-        getNext(file.ms, function() {
-          loop(file.ms, true);
-        });
+        if(!changed)
+        {
+          getNext(file.ms, function() {
+            loop(file.ms, true);
+          });
+        }
+        else loop(file.ms, true);
+        
       } else {
-        getNext(file.ms, function() {
-          loop(file.ms, true);
-        });
+        if(!changed)
+        {
+          getNext(file.ms, function() {
+            loop(file.ms, true);
+          });
+        }
+        else loop(file.ms, true);
         loopStates[path] = false;
         update('pause');
       }
@@ -114,13 +134,37 @@ function handleWSInit(command, res) {
       break;
     case 'prev':
       if (temp) {
-        getPrev(file.ms, function() {
-          loop(file.ms, true);
-        });
+        if(!changed)
+        {
+          getPrev(file.ms, function() {
+            loop(file.ms, true);
+          });
+        }
+        else
+        {
+          getPrev(file.ms, function() {
+            loop(file.ms, true);
+          });
+          getPrev(file.ms, function() {
+            loop(file.ms, true);
+          });
+        } 
       } else {
-        getPrev(file.ms, function() {
-          loop(file.ms, true);
-        });
+        if(!changed)
+        {
+          getPrev(file.ms, function() {
+            loop(file.ms, true);
+          });
+        }
+        else
+        {
+          getPrev(file.ms, function() {
+            loop(file.ms, true);
+          });
+          getPrev(file.ms, function() {
+            loop(file.ms, true);
+          });
+        }
         loopStates[path] = false;
         update('pause');
       }
