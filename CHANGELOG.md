@@ -2,6 +2,7 @@ Version 1.7.0
 
 Features:
 - Modifiers for tolerances have been added
+- Datums for tolerances have been added to tolerance pane and properties pane
 
 Bugfixes:
 
