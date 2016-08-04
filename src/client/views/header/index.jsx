@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 var md = require('node-markdown').Markdown;
 import Menu, {Item as MenuItem} from 'rc-menu';
@@ -68,21 +67,52 @@ export default class HeaderView extends React.Component {
     super(props);
 
     this.simulateMenuItemClicked = this.simulateMenuItemClicked.bind(this);
+    this.updateSpeed = this.updateSpeed.bind(this);
+    this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
+    this.updateSpindleSpeed = this.updateSpindleSpeed.bind(this);
+    this.updateFeedrate = this.updateFeedrate.bind(this);
   }
 
   componentDidMount() {
     let changes = document.getElementById('changes');
     let logbutton = document.getElementById('logbutton');
-    let chlog = new XMLHttpRequest();
-    chlog.open('GET', '/log');
-    chlog.onreadystatechange = function() {
-      if (chlog.readyState === 4 && chlog.status === 200) {
-        let res = chlog.responseText.toString();
-        changes.innerHTML = md(res);
-        logbutton.innerHTML = 'v' + md(res).split('\n')[0].split(' ')[1];
+    let log = this.props.cadManager.app.changelog;
+    changes.innerHTML = md(log);
+    logbutton.innerHTML = 'v' + md(log).split('\n')[0].split(' ')[1];
+  }
+
+  getFeedSpeedInfo() {
+    let fr = 'Not defined';
+    let ss = 'Not defined';
+    let ssIcon = null;
+    if (this.props.feedRate !== undefined) {
+      fr = this.props.feedRate.toFixed(1) + ' ' + 'mm/min'//this.props.feedRateUnits;
+    }
+    if (this.props.spindleSpeed !== 0) {
+      ss = Math.abs(this.props.spindleSpeed) + ' rev/min';
+      if (this.props.spindleSpeed > 0) {
+        ss += ' (CCW)';
+        ssIcom = getIcon('spindlespeed', 'CCW');
+      } else {
+        ss += ' (CW)';
+        ssIcon = getIcon('spindlespeed', 'CW');
       }
-    };
-    chlog.send();
+    } else {
+      ssIcon = getIcon('spindlespeed');
+    }
+    return [fr, ss, ssIcon];
+  }
+
+  updateSpeed(info) {
+    this.props.actionManager.emit('simulate-setspeed', info);
+  }
+
+  updateSpindleSpeed(info) {
+    this.props.spindleUpdateCb(info.speed);
+  }
+
+  updateFeedrate(info){
+    this.props.feedUpdateCb(info.feed);
   }
 
   simulateMenuItemClicked(info) {

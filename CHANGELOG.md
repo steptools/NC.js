@@ -1,10 +1,67 @@
+Version 1.7.0
+
+Features:
+- Modifiers for tolerances have been added
+
+Bugfixes:
+
+- Disabled workplans disable all children, not just immediate
+- Feedrate has proper rounding
+
+Version 1.6.0
+
+Features:
+
+- Added the ability to toggle tolerance highlighting in main view
+- Simulation pauses at the end of each Setup
+- Tolerances now display ranges and no longer display inactive workingsteps
+
+Bugfixes:
+
+- Tolerance information on properties pane is fixed
+- Disabled selectives now disable all their children
+- Mobile sidebar no longer crashes with new tolerance highlighting
+- Fixed issues when dragging the mobile sidebar on desktop
+
+Version 1.5.2
+
+Features:
+
+- Improved the preview pane ui
+- Display currently active tolerances at the top of the list view
+- Tools now have more info on their properties pane
+
+Bugfixes:
+
+- Fixed issues with functionality and application flow in Edge
+- Tolerances now have accurate names and types
+- Tolerance properly shows when active in properties pane
+- Styling fixes in the properties pane
+- Default names for tolerances and tools are now implemented
+
+Version 1.5.1
+
+Features:
+
+- Back button in preview pane is now always visible
+- Removed the inactive indicator on some preview panes
+
+Bugfixes:
+
+- Fixtures now load when there is a machine
+
 Version 1.5.0
 
 Features:
 
+- Added a preview pane that displays geometry related to the currently selected workpiece/tolerance
+- Back button in preview pane is now always visible
+- Removed the inactive indicator on some preview panes
+
 Bugfixes:
 
 - Make & make-release now ends properly when webpack fails
+- Made Fixture show up when machine tool was loaded from command line options
 
 Version 1.4.0
 

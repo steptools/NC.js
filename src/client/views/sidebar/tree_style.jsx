@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 'use-strict';
 
 import React from 'react';
@@ -15,7 +14,9 @@ function getNodeIcon(node) {
   } else if (node.type === 'tolerance') {
     return <span className={'icon custom tolerance '+node.toleranceType} />;
   } else if (node.type === 'workpiece') {
-    return <span className='icon custom workpiece' />;
+    return <span className='icon custom workpiece'/>;
+  } else if (node.type === 'divider') {
+    return null;
   } else {
     return <span className='icon glyphicons glyphicons-question-sign'/>;
   }
@@ -50,7 +51,7 @@ function hasActiveChildren(node, id) {
 const Container = (props) => {
   let node = props.node;
   node.icon = getNodeIcon(node);
-  
+
   let innerName = 'inner';
   let outerName = 'node';
   if (hasActiveChildren(node, props.decorators.ws) === 'active') {
@@ -69,8 +70,29 @@ const Container = (props) => {
   }
 
   let nodeName = node.name;
+  let highlightButton;
+  let highlightName;
   if (node.type === 'tolerance') {
     nodeName += ' - ' + node.value + node.unit;
+    if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
+      highlightName = 'open';
+    } else {
+      highlightName = 'close inactive';
+    }
+    highlightButton = (
+      <span
+        className={'highlight-button glyphicons glyphicons-eye-'+highlightName}
+        onClick={(ev) => {
+          ev.stopPropagation();
+          ev.preventDefault();
+          props.decorators.toggleHighlight(node.id);
+        }}
+      />);
+  }
+
+  if (node.type === 'divider') {
+    outerName += ' divider';
+    innerName += ' divider';
   }
 
   return (
@@ -84,12 +106,17 @@ const Container = (props) => {
       />
       <div
         className={innerName}
-        onClick={() => props.decorators.propertyCb(node)}
+        onClick={() => {
+          if (!outerName.includes('divider')) {
+            props.decorators.propertyCb(node);
+          }
+        }}
       >
         {node.icon}
         <span className='textbox'>
           {nodeName}
         </span>
+        {highlightButton}
       </div>
     </div>
   );

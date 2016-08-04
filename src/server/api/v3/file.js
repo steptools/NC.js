@@ -13,16 +13,14 @@ function init(path, machinetool) {
   this.apt.OpenProject(path);
   this.find.OpenProject(path);
 
-  this.ms = new StepNC.machineState(path);
-  if (machinetool !== '') {
-    if (!this.ms.LoadMachine(machinetool)) {
-      console.log('ERROR: Machinetool was not loaded');
-    } else {
-      console.log('Loaded Machinetool successfully');
-    }
-  }
-
-  return;
+	this.ms = new StepNC.machineState(path);
+	if(machinetool !== null){
+		if(!this.ms.LoadMachine(machinetool))
+			console.log("ERROR: Machinetool was not loaded");
+		else
+			console.log("Loaded Machine Successfully")
+	}
+	return;
 }
 
 module.exports.init = init;

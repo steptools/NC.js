@@ -20,7 +20,7 @@ export default class NC extends THREE.EventDispatcher {
         this._workingstep = workingstep;
         this._timeIn = timeIn;
         this._loader = loader;
-        this._objects = [];
+        this._objects = {};
         this.type = 'nc';
 
         this.traceNum = 0;
@@ -64,7 +64,6 @@ export default class NC extends THREE.EventDispatcher {
 
     addModel(model, usage, type, id, transform, bbox) {
         // console.log('Add Model(' + usage + '): ' + id);
-        let self = this;
         // Setup 3D object holder
         let obj = {
             model: model,
@@ -101,6 +100,11 @@ export default class NC extends THREE.EventDispatcher {
                 //This is where the shell gets sent when its loaded so that the full mesh can be added to the 3D objects
                 let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
                 let mesh = new THREE.Mesh(event.shell.getGeometry(), material, false);
+                
+                if (obj.bbox.isEmpty()) {
+                    obj.bbox = event.shell.getBoundingBox();
+                }
+                
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 mesh.userData = obj;
@@ -140,21 +144,12 @@ export default class NC extends THREE.EventDispatcher {
         }
     }
 
-    makeChild(id, fallback) {
-        ////console.log("NC.makeChild: " + id);
-        //if (!id) {
-        //    throw new Error("null id");
-        //}
-        //let ret = this._objects[id];
-        //if (ret) {
-        //    return ret;
-        //}
-        //this._objects[id] = fallback;
-        //return null;
-    }
-
     getObject3D() {
         return this._object3D;
+    };
+
+    getObjects() {
+        return this._objects;
     };
 
     getOverlay3D() {
@@ -166,14 +161,13 @@ export default class NC extends THREE.EventDispatcher {
     };
 
     getBoundingBox() {
-        let self = this;
         if (!this.boundingBox) {
             this.boundingBox = new THREE.Box3();
             let keys = _.keys(this._objects);
-            _.each(keys, function(key) {
-                let object = self._objects[key];
+            _.each(keys, (key) => {
+                let object = this._objects[key];
                 if (object.type !== 'polyline') {
-                    self.boundingBox.union(object.bbox);
+                    this.boundingBox.union(object.bbox);
                 }
             });
         }
@@ -181,59 +175,26 @@ export default class NC extends THREE.EventDispatcher {
     }
 
     calcBoundingBox() {
-        let self = this;
 
         this._overlay3D.remove(this.bbox);
         this.boundingBox = new THREE.Box3();
-        let keys = _.keys(self._objects);
-        _.each(keys, function(key) {
-            let object = self._objects[key];
+        let keys = _.keys(this._objects);
+        _.each(keys, (key) => {
+            let object = this._objects[key];
             if (object.rendered !== false && object.type !== 'polyline') {
                 let newBox = new THREE.Box3().setFromObject(object.object3D);
                 if (!newBox.isEmpty()) {
                     object.bbox = newBox;
                 }
-                self.boundingBox.union(object.bbox);
+                this.boundingBox.union(object.bbox);
             }
         });
-        let bounds = self.boundingBox;
+        let bounds = this.boundingBox;
 
         this.bbox = Assembly.buildBoundingBox(bounds);
         if (this.bbox && this.state.selected) {
             this._overlay3D.add(this.bbox);
         }
-    }
-
-    getTree(root) {
-        let node = {
-            id:                 root,
-            text:               this.project,
-            collapsed:          this.state.collapsed,
-            obj:                this,
-            state: {
-                selected:       this.state.selected,
-                highlighted:    this.state.highlighted,
-                visible:        this.state.visible,
-                opacity:        this.state.opacity,
-                explodeDistance:this.state.explodeDistance
-            },
-            children    : []
-        };
-        // Gen tree for all children
-        let keys = _.keys(this._objects);
-        _.each(keys, function(key) {
-            let tmpNode = {
-                id          : key,
-                text        : key,
-                collapsed   : false,
-                state       : {
-                    disabled  : false,
-                    selected  : false
-                }
-            };
-            node.children.push(tmpNode);
-        });
-        return node;
     }
 
     clearHighlights() {
@@ -253,7 +214,9 @@ export default class NC extends THREE.EventDispatcher {
         mouse.x = (mouseX / window.innerWidth) * 2 - 1;
         mouse.y = -(mouseY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(mouse, camera);
-        let intersections = this.raycaster.intersectObjects(this._object3D.children, true);
+        
+        let objs = _.map(_.values(this._objects), (obj) => obj.object3D);
+        let intersections = this.raycaster.intersectObjects(objs, true);
         // Did we hit anything?
         let object = undefined;
         if (intersections.length > 0) {
@@ -273,7 +236,6 @@ export default class NC extends THREE.EventDispatcher {
     }
 
     applyDelta(delta) {
-        let self = this;
         let alter = false;
         //Two types of changes- Keyframe and delta.
         //Keyframe doesn't have a 'prev' property.
@@ -285,10 +247,13 @@ export default class NC extends THREE.EventDispatcher {
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
-            var oldgeom = _.filter(_.values(self._objects), (geom) => (geom.usage =="cutter" || geom.usage =="tobe" || geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture"));
+            var oldgeom = _.filter(_.values(this._objects), (geom) => (
+                geom.usage =="cutter" || geom.usage =="tobe" || 
+                geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture")
+            );
             _.each(oldgeom,(geom)=> {
-                self._object3D.remove(geom.object3D);
-                self._overlay3D.remove(geom.object3D);
+                this._object3D.remove(geom.object3D);
+                this._overlay3D.remove(geom.object3D);
                 geom.rendered = false;
             });
 
@@ -299,7 +264,10 @@ export default class NC extends THREE.EventDispatcher {
 
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
-            var geoms = _.filter(delta.geom, (geom) => (geom.usage =='cutter' || (geom.usage =="tobe" && _.has(geom, 'shell')) || geom.usage =="asis"||geom.usage=='machine' || geom.usage=='fixture'));
+            var geoms = _.filter(delta.geom, (geom) => (
+                geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) || 
+                geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
+            );
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
@@ -308,11 +276,11 @@ export default class NC extends THREE.EventDispatcher {
                     this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
                     // Push the annotation for later completion
                     this._loader._annotations[name] = annotation;
-                    var url = "/v3/nc/";
+                    var url = '/v3/nc/';
                     this._loader.addRequest({
                         path: name,
                         baseURL: url,
-                        type: "annotation"
+                        type: 'annotation'
                     });
                 } else {
                     this._loader._annotations[name].addToScene();
@@ -322,15 +290,15 @@ export default class NC extends THREE.EventDispatcher {
 
             _.each(geoms, (geomData)=>{
                 let name = geomData.id;
-                if(geomData.usage =="asis") return;
+                if(geomData.usage =='asis' || (this.app.services.machine === null && geomData.usage == 'fixture')) return;
 
-                if(self._objects[name]) {
-                    let obj = self._objects[name];
+                if(this._objects[name]) {
+                    let obj = this._objects[name];
                     if (!obj.rendered) {
-                        self._overlay3D.add(obj.object3D);
+                        this._overlay3D.add(obj.object3D);
                         obj.rendered = true;
                         obj.setVisible();
-                        self._objects[name] = obj;
+                        this._objects[name] = obj;
                     }
                 }
                 else {
@@ -349,7 +317,6 @@ export default class NC extends THREE.EventDispatcher {
                         baseURL: url,
                         type: "shell"
                     })
-                   //this.addModel(geomData,geomData.usage,'cutter',)
                 }
             });
 
@@ -361,12 +328,12 @@ export default class NC extends THREE.EventDispatcher {
         else {
             // Handle each geom update in the delta
             // This is usually just a tool movement.
-            _.each(delta.geom, function(geom) {
+            _.each(delta.geom, (geom) => {
                 if (!window.geom || window.geom.length < 100){
                     window.geom = window.geom || [];
                     window.geom.push(geom);
                 }
-                let obj = self._objects[geom.id];
+                let obj = this._objects[geom.id];
                 if(obj !== undefined) {
                         self._object3D.add(self.traceLine);
                         self._overlay3D.add(self.traceLine);
@@ -411,7 +378,12 @@ export default class NC extends THREE.EventDispatcher {
         return alter;
     }
 
-    getSelected() { return [this]; }
+    getSelected() { 
+       if(this.state.selected) 
+        return [this]; 
+        else
+            return [];
+    }
     getID() { return this.id; }
     toggleHighlight() { }
     toggleVisibility() { }

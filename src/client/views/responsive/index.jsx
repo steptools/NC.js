@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import _ from 'lodash';
 import request from 'superagent';
@@ -6,7 +5,6 @@ import CADView from '../cad';
 import HeaderView from '../header';
 import SidebarView from '../sidebar';
 import FooterView	from '../footer';
-import {Markdown as md} from 'node-markdown';
 
 export default class ResponsiveView extends React.Component {
   constructor(props) {
@@ -22,6 +20,7 @@ export default class ResponsiveView extends React.Component {
 
     this.state = {
       guiMode: tempGuiMode,
+      msGuiMode: false,
       svmode: 'ws',
       ws: -1,
       svtree: {
@@ -39,6 +38,7 @@ export default class ResponsiveView extends React.Component {
       toolCache : [],
       curtool : '',
       toleranceCache: [],
+      highlightedTolerances: [],
       workingstepCache: {},
       workingstepList: [],
       workplanCache: {},
@@ -46,6 +46,9 @@ export default class ResponsiveView extends React.Component {
       previouslySelectedEntities: [null],
       mtc: {},
       live: false,
+      preview: false,
+      feedRate: 0,
+      spindleSpeed: 0,
     };
 
     this.addBindings();
@@ -61,6 +64,11 @@ export default class ResponsiveView extends React.Component {
     this.ppBtnClicked = this.ppBtnClicked.bind(this);
 
     this.updateWS = this.updateWorkingstep.bind(this);
+
+    this.toggleMobileSidebar = this.toggleMobileSidebar.bind(this);
+    this.handleKeydown = this.handleKeydown.bind(this);
+    this.handleKeyup = this.handleKeyup.bind(this);
+
     this.cbWS = this.cbWS.bind(this);
 
     this.handleResize = this.handleResize.bind(this);
@@ -69,6 +77,9 @@ export default class ResponsiveView extends React.Component {
     this.changeSpeed = this.changeSpeed.bind(this);
 
     this.openProperties = this.openProperties.bind(this);
+    this.openPreview = this.openPreview.bind(this);
+
+    this.toggleHighlight = this.toggleHighlight.bind(this);
 
     this.updateMTC = this.updateMTC.bind(this);
     this.populateFeedRate = this.populateFeedRate.bind(this);
@@ -96,6 +107,14 @@ export default class ResponsiveView extends React.Component {
     });
 
     this.props.app.actionManager.on('update-mtc', this.updateMTC);
+
+    this.props.app.socket.on('nc:feed', (feed) => {
+      this.setState({'feedRate' : feed});
+    });
+
+    this.props.app.socket.on('nc:spindle', (spindle) => {
+      this.setState({'spindleSpeed' : spindle});
+    });
   }
 
   componentWillMount() {
@@ -172,17 +191,6 @@ export default class ResponsiveView extends React.Component {
     // get the project loopstate
     let url = '/v3/nc/state/loop/';
     let resCb = (error, response) => {
-      let log = '';
-      request
-        .get('/log')
-        .end((err, res) => {
-          if (!err && res.ok) {
-            log = md(res.text);
-          } else {
-            console.log(err);
-          }});
-      this.setState({'logtext' : log});
-
       if (!error && response.ok) {
         let stateObj = JSON.parse(response.text);
 
@@ -194,6 +202,8 @@ export default class ResponsiveView extends React.Component {
         }
 
         this.setState({'playbackSpeed': Number(stateObj.speed)});
+        this.setState({'spindleSpeed': Number(stateObj.spindle)});
+        this.setState({'feedRate': Number(stateObj.feed)});
       } else {
         console.log(error);
       }
@@ -227,9 +237,21 @@ export default class ResponsiveView extends React.Component {
 
           wps[node.id] = node;
         };
-
+        let concatNames = (n) => {
+          if(n.type === 'tolerance' && !n.nameMod){
+            if(n.modName){
+              n.name = n.name + ' ' + n.modName;
+            }
+            if(n.rangeName){
+              n.name = n.name + ' ' + n.rangeName;
+            }
+          }
+          else if(n.type === 'workpiece' && n.children.length > 0){
+            concatNames(n.children);
+          }
+        }
         _.each(json, nodeCheck);
-
+        _.each(wps, concatNames);
         this.setState({'toleranceCache': wps});
         this.setState({'toleranceList': ids});
       } else {
@@ -241,6 +263,8 @@ export default class ResponsiveView extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
+    window.addEventListener('keydown', this.handleKeydown);
+    window.addEventListener('keyup', this.handleKeyup);
 
     this.getWorkplan();
     this.getLoopstate();
@@ -290,6 +314,8 @@ export default class ResponsiveView extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('keydown', this.handleKeydown);
+    window.removeEventListener('keyup', this.handleKeyup);
   }
 
   handleResize() {
@@ -303,6 +329,28 @@ export default class ResponsiveView extends React.Component {
 
     this.setState({resize: true});
     this.setState({resize: false});
+  }
+
+  handleKeydown(e) {
+    window.removeEventListener('keydown', this.handleKeydown);
+
+    switch (e.keyCode) {
+      case 27: // ESC
+        if (this.state.preview === true) {
+          this.openPreview(false);
+        } else {
+          this.openProperties(null);
+        }
+        break;
+    }
+  }
+
+  handleKeyup() {
+    window.addEventListener('keydown', this.handleKeydown);
+  }
+
+  toggleMobileSidebar(newMode) {
+    this.setState({msGuiMode: newMode});
   }
 
   openProperties(node, backtrack) {
@@ -328,6 +376,12 @@ export default class ResponsiveView extends React.Component {
     }
   }
 
+  openPreview(state) {
+    if (state === true || state === false && state !== this.state.preview) {
+      this.setState({preview: state});
+    }
+  }
+
   updateWorkingstep(ws) {
     let url = '/v3/nc/workplan/' + ws;
 
@@ -335,9 +389,14 @@ export default class ResponsiveView extends React.Component {
       if (!error && response.ok) {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
+          let tols = [];
+          _.each(this.state.toleranceCache[workingstep.toBe.id].children, (t) => {
+            tols.push(t.id);
+          });
           this.setState({
             'ws': workingstep.id,
             'wstext':workingstep.name.trim(),
+            'highlightedTolerances': tols,
           });
 
           this.setState({'curtool': workingstep.tool});
@@ -348,6 +407,18 @@ export default class ResponsiveView extends React.Component {
     };
 
     request.get(url).end(requestCB);
+  }
+
+  toggleHighlight(id) {
+    let newTols;
+
+    if (this.state.highlightedTolerances.indexOf(id) < 0) {
+      newTols = _.concat(this.state.highlightedTolerances, id);
+    } else {
+      newTols = _.without(this.state.highlightedTolerances, id);
+    }
+
+    this.setState({ 'highlightedTolerances': newTols });
   }
 
   populateSpindleSpeed(ss) {
@@ -515,6 +586,14 @@ export default class ResponsiveView extends React.Component {
           speed={this.state.playbackSpeed}
           ws={this.state.ws}
           workingstepCache={this.state.workingstepCache}
+          feedRate={this.state.feedRate}
+          spindleSpeed={this.state.spindleSpeed}
+          spindleUpdateCb={
+            (newSpindleSpeed) => this.setState({spindleSpeed: newSpindleSpeed})
+          }
+          feedUpdateCb={
+            (newFeedRate) => this.setState({feedRate: newFeedRate})
+          }
         />
       );
       SV = (
@@ -547,6 +626,11 @@ export default class ResponsiveView extends React.Component {
           openProperties={this.openProperties}
           selectedEntity={this.state.selectedEntity}
           previouslySelectedEntities={this.state.previouslySelectedEntities}
+          isMobile={false}
+          preview={this.state.preview}
+          openPreview={this.openPreview}
+          toggleHighlight={this.toggleHighlight}
+          highlightedTolerances={this.state.highlightedTolerances}
         />
       );
     } else {
@@ -562,19 +646,41 @@ export default class ResponsiveView extends React.Component {
             (newWSText) => this.setState({wstext: newWSText})
           }
           ppbutton={this.state.ppbutton}
+          cbMobileSidebar={this.toggleMobileSidebar}
+          msGuiMode={this.state.msGuiMode}
+          //
+          app={this.props.app}
+          mode={this.state.svmode}
+          tree={this.state.svtree}
+          altmenu={this.state.svaltmenu}
+          cbMode={
+              (newMode) => this.setState({svmode: newMode})
+          }
+          cbTree={
+              (newTree) => this.setState({svtree: newTree})
+          }
+          cbAltMenu={
+              (newAltMenu) => this.setState({svaltmenu: newAltMenu})
+          }
+          toolCache={this.state.toolCache}
+          curtool={this.state.curtool}
+          toleranceList={this.state.toleranceList}
+          toleranceCache={this.state.toleranceCache}
+          workplanCache={this.state.workplanCache}
+          workingstepCache={this.state.workingstepCache}
+          workingstepList={this.state.workingstepList}
+          openProperties={this.openProperties}
+          selectedEntity={this.state.selectedEntity}
+          previouslySelectedEntities={this.state.previouslySelectedEntities}
+          preview={this.state.preview}
+          openPreview={this.openPreview}
+          toggleHighlight={this.toggleHighlight}
+          highlightedTolerances={this.state.highlightedTolerances}
         />
       );
     }
 
-    let cadviewBottom, cadviewStyle;
-
-    if (navigator.userAgent.match(/iPhone|iPad|iPod/i)
-          || (navigator.userAgent.indexOf('Chrome') === -1
-            && navigator.userAgent.indexOf('Safari') !== -1)) {
-      cadviewBottom = '10vmin';
-    } else {
-      cadviewBottom = '0px';
-    }
+    let cadviewStyle;
 
     // squish the cad view down to appropriate size
     if (this.state.guiMode === 0) {
@@ -583,15 +689,26 @@ export default class ResponsiveView extends React.Component {
         'left': '390px',
         'top': '90px',
         'bottom': '0px',
-        'right': '0px',
+        'right': '0px'
       };
     } else {
+      let cadviewHeight="80%";
+      let fv = $('.Footer-container');
+
+      if(typeof fv.offset() != 'undefined')
+      {
+        cadviewHeight=fv.offset().top;
+        cadviewHeight=cadviewHeight+"px";
+      }
+      else cadviewHeight="100%";
+
+
       cadviewStyle =
       {
-        'bottom': cadviewBottom,
+        'top': "0",
         'right': '0px',
         'width': '100%',
-        'top': '0px',
+        'height': cadviewHeight
       };
     }
 
@@ -610,6 +727,8 @@ export default class ResponsiveView extends React.Component {
             selectedEntity={this.state.selectedEntity}
             toleranceCache={this.state.toleranceCache}
             ws={this.state.ws}
+            workingstepCache={this.state.workingstepCache}
+            highlightedTolerances={this.state.highlightedTolerances}
           />
         </div>
         {FV}

@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import Menu, {Item as MenuItem} from 'rc-menu';
 import WorkingstepList from './workingstepslist';
@@ -43,6 +42,7 @@ export default class SidebarView extends React.Component {
 
   render() {
     let properties = <PropertiesPane
+      app={this.props.app}
       entity={this.props.selectedEntity}
       previousEntities={this.props.previouslySelectedEntities}
       pid={this.props.pid}
@@ -50,7 +50,15 @@ export default class SidebarView extends React.Component {
       propertiesCb={this.props.openProperties}
       tools={this.props.toolCache}
       workingsteps={this.props.workingstepCache}
+      resize={this.props.resize}
       toleranceCache={this.props.toleranceCache}
+      guiMode={this.props.guiMode}
+      manager={this.props.cadManager}
+      preview={this.props.preview}
+      previewCb={this.props.openPreview}
+      toggleHighlight={this.props.toggleHighlight}
+      highlightedTolerances={this.props.highlightedTolerances}
+      isMobile={this.props.isMobile}
     />;
 
     const tabs = (
@@ -100,6 +108,7 @@ export default class SidebarView extends React.Component {
           ws={this.props.ws}
           workingstepCache={this.props.workingstepCache}
           workingstepList={this.props.workingstepList}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'wp') {
@@ -110,16 +119,21 @@ export default class SidebarView extends React.Component {
           ws={this.props.ws}
           workplanCache={this.props.workplanCache}
           propertyCb={this.props.openProperties}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'tolerance') {
       currentView = (
         <ToleranceList
+          curWS={this.props.workingstepCache[this.props.ws]}
           cbMode={this.props.cbMode}
           cbTree={this.props.cbTree}
           propertyCb={this.props.openProperties}
           toleranceCache={this.props.toleranceCache}
           toleranceList={this.props.toleranceList}
+          highlightedTolerances={this.props.highlightedTolerances}
+          toggleHighlight={this.props.toggleHighlight}
+          isMobile={this.props.isMobile}
         />
       );
     } else if (this.props.mode === 'tools') {
@@ -134,12 +148,17 @@ export default class SidebarView extends React.Component {
           }}
           tools={this.props.toolCache}
           curtool={this.props.curtool}
+          isMobile={this.props.isMobile}
         />
       );
     }
 
+    let SVWidth;
+    if(this.props.isMobile)
+      SVWidth={"width": "100%"};
+
     return (
-      <div className='sidebar'>
+      <div className='sidebar' style={SVWidth}>
         {properties}
         {tabs}
         {currentView}

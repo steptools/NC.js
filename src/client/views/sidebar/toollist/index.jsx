@@ -1,4 +1,3 @@
-// NOTE: styleguide compliant
 import React from 'react';
 import _ from 'lodash';
 
@@ -21,7 +20,7 @@ export default class ToolList extends React.Component {
     return (
       <ol
         id={node.id}
-        type = {node.name}
+        type = {node.toolType}
         className={cName}
         onClick={() => this.props.propertyCb(node)}
         onMouseDown={function(e) {
@@ -38,13 +37,31 @@ export default class ToolList extends React.Component {
   }
 
   render() {
+
+    let treeHeight;
+    if(this.props.isMobile)
+      treeHeight={"height": "100%"};
+
+    let tListActive=(_.values(this.props.tools).map((tool, i) => {
+          if(tool.enabled === true)
+            return (<div className='m-node' key={i}>
+              {this.renderNode(tool)}
+            </div>);
+          else return "";
+        }));
+
+    let tListDisabled=(_.values(this.props.tools).map((tool, i) => {
+          if(tool.enabled === false)
+            return (<div className='m-node' key={i}>
+              {this.renderNode(tool)}
+            </div>);
+          else return "";
+        }));
+
     return (
-      <div className='m-tree'>
-        {_.values(this.props.tools).map((tool, i) => {
-          return <div className='m-node' key={i}>
-            {this.renderNode(tool)}
-          </div>;
-        })}
+      <div className='m-tree' style={treeHeight}>
+        {tListActive}
+        {tListDisabled}
       </div>
     );
   }

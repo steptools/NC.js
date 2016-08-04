@@ -1,28 +1,75 @@
-.footer-bar {
+.Footer-container {
     position: absolute;
-    height: 10vmin;
-    width: 100%;
-    font-family: sans-serif;
-    font-size: 8vmin;
-    color: 222222;
     bottom: 0;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,1));
-    z-index: 99;
-    flex-flow: row nowrap;
-    display: flex;
+    width: 100%;
+    cursor: default;
 
-    .op-text {
-        flex: 20;
+    .drawerbutton {
+        height: 3vmin;
+        width: 100%;
+        position: relative;
+        text-align: center;
+        font-size: 12px;
+        background-color: #DDDDDD;
+        z-index: 100;
+        border-bottom: 1px solid rgba(102, 102, 102, 0.5);
+        cursor: pointer;
+        
+        span {
+            line-height: 3vmin;
+        }
     }
 
-    .footer-buttons {
-        background: green;
+    .Footer-bar {
+        position: relative;
+        height: 10vmin;
+        width: 100%;
+        font-family: sans-serif;
+        font-size: 8vmin;
+        color: 222222;
+        background-color: #DDDDDD;
+        z-index: 99;
+        padding-left: 5px;
         display: flex;
+        flex-flow: row nowrap;
+        cursor: pointer;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
 
-        .button-icon {
-            flex: 1;
-            padding: 0.5vmin;
-            height: 10vmin;
+        .op-text {
+            flex: 20;
+            white-space: nowrap;
+            overflow: hidden;
+
+            p {
+                display: inline-block;
+                padding-left: 100%;
+                animation: marquee 30s linear infinite;
+            }
+        }
+
+        @keyframes marquee {
+            0%   { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .footer-buttons {
+            cursor: pointer;
+            display: flex;
+
+            .button-icon {
+                flex: 1;
+                padding: 0.5vmin;
+                height: 10vmin;
+                border-left: 1px solid rgba(102, 102, 102, 0.5);
+            }
+
+            .glyphicons {
+                color: #333333;
+            }
         }
     }
 }

@@ -12,7 +12,11 @@ var app;
 var loopTimer;
 var loopStates = {};
 let playbackSpeed = 100;
+let spindleSpeed;
+let feedRate;
 let path = find.GetProjectName();
+let changed = false;
+let justchanged = false;
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
@@ -20,19 +24,15 @@ var WSGCode = [];
 let nextSequence = 0;
 
 var MTCHold = {};
-///*******************************************************************\
-//|                                                                    |
-//|                       Helper Functions                             |
-//|                                                                    |
-//\*******************************************************************/
+/****************************** Helper Functions ******************************/
 
-var update = (val) => {
+function update(val) {
   app.ioServer.emit('nc:state', val);
-};
+}
 
-var updateSpeed = (speed) => {
+function updateSpeed(speed) {
   app.ioServer.emit('nc:speed', speed);
-};
+}
 
 var MTListen = function() {
   var resCoords = [];
@@ -164,22 +164,22 @@ var _getDelta = function(ms, key, cb) {
   });
 };
 
-var getNext = function(ms, cb) {
+function getNext(ms, cb) {
   ms.NextWS();
   cb();
-};
+}
 
-var getPrev = function(ms, cb) {
+function getPrev(ms, cb) {
   ms.PrevWS();
   cb();
-};
+}
 
-var getToWS = function(wsId, ms, cb) {
+function getToWS(wsId, ms, cb) {
   ms.GoToWS(wsId);
   //assume switch was successful
   app.logger.debug('Switched! ' + wsId);
   cb();
-};
+}
 
 var loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
@@ -250,11 +250,7 @@ var parseGCodes = function() {
   });
 };
 
-///*******************************************************************\
-//|                                                                    |
-//|                       Endpoint Functions                           |
-//|                                                                    |
-//\*******************************************************************/
+/***************************** Endpoint Functions *****************************/
 
 var _loopInit = function(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);

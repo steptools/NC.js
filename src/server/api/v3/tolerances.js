@@ -1,111 +1,165 @@
-"use strict";
-var StepNC = require('../../../../../STEPNode/build/Release/StepNode');
+'use strict';
 var file = require('./file');
 var _ = require('lodash');
 var tol = file.tol;
 var apt = file.apt;
 var find = file.find;
 
-///*******************************************************************\
-//|                                                                    |
-//|                       Helper Functions                             |
-//|                                                                    |
-//\*******************************************************************/
+/****************************** Helper Functions ******************************/
+function getModIcon(mod){
+  switch(mod){
+    case 'maximum_material_requirement':
+      return '\u24C2 ';
+    case 'reciprocity_requirement':
+      return '\u24C7 ';
+    case 'least_material_requirement':
+      return '\u24C1 ';
+    case 'any_cross_section':
+      return '(ACS) ';
+    case 'common_zone':
+      return '(CZ) ';
+    case 'each_radial_element':
+      return '(EACH RADIAL ELEMENT)';
+    case 'free_state':
+      return '\u24BB ';
+    case 'line_element':
+      return '(LE) ';
+    case 'major_diameter':
+      return '(MD) ';
+    case 'minor_diameter':
+      return '(LD) ';
+    case 'not_convex':
+      return '(NC) ';
+    case 'pitch_diameter':
+      return '(PD) ';
+    case 'separate_requirement':
+      return '(SEP REQT) ';
+    case 'statistical_tolerance':
+      return '<ST> ';
+    case 'tangent_plane':
+      return '\u24C9 ';
+    default:
+      return mod + 'hasn\'t been implemented yet';
+  }
+}
 
-var getTolerance = function(id) {
-  let name = tol.GetToleranceType(id);
+function getTolerance(id) {
+  let name = apt.SetNameGet(id);
+  let tolTypeName = tol.GetToleranceType(id);
+  let unit = tol.GetToleranceUnit(id);
   let tolType;
-  if (name) {
-    name = name.replace(/_/g, ' ').toLowerCase();
-    tolType = name.split(' ')[0];
+  if (tolTypeName) {
+    tolTypeName = tolTypeName.replace(/_/g, ' ').toLowerCase();
+    tolTypeName = tolTypeName.replace(/\w\S*/g, function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+    tolType = tolTypeName.split(' ')[0];
+  }
+
+  if (name.trim() === '') {
+    name = tolTypeName;
+  }
+  let range = tol.GetTolerancePlusMinus(id);
+  let rangeName;
+  let mods = tol.GetToleranceModifierAll(id);
+  let modName;
+  if(mods.length > 0){
+    modName = mods.map((mod) => getModIcon(mod)).join(' ');
+  }
+  if (!range || range.flag === false) {
+    rangeName = '';
+  }
+  else{
+    if(Math.abs(range.upper) === Math.abs(range.lower)){
+      rangeName = '\u00B1 ' + Math.abs(range.upper) + unit;
+    }
+    else{
+      rangeName = range.upper + ' ' + range.lower + ' ' + unit;
+    }
   }
 
   return {
-    "id": id,
-    "type": 'tolerance',
-    "name": name,
-    "toleranceType": tolType,
-    "value": tol.GetToleranceValue(id),
-    "unit" : tol.GetToleranceUnit(id),
-    "faces": tol.GetToleranceFaceAll(id)
+    'id': id,
+    'type': 'tolerance',
+    'name': name,
+    'tolTypeName': tolTypeName,
+    'toleranceType': tolType,
+    'value': tol.GetToleranceValue(id),
+    'unit' : unit,
+    'faces': tol.GetToleranceFaceAll(id),
+    'range': range,
+    'rangeName': rangeName,
+    'modifiers': mods,
+    'modName': modName,
   };
-};
+}
 
-var getWp = function(id, type) {
+function getWp(id, type) {
   let name = find.GetWorkpieceName(id);
   let steps = apt.GetWorkpieceExecutableAll(id);
   let tolerances = tol.GetWorkpieceToleranceAll(id);
   let ret = {
-    "id": id,
-    "name": name,
-    "workingsteps": steps,
-    "wpType": type,
-    "tolerances": tolerances,
-    "children": [],
-    "subs": []
+    'id': id,
+    'name': name,
+    'workingsteps': steps,
+    'wpType': type,
+    'tolerances': tolerances,
+    'children': [],
+    'subs': [],
   };
-  if (type)
-    ret.type = "workpiece";
+  if (type) {
+    ret.type = 'workpiece';
+  }
 
-  let asm_list = find.GetWorkpieceImmediateSubAssemblyAll(id);
-  let subs = [];
+  let asmList = find.GetWorkpieceSubAssemblyAll(id);
 
-  for (let sub_id of asm_list) {
-    if (id !== sub_id) {
-      let sub = getWp(sub_id);
+  for (let subId of asmList) {
+    if (id !== subId) {
+      let sub = getWp(subId);
       ret.subs.push(sub);
       ret.subs.concat(sub.subs);
     }
   }
 
-  if (subs.length > 0)
-    ret.children = subs;
-
   return ret;
-};
+}
 
-var getWsTols = function(wsId, wpId) {
+function getWsTols(wsId, wpId) {
   if (find.IsWorkingstep(wsId)) { // this may be able to be factored out later
     let tolerances = JSON.stringify(tol.GetWorkingstepToleranceAll(wsId));
     return tolerances;
-  }
-  else {  // we are looking for a tolerance
+  } else {  // we are looking for a tolerance
     let tol = getTolerance(Number(wsId));
     tol.workpiece = wpId;
     return tol;
   }
-};
+}
 
-///*******************************************************************\
-//|                                                                    |
-//|                       Endpoint Functions                           |
-//|                                                                    |
-//\*******************************************************************/
+/***************************** Endpoint Functions *****************************/
 
-var _getWsTols = function(req,res) {
-  if (req.params.wsId){
+function _getWsTols(req, res) {
+  if (req.params.wsId) {
     let wsId = req.params.wsId;
     if (find.IsWorkingstep(wsId)) { // this may be able to be factored out later
       let tolerances = JSON.stringify(tol.GetWorkingstepToleranceAll(wsId));
       res.status(200).send(tolerances);
-    }
-    else {  // we are looking for a tolerance
+    } else {  // we are looking for a tolerance
       let tol = getTolerance(Number(req.params.wsId));
       res.status(200).send(tol);
     }
   }
-};
+}
 
-var _getTols = function(req,res) {
-  let tol_list = tol.GetToleranceAll();
+function _getTols(req, res) {
+  let tolList = tol.GetToleranceAll();
   let ret = [];
-  for (let id of tol_list){
-      ret.push(getTolerance(id));
+  for (let id of tolList) {
+    ret.push(getTolerance(id));
   }
   res.status(200).send(ret);
-};
+}
 
-var _getWps = function(req,res) {
+function _getWps(req, res) {
   let wps = find.GetWorkpieceAll();
   let ret = {};
   for (let id of wps) {
@@ -120,20 +174,19 @@ var _getWps = function(req,res) {
       wp.subs = undefined;
     }
 
-    _.each(wp.tolerances, (wp_tol) => {
-      wp.children.push(getWsTols(wp_tol, wp.id));
-    });
-
+    _.each(wp.tolerances, (wpTol) => wp.children.push(getWsTols(wpTol, wp.id)));
     wp.tolerances = undefined;
   }
 
   res.status(200).send(ret);
-};
+}
 
 module.exports = function(app, cb) {
-  app.router.get('/v3/nc/tolerances/:wsId',_getWsTols);
-  app.router.get('/v3/nc/tolerances/',_getTols);
-  app.router.get('/v3/nc/workpieces/',_getWps);
+  app.router.get('/v3/nc/tolerances/:wsId', _getWsTols);
+  app.router.get('/v3/nc/tolerances/', _getTols);
+  app.router.get('/v3/nc/workpieces/', _getWps);
 
-  if (cb) cb();
+  if (cb) {
+    cb();
+  }
 };
