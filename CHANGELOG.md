@@ -12,6 +12,7 @@ Bugfixes:
 - Feedrate has proper rounding
 - Workingstep transition bug fixed
 - Sidebar should scroll properly on initial load
+- Tool properties pane now shows/hides the correct workingsteps
 
 Version 1.6.0
 
