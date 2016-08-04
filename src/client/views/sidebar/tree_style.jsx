@@ -48,75 +48,95 @@ function hasActiveChildren(node, id) {
   return 'inactive';
 }
 
-const Container = (props) => {
+function setToleranceInfo(node, props) {
+  node.name += ' - ' + node.value + node.unit;
+  if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
+    node.highlightName = 'open';
+  } else {
+    node.highlightName = 'close inactive';
+  }
+
+  node.highlightIcon = 'highlight-button glyphicons glyphicons-eye-';
+  node.highlightIcon += node.highlightName;
+
+  node.highlightButton = (
+    <span
+      className={node.highlightIcon}
+      onClick={(ev) => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        props.decorators.toggleHighlight(node.id);
+      }}
+    />
+  );
+}
+
+function setToggle(node) {
+  node.toggleName = 'toggle';
+  if (node.leaf === true) {
+    node.toggleName = 'toggle-hidden';
+  } else if (node.toggled === true) {
+    node.toggleName += ' glyphicon glyphicon-chevron-down';
+  } else {
+    node.toggleName += ' glyphicon glyphicon-chevron-right';
+  }
+}
+
+function setNodeInfo(props) {
   let node = props.node;
   node.icon = getNodeIcon(node);
 
-  let innerName = 'inner';
-  let outerName = 'node';
+  node.innerName = 'inner';
+  node.outerName = 'node';
   if (hasActiveChildren(node, props.decorators.ws) === 'active') {
-    innerName += ' running-node';
+    node.innerName += ' running-node';
   } else if (node.enabled === false) {
-    innerName += ' disabled';
+    node.innerName += ' disabled';
   }
 
-  let toggleName = 'toggle';
-  if (node.leaf === true) {
-    toggleName = 'toggle-hidden';
-  } else if (node.toggled === true) {
-    toggleName += ' glyphicon glyphicon-chevron-down';
-  } else {
-    toggleName += ' glyphicon glyphicon-chevron-right';
-  }
+  setToggle(node);
 
-  let nodeName = node.name;
-  let highlightButton;
-  let highlightName;
   if (node.type === 'tolerance') {
-    nodeName += ' - ' + node.value + node.unit;
-    if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
-      highlightName = 'open';
-    } else {
-      highlightName = 'close inactive';
-    }
-    highlightButton = (
-      <span
-        className={'highlight-button glyphicons glyphicons-eye-'+highlightName}
-        onClick={(ev) => {
-          ev.stopPropagation();
-          ev.preventDefault();
-          props.decorators.toggleHighlight(node.id);
-        }}
-      />);
+    setToleranceInfo(node, props);
   }
 
-  if (node.type === 'divider') {
-    outerName += ' divider';
-    innerName += ' divider';
+  if (node.type.includes('divider')) {
+    node.outerName += ' divider';
+    node.innerName += ' divider';
   }
+  if (node.type === 'subdivider') {
+    node.outerName += ' subdivider';
+    node.innerName += ' subdivider';
+  }
+
+  return node;
+}
+
+const Container = (props) => {
+  let node = setNodeInfo(props);
 
   return (
     <div
       id={node.id}
-      className={outerName}
+      className={node.outerName}
     >
       <div
-        className={toggleName}
+        className={node.toggleName}
         onClick={props.onClick}
       />
       <div
-        className={innerName}
+        className={node.innerName}
         onClick={() => {
-          if (!outerName.includes('divider')) {
+          if (!node.outerName.includes('divider')) {
             props.decorators.propertyCb(node);
           }
         }}
       >
         {node.icon}
         <span className='textbox'>
-          {nodeName}
+          {node.name}
         </span>
-        {highlightButton}
+        {node.highlightButton}
       </div>
     </div>
   );

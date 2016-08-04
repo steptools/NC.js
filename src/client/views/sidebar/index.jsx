@@ -136,6 +136,7 @@ export default class SidebarView extends React.Component {
           highlightedTolerances={this.props.highlightedTolerances}
           toggleHighlight={this.props.toggleHighlight}
           isMobile={this.props.isMobile}
+          ws={this.props.ws}
         />
       );
     } else if (this.props.mode === 'tools') {
@@ -156,8 +157,9 @@ export default class SidebarView extends React.Component {
     }
 
     let SVWidth;
-    if(this.props.isMobile)
-      SVWidth={"width": "100%"};
+    if (this.props.isMobile) {
+      SVWidth = {'width': '100%'};
+    }
 
     return (
       <div className='sidebar' style={SVWidth}>

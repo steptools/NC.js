@@ -368,7 +368,8 @@ export default class PropertiesPane extends React.Component {
         Value: {entity.value}{entity.unit}
       </MenuItem>
     );
-    if(entity.modifiers.length > 0){
+
+    if (entity.modifiers.length > 0) {
       this.properties.push(
         <MenuItem disabled key='modifier' className='property modifier'>
           <div className={getIcon('modifiers')}/>
