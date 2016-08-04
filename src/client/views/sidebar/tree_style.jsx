@@ -52,7 +52,7 @@ function hasActiveChildren(node, id) {
 
 function setToleranceInfo(node, props) {
   node.name += ' - ' + node.value + node.unit + ' ' + node.rangeName;
-  if (node.type.includes('upcoming')) {
+  if (node.upcoming) {
     node.highlightButton = null;
     return;
   }

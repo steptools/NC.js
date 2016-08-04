@@ -43,7 +43,7 @@ export default class ToleranceList extends React.Component {
   addCurrent(tolList) {
     if (this.props.curWS.toBe && this.props.curWS.toBe.id > 0) {
       let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
-      if (wp.children && wp.children.length > 0) {
+      if (wp && wp.children && wp.children.length > 0) {
         tolList.push({
           name: 'Active Tolerances',
           leaf: true,
@@ -137,7 +137,7 @@ export default class ToleranceList extends React.Component {
       for (let tol in tolerances) {
         if (tolerances[tol].workingsteps.indexOf(ws) >= 0) {
           let tolToAdd = tolerances[tol];
-          tolToAdd.type = 'tolerance';
+          tolToAdd.upcoming = true;
           tolsInWS.push(tolToAdd);
         }
       }
