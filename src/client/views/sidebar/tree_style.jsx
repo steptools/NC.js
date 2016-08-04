@@ -104,10 +104,6 @@ function setNodeInfo(props) {
     node.outerName += ' divider';
     node.innerName += ' divider';
   }
-  if (node.type === 'subdivider') {
-    node.outerName += ' subdivider';
-    node.innerName += ' subdivider';
-  }
 
   return node;
 }

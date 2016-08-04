@@ -172,6 +172,7 @@ export default class ToleranceList extends React.Component {
     if (this.props.isMobile) {
       ts.style.tree.base.height = '100%';
     }
+
     return (
       <Treebeard
         data={tolList}
