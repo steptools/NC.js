@@ -49,7 +49,12 @@ function hasActiveChildren(node, id) {
 }
 
 function setToleranceInfo(node, props) {
-  node.name += ' - ' + node.value + node.unit;
+  node.name += ' - ' + node.value + node.unit + ' ' + node.rangeName;
+  if (node.type.includes('upcoming')) {
+    node.highlightButton = null;
+    return;
+  }
+
   if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
     node.highlightName = 'open';
   } else {
@@ -100,7 +105,7 @@ function setNodeInfo(props) {
     setToleranceInfo(node, props);
   }
 
-  if (node.type.includes('divider')) {
+  if (node.type === 'divider') {
     node.outerName += ' divider';
     node.innerName += ' divider';
   }
@@ -110,6 +115,7 @@ function setNodeInfo(props) {
 
 const Container = (props) => {
   let node = setNodeInfo(props);
+  console.log(node);
 
   return (
     <div

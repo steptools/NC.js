@@ -253,18 +253,14 @@ export default class ResponsiveView extends React.Component {
           wps[node.id] = node;
         };
         let concatNames = (n) => {
-          if(n.type === 'tolerance' && !n.nameMod){
-            if(n.modName){
+          if (n.type === 'tolerance' && !n.nameMod) {
+            if (n.modName) {
               n.name = n.name + ' ' + n.modName;
             }
-            if(n.rangeName){
-              n.name = n.name + ' ' + n.rangeName;
-            }
-          }
-          else if(n.type === 'workpiece' && n.children.length > 0){
+          } else if (n.type === 'workpiece' && n.children.length > 0) {
             concatNames(n.children);
           }
-        }
+        };
         _.each(json, nodeCheck);
         _.each(wps, concatNames);
         this.setState({'toleranceCache': wps});

@@ -136,7 +136,9 @@ export default class ToleranceList extends React.Component {
       let tolsInWS = [];
       for (let tol in tolerances) {
         if (tolerances[tol].workingsteps.indexOf(ws) >= 0) {
-          tolsInWS.push(tolerances[tol]);
+          let tolToAdd = tolerances[tol];
+          tolToAdd.type = 'tolerance';
+          tolsInWS.push(tolToAdd);
         }
       }
       upcoming.push(tolsInWS);
