@@ -616,6 +616,10 @@ $icons: '../icons/';
         border-radius: 5px;
         background-image: url($icons + 'tools/tool.svg');
     }
+
+    &.datum {
+        background-image: url($icons + 'tolerance/datum.svg');
+    }
     
     &.letter {
         font-size: 14px;

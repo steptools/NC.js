@@ -15,7 +15,9 @@ function getNodeIcon(node) {
     return <span className={'icon custom tolerance '+node.toleranceType} />;
   } else if (node.type === 'workpiece') {
     return <span className='icon custom workpiece'/>;
-  } else if (node.type === 'divider') {
+  } else if (node.type === 'datum') {
+    return <span className='icon custom datum'/>;
+  }else if (node.type === 'divider') {
     return null;
   } else {
     return <span className='icon glyphicons glyphicons-question-sign'/>;
@@ -49,9 +51,9 @@ function hasActiveChildren(node, id) {
 }
 
 const Container = (props) => {
+  console.log(props);
   let node = props.node;
   node.icon = getNodeIcon(node);
-
   let innerName = 'inner';
   let outerName = 'node';
   if (hasActiveChildren(node, props.decorators.ws) === 'active') {
