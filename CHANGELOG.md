@@ -11,6 +11,7 @@ Bugfixes:
 - Disabled workplans disable all children, not just immediate
 - Feedrate has proper rounding
 - Workingstep transition bug fixed
+- Sidebar should scroll properly on initial load
 
 Version 1.6.0
 

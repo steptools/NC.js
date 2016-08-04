@@ -11,7 +11,6 @@ export default class WorkingstepList extends React.Component {
 
   setWS(node) {
     let url = '/v3/nc/state/ws/' + node['id'];
-    //console.log('requesting ', url);
     request.get(url).end();
   }
 
@@ -59,9 +58,10 @@ export default class WorkingstepList extends React.Component {
   render() {
 
     let treeHeight;
-    if(this.props.isMobile)
-      treeHeight={"height": "100%"};
-    
+    if (this.props.isMobile) {
+      treeHeight={'height': '100%'};
+    }
+
     return (
       <div className='m-tree' style={treeHeight}>
         {this.props.workingstepList.map((workingstep, i) => {
