@@ -328,17 +328,13 @@ export default class PropertiesPane extends React.Component {
       return;
     }
 
-    let cName = 'preview-button preview-icon';
-    cName += ' glyphicons glyphicons-new-window-alt';
     this.buttons.push(
       <MenuItem
         key='preview'
         className='button'
       >
         Preview
-        <span
-          className={cName}
-        />
+        <span className={'icon glyphicons glyphicons-new-window-alt'}/>
       </MenuItem>
     );
   }
@@ -374,7 +370,8 @@ export default class PropertiesPane extends React.Component {
         Value: {entity.value}{entity.unit}
       </MenuItem>
     );
-    if(entity.modifiers.length > 0){
+
+    if (entity.modifiers.length > 0) {
       this.properties.push(
         <MenuItem disabled key='modifier' className='property modifier'>
           <div className={getIcon('modifiers')}/>
@@ -454,7 +451,7 @@ export default class PropertiesPane extends React.Component {
       highlightButton = (
         <span
           key='preview'
-          className='preview-icon glyphicons glyphicons-new-window-alt'
+          className='icon preview glyphicons glyphicons-new-window-alt'
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -583,16 +580,15 @@ export default class PropertiesPane extends React.Component {
       }
     } else if (entity.type === 'tolerance') {
       if (children && children.length > 0) {
-        if(children.length === 1){
+        if (children.length === 1) {
           childrenTitle = 'Datum:';
-        }
-        else{
+        } else {
           childrenTitle = 'Datums:';
         }
       } else {
         childrenTitle = 'No datums defined.';
       }
-    }else if (children) {
+    } else if (children) {
       childrenTitle = 'Children:';
     } else {
       childrenTitle = 'No Children';

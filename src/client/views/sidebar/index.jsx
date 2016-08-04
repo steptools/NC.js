@@ -129,11 +129,14 @@ export default class SidebarView extends React.Component {
           cbMode={this.props.cbMode}
           cbTree={this.props.cbTree}
           propertyCb={this.props.openProperties}
+          workingstepCache={this.props.workingstepCache}
+          workingstepList={this.props.workingstepList}
           toleranceCache={this.props.toleranceCache}
           toleranceList={this.props.toleranceList}
           highlightedTolerances={this.props.highlightedTolerances}
           toggleHighlight={this.props.toggleHighlight}
           isMobile={this.props.isMobile}
+          ws={this.props.ws}
         />
       );
     } else if (this.props.mode === 'tools') {
@@ -154,8 +157,9 @@ export default class SidebarView extends React.Component {
     }
 
     let SVWidth;
-    if(this.props.isMobile)
-      SVWidth={"width": "100%"};
+    if (this.props.isMobile) {
+      SVWidth = {'width': '100%'};
+    }
 
     return (
       <div className='sidebar' style={SVWidth}>
