@@ -356,11 +356,7 @@ export default class NC extends THREE.EventDispatcher {
                         let zvec = new THREE.Vector3(delta.offset[3], delta.offset[4], delta.offset[5]);
 
                         let yvec = new THREE.Vector3();
-                        yvec.crossVectors(xvec, zvec);
-
-                        console.log(xvec);
-                        console.log(yvec);
-                        console.log(zvec);
+                        yvec.crossVectors(zvec, xvec);
 
                         let trans = new THREE.Matrix3();
 
@@ -370,11 +366,8 @@ export default class NC extends THREE.EventDispatcher {
                           zvec.getComponent(0), zvec.getComponent(1), zvec.getComponent(2)
                         );
 
-                        trans.transpose();
-
 												mtposition.applyMatrix3(trans);
-                        console.log(mtposition);
-												
+
                         obj.object3D.position.copy(mtposition);
                         obj.object3D.quaternion.copy(quaternion);
                         //console.log(obj.object3D.position);
