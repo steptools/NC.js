@@ -10,8 +10,6 @@ let playbackSpeed = 100;
 let spindleSpeed;
 let feedRate;
 let path = find.GetProjectName();
-let changed = false;
-let justchanged = false;
 
 /****************************** Helper Functions ******************************/
 
@@ -63,37 +61,29 @@ function loop(ms, key) {
       feedRate = feedRateNew;
       app.ioServer.emit('nc:feed', feedRate);
     }
-    // SWITCH Workingstep
+    //get the delta
+    getDelta(ms, key, function(b) {
+      app.ioServer.emit('nc:delta', JSON.parse(b));
+      if (playbackSpeed > 0) {
+        if (loopTimer !== undefined) {
+          clearTimeout(loopTimer);
+        }
+        loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+      }
+    });
+    //change the working step
     let rc = ms.AdvanceState();
+    console.log(rc);
     if (rc === 1) {
       let setup = sameSetup(ms.GetWSID(), ms.GetNextWSID());
       if (!setup) {
         loopStates[path] = false;
         update('pause');
-        changed = true;
-        justchanged = true;
       }
-      if(!changed){
-        getNext(ms, function() {
-          loop(ms, true);
-        });
-      }
-    }
-    //get the delta
-    getDelta(ms, key, function(b) {
-        app.ioServer.emit('nc:delta', JSON.parse(b));
-        if (playbackSpeed > 0) {
-          if (loopTimer !== undefined) {
-            clearTimeout(loopTimer);
-          }
-            if (rc === 1) loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
-            else
-            {
-              loopTimer = setTimeout(() => loop(ms, changed), 50/(playbackSpeed/200));
-              if(changed) changed = false;
-            }
-        }
+      getNext(ms, function() {
+        loop(ms, true);
       });
+    }
   }
 }
 
@@ -142,15 +132,9 @@ function handleWSInit(command, res) {
         break;
       }
       let ws = Number(command);
-      if (temp) {
-        getToWS(ws, file.ms, function() {
-          loop(file.ms, true);
-        });
-      } else {
-        getToWS(ws, file.ms, function() {
-          loop(file.ms, true);
-        });
-      }
+      getToWS(ws, file.ms, function() {
+        loop(file.ms, true);
+      });
       loopStates[path] = false;
       update('pause');
       res.sendStatus(200);
@@ -195,12 +179,6 @@ function _loopInit(req, res) {
         }
         // app.logger.debug('Looping ' + path);
         loopStates[path] = true;
-        if (justchanged) {
-          justchanged = false;
-          getNext(file.ms, function() {
-            loop(file.ms, true);
-          });
-        }
         res.sendStatus(200);
         update('play');
         loop(ms, false);
@@ -252,10 +230,8 @@ var _wsInit = function(req, res) {
   }
 
   handleWSInit(req.params.command, res);
-  if(justchanged){
-    temp = true;
-  }
-  getDelta(file.ms, justchanged, function(b) {
+
+  getDelta(file.ms, false, function(b) {
     app.ioServer.emit('nc:delta', JSON.parse(b));
     if (playbackSpeed > 0) {
       if (loopTimer !== undefined) {
