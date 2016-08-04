@@ -43,6 +43,16 @@ function getModIcon(mod){
   }
 }
 
+function getDatum(dat){
+  let label = tol.GetDatumLabel(dat);
+  let ret = {
+    'type' : 'datum',
+    'name' : label,
+    'id' : dat,
+  }
+  return ret;
+}
+
 function getTolerance(id) {
   let name = apt.SetNameGet(id);
   let tolTypeName = tol.GetToleranceType(id);
@@ -77,7 +87,8 @@ function getTolerance(id) {
       rangeName = range.upper + ' ' + range.lower + ' ' + unit;
     }
   }
-
+  let datum = tol.GetToleranceDatumAll(id);
+  let datumLabels = datum.map((dat) => getDatum(dat));
   return {
     'id': id,
     'type': 'tolerance',
@@ -91,6 +102,8 @@ function getTolerance(id) {
     'rangeName': rangeName,
     'modifiers': mods,
     'modName': modName,
+    'datum' : datum,
+    'children' : datumLabels,
   };
 }
 

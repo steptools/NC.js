@@ -15,7 +15,9 @@ function getNodeIcon(node) {
     return <span className={'icon custom tolerance '+node.toleranceType} />;
   } else if (node.type === 'workpiece') {
     return <span className='icon custom workpiece'/>;
-  } else if (node.type === 'divider') {
+  } else if (node.type === 'datum') {
+    return <span className='icon custom datum'/>;
+  }else if (node.type === 'divider') {
     return null;
   } else {
     return <span className='icon glyphicons glyphicons-question-sign'/>;
@@ -48,6 +50,7 @@ function hasActiveChildren(node, id) {
   return 'inactive';
 }
 
+<<<<<<< HEAD
 function setToleranceInfo(node, props) {
   node.name += ' - ' + node.value + node.unit + ' ' + node.rangeName;
   if (node.type.includes('upcoming')) {
@@ -59,6 +62,18 @@ function setToleranceInfo(node, props) {
     node.highlightName = 'open';
   } else {
     node.highlightName = 'close inactive';
+=======
+const Container = (props) => {
+  console.log(props);
+  let node = props.node;
+  node.icon = getNodeIcon(node);
+  let innerName = 'inner';
+  let outerName = 'node';
+  if (hasActiveChildren(node, props.decorators.ws) === 'active') {
+    innerName += ' running-node';
+  } else if (node.enabled === false) {
+    innerName += ' disabled';
+>>>>>>> 3e716a1c63ee523e381f2e450da1fc442359b591
   }
 
   node.highlightIcon = 'highlight-button glyphicons glyphicons-eye-';
@@ -101,8 +116,30 @@ function setNodeInfo(props) {
 
   setToggle(node);
 
+<<<<<<< HEAD
   if (node.type === 'tolerance') {
     setToleranceInfo(node, props);
+=======
+  let nodeName = node.name;
+  let highlightButton;
+  let highlightName;
+  if (node.type === 'tolerance') {
+    nodeName += ' - ' + node.value + node.unit;
+    if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
+      highlightName = 'open';
+    } else {
+      highlightName = 'close inactive';
+    }
+    highlightButton = (
+      <span
+        className={'highlight-button glyphicons glyphicons-eye-'+highlightName}
+        onClick={(ev) => {
+          ev.stopPropagation();
+          ev.preventDefault();
+          props.decorators.toggleHighlight(node.id);
+        }}
+      />);
+>>>>>>> 3e716a1c63ee523e381f2e450da1fc442359b591
   }
 
   if (node.type === 'divider') {

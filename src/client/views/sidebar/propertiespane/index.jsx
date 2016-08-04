@@ -23,6 +23,8 @@ function getIcon(type, data) {
       return 'icon custom workpiece';
     case 'diameter':
       return 'icon custom diameter';
+    case 'datum':
+      return 'icon custom datum';
     case 'tolerance':
       if (data) {
         return 'icon custom tolerance ' + data;
@@ -565,8 +567,7 @@ export default class PropertiesPane extends React.Component {
   }
 
   renderChildren(entity) {
-    if (entity.type === 'workingstep' || entity.type === 'tool' ||
-        entity.type === 'tolerance') {
+    if (entity.type === 'workingstep' || entity.type === 'tool') {
       return null;
     }
     let children = entity.children; // this.normalizeChildren(entity);
@@ -577,7 +578,18 @@ export default class PropertiesPane extends React.Component {
       } else {
         childrenTitle = 'No tolerances defined.';
       }
-    } else if (children) {
+    } else if (entity.type === 'tolerance') {
+      if (children && children.length > 0) {
+        if(children.length === 1){
+          childrenTitle = 'Datum:';
+        }
+        else{
+          childrenTitle = 'Datums:';
+        }
+      } else {
+        childrenTitle = 'No datums defined.';
+      }
+    }else if (children) {
       childrenTitle = 'Children:';
     } else {
       childrenTitle = 'No Children';

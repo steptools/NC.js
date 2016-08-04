@@ -3,6 +3,7 @@ Version 1.7.0
 Features:
 - Modifiers for tolerances have been added
 - Tolerances for the next 5 workingsteps are displayed in the tolerance view
+- Datums for tolerances have been added to tolerance pane and properties pane
 
 Bugfixes:
 
