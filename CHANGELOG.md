@@ -1,16 +1,27 @@
+Version 1.7.0
+
+Features:
+- Modifiers for tolerances have been added
+
+Bugfixes:
+
+- Disabled workplans disable all children, not just immediate
+- Feedrate has proper rounding
+
 Version 1.6.0
 
 Features:
 
 - Added the ability to toggle tolerance highlighting in main view
 - Simulation pauses at the end of each Setup
-- Tolerances now display ranges
+- Tolerances now display ranges and no longer display inactive workingsteps
 
 Bugfixes:
 
 - Tolerance information on properties pane is fixed
 - Disabled selectives now disable all their children
 - Mobile sidebar no longer crashes with new tolerance highlighting
+- Fixed issues when dragging the mobile sidebar on desktop
 
 Version 1.5.2
 
