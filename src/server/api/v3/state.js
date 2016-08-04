@@ -49,10 +49,10 @@ function getToWS(wsId, ms, cb) {
 }
 
 function loop(ms, key) {
-  let spindleSpeedNew;
-  let feedRateNew;
   if (loopStates[path] === true) {
-    let rc = ms.AdvanceState();
+    //spindle speed and feedrate
+    let spindleSpeedNew;
+    let feedRateNew;
     spindleSpeedNew = Number(ms.GetCurrentSpindleSpeed());
     feedRateNew = Number(ms.GetCurrentFeedrate());
     if(spindleSpeed !== spindleSpeedNew){
@@ -63,23 +63,9 @@ function loop(ms, key) {
       feedRate = feedRateNew;
       app.ioServer.emit('nc:feed', feedRate);
     }
-    if (rc === 0) {  // OK
-      getDelta(ms, key, function(b) {
-        app.ioServer.emit('nc:delta', JSON.parse(b));
-        if (playbackSpeed > 0) {
-          if (loopTimer !== undefined) {
-            clearTimeout(loopTimer);
-          }
-          if(changed){
-            changed = false;
-            loopTimer = setTimeout(() => loop(ms, true), 50/(playbackSpeed/200));
-          }
-          else{
-            loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
-          }
-        }
-      });
-    } else if (rc === 1) {   // SWITCH Workingstep
+    // SWITCH Workingstep
+    let rc = ms.AdvanceState();
+    if (rc === 1) {
       let setup = sameSetup(ms.GetWSID(), ms.GetNextWSID());
       if (!setup) {
         loopStates[path] = false;
@@ -92,16 +78,22 @@ function loop(ms, key) {
           loop(ms, true);
         });
       }
-        getDelta(ms, key, function(b) {
-          app.ioServer.emit('nc:delta', JSON.parse(b));
-          if (playbackSpeed > 0) {
-            if (loopTimer !== undefined) {
-              clearTimeout(loopTimer);
-            }
-            loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+    }
+    //get the delta
+    getDelta(ms, key, function(b) {
+        app.ioServer.emit('nc:delta', JSON.parse(b));
+        if (playbackSpeed > 0) {
+          if (loopTimer !== undefined) {
+            clearTimeout(loopTimer);
           }
-        });
-      }
+            if (rc === 1) loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+            else
+            {
+              loopTimer = setTimeout(() => loop(ms, changed), 50/(playbackSpeed/200));
+              if(changed) changed = false;
+            }
+        }
+      });
   }
 }
 
