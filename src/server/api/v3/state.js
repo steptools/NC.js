@@ -243,7 +243,7 @@ var parseGCodes = function() {
     });
     JSONContent = JSONContent.substring(0, JSONContent.length - 2)  + '\n]}';
 
-    fs.writeFile(MTCfile, JSONContent, (err) => {
+    fs.writeFile(MTCfile, JSONContent, {flag: "w+"}, (err) => {
       console.log(err);
     });
     MTCHold.gcode = WSGCode['GCode'][MTCHold.gcode];
