@@ -149,7 +149,11 @@ export default class FooterView extends React.Component {
 
     let currentMSGuiMode = this.props.msGuiMode;
 
-    //console.log(soy, soy2, lastTouch, currentMSGuiMode);
+    if (dragged === false) {
+      this.soClick();
+      return;
+    }
+
     if (soy > 0) {
       if (soy2 - lastTouch > 0) {
         this.props.cbMobileSidebar(true);
@@ -169,6 +173,7 @@ export default class FooterView extends React.Component {
       //fv.css('height', '100%');
     }
     soy = 0;
+    dragged = false;
   }
 
   soTouchCancel(info) {
@@ -201,6 +206,7 @@ export default class FooterView extends React.Component {
 
   soTouchMove(info) {
     console.log('touch move');
+    dragged = true;
     let touches = info.originalEvent.touches;
     info.preventDefault();
     info.stopPropagation();
