@@ -81,8 +81,7 @@ export default class FooterView extends React.Component {
     if (currentMSGuiMode === false) {
       let bottomPos = (window.innerHeight - height);
       fv.animate({top: bottomPos+'px'}, 500);
-    }
-    if (currentMSGuiMode === true) {
+    } else if (currentMSGuiMode === true) {
       fv.animate({top: '0px'}, 500);
     }
     soy = 0;
@@ -172,8 +171,7 @@ export default class FooterView extends React.Component {
       let bottomPos = (window.innerHeight - (db.height() + fb.height()));
       fv.animate({top: bottomPos+'px'}, 500);
       //fv.css('height', 'unset');
-    }
-    if (currentMSGuiMode === true) {
+    } else if (currentMSGuiMode === true) {
       fv.animate({top: '0px'}, 500);
       //fv.css('height', '100%');
     }
@@ -204,8 +202,7 @@ export default class FooterView extends React.Component {
       let bottomPos = (window.innerHeight - (db.height() + fb.height()));
       fv.animate({top: bottomPos+'px'}, 500);
       //fv.css('height', 'unset');
-    }
-    if (currentMSGuiMode === true) {
+    } else if (currentMSGuiMode === true) {
       fv.animate({top: '0px'}, 500);
       //fv.css('height', '100%');
     }
