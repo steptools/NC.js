@@ -15,16 +15,33 @@ let playbackSpeed = 100;
 let spindleSpeed;
 let feedRate;
 let path = find.GetProjectName();
-let changed = false;
-let justchanged = false;
+let init = false;
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
-//var states = [0, 0, 0];
+var WSArray = [];
 let nextSequence = 0;
 
 var MTCHold = {};
 /****************************** Helper Functions ******************************/
+
+function getWorkingstepsArray(id){
+  if(find.IsWorkingstep(id) && find.IsEnabled(id)){
+    WSArray.push(id);
+  }
+  if (!find.IsWorkingstep(id)) {
+    let children = find.GetNestedExecutableAll(id);
+    if (children !== undefined) {
+      children.map((child) => getWorkingstepsArray(child));
+    }
+  }
+}
+
+function workingstepsArrayDriver(){
+  let id = find.GetMainWorkplan();
+  getWorkingstepsArray(id);
+  console.log(WSArray);
+}
 
 function update(val) {
   app.ioServer.emit('nc:state', val);
@@ -141,7 +158,11 @@ var _getDelta = function(ms, key, cb) {
     MTCHold.live = res[7];
     if (findWS(res[4]) ) {
       console.log('keystate');
-      ms.NextWS();
+      console.log('this is the Gcodeindex')
+      console.log(WSGCodeIndex);
+      console.log('this is the array place');
+      console.log(WSArray[WSGCodeIndex]);
+      ms.GoToWS(WSArray[WSGCodeIndex]);
       holder = JSON.parse(ms.GetKeystateJSON());
       holder.next = true;
     } else {
@@ -255,6 +276,10 @@ var parseGCodes = function() {
 var _loopInit = function(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
   let MTCfile = app.project.substring(0, app.project.length - 5) + 'mtc';
+  if(!init){
+    init = true;
+    workingstepsArrayDriver();
+  }
 
   fs.readFile(MTCfile, function(err, data) {
     if (err) {
