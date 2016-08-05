@@ -15,16 +15,32 @@ let playbackSpeed = 100;
 let spindleSpeed;
 let feedRate;
 let path = find.GetProjectName();
-let changed = false;
-let justchanged = false;
+let init = false;
 
 var WSGCodeIndex = 0;
 var WSGCode = [];
-//var states = [0, 0, 0];
+var WSArray = [];
 let nextSequence = 0;
 
 var MTCHold = {};
 /****************************** Helper Functions ******************************/
+
+function getWorkingstepsArray(id){
+  if(find.IsWorkingstep(id) && find.IsEnabled(id)){
+    WSArray.push(id);
+  }
+  if (!find.IsWorkingstep(id)) {
+    let children = find.GetNestedExecutableAll(id);
+    if (children !== undefined) {
+      children.map((child) => getWorkingstepsArray(child));
+    }
+  }
+}
+
+function workingstepsArrayDriver(){
+  let id = find.GetMainWorkplan();
+  getWorkingstepsArray(id);
+}
 
 function update(val) {
   app.ioServer.emit('nc:state', val);
@@ -100,24 +116,23 @@ var MTListen = function() {
 var findWS = function(current) {
   var change = false;
 
-  if (current >= WSGCode['worksteps'][WSGCodeIndex]) {
-    if (WSGCodeIndex >= WSGCode['worksteps'].length) {
-      WSGCodeIndex = 0;
-    } else {
-      WSGCodeIndex = WSGCodeIndex + 1;
-    }
-    console.log('GCODE Switched!');
-    return true;
+  if (current < WSGCode['worksteps'][WSGCodeIndex] && WSGCodeIndex > 0) {
+    WSGCodeIndex = 0;
+    change = true;
+    app.logger.debug("Starting from 0");
   }
 
-  while (current < WSGCode['worksteps'][WSGCodeIndex - 1]) {
-    if (WSGCodeIndex >= WSGCode['worksteps'].length) {
-      WSGCodeIndex = 0;
-    } else {
-      WSGCodeIndex = WSGCodeIndex + 1;
-    }
+  if (WSGCodeIndex === 0 && current > WSGCode['worksteps'][WSGCodeIndex]) {
     change = true;
   }
+  while (current > WSGCode['worksteps'][WSGCodeIndex + 1]) {
+    WSGCodeIndex = WSGCodeIndex + 1;
+    change = true;
+    if (WSGCodeIndex === WSGCode['worksteps'].length - 1) {
+      break;
+    }
+  }
+
   return change;
 };
 
@@ -127,7 +142,6 @@ var _getDelta = function(ms, key, cb) {
   let theQuestion = MTListen();
 
   theQuestion.then(function(res) {
-    //console.log(res);
     MTCHold.feedrate = 'Not defined';
     MTCHold.gcode = 'Not defined';
     MTCHold.spindleSpeed = 'Not defined';
@@ -139,7 +153,7 @@ var _getDelta = function(ms, key, cb) {
 
     if (findWS(res[4]) ) {
       console.log('keystate');
-      ms.NextWS();
+      ms.GoToWS(WSArray[WSGCodeIndex + 1]);
       holder = JSON.parse(ms.GetKeystateJSON());
       holder.next = true;
     } else {
@@ -210,7 +224,6 @@ var parseGCodes = function() {
       _.each(GCodes, function(line) {
         if (line[0] === '(') {
           if (line.substring(1, 12) === 'WORKINGSTEP') {
-            console.log(lineNumber);
             MTCcontent.push(lineNumber);
           }
         } else {
@@ -253,6 +266,10 @@ var parseGCodes = function() {
 var _loopInit = function(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
   let MTCfile = app.project.substring(0, app.project.length - 5) + 'mtc';
+  if(!init){
+    init = true;
+    workingstepsArrayDriver();
+  }
 
   fs.readFile(MTCfile, function(err, data) {
     if (err) {
