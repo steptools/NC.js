@@ -62,6 +62,12 @@ export default class FooterView extends React.Component {
   soMouseUp() {
     console.log('mouse up');
     $('.Footer-bar .op-text').on('mousedown', this.soMouseDown);
+    $(window).off('mousemove');
+    $(window).off('mouseup');
+
+    if (dragged === false) {
+      return;
+    }
 
     let fv = $('.Footer-container');
     let offset = fv.offset().top;
@@ -80,14 +86,11 @@ export default class FooterView extends React.Component {
 
     if (currentMSGuiMode === false) {
       let bottomPos = (window.innerHeight - height);
-      fv.animate({top: bottomPos+'px'}, 500);
+      fv.stop().animate({top: bottomPos+'px'}, 500);
     } else if (currentMSGuiMode === true) {
-      fv.animate({top: '0px'}, 500);
+      fv.stop().animate({top: '0px'}, 500);
     }
     soy = 0;
-
-    $(window).off('mousemove');
-    $(window).off('mouseup');
   }
 
   soMouseMove(info) {
@@ -125,10 +128,10 @@ export default class FooterView extends React.Component {
 
     if (currentMSGuiMode === false) {
       let bottomPos = (window.innerHeight - (db.height() + fb.height()));
-      fv.animate({top: bottomPos+'px'}, 500);
+      fv.stop().animate({top: bottomPos+'px'}, 500);
       //fv.css('height', 'unset');
     } else if (currentMSGuiMode === true) {
-      fv.animate({top: '0px'}, 500);
+      fv.stop().animate({top: '0px'}, 500);
       //fv.css('height', '100%');
     }
     soy = 0;
@@ -169,10 +172,10 @@ export default class FooterView extends React.Component {
 
     if (currentMSGuiMode === false) {
       let bottomPos = (window.innerHeight - (db.height() + fb.height()));
-      fv.animate({top: bottomPos+'px'}, 500);
+      fv.stop().animate({top: bottomPos+'px'}, 500);
       //fv.css('height', 'unset');
     } else if (currentMSGuiMode === true) {
-      fv.animate({top: '0px'}, 500);
+      fv.stop().animate({top: '0px'}, 500);
       //fv.css('height', '100%');
     }
     soy = 0;
@@ -200,10 +203,10 @@ export default class FooterView extends React.Component {
 
     if (currentMSGuiMode === false) {
       let bottomPos = (window.innerHeight - (db.height() + fb.height()));
-      fv.animate({top: bottomPos+'px'}, 500);
+      fv.stop().animate({top: bottomPos+'px'}, 500);
       //fv.css('height', 'unset');
     } else if (currentMSGuiMode === true) {
-      fv.animate({top: '0px'}, 500);
+      fv.stop().animate({top: '0px'}, 500);
       //fv.css('height', '100%');
     }
     soy = 0;
