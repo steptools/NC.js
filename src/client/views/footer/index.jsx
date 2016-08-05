@@ -132,13 +132,14 @@ export default class FooterView extends React.Component {
 
   soTouchStart(info) {
     console.log('touch start');
+    let touches = info.originalEvent.touches;
     info.preventDefault();
     info.stopPropagation();
 
     let fbHeight = fb.height();
     let dbHeight = db.height();
-    soy = (fv.offset().top + (dbHeight + fbHeight)) - info.touches[0].pageY;
-    soy2 = info.touches[0].pageY;
+    soy = (fv.offset().top + (dbHeight + fbHeight)) - touches[0].pageY;
+    soy2 = touches[0].pageY;
   }
 
   soTouchEnd(info) {
@@ -200,14 +201,15 @@ export default class FooterView extends React.Component {
 
   soTouchMove(info) {
     console.log('touch move');
+    let touches = info.originalEvent.touches;
     info.preventDefault();
     info.stopPropagation();
 
-    lastTouch = info.touches[0].pageY;
+    lastTouch = touches[0].pageY;
 
     let maxTop = window.innerHeight - (fb.height() + db.height());
     if (soy > 0) {
-      let newTop = info.touches[0].pageY - soy;
+      let newTop = touches[0].pageY - soy;
       if (newTop < 0) {
         newTop = 0;
       } else if (newTop > maxTop) {
