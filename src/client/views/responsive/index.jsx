@@ -14,7 +14,7 @@ export default class ResponsiveView extends React.Component {
 
     let innerWidth = window.innerWidth;
     let innerHeight = window.innerHeight;
-    if ((innerWidth-390 > innerHeight) && (innerWidth > 800)) {
+    if ((innerWidth - 390 > innerHeight) && (innerWidth > 800)) {
       tempGuiMode = 0;
     }
 
@@ -108,9 +108,9 @@ export default class ResponsiveView extends React.Component {
       nodeCheck(planNodes);
       workingstepCache = stepNodes;
 
-      this.state.workplanCache=planNodes;
-      this.state.workingstepCache=workingstepCache;
-      this.state.workingstepList=wsList;
+      this.state.workplanCache = planNodes;
+      this.state.workingstepCache = workingstepCache;
+      this.state.workingstepList = wsList;
 
     } else {
       console.log(err);
@@ -201,8 +201,8 @@ export default class ResponsiveView extends React.Component {
       };
       _.each(json, nodeCheck);
       _.each(wps, concatNames);
-      this.state.toleranceCache=wps;
-      this.state.toleranceList=ids;
+      this.state.toleranceCache = wps;
+      this.state.toleranceList = ids;
     } else {
       console.log(err);
     }
@@ -278,7 +278,7 @@ export default class ResponsiveView extends React.Component {
   handleResize() {
     let innerWidth = window.innerWidth;
     let innerHeight = window.innerHeight;
-    if ((innerWidth-390 > innerHeight) && (innerWidth > 800)) {
+    if ((innerWidth - 390 > innerHeight) && (innerWidth > 800)) {
       this.setState({guiMode: 0});
     } else {
       this.setState({guiMode: 1});
@@ -584,8 +584,8 @@ export default class ResponsiveView extends React.Component {
       let fv = $('.Footer-container');
 
       if (typeof fv.offset() != 'undefined') {
-        cadviewHeight=fv.offset().top;
-        cadviewHeight=cadviewHeight + 'px';
+        cadviewHeight = fv.offset().top;
+        cadviewHeight = cadviewHeight + 'px';
       } else {
         cadviewHeight = '100%';
       }

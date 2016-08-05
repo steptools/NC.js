@@ -10,7 +10,10 @@ export default class WorkingstepList extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log(this);
+    // icons need to be removed/reset before unmounting
+    for (let i in this.props.workingstepCache) {
+      delete this.props.workingstepCache[i].icon;
+    }
   }
 
   setWS(node) {

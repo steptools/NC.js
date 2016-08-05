@@ -30,6 +30,7 @@ export default class ToleranceList extends React.Component {
   }
 
   componentWillUnmount() {
+    // some properties need to be removed before unmounting
     for (let i in this.props.workingstepCache) {
       this.props.workingstepCache[i].leaf = true;
       delete this.props.workingstepCache[i].children;
