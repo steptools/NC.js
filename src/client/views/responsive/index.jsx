@@ -10,12 +10,12 @@ export default class ResponsiveView extends React.Component {
   constructor(props) {
     super(props);
 
-    let tempGuiMode=1;
+    let tempGuiMode = 1;
 
     let innerWidth = window.innerWidth;
     let innerHeight = window.innerHeight;
     if ((innerWidth-390 > innerHeight) && (innerWidth > 800)) {
-      tempGuiMode=0;
+      tempGuiMode = 0;
     }
 
     this.state = {
@@ -45,57 +45,37 @@ export default class ResponsiveView extends React.Component {
       previouslySelectedEntities: [null],
       preview: false,
       feedRate: 0,
-      spindleSpeed: 0
+      spindleSpeed: 0,
     };
 
     // get the workplan
     this.getWorkPlan = this.getWorkPlan.bind(this);
-    let url = '/v3/nc/workplan/';
-    let resCb = (err, res) => { //Callback function for response
-      this.getWorkPlan(err, res);
-    };
-    request.get(url).end(resCb);
+    request.get('/v3/nc/workplan/').end(this.getWorkPlan);
 
     // get the project loopstate
     this.getLoopState = this.getLoopState.bind(this);
-    url = '/v3/nc/state/loop/';
-    resCb = (error, response) => {
-      this.getLoopState(error, response);
-    };
-    request.get(url).end(resCb);
+    request.get('/v3/nc/state/loop/').end(this.getLoopState);
 
     // get the cache of tools
     this.getToolCache = this.getToolCache.bind(this);
-    url = '/v3/nc/tools/';
-    resCb = (err,res) => { //Callback function for response
-      this.getToolCache(err,res);
-    };
-    request.get(url).end(resCb);
+    request.get('/v3/nc/tools/').end(this.getToolCache);
 
     // get the current tool
-    url = '/v3/nc/tools/' + this.state.ws;
-    request.get(url).end((err,res) => {
+    request.get('/v3/nc/tools/' + this.state.ws).end((err, res) => {
       if (!err && res.ok) {
-        this.state.curtool=res.text;
+        this.state.curtool = res.text;
       }
     });
 
     // get data for workpiece/tolerance view
     this.getWPT = this.getWPT.bind(this);
-    url = '/v3/nc/workpieces/';
-    resCb = (err, res) => { //Callback function for response
-      this.getWPT(err, res);
-    };
-    request.get(url).end(resCb);
+    request.get('/v3/nc/workpieces/').end(this.getWPT);
 
     this.addBindings();
     this.addListeners();
   }
 
-  //constructor get requests start
-
-  getWorkPlan(err, res)
-  {
+  getWorkPlan(err, res) {
     if (!err && res.ok) {
       let workingstepCache = {};
       let wsList = [];
@@ -137,45 +117,42 @@ export default class ResponsiveView extends React.Component {
     }
   }
 
-  getLoopState(error, response)
-  {
-    if (!error && response.ok) {
-      let stateObj = JSON.parse(response.text);
+  getLoopState(err, res) {
+    if (!err && res.ok) {
+      let stateObj = JSON.parse(res.text);
 
       if (stateObj.state === 'play') {
         //Loop is running, we need a pause button.
-        this.state.ppbutton='pause';
+        this.state.ppbutton = 'pause';
       } else {
-        this.state.ppbutton='play';
+        this.state.ppbutton = 'play';
       }
 
-      this.state.playbackSpeed=Number(stateObj.speed);
-      this.state.spindleSpeed=Number(stateObj.spindle);
-      this.state.feedRate=Number(stateObj.feed);
-    } else {
-      console.log(error);
-    }
-  }
-
-  getToolCache(err,res)
-  {
-    if (!err && res.ok) {
-      let tools = {};
-      let json = JSON.parse(res.text);
-
-      _.each(json, (tool)=> {
-        tool.icon = <span className='icon custom tool' />;
-        tools[tool.id] = tool;
-      });
-
-      this.state.toolCache=tools;
+      this.state.playbackSpeed = Number(stateObj.speed);
+      this.state.spindleSpeed = Number(stateObj.spindle);
+      this.state.feedRate = Number(stateObj.feed);
     } else {
       console.log(err);
     }
   }
 
-  getWPT(err, res)
-  {
+  getToolCache(err, res) {
+    if (!err && res.ok) {
+      let tools = {};
+      let json = JSON.parse(res.text);
+
+      _.each(json, (tool) => {
+        tool.icon = <span className='icon custom tool' />;
+        tools[tool.id] = tool;
+      });
+
+      this.state.toolCache = tools;
+    } else {
+      console.log(err);
+    }
+  }
+
+  getWPT(err, res) {
     if (!err && res.ok) {
       // Node preprocessing
       let json = JSON.parse(res.text);
@@ -230,8 +207,6 @@ export default class ResponsiveView extends React.Component {
       console.log(err);
     }
   }
-
-  //constructor get requests end
 
   addBindings() {
     this.ppstate = this.ppstate.bind(this);
@@ -480,6 +455,7 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
+    console.log('rendering');
     let HV, SV, FV;
     if (this.state.guiMode === 0) {
       HV = (

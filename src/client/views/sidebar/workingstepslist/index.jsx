@@ -9,6 +9,10 @@ export default class WorkingstepList extends React.Component {
     this.setWS = this.setWS.bind(this);
   }
 
+  componentWillUnmount() {
+    console.log(this);
+  }
+
   setWS(node) {
     let url = '/v3/nc/state/ws/' + node['id'];
     request.get(url).end();
