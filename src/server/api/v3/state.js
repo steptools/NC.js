@@ -42,6 +42,7 @@ var MTListen = function() {
   var currentgcode;
   var feedrate;
   var live = false;
+  var gcode;
 
   return new Promise(function(resolve) {
     let mtc = request.get('http://192.168.0.123:5000/current');
@@ -59,14 +60,9 @@ var MTListen = function() {
             return false;
           }
         });
-        resCoords = pathtag.Samples[0].PathPosition[0]._.split(' ');
-        feedrate = pathtag['Samples'][0]['PathFeedrate'][1]['_'];
-
-        if (pathtag['Events'][0]['Block']) {
-          currentgcode = pathtag['Events'][0]['Block'][0]['_'];
-        } else {
-          currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
-        }
+        resCoords = pathtag["Samples"][0]["PathPosition"][0]['_'].split(' ');
+        feedrate = pathtag["Samples"][0]['PathFeedrate'][1]['_'];
+        gcode = pathtag['Events'][0]['Block'][0]['_'];
         currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
 
         let header = result['MTConnectStreams']['Header'][0].$;
@@ -94,7 +90,7 @@ var MTListen = function() {
             }
           });
           feedrateUnits = feedrateUnits['$']['units'];
-          resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate, feedrateUnits, live]);
+          resolve([coords, xOffset, yOffset, zOffset, currentgcode, feedrate, feedrateUnits, live, gcode]);
         });
       });
     });
@@ -139,6 +135,8 @@ var _getDelta = function(ms, key, cb) {
     MTCHold.feedrateUnits = res[6];
     MTCHold.gcode = WSGCode['GCode'][res[4]];
     MTCHold.live = res[7];
+    MTCHold.realgcode = res[8];
+
     if (findWS(res[4]) ) {
       console.log('keystate');
       ms.NextWS();
