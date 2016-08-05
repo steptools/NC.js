@@ -33,6 +33,7 @@ export default class ToleranceList extends React.Component {
     for (let i in this.props.workingstepCache) {
       this.props.workingstepCache[i].leaf = true;
       delete this.props.workingstepCache[i].children;
+      delete this.props.workingstepCache[i].icon;
     }
   }
 
@@ -90,12 +91,13 @@ export default class ToleranceList extends React.Component {
       });
 
       for (let i = 0; i < n; i++) {
-        if (upcomingTols[i].length === 0) {
+        if (!upcomingTols[i] || upcomingTols[i].length === 0) {
           continue;
         }
         let ws = this.props.workingstepCache[upcomingWS[i]];
         ws.children = upcomingTols[i];
         ws.leaf = false;
+        ws.icon = <div className='icon custom letter'>{i + 1}</div>;
         tolList.push(ws);
       }
     } else {
@@ -119,7 +121,6 @@ export default class ToleranceList extends React.Component {
         if (wsList[i] < 0 || !this.props.workingstepCache[wsList[i]].enabled) {
           continue;
         }
-        //console.log(this.props.workingstepCache[wsList[i]]);
         upcomingWS.push(wsList[i]);
         n--;
       } else if (n <= 0) {
