@@ -40,7 +40,6 @@ function getWorkingstepsArray(id){
 function workingstepsArrayDriver(){
   let id = find.GetMainWorkplan();
   getWorkingstepsArray(id);
-  console.log(WSArray);
 }
 
 function update(val) {
@@ -147,7 +146,6 @@ var _getDelta = function(ms, key, cb) {
   let theQuestion = MTListen();
 
   theQuestion.then(function(res) {
-    //console.log(res);
     MTCHold.feedrate = 'Not defined';
     MTCHold.gcode = 'Not defined';
     MTCHold.spindleSpeed = 'Not defined';
@@ -157,11 +155,7 @@ var _getDelta = function(ms, key, cb) {
     MTCHold.live = res[7];
     if (findWS(res[4]) ) {
       console.log('keystate');
-      console.log('this is the Gcodeindex')
-      console.log(WSGCodeIndex);
-      console.log('this is the array place');
-      console.log(WSArray[WSGCodeIndex]);
-      ms.GoToWS(WSArray[WSGCodeIndex]);
+      ms.GoToWS(WSArray[WSGCodeIndex + 1]);
       holder = JSON.parse(ms.GetKeystateJSON());
       holder.next = true;
     } else {
@@ -232,7 +226,6 @@ var parseGCodes = function() {
       _.each(GCodes, function(line) {
         if (line[0] === '(') {
           if (line.substring(1, 12) === 'WORKINGSTEP') {
-            console.log(lineNumber);
             MTCcontent.push(lineNumber);
           }
         } else {
