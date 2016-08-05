@@ -455,7 +455,6 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
-    console.log('rendering');
     let HV, SV, FV;
     if (this.state.guiMode === 0) {
       HV = (
