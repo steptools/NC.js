@@ -129,7 +129,7 @@ APIServer.prototype._setSite = function() {
   var _serveRoot = function (req, res) {
     var change = fs.readFileSync('CHANGELOG.md', 'utf8');
     var appConfig = {
-      title: 'NC.js',
+      title: 'Smart Machining Advisor',
       source: '/js/main.js',
       services: services,
       config: self.config.client,
