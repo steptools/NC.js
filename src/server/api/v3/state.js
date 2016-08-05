@@ -121,24 +121,23 @@ var MTListen = function() {
 var findWS = function(current) {
   var change = false;
 
-  if (current >= WSGCode['worksteps'][WSGCodeIndex]) {
-    if (WSGCodeIndex >= WSGCode['worksteps'].length) {
-      WSGCodeIndex = 0;
-    } else {
-      WSGCodeIndex = WSGCodeIndex + 1;
-    }
-    console.log('GCODE Switched!');
-    return true;
+  if (current < WSGCode['worksteps'][WSGCodeIndex] && WSGCodeIndex > 0) {
+    WSGCodeIndex = 0;
+    change = true;
+    app.logger.debug("Starting from 0");
   }
 
-  while (current < WSGCode['worksteps'][WSGCodeIndex - 1]) {
-    if (WSGCodeIndex >= WSGCode['worksteps'].length) {
-      WSGCodeIndex = 0;
-    } else {
-      WSGCodeIndex = WSGCodeIndex + 1;
-    }
+  if (WSGCodeIndex === 0 && current > WSGCode['worksteps'][WSGCodeIndex]) {
     change = true;
   }
+  while (current > WSGCode['worksteps'][WSGCodeIndex + 1]) {
+    WSGCodeIndex = WSGCodeIndex + 1;
+    change = true;
+    if (WSGCodeIndex === WSGCode['worksteps'].length - 1) {
+      break;
+    }
+  }
+
   return change;
 };
 
