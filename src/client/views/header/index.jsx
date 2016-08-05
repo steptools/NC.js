@@ -1,6 +1,7 @@
 import React from 'react';
 var md = require('node-markdown').Markdown;
-import Menu, {Item as MenuItem} from 'rc-menu';
+import Menu, {SubMenu, Item as MenuItem} from 'rc-menu';
+import _ from 'lodash';
 
 function getIcon(type, data) {
   if (!data) {
@@ -71,6 +72,7 @@ export default class HeaderView extends React.Component {
     this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
     this.updateSpindleSpeed = this.updateSpindleSpeed.bind(this);
     this.updateFeedrate = this.updateFeedrate.bind(this);
+    this.renderMachineButton = this.renderMachineButton.bind(this);
   }
 
   componentDidMount() {
@@ -79,6 +81,13 @@ export default class HeaderView extends React.Component {
     let log = this.props.cadManager.app.changelog;
     changes.innerHTML = md(log);
     logbutton.innerHTML = 'v' + md(log).split('\n')[0].split(' ')[1];
+  }
+
+  renderMachineButton(machine) {
+    return (<Button key={'machine-'+machine.id}>
+        <span>{machine.name}</span>
+      </Button>
+    );
   }
 
   getFeedSpeedInfo() {
@@ -126,6 +135,12 @@ export default class HeaderView extends React.Component {
           changelog.className = 'changelog';
           this.props.cbLogstate(false);
         }
+        break;
+      default:
+        if (info.key.indexOf('machine') >= 0) {
+          let id = info.key.split('-')[1];
+          this.props.changeMachine(Number(id));
+        }
     }
   }
 
@@ -135,6 +150,7 @@ export default class HeaderView extends React.Component {
         mode='horizontal'
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
+        openSubMenuOnMouseEnter={false}
       >
         <MenuItem disabled key='mtc' className='info mtc'/>
         <MenuItem disabled key='live' className='info live'>
@@ -170,6 +186,12 @@ export default class HeaderView extends React.Component {
             </div>
           </div>
         </MenuItem>
+        <SubMenu
+          title={this.props.machineList[this.props.selectedMachine].name}
+          key='machine'
+        >
+          {_.map(_.values(this.props.machineList),this.renderMachineButton)}
+        </SubMenu>
         <Button key='changelog' id='logbutton'>
           <div className='version' id='logbutton'>v1.1.0</div>
         </Button>

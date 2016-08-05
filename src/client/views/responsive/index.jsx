@@ -49,6 +49,24 @@ export default class ResponsiveView extends React.Component {
       preview: false,
       feedRate: 0,
       spindleSpeed: 0,
+      machineList: {
+        0: {
+          id: 0,
+          name: 'OKUMA THING',
+          ip: '192.168.0.13:5000',
+        },
+        1: {
+          id: 1,
+          name: 'DMG_5000',
+          ip: '72.64.0.13:5000',
+        },
+        2: {
+          id: 2,
+          name: 'not a machine',
+          ip: '192.168.0.17:5000',
+        },
+      },
+      selectedMachine: 0,
     };
 
     this.addBindings();
@@ -84,6 +102,8 @@ export default class ResponsiveView extends React.Component {
     this.updateMTC = this.updateMTC.bind(this);
     this.populateFeedRate = this.populateFeedRate.bind(this);
     this.populateSpindleSpeed = this.populateSpindleSpeed.bind(this);
+
+    this.changeMachine = this.changeMachine.bind(this);
   }
 
   addListeners() {
@@ -185,6 +205,13 @@ export default class ResponsiveView extends React.Component {
       }
     };
     request.get(url).end(resCb);
+  }
+
+  changeMachine(machineId) {
+    // TODO: actually change the machine in server-side
+    this.setState({
+      selectedMachine: machineId
+    });
   }
 
   getLoopstate() {
@@ -594,6 +621,9 @@ export default class ResponsiveView extends React.Component {
           feedUpdateCb={
             (newFeedRate) => this.setState({feedRate: newFeedRate})
           }
+          machineList={this.state.machineList}
+          changeMachine={this.changeMachine}
+          selectedMachine={this.state.selectedMachine}
         />
       );
       SV = (
