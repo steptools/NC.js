@@ -47,6 +47,7 @@ export default class FooterView extends React.Component {
   }
 
   soMouseDown(info) {
+    console.log('mouse down');
     $('.Footer-bar .op-text').off('mousedown');
 
     let fv = $('.Footer-container');
@@ -59,6 +60,7 @@ export default class FooterView extends React.Component {
   }
 
   soMouseUp() {
+    console.log('mouse up');
     $('.Footer-bar .op-text').on('mousedown', this.soMouseDown);
 
     let fv = $('.Footer-container');
@@ -106,7 +108,35 @@ export default class FooterView extends React.Component {
     }
   }
 
+  soClick() {
+    console.log('click');
+
+    if (dragged === true) {
+      dragged = false;
+      return;
+    }
+
+    let fv = $('.Footer-container');
+    let fb = $('.Footer-bar');
+    let db = $('.drawerbutton');
+    let currentMSGuiMode = this.props.msGuiMode;
+
+    currentMSGuiMode = !currentMSGuiMode;
+    this.props.cbMobileSidebar(currentMSGuiMode);
+
+    if (currentMSGuiMode === false) {
+      let bottomPos = (window.innerHeight - (db.height() + fb.height()));
+      fv.animate({top: bottomPos+'px'}, 500);
+      //fv.css('height', 'unset');
+    } else if (currentMSGuiMode === true) {
+      fv.animate({top: '0px'}, 500);
+      //fv.css('height', '100%');
+    }
+    soy = 0;
+  }
+
   soTouchStart(info) {
+    console.log('touch start');
     info.preventDefault();
     info.stopPropagation();
 
@@ -118,6 +148,7 @@ export default class FooterView extends React.Component {
   }
 
   soTouchEnd(info) {
+    console.log('touch end');
     info.preventDefault();
     info.stopPropagation();
 
@@ -126,6 +157,7 @@ export default class FooterView extends React.Component {
     let db = $('.drawerbutton');
     let currentMSGuiMode = this.props.msGuiMode;
 
+    console.log(soy, soy2, lastTouch, currentMSGuiMode);
     if (soy > 0) {
       if (soy2 - lastTouch > 0) {
         this.props.cbMobileSidebar(true);
@@ -149,6 +181,7 @@ export default class FooterView extends React.Component {
   }
 
   soTouchCancel(info) {
+    console.log('touch cancel');
     info.preventDefault();
     info.stopPropagation();
 
@@ -180,6 +213,7 @@ export default class FooterView extends React.Component {
   }
 
   soTouchMove(info) {
+    console.log('touch move');
     info.preventDefault();
     info.stopPropagation();
 
@@ -200,39 +234,13 @@ export default class FooterView extends React.Component {
     }
   }
 
-  soClick(info) {
-    info.preventDefault();
-    info.stopPropagation();
-
-    if (dragged === true) {
-      dragged = false;
-      return;
-    }
-
-    let fv = $('.Footer-container');
-    let fb = $('.Footer-bar');
-    let db = $('.drawerbutton');
-    let currentMSGuiMode = this.props.msGuiMode;
-
-    currentMSGuiMode = !currentMSGuiMode;
-    this.props.cbMobileSidebar(currentMSGuiMode);
-
-    if (currentMSGuiMode === false) {
-      let bottomPos = (window.innerHeight - (db.height() + fb.height()));
-      fv.animate({top: bottomPos+'px'}, 500);
-      //fv.css('height', 'unset');
-    }
-    if (currentMSGuiMode === true) {
-      fv.animate({top: '0px'}, 500);
-      //fv.css('height', '100%');
-    }
-    soy = 0;
-  }
-
   componentDidMount() {
-    $('.Footer-bar .op-text').on('mousedown', this.soMouseDown);
-    $('.Footer-bar .op-text').on('click', this.soClick);
-    $('.drawerbutton').on('click', this.soClick);
+    $('.Footer-container .draggable').on('mousedown', this.soMouseDown);
+    $('.Footer-container .draggable').on('click', this.soClick);
+    $('.Footer-container .draggable').on('touchstart', this.soTouchStart);
+    $('.Footer-container .draggable').on('touchend', this.soTouchEnd);
+    $('.Footer-container .draggable').on('touchcancel', this.soTouchCancel);
+    $('.Footer-container .draggable').on('touchmove', this.soTouchMove);
   }
 
   render() {
@@ -281,16 +289,11 @@ export default class FooterView extends React.Component {
 
     return (
       <div className='Footer-container'>
-        <div className='drawerbutton'>
+        <div className='drawerbutton draggable'>
             <span className={drawerbutton}/>
         </div>
         <div className='Footer-bar'>
-          <div
-            className='op-text'
-            onTouchStart={this.soTouchStart}
-            onTouchEnd={this.soTouchEnd}
-            onTouchCancel={this.soTouchCancel}
-            onTouchMove={this.soTouchMove}>
+          <div className='op-text draggable'>
             <p>{this.props.wstext}</p>
           </div>
           <div className='footer-buttons'>
