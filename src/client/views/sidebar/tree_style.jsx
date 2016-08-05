@@ -114,6 +114,8 @@ function setNodeInfo(props) {
 const Container = (props) => {
   let node = setNodeInfo(props);
 
+  // TODO: REPLACE WORKINGSTEP ICON WITH A NUMBER
+
   return (
     <div
       id={node.id}
