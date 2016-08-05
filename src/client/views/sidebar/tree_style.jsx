@@ -87,7 +87,9 @@ function setToggle(node) {
 
 function setNodeInfo(props) {
   let node = props.node;
-  node.icon = getNodeIcon(node);
+  if (!node.icon) {
+    node.icon = getNodeIcon(node);
+  }
 
   node.innerName = 'inner';
   node.outerName = 'node';
@@ -113,6 +115,8 @@ function setNodeInfo(props) {
 
 const Container = (props) => {
   let node = setNodeInfo(props);
+
+  // TODO: REPLACE WORKINGSTEP ICON WITH A NUMBER
 
   return (
     <div
