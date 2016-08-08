@@ -235,7 +235,7 @@ var parseGCodes = function() {
   fileRead.then(function(res) {
     res[0].shift();
 
-    var JSONContent = '{\"worksteps\" : [\n';
+    var JSONContent = '{\"worksteps\" : [\n0,\n';
     _.each(res[0], function(code) {
       JSONContent = JSONContent + code.toString() + ',\n';
     });
