@@ -26,7 +26,8 @@ export default class FooterView extends React.Component {
     this.btnClicked = this.btnClicked.bind(this);
     this.ffBtnClicked = this.ffBtnClicked.bind(this);
     this.bbBtnClicked = this.bbBtnClicked.bind(this);
-    this.footerPositionController = this.footerPositionController.bind(this);
+    this.footerController = this.footerController.bind(this);
+    this.footerMove = this.footerMove.bind(this);
     this.soMouseDown = this.soMouseDown.bind(this);
     this.soMouseUp = this.soMouseUp.bind(this);
     this.soMouseMove = this.soMouseMove.bind(this);
@@ -48,7 +49,7 @@ export default class FooterView extends React.Component {
     this.props.actionManager.emit('sim-b');
   }
 
-  footerPositionController(mode) {
+  footerController(mode) {
     let offset = fv.offset().top;
     let height = db.height() + fb.height();
     let newMode = false;
@@ -72,6 +73,19 @@ export default class FooterView extends React.Component {
     soy = 0;
   }
 
+  footerMove(y) {
+    let maxTop = window.innerHeight - (fb.height() + db.height());
+    if (soy > 0) {
+      let newTop = y - soy;
+      if (newTop < 0) {
+        newTop = 0;
+      } else if (newTop > maxTop) {
+        newTop = maxTop;
+      }
+      fv.css('top', newTop+'px');
+    }
+  }
+  
   soMouseDown(info) {
     console.log('mouse down');
     $(fv, '.draggable').off('mousedown');
@@ -92,20 +106,11 @@ export default class FooterView extends React.Component {
       return;
     }
 
-    this.footerPositionController(this.msGuiMode);
+    this.footerController(this.msGuiMode);
   }
 
   soMouseMove(info) {
-    let maxTop = window.innerHeight - (fb.height() + db.height());
-    if (soy > 0) {
-      let newTop = info.clientY - soy;
-      if (newTop < 0) {
-        newTop = 0;
-      } else if (newTop > maxTop) {
-        newTop = maxTop;
-      }
-      fv.css('top', newTop+'px');
-    }
+    this.footerMove(info.clientY);
   }
 
   soClick() {
@@ -151,32 +156,21 @@ export default class FooterView extends React.Component {
     info.stopPropagation();
 
     let touchDuration = info.timeStamp - touchTimeStamp;
-    console.log(touchDuration);
 
+    // if the duration of the touch was less than 250ms consider it a tap
     if (touchDuration < 250) {
       this.soClick();
       return;
     }
 
-    this.footerPositionController(this.msGuiMode);
+    this.footerController(this.msGuiMode);
   }
 
   soTouchMove(info) {
     console.log('touch move');
-    let touches = info.touches;
     info.preventDefault();
     info.stopPropagation();
-
-    let maxTop = window.innerHeight - (fb.height() + db.height());
-    if (soy > 0) {
-      let newTop = touches[0].pageY - soy;
-      if (newTop < 0) {
-        newTop = 0;
-      } else if (newTop > maxTop) {
-        newTop = maxTop;
-      }
-      fv.css('top', newTop+'px');
-    }
+    this.footerMove(info.touches[0].pageY);
   }
 
   componentDidMount() {
