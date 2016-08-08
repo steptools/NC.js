@@ -39,6 +39,8 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-record';
     case 'gcode':
       return 'icon glyphicons glyphicons-chevron-right';
+    case 'machine':
+      return 'icon glyphicons glyphicons-settings';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -84,9 +86,13 @@ export default class HeaderView extends React.Component {
   }
 
   renderMachineButton(machine) {
-    return (<Button key={'machine-'+machine.id}>
+    return (
+      <MenuItem
+        className='machine-button'
+        key={'machine-'+machine.id}
+      >
         <span>{machine.name}</span>
-      </Button>
+      </MenuItem>
     );
   }
 
@@ -187,8 +193,19 @@ export default class HeaderView extends React.Component {
           </div>
         </MenuItem>
         <SubMenu
-          title={this.props.machineList[this.props.selectedMachine].name}
+          title={
+            <div className='item'>
+              <div className={getIcon('machine')} />
+              <div className='text'>
+                <div className='title'>Current Machine:</div>
+                <div className='value'>
+                  {this.props.machineList[this.props.selectedMachine].name}
+                </div>
+              </div>
+            </div>
+          }
           key='machine'
+          className='info machine button'
         >
           {_.map(_.values(this.props.machineList),this.renderMachineButton)}
         </SubMenu>
