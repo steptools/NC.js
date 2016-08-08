@@ -1,10 +1,10 @@
 import React from 'react';
 import MobileSidebar from '../mobilesidebar';
 
-let soy = 0; //for detecting offset clicked from top of footerbar
+let soy = 0; // for detecting offset clicked from top of footerbar
 let touchTimeStamp = 0;
 let dragged = false;
-let fv, fb, db;
+let fv, fb, db, footerMiddle;
 
 class ButtonImage extends React.Component {
   constructor(props) {
@@ -49,7 +49,8 @@ export default class FooterView extends React.Component {
     this.props.actionManager.emit('sim-b');
   }
 
-  footerController(mode) {
+  footerController() {
+    let mode = this.props.msGuiMode;
     let offset = fv.offset().top;
     let height = db.height() + fb.height();
     let newMode = false;
@@ -75,8 +76,9 @@ export default class FooterView extends React.Component {
 
   footerMove(y) {
     let maxTop = window.innerHeight - (fb.height() + db.height());
+    console.log(y, soy);
     if (soy > 0) {
-      let newTop = y - soy;
+      let newTop = y;
       if (newTop < 0) {
         newTop = 0;
       } else if (newTop > maxTop) {
@@ -85,7 +87,7 @@ export default class FooterView extends React.Component {
       fv.css('top', newTop+'px');
     }
   }
-  
+
   soMouseDown(info) {
     console.log('mouse down');
     $(fv, '.draggable').off('mousedown');
@@ -106,7 +108,7 @@ export default class FooterView extends React.Component {
       return;
     }
 
-    this.footerController(this.msGuiMode);
+    this.footerController();
   }
 
   soMouseMove(info) {
@@ -139,7 +141,7 @@ export default class FooterView extends React.Component {
     console.log('touch start');
     info.preventDefault();
     info.stopPropagation();
-    let touches = info.touches;
+    let touches = info.originalEvent.touches;
 
     // prevents changes from multiple touches, we only use the first touch
     if (touches.length > 1) {
@@ -170,16 +172,23 @@ export default class FooterView extends React.Component {
     console.log('touch move');
     info.preventDefault();
     info.stopPropagation();
-    this.footerMove(info.touches[0].pageY);
+    let touch = info.originalEvent.touches[0];
+    let touchY = touch.pageY - touch.radiusY;
+    this.footerMove(touchY);
   }
 
   componentDidMount() {
     fv = $('.Footer-container');
     fb = $('.Footer-bar');
     db = $('.drawerbutton');
+    footerMiddle = (fb.height() + db.height()) / 2;
 
     $(fv, '.draggable').on('mousedown', this.soMouseDown);
     $(fv, '.draggable').on('click', this.soClick);
+    $(fv, '.draggable').on('touchstart', this.soTouchStart);
+    $(fv, '.draggable').on('touchend', this.soTouchEnd);
+    $(fv, '.draggable').on('touchmove', this.soTouchMove);
+    $(fv, '.draggable').on('touchcancel', this.soTouchEnd);
   }
 
   render() {
@@ -228,13 +237,7 @@ export default class FooterView extends React.Component {
             <span className={drawerbutton}/>
         </div>
         <div className='Footer-bar'>
-          <div
-            className='op-text draggable'
-            onTouchStart={this.soTouchStart}
-            onTouchEnd={this.soTouchEnd}
-            onTouchMove={this.soTouchMove}
-            onTouchCancel={this.soTouchEnd}
-          >
+          <div className='op-text draggable'>
             <p>{this.props.wstext}</p>
           </div>
           <div className='footer-buttons'>
