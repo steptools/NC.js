@@ -116,15 +116,12 @@ var MTListen = function() {
 var findWS = function(current) {
   var change = false;
 
-  if (current < WSGCode['worksteps'][WSGCodeIndex] && WSGCodeIndex > 0) {
+  if (current < WSGCode['worksteps'][WSGCodeIndex]) {
     WSGCodeIndex = 0;
     change = true;
     app.logger.debug("Starting from 0");
   }
 
-  if (WSGCodeIndex === 0 && current > WSGCode['worksteps'][WSGCodeIndex]) {
-    change = true;
-  }
   while (current > WSGCode['worksteps'][WSGCodeIndex + 1]) {
     WSGCodeIndex = WSGCodeIndex + 1;
     change = true;
@@ -153,7 +150,7 @@ var _getDelta = function(ms, key, cb) {
 
     if (findWS(res[4]) ) {
       console.log('keystate');
-      ms.GoToWS(WSArray[WSGCodeIndex + 1]);
+      ms.GoToWS(WSArray[WSGCodeIndex]);
       holder = JSON.parse(ms.GetKeystateJSON());
       holder.next = true;
     } else {
