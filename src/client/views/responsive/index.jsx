@@ -10,12 +10,12 @@ export default class ResponsiveView extends React.Component {
   constructor(props) {
     super(props);
 
-    let tempGuiMode=1;
+    let tempGuiMode = 1;
 
     let innerWidth = window.innerWidth;
     let innerHeight = window.innerHeight;
-    if ((innerWidth-390 > innerHeight) && (innerWidth > 800)) {
-      tempGuiMode=0;
+    if ((innerWidth - 390 > innerHeight) && (innerWidth > 800)) {
+      tempGuiMode = 0;
     }
 
     this.state = {
@@ -48,8 +48,164 @@ export default class ResponsiveView extends React.Component {
       spindleSpeed: 0,
     };
 
+    // get the workplan
+    this.getWorkPlan = this.getWorkPlan.bind(this);
+    request.get('/v3/nc/workplan/').end(this.getWorkPlan);
+
+    // get the project loopstate
+    this.getLoopState = this.getLoopState.bind(this);
+    request.get('/v3/nc/state/loop/').end(this.getLoopState);
+
+    // get the cache of tools
+    this.getToolCache = this.getToolCache.bind(this);
+    request.get('/v3/nc/tools/').end(this.getToolCache);
+
+    // get the current tool
+    request.get('/v3/nc/tools/' + this.state.ws).end((err, res) => {
+      if (!err && res.ok) {
+        this.state.curtool = res.text;
+      }
+    });
+
+    // get data for workpiece/tolerance view
+    this.getWPT = this.getWPT.bind(this);
+    request.get('/v3/nc/workpieces/').end(this.getWPT);
+
     this.addBindings();
     this.addListeners();
+  }
+
+  getWorkPlan(err, res) {
+    if (!err && res.ok) {
+      let workingstepCache = {};
+      let wsList = [];
+      let planNodes = JSON.parse(res.text);
+      let stepNodes = {};
+      let index = 1;
+      let negIndex = -1;
+      let nodeCheck = (node) => {
+        if (node.type === 'workingstep') {
+          node.number = index;
+          node.leaf = true;
+          stepNodes[node.id] = node;
+          if (node.enabled) {
+            wsList.push(node.id);
+            index = index + 1;
+          }
+        } else {
+          if (node.type === 'workplan-setup') {
+            wsList.push(negIndex);
+            stepNodes[negIndex] = {name: node.name};
+            negIndex = negIndex - 1;
+          }
+          if (node.children.length !== 0) {
+            node.children.map(nodeCheck);
+          }
+          node.leaf = false;
+        }
+        node.toggled = false;
+      };
+      nodeCheck(planNodes);
+      workingstepCache = stepNodes;
+
+      this.state.workplanCache = planNodes;
+      this.state.workingstepCache = workingstepCache;
+      this.state.workingstepList = wsList;
+
+    } else {
+      console.log(err);
+    }
+  }
+
+  getLoopState(err, res) {
+    if (!err && res.ok) {
+      let stateObj = JSON.parse(res.text);
+
+      if (stateObj.state === 'play') {
+        //Loop is running, we need a pause button.
+        this.state.ppbutton = 'pause';
+      } else {
+        this.state.ppbutton = 'play';
+      }
+
+      this.state.playbackSpeed = Number(stateObj.speed);
+      this.state.spindleSpeed = Number(stateObj.spindle);
+      this.state.feedRate = Number(stateObj.feed);
+    } else {
+      console.log(err);
+    }
+  }
+
+  getToolCache(err, res) {
+    if (!err && res.ok) {
+      let tools = {};
+      let json = JSON.parse(res.text);
+
+      _.each(json, (tool) => {
+        tool.icon = <span className='icon custom tool' />;
+        tools[tool.id] = tool;
+      });
+
+      this.state.toolCache = tools;
+    } else {
+      console.log(err);
+    }
+  }
+
+  getWPT(err, res) {
+    if (!err && res.ok) {
+      // Node preprocessing
+      let json = JSON.parse(res.text);
+      let wps = {};
+      let ids = [];
+      let nodeCheck = (n) => {
+        let node = n;
+
+        if (node.children && node.children.length > 0) {
+          node.enabled = true;
+          node.leaf = false;
+          _.each(node.children, nodeCheck);
+        } else {
+          node.leaf = true;
+        }
+
+        if (node.wpType) {
+          ids.push(node.id);
+        }
+
+        if (node.type === 'tolerance') {
+          let workingsteps = [];
+          for (let i in json[node.workpiece].workingsteps) {
+            let ws = json[node.workpiece].workingsteps[i];
+            ws = this.state.workingstepCache[ws];
+            if (node.workpiece === ws.toBe.id) {
+              workingsteps.push(json[node.workpiece].workingsteps[i]);
+            }
+          }
+          node.workingsteps = workingsteps;
+        } else if (node.type === 'datum') {
+          node.leaf = true;
+          node.enabled = true;
+        }
+
+        wps[node.id] = node;
+      };
+      let concatNames = (n) => {
+        if (n.type === 'tolerance' && !n.nameMod) {
+          if (n.modName) {
+            n.name = n.name + ' ' + n.modName;
+          }
+        } else if (n.type === 'workpiece' && n.children.length > 0) {
+          concatNames(n.children);
+        }
+      };
+      _.each(json, nodeCheck);
+      _.each(wps, concatNames);
+      this.state.toleranceCache = wps;
+      this.state.toleranceList = ids;
+    } else {
+      console.log(err);
+    }
   }
 
   addBindings() {
@@ -104,176 +260,13 @@ export default class ResponsiveView extends React.Component {
   }
 
   componentWillMount() {
-    let url = '/v3/nc/state/loop/';
-    let requestCB = (error, response) => {
-      if (!error && response.ok) {
-        let stateObj = JSON.parse(response.text);
-
-        if (stateObj.state === 'play') {
-          //Loop is running, we need a pause button.
-          this.setState({'ppbutton': 'pause'});
-        } else {
-          this.setState({'ppbutton': 'play'});
-        }
-        this.setState({'playbackSpeed': Number(stateObj.speed)});
-      } else {
-        console.log(error);
-      }
-    };
-
-    request.get(url).end(requestCB);
+    //
   }
 
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
     window.addEventListener('keydown', this.handleKeydown);
     window.addEventListener('keyup', this.handleKeyup);
-
-    // set a temp variable for the workingstep cache
-    let workingstepCache = {};
-    let wsList = [];
-
-    // get the workplan
-    let url = '/v3/nc/workplan/';
-    let resCb = (err, res) => { //Callback function for response
-      if (!err && res.ok) {
-        let planNodes = JSON.parse(res.text);
-        let stepNodes = {};
-        let index = 1;
-        let negIndex = -1;
-        let nodeCheck = (node) => {
-          if (node.type === 'workingstep') {
-            node.number = index;
-            node.leaf = true;
-            stepNodes[node.id] = node;
-            if (node.enabled) {
-              wsList.push(node.id);
-              index = index + 1;
-            }
-          } else {
-            if (node.type === 'workplan-setup') {
-              wsList.push(negIndex);
-              stepNodes[negIndex] = {name: node.name};
-              negIndex = negIndex - 1;
-            }
-            if (node.children.length !== 0) {
-              node.children.map(nodeCheck);
-            }
-            node.leaf = false;
-          }
-          node.toggled = false;
-        };
-        nodeCheck(planNodes);
-        workingstepCache = stepNodes;
-
-        this.setState({'workplanCache': planNodes});
-        this.setState({'workingstepCache': workingstepCache});
-        this.setState({'workingstepList': wsList});
-
-      } else {
-        console.log(err);
-      }
-    };
-    request.get(url).end(resCb);
-
-    // get the project loopstate
-    url = '/v3/nc/state/loop/';
-    resCb = (error, response) => {
-      if (!error && response.ok) {
-        let stateObj = JSON.parse(response.text);
-
-        if (stateObj.state === 'play') {
-          //Loop is running, we need a pause button.
-          this.setState({'ppbutton': 'pause'});
-        } else {
-          this.setState({'ppbutton':'play'});
-        }
-
-        this.setState({'playbackSpeed': Number(stateObj.speed)});
-        this.setState({'spindleSpeed': Number(stateObj.spindle)});
-        this.setState({'feedRate': Number(stateObj.feed)});
-      } else {
-        console.log(error);
-      }
-    };
-    request.get(url).end(resCb);
-
-    // get the cache of tools
-    url = '/v3/nc/tools/';
-    resCb = (err,res) => { //Callback function for response
-      if (!err && res.ok) {
-        let tools = {};
-        let json = JSON.parse(res.text);
-
-        _.each(json, (tool)=> {
-          tool.icon = <span className='icon custom tool' />;
-          tools[tool.id] = tool;
-        });
-
-        this.setState({'toolCache': tools});
-      } else {
-        console.log(err);
-      }
-    };
-    request.get(url).end(resCb);
-
-    // get the current tool
-    url = '/v3/nc/tools/' + this.state.ws;
-    request
-      .get(url)
-      .end((err,res) => {
-        if (!err && res.ok) {
-          this.setState({'curtool': res.text});
-        }
-      });
-
-    // get data for workpiece/tolerance view
-    url = '/v3/nc/workpieces/';
-    resCb = (err, res) => { //Callback function for response
-      if (!err && res.ok) {
-        // Node preprocessing
-        let json = JSON.parse(res.text);
-        let wps = {};
-        let ids = [];
-        let nodeCheck = (n) => {
-          let node = n;
-
-          if (node.wpType && node.children && node.children.length > 0) {
-            ids.push(node.id);
-            node.enabled = true;
-            node.leaf = false;
-            _.each(node.children, nodeCheck);
-          } else {
-            node.leaf = true;
-            if (node.type === 'tolerance') {
-              node.workingsteps = json[node.workpiece].workingsteps;
-            }
-          }
-
-          wps[node.id] = node;
-        };
-        let concatNames = (n) => {
-          if(n.type === 'tolerance' && !n.nameMod){
-            if(n.modName){
-              n.name = n.name + ' ' + n.modName;
-            }
-            if(n.rangeName){
-              n.name = n.name + ' ' + n.rangeName;
-            }
-          }
-          else if(n.type === 'workpiece' && n.children.length > 0){
-            concatNames(n.children);
-          }
-        }
-        _.each(json, nodeCheck);
-        _.each(wps, concatNames);
-        this.setState({'toleranceCache': wps});
-        this.setState({'toleranceList': ids});
-      } else {
-        console.log(err);
-      }
-    };
-    request.get(url).end(resCb);
   }
 
   componentWillUnmount() {
@@ -281,11 +274,11 @@ export default class ResponsiveView extends React.Component {
     window.removeEventListener('keydown', this.handleKeydown);
     window.removeEventListener('keyup', this.handleKeyup);
   }
-  
+
   handleResize() {
     let innerWidth = window.innerWidth;
     let innerHeight = window.innerHeight;
-    if ((innerWidth-390 > innerHeight) && (innerWidth > 800)) {
+    if ((innerWidth - 390 > innerHeight) && (innerWidth > 800)) {
       this.setState({guiMode: 0});
     } else {
       this.setState({guiMode: 1});
@@ -354,7 +347,8 @@ export default class ResponsiveView extends React.Component {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
           let tols = [];
-          _.each(this.state.toleranceCache[workingstep.toBe.id].children, (t) => {
+          let cache = this.state.toleranceCache[workingstep.toBe.id];
+          _.each(cache.children, (t) => {
             tols.push(t.id);
           });
           this.setState({
@@ -372,17 +366,17 @@ export default class ResponsiveView extends React.Component {
 
     request.get(url).end(requestCB);
   }
-  
+
   toggleHighlight(id) {
     let newTols;
-    
+
     if (this.state.highlightedTolerances.indexOf(id) < 0) {
       newTols = _.concat(this.state.highlightedTolerances, id);
     } else {
       newTols = _.without(this.state.highlightedTolerances, id);
     }
-    
-    this.setState({ 'highlightedTolerances': newTols });
+
+    this.setState({'highlightedTolerances': newTols});
   }
 
   playpause() {
@@ -582,31 +576,32 @@ export default class ResponsiveView extends React.Component {
         'left': '390px',
         'top': '90px',
         'bottom': '0px',
-        'right': '0px'
+        'right': '0px',
       };
     } else {
-      let cadviewHeight="80%";
+      let cadviewHeight = '80%';
       let fv = $('.Footer-container');
+      let rv = $('.RespView');
+      let fb = $('.Footer-bar');
+      let db = $('.drawerbutton');
 
-      if(typeof fv.offset() != 'undefined')
-      {
-        cadviewHeight=fv.offset().top;
-        cadviewHeight=cadviewHeight+"px";
+      if (typeof fv.offset() != 'undefined') {
+        cadviewHeight = (rv.height() - (db.height() + fb.height()));
+        cadviewHeight = cadviewHeight + 'px';
+      } else {
+        cadviewHeight = '100%';
       }
-      else cadviewHeight="100%";
 
-
-      cadviewStyle =
-      {
-        'top': "0",
+      cadviewStyle = {
+        'top': '0',
         'right': '0px',
         'width': '100%',
-        'height': cadviewHeight
+        'height': cadviewHeight,
       };
     }
 
     return (
-      <div style={{height:'100%'}}>
+      <div className='RespView' style={{height:'100%'}}>
         {HV}
         {SV}
         <div id='cadview-container' style={cadviewStyle}>
