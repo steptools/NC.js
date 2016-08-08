@@ -86,10 +86,12 @@ export default class HeaderView extends React.Component {
   }
 
   renderMachineButton(machine) {
+    let id = this.props.machineList.indexOf(machine);
+
     return (
       <MenuItem
         className='machine-button'
-        key={'machine-'+machine.id}
+        key={'machine-'+id}
       >
         <span>{machine.name}</span>
       </MenuItem>
@@ -199,7 +201,11 @@ export default class HeaderView extends React.Component {
               <div className='text'>
                 <div className='title'>Current Machine:</div>
                 <div className='value'>
-                  {this.props.machineList[this.props.selectedMachine].name}
+                  {
+                    this.props.machineList[this.props.selectedMachine] ?
+                    this.props.machineList[this.props.selectedMachine].name
+                    : null
+                  }
                 </div>
               </div>
             </div>

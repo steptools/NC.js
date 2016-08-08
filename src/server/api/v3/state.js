@@ -23,6 +23,8 @@ var WSArray = [];
 let nextSequence = 0;
 
 var MTCHold = {};
+
+let currentMachine = 0;
 /****************************** Helper Functions ******************************/
 
 function getWorkingstepsArray(id){
@@ -61,7 +63,9 @@ var MTListen = function() {
   var gcode;
 
   return new Promise(function(resolve) {
-    let mtc = request.get('http://192.168.0.123:5000/current');
+    let addr = 'http://' + app.config.machineList[currentMachine] + '/current';
+
+    let mtc = request.get(addr);
     mtc.end(function (err, res) {
       if (err || !res.ok) {
         return;
@@ -94,7 +98,9 @@ var MTListen = function() {
       coords[1] = parseInt(resCoords[1]);
       coords[2] = parseInt(resCoords[2]);
 
-      let mtc = request.get('http://192.168.0.123:5000/');
+      let addr = 'http://' + app.config.machineList[currentMachine] + '/';
+      let mtc = request.get(addr);
+
       mtc.end(function (err, res) {
         parseXMLString.parseString(res.text, function (error, result) {
           let ret = result['MTConnectDevices']['Devices'][0]['Device'][0]['Components'][0]['Controller'][0]['Components'][0]['Path'][0]['DataItems'][0]['DataItem'];
@@ -450,6 +456,19 @@ var _getMTCHold = function (req, res) {
   res.status(200).send(MTCHold);
 };
 
+let _machineInfo = (req, res) => {
+  if (req.params.id) {
+    currentMachine = Number(req.params.id);
+    res.status(200).send('OK');
+  } else {
+    res.status(200).send(currentMachine.toString());
+  }
+};
+
+let _getAllMachines = (req, res) => {
+  res.status(200).send(app.config.machineList);
+}
+
 module.exports = function(globalApp, cb) {
   app = globalApp;
   app.router.get('/v3/nc/state/key', _getKeyState);
@@ -458,6 +477,9 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
   app.router.get('/v3/nc/state/mtc', _getMTCHold);
+  app.router.get('/v3/nc/state/machine/:id', _machineInfo);
+  app.router.get('/v3/nc/state/machine', _machineInfo);
+  app.router.get('/v3/nc/state/machines', _getAllMachines);
   if (cb) {
     cb();
   }

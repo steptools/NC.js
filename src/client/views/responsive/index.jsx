@@ -49,23 +49,7 @@ export default class ResponsiveView extends React.Component {
       preview: false,
       feedRate: 0,
       spindleSpeed: 0,
-      machineList: {
-        0: {
-          id: 0,
-          name: 'OKUMA THING',
-          ip: '192.168.0.13:5000',
-        },
-        1: {
-          id: 1,
-          name: 'DMG_5000',
-          ip: '72.64.0.13:5000',
-        },
-        2: {
-          id: 2,
-          name: 'not a machine',
-          ip: '192.168.0.17:5000',
-        },
-      },
+      machineList: [],
       selectedMachine: 0,
     };
 
@@ -208,7 +192,9 @@ export default class ResponsiveView extends React.Component {
   }
 
   changeMachine(machineId) {
-    // TODO: actually change the machine in server-side
+    let url = '/v3/nc/state/machine/' + machineId;
+    request.get(url).end();
+
     this.setState({
       selectedMachine: machineId
     });
@@ -337,6 +323,22 @@ export default class ResponsiveView extends React.Component {
 
     url = '/v3/nc/state/loop/start';
     request.get(url).end();
+
+    url = '/v3/nc/state/machines';
+    resCb = (err, res) => {
+      if (!err && res.ok) {
+        this.setState({machineList: JSON.parse(res.text)});
+      }
+    };
+    request.get(url).end(resCb);
+
+    url = '/v3/nc/state/machine';
+    resCb = (err, res) => {
+      if (!err && res.ok) {
+        this.setState({selectedMachine: Number(res.text)});
+      }
+    };
+    request.get(url).end(resCb);
   }
 
   componentWillUnmount() {

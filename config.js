@@ -32,8 +32,17 @@ module.exports = function(environment) {
           },
           "machine" : {
             "dir" : ""
-          }
-
+          },
+          "machineList" : [
+            {
+              name: 'Okuma',
+              address: '192.168.0.123:5000'
+            },
+            {
+              name: 'DMG_5000',
+              address: 'localhost:5000',
+            },
+          ],
     };
     try {
         config.env = environment;
