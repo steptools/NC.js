@@ -252,7 +252,7 @@ export default class NC extends THREE.EventDispatcher {
                 geom.rendered = false;
             });
 
-            var oldannotations = this._annotations;
+            var oldannotations = this._loader._annotations;
             _.each(oldannotations, (anno) => {
                 anno.removeFromScene();
             });
