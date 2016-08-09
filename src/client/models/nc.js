@@ -253,7 +253,7 @@ export default class NC extends THREE.EventDispatcher {
             });
 
             var oldannotations = this._loader._annotations;
-            _.each(oldannotations, (anno) => {
+            _.each(_.values(this._loader._annotations), (anno) => {
                 anno.removeFromScene();
             });
 
