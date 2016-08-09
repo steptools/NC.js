@@ -143,7 +143,7 @@ export default class PropertiesPane extends React.Component {
       this.props.manager.dispatchEvent({
         type: 'setModel',
         viewType: 'preview',
-        path: prevId,
+        path: prevId.toString(),
         baseURL: url,
         modelType: 'previewShell',
       });
