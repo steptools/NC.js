@@ -84,7 +84,6 @@ var MTListen = function() {
         feedrate = pathtag["Samples"][0]['PathFeedrate'][1]['_'];
         gcode = pathtag['Events'][0]['Block'][0]['_'];
         currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
-				console.log("Current block: " + currentgcode);
         let header = result['MTConnectStreams']['Header'][0].$;
         let next = header.nextSequence;
         if (next !== nextSequence) {
@@ -155,12 +154,10 @@ var _getDelta = function(ms, key, cb) {
     MTCHold.realgcode = res[8];
 
     if (findWS(res[4]) ) {
-      console.log('keystate');
       ms.GoToWS(WSArray[WSGCodeIndex]);
       holder = JSON.parse(ms.GetKeystateJSON());
       holder.next = true;
     } else {
-      console.log('delta');
       holder = JSON.parse(ms.GetDeltaJSON());
       holder.next = false;
     }
@@ -234,7 +231,7 @@ var parseGCodes = function() {
 	          GCcontent.push(line);
 	          lineNumber++;
 					}
-          
+
         }
       });
       resolve([MTCcontent, GCcontent]);
