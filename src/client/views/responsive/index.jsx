@@ -49,6 +49,8 @@ export default class ResponsiveView extends React.Component {
       preview: false,
       feedRate: 0,
       spindleSpeed: 0,
+      machineList: [],
+      selectedMachine: 0,
     };
 
     this.addBindings();
@@ -84,6 +86,8 @@ export default class ResponsiveView extends React.Component {
     this.updateMTC = this.updateMTC.bind(this);
     this.populateFeedRate = this.populateFeedRate.bind(this);
     this.populateSpindleSpeed = this.populateSpindleSpeed.bind(this);
+
+    this.changeMachine = this.changeMachine.bind(this);
   }
 
   addListeners() {
@@ -185,6 +189,15 @@ export default class ResponsiveView extends React.Component {
       }
     };
     request.get(url).end(resCb);
+  }
+
+  changeMachine(machineId) {
+    let url = '/v3/nc/state/machine/' + machineId;
+    request.get(url).end();
+
+    this.setState({
+      selectedMachine: machineId
+    });
   }
 
   getLoopstate() {
@@ -310,6 +323,22 @@ export default class ResponsiveView extends React.Component {
 
     url = '/v3/nc/state/loop/start';
     request.get(url).end();
+
+    url = '/v3/nc/state/machines';
+    resCb = (err, res) => {
+      if (!err && res.ok) {
+        this.setState({machineList: JSON.parse(res.text)});
+      }
+    };
+    request.get(url).end(resCb);
+
+    url = '/v3/nc/state/machine';
+    resCb = (err, res) => {
+      if (!err && res.ok) {
+        this.setState({selectedMachine: Number(res.text)});
+      }
+    };
+    request.get(url).end(resCb);
   }
 
   componentWillUnmount() {
@@ -594,6 +623,9 @@ export default class ResponsiveView extends React.Component {
           feedUpdateCb={
             (newFeedRate) => this.setState({feedRate: newFeedRate})
           }
+          machineList={this.state.machineList}
+          changeMachine={this.changeMachine}
+          selectedMachine={this.state.selectedMachine}
         />
       );
       SV = (
