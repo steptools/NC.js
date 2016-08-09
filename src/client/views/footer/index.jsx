@@ -136,7 +136,7 @@ export default class FooterView extends React.Component {
       fv.stop().animate({top: '0px'}, 500);
     }
     soy = 0;
-    fclicked = false;
+    fClicked = false;
   }
 
   soTouchStart(info) {
@@ -164,7 +164,7 @@ export default class FooterView extends React.Component {
 
     // if the duration of the touch was less than 250ms consider it a tap
     if (touchDuration < 250) {
-      fclicked = true;
+      fClicked = true;
       this.soClick();
       return;
     }
