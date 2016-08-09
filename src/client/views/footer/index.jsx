@@ -78,7 +78,7 @@ export default class FooterView extends React.Component {
     let maxTop = window.innerHeight - footerHeight;
     if (soy > 0) {
       let newTop = y - soy;
-      console.log(y, soy, newTop);
+      //console.log(y, soy, newTop);
       if (newTop < 0) {
         newTop = 0;
       } else if (newTop > maxTop) {
