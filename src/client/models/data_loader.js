@@ -176,7 +176,7 @@ export default class DataLoader extends THREE.EventDispatcher {
             req = this._loading[event.data.workerID];
         }
         // Put worker back into the queue - if it is the time
-        if (_.indexOf(["rootLoad", "workerFinish", "loadError"], event.data.type) != -1) {
+        if (_.indexOf(["rootLoad", "workerFinish", "loadError", "previewLoad"], event.data.type) != -1) {
             this._loading[event.data.workerID] = undefined;
             this._freeWorkers.push(event.data.workerID);
             this.runLoadQueue();
@@ -204,9 +204,6 @@ export default class DataLoader extends THREE.EventDispatcher {
                 break;
             case "previewLoad":
                 this.buildPreviewNCJSON(event.data.data, req);
-                break;
-            case "previewEndLoad":
-                req.cb();
                 break;
             case "shellLoad":
             //This is the case where the shell comes in with position, normals and colors vector after ProcessShellJSON
@@ -315,7 +312,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 this.addRequest({
                     path: geomData.shell.split('.')[0],
                     baseURL: baseUrl,
-                    type: 'shell'
+                    type: 'shell',
                 });
                 // Is this a polyline
             } else if (_.has(geomData, 'polyline')) {
@@ -333,9 +330,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 console.log('No idea what we found: ' + geomData);
             }
         });
-        if (doc.workingstep) {
-            this._app.actionManager.emit('change-workingstep', doc.workingstep);
-        }
+
         req.callback(undefined, nc);
     }
 
