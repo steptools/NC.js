@@ -63,7 +63,7 @@ var MTListen = function() {
   var gcode;
 
   return new Promise(function(resolve) {
-    let addr = 'http://' + app.config.machineList[currentMachine] + '/current';
+    let addr = 'http://' + app.config.machineList[currentMachine].address + '/current';
 
     let mtc = request.get(addr);
     mtc.end(function (err, res) {
@@ -98,7 +98,7 @@ var MTListen = function() {
       coords[1] = parseInt(resCoords[1]);
       coords[2] = parseInt(resCoords[2]);
 
-      let addr = 'http://' + app.config.machineList[currentMachine] + '/';
+      let addr = 'http://' + app.config.machineList[currentMachine].address + '/';
       let mtc = request.get(addr);
 
       mtc.end(function (err, res) {
