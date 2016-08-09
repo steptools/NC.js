@@ -5,6 +5,7 @@ let soy = 0; // for detecting offset clicked from top of footerbar
 let firstTouch = {};
 let dragged = false;
 let fv, fb, db;
+let fClicked = false; //need this to keep animation for soclick
 
 class ButtonImage extends React.Component {
   constructor(props) {
@@ -135,6 +136,7 @@ export default class FooterView extends React.Component {
       fv.stop().animate({top: '0px'}, 500);
     }
     soy = 0;
+    fclicked = false;
   }
 
   soTouchStart(info) {
@@ -162,6 +164,7 @@ export default class FooterView extends React.Component {
 
     // if the duration of the touch was less than 250ms consider it a tap
     if (touchDuration < 250) {
+      fclicked = true;
       this.soClick();
       return;
     }
@@ -230,6 +233,21 @@ export default class FooterView extends React.Component {
       drawerbutton = 'glyphicons glyphicons-chevron-down';
     } else { //drawer closed
       drawerbutton = 'glyphicons glyphicons-chevron-up';
+    }
+
+    if (soy === 0 && !fClicked) {
+      let fv = $('.Footer-container');
+      let fb = $('.Footer-bar');
+      let db = $('.drawerbutton');
+      let currentMSGuiMode = this.props.msGuiMode;
+
+      if (currentMSGuiMode === false) {
+        let bottomPos = (window.innerHeight - (db.height() + fb.height()));
+        fv.css('top', bottomPos+'px');
+      }
+      if (currentMSGuiMode === true) {
+        fv.css('top', '0px');
+      }
     }
 
     return (
