@@ -258,12 +258,20 @@ export default class DataLoader extends THREE.EventDispatcher {
             let newpath = (req.baseURL).split('state')[0];
             if(newpath[newpath.length - 1] === '/')
                 newpath = newpath.substring(0 , newpath.length - 1);
-            data.url = newpath + '/geometry/' + req.path + '/' + req.type;
+
+            // TODO: actually figure out whether we need /shell or not
+            if (req.path.indexOf('mesh') >= 0) {
+                data.url = newpath + '/geometry/' + req.path + '/' + req.type;
+            } else {
+                data.url = newpath + '/geometry/' + req.path;
+            }
+
         } else if (data.type === 'previewShell') {
             data.shellSize = req.shellSize;
             let newpath = req.baseURL;
             if(newpath[newpath.length - 1] === '/')
                 newpath = newpath.substring(0 , newpath.length - 1);
+
             data.url = newpath + '/geometry/' + req.path;
         }
         else if (data.type === "annotation") {
@@ -276,36 +284,59 @@ export default class DataLoader extends THREE.EventDispatcher {
     }
     
     buildPreviewNCJSON(data, req) {
+        let doc = JSON.parse(data);
+        let parts = req.base.split('/');
+        let baseUrl = parts.slice(0, 3).join('/');
+
         let nc = new NC(null, null, null, this);
-        
-        // TODO: try to get actual transform data?
-        let color = DataLoader.parseColor('7d7d7d');
-        let transform = DataLoader.parseXform( [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1,
-        ], true);
 
-        let boundingBox = new THREE.Box3();
-
-        _.each(data, (geomData) => {
-            if (_.has(geomData, 'id')) {
-                if (geomData.usage === undefined) {
+        _.each(doc.geom, (geomData) => {
+            let color = DataLoader.parseColor('7d7d7d');
+            let transform = DataLoader.parseXform(geomData.xform, true);
+            // Is this a shell
+            if (_.has(geomData, 'shell')) {
+                if(geomData.usage === 'cutter')
+                {
+                    color = DataLoader.parseColor("FF530D");
+                }
+                if(geomData.usage === 'fixture' && this._app.services.machine === null){
+                    return;
+                }
+                if (!geomData.usage) {
                     geomData.usage = 'tobe';
                 }
 
+                let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
                 let shell = new Shell(geomData.id, nc, nc, geomData.size, color, boundingBox);
-
                 nc.addModel(shell, geomData.usage, 'shell', geomData.id, transform, boundingBox);
                 // Push the shell for later completion
-                this._shells[geomData.id + ".json"] = shell;
+
+                this._shells[geomData.shell] = shell;
+                this.addRequest({
+                    path: geomData.shell.split('.')[0],
+                    baseURL: baseUrl,
+                    type: 'shell'
+                });
+                // Is this a polyline
+            } else if (_.has(geomData, 'polyline')) {
+                let annotation = new Annotation(geomData.id, nc, nc);
+                nc.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
+                // Push the annotation for later completion
+                let name = geomData.polyline.split('.')[0];
+                this._annotations[name] = annotation;
+                this.addRequest({
+                    path: name,
+                    baseURL: baseUrl,
+                    type: 'annotation'
+                });
+            } else {
+                console.log('No idea what we found: ' + geomData);
             }
         });
-
-        req.cb = () => {
-            req.callback(undefined, nc);
-        };
+        if (doc.workingstep) {
+            this._app.actionManager.emit('change-workingstep', doc.workingstep);
+        }
+        req.callback(undefined, nc);
     }
 
     buildAssemblyJSON(jsonText, req) {

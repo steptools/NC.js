@@ -616,6 +616,16 @@ function processAssembly(url, workerID, data) {
     });
 }
 
+function processPreviewJSON(url, workerID, data) {
+    // pass back to main thread
+    self.postMessage({
+        type: 'previewLoad',
+        url: url,
+        data: data,
+        workerID: workerID,
+    });
+}
+
 function processNCState(url, workerID, data) {
     // All we really need to do is pass this back to the main thread
     self.postMessage({
@@ -786,54 +796,12 @@ let messageHandler = function(e) {
                 processAnnotation(url, workerID, res.text);
                 break;
             case "previewShell":
-
-                if (parts[parts.length - 1] === 'tool') {
-                    file = parts[parts.length - 2];
+                file = parts.slice(-1).join('/');
+                if (file === 'tool') {
+                    file = parts.slice(-2).join('/');
                 }
-                else {
-                    file = parts[parts.length - 1];
-                }
-
-                let data;
-                try {
-                    data = JSON.parse(res.text);
-                }
-                catch (err) {
-                    console.log(err);
-                    console.log(res.text);
-                    data = [];
-                }
-
-                self.postMessage({
-                    type: "previewLoad",
-                    url: url,
-                    data: data,
-                    workerID: workerID,
-                });
-
-                _.each(data, (dataItem) => {
-                    self.postMessage({ type: "parseComplete", file: file });
-                    processShellJSON(url, workerID, dataItem, false);
-                });
-
                 file = 'preview-' + file;
-
-                if (parts[parts.length - 1] === 'tool') {
-                    file = file + '/tool';
-                }
-
-                self.postMessage({
-                    type:"previewEndLoad",
-                    url: url,
-                    workerID: workerID,
-                })
-
-                self.postMessage({
-                    type: "workerFinish",
-                    workerID: workerID,
-                    file: file,
-                });
-
+                processPreviewJSON(url, workerID, res.text);
                 break;
             case "shell":
                 // Try to parse the JSON file
