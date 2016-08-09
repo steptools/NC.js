@@ -48,28 +48,14 @@ export default class ResponsiveView extends React.Component {
       spindleSpeed: 0,
     };
 
-    // get the workplan
     this.getWorkPlan = this.getWorkPlan.bind(this);
-    request.get('/v3/nc/workplan/').end(this.getWorkPlan);
 
-    // get the project loopstate
     this.getLoopState = this.getLoopState.bind(this);
-    request.get('/v3/nc/state/loop/').end(this.getLoopState);
 
-    // get the cache of tools
     this.getToolCache = this.getToolCache.bind(this);
-    request.get('/v3/nc/tools/').end(this.getToolCache);
 
-    // get the current tool
-    request.get('/v3/nc/tools/' + this.state.ws).end((err, res) => {
-      if (!err && res.ok) {
-        this.state.curtool = res.text;
-      }
-    });
 
-    // get data for workpiece/tolerance view
     this.getWPT = this.getWPT.bind(this);
-    request.get('/v3/nc/workpieces/').end(this.getWPT);
 
     this.addBindings();
     this.addListeners();
@@ -175,9 +161,8 @@ export default class ResponsiveView extends React.Component {
 
         if (node.type === 'tolerance') {
           let workingsteps = [];
-          for (let i in json[node.workpiece].workingsteps) {
-            let ws = json[node.workpiece].workingsteps[i];
-            ws = this.state.workingstepCache[ws];
+          for (let i of json[node.workpiece].workingsteps) {
+            let ws = this.state.workingstepCache[i];
             if (node.workpiece === ws.toBe.id) {
               workingsteps.push(json[node.workpiece].workingsteps[i]);
             }
@@ -260,7 +245,20 @@ export default class ResponsiveView extends React.Component {
   }
 
   componentWillMount() {
-    //
+    // get the workplan
+    request.get('/v3/nc/workplan/').end(this.getWorkPlan);
+    // get the project loopstate
+    request.get('/v3/nc/state/loop/').end(this.getLoopState);
+    // get the cache of tools
+    request.get('/v3/nc/tools/').end(this.getToolCache);
+    // get the current tool
+    request.get('/v3/nc/tools/' + this.state.ws).end((err, res) => {
+      if (!err && res.ok) {
+        this.state.curtool = res.text;
+      }
+    });
+    // get data for workpiece/tolerance view
+    request.get('/v3/nc/workpieces/').end(this.getWPT);
   }
 
   componentDidMount() {
