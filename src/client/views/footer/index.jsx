@@ -5,7 +5,6 @@ let soy = 0; // for detecting offset clicked from top of footerbar
 let firstTouch = {};
 let dragged = false;
 let fv, fb, db;
-let fClicked = false; //need this to keep animation for soclick
 
 class ButtonImage extends React.Component {
   constructor(props) {
@@ -39,14 +38,17 @@ export default class FooterView extends React.Component {
   }
 
   btnClicked() {
+    console.log('sim-pp');
     this.props.actionManager.emit('sim-pp');
   }
 
   ffBtnClicked() {
+    console.log('sim-f');
     this.props.actionManager.emit('sim-f');
   }
 
   bbBtnClicked() {
+    console.log('sim-b');
     this.props.actionManager.emit('sim-b');
   }
 
@@ -91,7 +93,7 @@ export default class FooterView extends React.Component {
 
   soMouseDown(info) {
     //console.log('mouse down');
-    $(fv, '.draggable').off('mousedown');
+    $('.Footer-container .draggable').off('mousedown');
 
     soy = (fv.offset().top + (db.height() + fb.height())) - info.clientY;
 
@@ -101,7 +103,7 @@ export default class FooterView extends React.Component {
 
   soMouseUp() {
     //console.log('mouse up');
-    $(fv, '.draggable').on('mousedown', this.soMouseDown);
+    $('.Footer-container .draggable').on('mousedown', this.soMouseDown);
     $(window).off('mousemove');
     $(window).off('mouseup');
 
@@ -113,12 +115,12 @@ export default class FooterView extends React.Component {
   }
 
   soMouseMove(info) {
+    //console.log('mousemove');
     this.footerMove(info.clientY);
   }
 
   soClick() {
     //console.log('click');
-
     if (dragged === true) {
       dragged = false;
       return;
@@ -136,14 +138,16 @@ export default class FooterView extends React.Component {
       fv.stop().animate({top: '0px'}, 500);
     }
     soy = 0;
-    fClicked = false;
   }
 
   soTouchStart(info) {
     //console.log('touch start');
     info.preventDefault();
     info.stopPropagation();
-    let touches = info.originalEvent.touches;
+    if (info.originalEvent) {
+      info = info.originalEvent;
+    }
+    let touches = info.touches;
 
     // prevents changes from multiple touches, we only use the first touch
     if (touches.length > 1) {
@@ -159,13 +163,14 @@ export default class FooterView extends React.Component {
     //console.log('touch end');
     info.preventDefault();
     info.stopPropagation();
-
+    if (info.originalEvent) {
+      info = info.originalEvent;
+    }
     let touchDuration = info.timeStamp - firstTouch.timeStamp;
 
     // if the duration of the touch was less than 250ms consider it a tap
     if (touchDuration < 250) {
-      fClicked = true;
-      this.soClick();
+      this.soClick(info);
       return;
     }
 
@@ -176,7 +181,10 @@ export default class FooterView extends React.Component {
     //console.log('touch move');
     info.preventDefault();
     info.stopPropagation();
-    let touch = info.originalEvent.touches[0];
+    if (info.originalEvent) {
+      info = info.originalEvent;
+    }
+    let touch = info.touches[0];
 
     let touchY = touch.pageY - touch.radiusY;
     this.footerMove(touchY);
@@ -187,12 +195,12 @@ export default class FooterView extends React.Component {
     fb = $('.Footer-bar');
     db = $('.drawerbutton');
 
-    $(fv, '.draggable').on('mousedown', this.soMouseDown);
-    $(fv, '.draggable').on('click', this.soClick);
-    $(fv, '.draggable').on('touchstart', this.soTouchStart);
-    $(fv, '.draggable').on('touchend', this.soTouchEnd);
-    $(fv, '.draggable').on('touchmove', this.soTouchMove);
-    $(fv, '.draggable').on('touchcancel', this.soTouchEnd);
+    $('.Footer-container .draggable').on('mousedown', this.soMouseDown);
+    $('.Footer-container .draggable').on('click', this.soClick);
+    $('.Footer-container .draggable').on('touchstart', this.soTouchStart);
+    $('.Footer-container .draggable').on('touchend', this.soTouchEnd);
+    $('.Footer-container .draggable').on('touchmove', this.soTouchMove);
+    $('.Footer-container .draggable').on('touchcancel', this.soTouchEnd);
   }
 
   render() {
@@ -233,21 +241,6 @@ export default class FooterView extends React.Component {
       drawerbutton = 'glyphicons glyphicons-chevron-down';
     } else { //drawer closed
       drawerbutton = 'glyphicons glyphicons-chevron-up';
-    }
-
-    if (soy === 0 && !fClicked) {
-      let fv = $('.Footer-container');
-      let fb = $('.Footer-bar');
-      let db = $('.drawerbutton');
-      let currentMSGuiMode = this.props.msGuiMode;
-
-      if (currentMSGuiMode === false) {
-        let bottomPos = (window.innerHeight - (db.height() + fb.height()));
-        fv.css('top', bottomPos+'px');
-      }
-      if (currentMSGuiMode === true) {
-        fv.css('top', '0px');
-      }
     }
 
     return (

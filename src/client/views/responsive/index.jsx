@@ -178,7 +178,7 @@ export default class ResponsiveView extends React.Component {
           for (let i in json[node.workpiece].workingsteps) {
             let ws = json[node.workpiece].workingsteps[i];
             ws = this.state.workingstepCache[ws];
-            if (node.workpiece === ws.toBe.id) {
+            if (ws.toBe && node.workpiece === ws.toBe.id) {
               workingsteps.push(json[node.workpiece].workingsteps[i]);
             }
           }
