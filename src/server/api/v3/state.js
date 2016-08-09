@@ -230,7 +230,7 @@ var parseGCodes = function() {
             MTCcontent.push(lineNumber);
           }
         } else {
-					if (line.substring(0,1) != 'IF') {
+					if (line.substring(0,2) != 'IF') {
 	          GCcontent.push(line);
 	          lineNumber++;
 					}
