@@ -27,7 +27,7 @@
         background: none;
         white-space: normal;
 
-        &:hover:not(.rc-menu-item-disabled) {
+        &:hover:not(.rc-menu-item-disabled,.rc-menu-submenu-disabled) {
             border-bottom-color: #2DB7F5;
         }
     }

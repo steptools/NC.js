@@ -195,6 +195,7 @@ export default class HeaderView extends React.Component {
           </div>
         </MenuItem>
         <SubMenu
+          disabled  // TODO: figure out server-side functionality for switching machines
           title={
             <div className='item'>
               <div className={getIcon('machine')} />
@@ -211,7 +212,7 @@ export default class HeaderView extends React.Component {
             </div>
           }
           key='machine'
-          className='info machine button'
+          className='info machine'  // TODO: add 'button' class when enabling machine switching
         >
           {_.map(_.values(this.props.machineList),this.renderMachineButton)}
         </SubMenu>
