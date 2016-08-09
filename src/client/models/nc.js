@@ -132,14 +132,10 @@ export default class NC extends THREE.EventDispatcher {
                 }
             });
             model.addEventListener("annotationMakeVisible", (event)=>{
-              _.each(model._addedGeometry, (line)=>{
-                this._annotation3D.add(line);
-              });
+              this._annotation3D.add(obj.annotation3D);
             });
             model.addEventListener("annotationMakeNonVisible", (event)=>{
-              _.each(model._addedGeometry, (line)=>{
-                this._annotation3D.remove(line);
-              });
+                this._annotation3D.remove(obj.annotation3D);
             });
         }
     }
@@ -243,7 +239,6 @@ export default class NC extends THREE.EventDispatcher {
         if (delta.next) {
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
-            // console.log("Keyframe recieved");
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
@@ -257,9 +252,9 @@ export default class NC extends THREE.EventDispatcher {
                 geom.rendered = false;
             });
 
-            var oldannotations = this._annotation3D.children;
+            var oldannotations = this._annotations;
             _.each(oldannotations, (anno) => {
-                this._annotation3D.remove(anno);
+                anno.removeFromScene();
             });
 
             //Load new Stuff.
