@@ -84,7 +84,7 @@ var MTListen = function() {
         feedrate = pathtag["Samples"][0]['PathFeedrate'][1]['_'];
         gcode = pathtag['Events'][0]['Block'][0]['_'];
         currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
-
+				console.log("Current block: " + currentgcode);
         let header = result['MTConnectStreams']['Header'][0].$;
         let next = header.nextSequence;
         if (next !== nextSequence) {
@@ -230,8 +230,11 @@ var parseGCodes = function() {
             MTCcontent.push(lineNumber);
           }
         } else {
-          GCcontent.push(line);
-          lineNumber++;
+					if (line.substring(0,1) != 'IF') {
+	          GCcontent.push(line);
+	          lineNumber++;
+					}
+          
         }
       });
       resolve([MTCcontent, GCcontent]);
