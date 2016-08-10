@@ -5,6 +5,7 @@ Features:
 Bugfixes:
 
 - Tolerances can be examined in the properties pane again
+- Upcoming tolerances now lists tolerances for all upcoming workingsteps, not 5
 
 Version 1.7.0
 
