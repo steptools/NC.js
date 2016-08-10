@@ -124,8 +124,12 @@ export default class PropertiesPane extends React.Component {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
     } else if (event.key === 'preview') {
+      if (entity.type === 'workingstep') {
+        this.setState({'previewEntity': entity.toBe});
+      } else {
+        this.setState({'previewEntity': entity});
+      }
 
-      this.setState({'previewEntity': entity});
       this.props.previewCb(true);
       let prevId;
       if (entity.type === 'workingstep') {
@@ -148,7 +152,6 @@ export default class PropertiesPane extends React.Component {
         modelType: 'previewShell',
       });
     }
-    // some other menu item clicked, no need to do anything
   }
 
   getWPForEntity(entity) {
@@ -324,7 +327,7 @@ export default class PropertiesPane extends React.Component {
 
   renderPreviewButton(entity) {
     if (entity.type === 'workplan' || entity.type === 'selective' ||
-        entity.type === 'workplan-setup' || entity.type === 'workingstep') {
+        entity.type === 'workplan-setup') {
       return;
     }
 
@@ -520,6 +523,9 @@ export default class PropertiesPane extends React.Component {
 
     let asIs, toBe, delta;
 
+    // show tolerances for toBe
+    this.renderChildren(this.props.toleranceCache[entity.toBe.id]);
+
     if (entity.asIs &&
         entity.asIs.id !== 0 &&
         this.props.toleranceCache[entity.asIs.id]) {
@@ -563,8 +569,8 @@ export default class PropertiesPane extends React.Component {
       <MenuItem disabled key='workpieces' className='property children'>
         {title}
         <div className='list'>
-          {asIs}
           {toBe}
+          {asIs}
           {delta}
         </div>
       </MenuItem>
