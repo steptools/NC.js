@@ -106,7 +106,9 @@ export default class ResponsiveView extends React.Component {
       this.speedChanged(speed);
     });
 
-    this.props.app.actionManager.on('update-mtc', this.updateMTC);
+    this.props.app.socket.on('nc:mtc', (MTC) => {
+      this.updateMTC(MTC);
+    });
 
     this.props.app.socket.on('nc:feed', (feed) => {
       this.setState({'feedRate' : feed});
@@ -468,28 +470,20 @@ export default class ResponsiveView extends React.Component {
     }
   }
 
-  updateMTC() {
-    // get current mtc data
-    let url = '/v3/nc/state/mtc';
-    let resCb = (err, res) => {
-      if (err || !res.ok) {
-        return;
-      }
-      let mtc = JSON.parse(res.text);
-      // populate the header
-      let live = $('.header .info.live');
-      if (mtc.live === true && !live.hasClass('active')) {
-        live.addClass('active');
-        $('.header .info.live .value').html('Live');
-      } else if (mtc.live === false && live.hasClass('active')) {
-        live.removeClass('active');
-        $('.header .info.live .value').html('Stopped');
-      }
-      $('.header .info.gcode .value').html(mtc.realgcode);
-      this.populateSpindleSpeed(mtc.spindlespeed);
-      this.populateFeedRate(mtc.feedrate, mtc.feedrateUnits);
-    };
-    request.get(url).end(resCb);
+  updateMTC(MTC) {
+    let mtc = MTC;
+    // populate the header
+    let live = $('.header .info.live');
+    if (mtc.live === true && !live.hasClass('active')) {
+      live.addClass('active');
+      $('.header .info.live .value').html('Live');
+    } else if (mtc.live === false && live.hasClass('active')) {
+      live.removeClass('active');
+      $('.header .info.live .value').html('Stopped');
+    }
+    $('.header .info.gcode .value').html(mtc.realgcode);
+    this.populateSpindleSpeed(mtc.spindlespeed);
+    this.populateFeedRate(mtc.feedrate, mtc.feedrateUnits);
   }
 
   playpause() {

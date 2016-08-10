@@ -119,7 +119,7 @@ var findWS = function(current) {
   if (current < WSGCode['worksteps'][WSGCodeIndex]) {
     WSGCodeIndex = 0;
     change = true;
-    app.logger.debug("Starting from 0");
+    //app.logger.debug("Starting from 0");
   }
 
   while (current > WSGCode['worksteps'][WSGCodeIndex + 1]) {
@@ -149,12 +149,12 @@ var _getDelta = function(ms, key, cb) {
     MTCHold.realgcode = res[8];
 
     if (findWS(res[4]) ) {
-      console.log('keystate');
+      //console.log('keystate');
       ms.GoToWS(WSArray[WSGCodeIndex]);
       holder = JSON.parse(ms.GetKeystateJSON());
       holder.next = true;
     } else {
-      console.log('delta');
+      //console.log('delta');
       holder = JSON.parse(ms.GetDeltaJSON());
       holder.next = false;
     }
@@ -185,16 +185,14 @@ function getPrev(ms, cb) {
 
 function getToWS(wsId, ms, cb) {
   ms.GoToWS(wsId);
-  //assume switch was successful
-  app.logger.debug('Switched! ' + wsId);
   cb();
 }
 
 var loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
-    app.logger.debug('Loop step ' + path);
     _getDelta(ms, key, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
+      app.ioServer.emit('nc:mtc', MTCHold);
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {
           clearTimeout(loopTimer);
@@ -413,6 +411,7 @@ var _wsInit = function(req, res) {
     }
     _getDelta(ms, false, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
+      app.ioServer.emit('nc:mtc', MTCHold);
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {
           clearTimeout(loopTimer);
