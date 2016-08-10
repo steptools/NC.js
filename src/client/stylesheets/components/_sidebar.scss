@@ -453,6 +453,7 @@ $icons: '../icons/';
                 background-color: transparent;
                 
                 .button {
+                    flex-grow: 1;
                     float: none;
                     padding: 10px 20px;
                     text-align: center;
