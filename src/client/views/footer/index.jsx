@@ -38,18 +38,26 @@ export default class FooterView extends React.Component {
   }
 
   btnClicked() {
-    console.log('sim-pp');
+    //console.log('sim-pp');
     this.props.actionManager.emit('sim-pp');
   }
 
   ffBtnClicked() {
-    console.log('sim-f');
+    //console.log('sim-f');
     this.props.actionManager.emit('sim-f');
   }
 
   bbBtnClicked() {
-    console.log('sim-b');
+    //console.log('sim-b');
     this.props.actionManager.emit('sim-b');
+  }
+
+  footerControlMode() {
+
+  }
+
+  footerControlPosition() {
+
   }
 
   footerController() {
@@ -70,7 +78,9 @@ export default class FooterView extends React.Component {
       let bottomPos = (window.innerHeight - (db.height() + fb.height()));
       fv.stop().animate({top: bottomPos+'px'}, 500);
     } else if (newMode === true) {
-      fv.stop().animate({top: '0px'}, 500);
+      fv.stop().animate({top: '0px'}, 500, 'swing', function() {
+        // TODO: scroll sidebar
+      });
     }
     soy = 0;
   }
