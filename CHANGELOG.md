@@ -1,6 +1,7 @@
 Version 1.7.1
 
 Features:
+- Added previous tolerances to the tolerances tab
 
 Bugfixes:
 
