@@ -1,3 +1,11 @@
+Version 1.7.1
+
+Features:
+
+Bugfixes:
+
+- Tolerances can be examined in the properties pane again
+
 Version 1.7.0
 
 Features:
