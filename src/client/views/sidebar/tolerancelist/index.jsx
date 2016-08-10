@@ -47,7 +47,7 @@ export default class ToleranceList extends React.Component {
       return;
     }
 
-    for (let tol in this.props.toleranceList) {
+    for (let tol in this.props.toleranceCache) {
       if (this.props.toleranceCache[tol].type === 'tolerance') {
         tolerances.push(tol);
       }
@@ -88,7 +88,18 @@ export default class ToleranceList extends React.Component {
   }
 
   addUpcoming(n, tolList) {
-    if (tolerances.length === 0) {
+    let upcomingWorkingsteps = this.getUpcomingWorkingsteps();
+    let upcomingTols = this.upcomingTols(upcomingWorkingsteps);
+    let upcoming = false;
+
+    for (let i = 0; i < upcomingTols.length; i++) {
+      if (upcomingTols[i].length !== 0) {
+        upcoming = true;
+        break;
+      }
+    }
+
+    if (!upcoming) {
       tolList.push({
         name: 'No Upcoming Tolerances',
         leaf: true,
@@ -98,10 +109,6 @@ export default class ToleranceList extends React.Component {
       return;
     }
 
-    let upcomingWorkingsteps = this.getUpcomingWorkingsteps();
-    let upcomingTols = this.upcomingTols(upcomingWS);
-    let upcoming = false;
-
     tolList.push({
       name: 'Upcoming Tolerances',
       leaf: true,
@@ -109,49 +116,34 @@ export default class ToleranceList extends React.Component {
       id: -2,
     });
 
-    console.log(upcomingWorkingsteps);
-    console.log(upcomingTols);
-
-    //for (let i = 0; i < upcomingTols.length; i++) {
-    //  if (upcomingTols[i].length !== 0) {
-    //    upcoming = true;
-    //    break;
-    //  }
-    //}
-
-    /*
-    if (upcoming) {
-      for (let i = 0; i < n; i++) {
-        if (!upcomingTols[i] || upcomingTols[i].length === 0) {
-          continue;
-        }
-        let ws = this.props.workingstepCache[upcomingWS[i]];
-        ws.children = upcomingTols[i];
-        ws.leaf = false;
-        ws.icon = <div className='icon custom letter'>{i + 1}</div>;
-        tolList.push(ws);
+    for (let i = 0; i < upcomingTols.length; i++) {
+      if (upcomingTols[i].length === 0) {
+        continue;
       }
-    } else {
-      
-    }*/
+      let ws = this.props.workingstepCache[upcomingWorkingsteps[i]];
+      ws.children = upcomingTols[i];
+      ws.leaf = false;
+      ws.icon = <div className='icon custom letter'>{i + 1}</div>;
+      tolList.push(ws);
+    }
   }
 
   getUpcomingWorkingsteps() {
     let wsList = this.props.workingstepList;
-    let upcomingWS = [];
+    let upcomingWorkingsteps = [];
     let upcoming = false;
     for (let i = 0; i < wsList.length; i++) {
       if (wsList[i] === this.props.ws) {
         upcoming = true;
-      } else if (upcoming === true && n > 0) {
+      } else if (upcoming === true) {
         if (wsList[i] < 0 || !this.props.workingstepCache[wsList[i]].enabled) {
           continue;
         }
-        upcomingWS.push(wsList[i]);
+        upcomingWorkingsteps.push(wsList[i]);
       }
     }
 
-    return upcomingWS;
+    return upcomingWorkingsteps;
   }
 
   upcomingTols(upcomingWorkingsteps) {
@@ -193,11 +185,21 @@ export default class ToleranceList extends React.Component {
   }
 
   render() {
+    // TODO: pass tolerances by WS (in order) through props for optimization
     this.getTolerances();
     let tolList = [];
     this.addCurrent(tolList);
-    let n = 5; // number of upcoming workingsteps to check for tolerances
-    this.addUpcoming(n, tolList);
+    if (tolerances.length === 0) {
+      tolList.push({
+        name: 'No Upcoming Tolerances',
+        leaf: true,
+        type: 'divider',
+        id: -2,
+      });
+    } else {
+      let n = 5; // number of upcoming workingsteps to check for tolerances
+      this.addUpcoming(n, tolList);
+    }
     //this.addWorkpieces(tolList, -(n + 1));
 
     if (tolList.length <= 0) {
