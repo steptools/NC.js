@@ -123,7 +123,7 @@ export default class ToleranceList extends React.Component {
       let ws = this.props.workingstepCache[upcomingWorkingsteps[i]];
       ws.children = upcomingTols[i];
       ws.leaf = false;
-      ws.icon = <div className='icon custom letter'>{i + 100}</div>;
+      ws.icon = <div className='icon custom letter'>{i + 1}</div>;
       tolList.push(ws);
     }
   }
