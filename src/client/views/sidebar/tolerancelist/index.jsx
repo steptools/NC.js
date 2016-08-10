@@ -2,6 +2,7 @@ import React from 'react';
 import {Treebeard} from 'react-treebeard';
 import ts from '../tree_style.jsx';
 
+let wsList = [];
 var tolerancesByWS = [];
 
 export default class ToleranceList extends React.Component {
@@ -27,6 +28,10 @@ export default class ToleranceList extends React.Component {
     $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard flat');
   }
 
+  shouldComponentUpdate(nextProps) {
+    return typeof nextProps.ws === 'number';
+  }
+
   componentWillReceiveProps(nextProps) {
     this.decorators.highlightedTolerances = nextProps.highlightedTolerances;
   }
@@ -45,19 +50,22 @@ export default class ToleranceList extends React.Component {
     if (tolerancesByWS.length > 0) {
       return;
     }
-    
+
+    wsList = this.props.workingstepList.filter(function(x) {
+      return x > -1;
+    });
+
     let tolerances = [];
     for (let tol in this.props.toleranceCache) {
       if (this.props.toleranceCache[tol].type === 'tolerance') {
         tolerances.push(this.props.toleranceCache[tol]);
       }
     }
-    
-    let wsList = this.props.workingstepList;
-    let tolsInWs;
+
+    let tolsInWS;
     for (let i in wsList) {
       let ws = wsList[i];
-      tolsInWs = [];
+      tolsInWS = [];
       for (let tol in tolerances) {
         if (tolerances[tol].workingsteps.indexOf(ws) >= 0) {
           let tolToAdd = tolerances[tol];
@@ -66,8 +74,6 @@ export default class ToleranceList extends React.Component {
       }
       tolerancesByWS.push(tolsInWS);
     }
-
-    console.log(tolerancesByWS);
   }
 
   onToggle(node, toggled) {
@@ -82,6 +88,7 @@ export default class ToleranceList extends React.Component {
   }
 
   addCurrent(tolList) {
+    // Don't change this to use tolerancesByWS, it won't work
     if (!this.props.curWS.toBe || this.props.curWS.toBe <= 0) {
       return;
     }
@@ -101,17 +108,22 @@ export default class ToleranceList extends React.Component {
         type: 'divider',
         id: -1,
       });
+      let ws = this.props.ws;
+      let curWSIndex = wsList.indexOf(ws);
+      ws = this.props.workingstepCache[ws];
+      ws.leaf = true;
+      ws.icon = <div className='icon custom letter'>{curWSIndex + 1}</div>;
+      tolList.push(ws);
     }
   }
 
   addUpcoming(tolList) {
-    let upcomingWorkingsteps = this.getUpcomingWorkingsteps();
-    let upcomingTols = this.upcomingTols(upcomingWorkingsteps);
-
+    let wsCache = this.props.workingstepCache;
+    let curWSIndex = wsList.indexOf(this.props.ws);
     let upcoming = false;
 
-    for (let i = 0; i < upcomingTols.length; i++) {
-      if (upcomingTols[i].length !== 0) {
+    for (let i = curWSIndex + 1; i < tolerancesByWS.length; i++) {
+      if (tolerancesByWS[i] && tolerancesByWS[i].length > 0) {
         upcoming = true;
         break;
       }
@@ -134,12 +146,12 @@ export default class ToleranceList extends React.Component {
       id: -2,
     });
 
-    for (let i = 0; i < upcomingTols.length; i++) {
-      if (upcomingTols[i].length === 0) {
+    for (let i = curWSIndex + 1; i < tolerancesByWS.length; i++) {
+      if (tolerancesByWS[i] && tolerancesByWS[i].length === 0) {
         continue;
       }
-      let ws = this.props.workingstepCache[upcomingWorkingsteps[i]];
-      ws.children = upcomingTols[i];
+      let ws = wsCache[wsList[i]];
+      ws.children = tolerancesByWS[i];
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
       tolList.push(ws);
@@ -147,7 +159,44 @@ export default class ToleranceList extends React.Component {
   }
 
   addPrevious(tolList) {
+    let wsCache = this.props.workingstepCache;
+    let curWSIndex = wsList.indexOf(this.props.ws);
+    let previous = false;
 
+    for (let i = 0; i < curWSIndex; i++) {
+      if (tolerancesByWS[i] && tolerancesByWS[i].length > 0) {
+        previous = true;
+        break;
+      }
+    }
+
+    if (!previous) {
+      tolList.push({
+        name: 'No Previous Tolerances',
+        leaf: true,
+        type: 'divider',
+        id: -3,
+      });
+      return;
+    }
+
+    tolList.push({
+      name: 'Previous Tolerances',
+      leaf: true,
+      type: 'divider',
+      id: -3,
+    });
+
+    for (let i = 0; i < curWSIndex; i++) {
+      if (tolerancesByWS[i] && tolerancesByWS[i].length === 0) {
+        continue;
+      }
+      let ws = wsCache[wsList[i]];
+      ws.children = tolerancesByWS[i];
+      ws.leaf = false;
+      ws.icon = <div className='icon custom letter'>{i + 1}</div>;
+      tolList.push(ws);
+    }
   }
 
   addWorkpieces(tolList, dividerId) {
@@ -167,9 +216,9 @@ export default class ToleranceList extends React.Component {
     // TODO: pass tolerances by WS (in order) through props for optimization
     this.getTolerancesByWS();
     let tolList = [];
-    //this.addCurrent(tolList);
-    //this.addUpcoming(tolList);
-    //this.addPrevious(tolList);
+    this.addCurrent(tolList);
+    this.addUpcoming(tolList);
+    this.addPrevious(tolList);
     //this.addWorkpieces(tolList, -(n + 1));
 
     if (tolList.length <= 0) {
