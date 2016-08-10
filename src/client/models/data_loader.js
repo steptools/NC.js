@@ -172,11 +172,11 @@ export default class DataLoader extends THREE.EventDispatcher {
         let req, shell, anno;
         // console.log("Worker Data: " + event.data.file);
         // Find the request this message corresponds to
-        if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError"], event.data.type) != -1) {
+        if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError", "previewLoad", "previewEndLoad"], event.data.type) != -1) {
             req = this._loading[event.data.workerID];
         }
         // Put worker back into the queue - if it is the time
-        if (_.indexOf(["rootLoad", "workerFinish", "loadError"], event.data.type) != -1) {
+        if (_.indexOf(["rootLoad", "workerFinish", "loadError", "previewLoad"], event.data.type) != -1) {
             this._loading[event.data.workerID] = undefined;
             this._freeWorkers.push(event.data.workerID);
             this.runLoadQueue();
@@ -202,17 +202,14 @@ export default class DataLoader extends THREE.EventDispatcher {
                     this.dispatchEvent({ type: "annotationLoad", file: event.data.file });
                 }
                 break;
+            case "previewLoad":
+                this.buildPreviewNCJSON(event.data.data, req);
+                break;
             case "shellLoad":
             //This is the case where the shell comes in with position, normals and colors vector after ProcessShellJSON
                 shell = this._shells[event.data.id+".json"];
-              
-                if (req.type === 'previewShell') {
-                    this.buildPreviewNC(event.data, req);
-                    this.dispatchEvent({
-                        type: "shellLoad",
-                        file: event.data.file
-                    });
-                } else if (!shell) {
+
+                if (!shell) {
                     console.log('DataLoader.ShellLoad: invalid shell ID ' + event.data.id);
                 } else {
                     data = event.data.data;
@@ -258,12 +255,20 @@ export default class DataLoader extends THREE.EventDispatcher {
             let newpath = (req.baseURL).split('state')[0];
             if(newpath[newpath.length - 1] === '/')
                 newpath = newpath.substring(0 , newpath.length - 1);
-            data.url = newpath + '/geometry/' + req.path + '/' + req.type;
+
+            // TODO: actually figure out whether we need /shell or not
+            if (req.path.indexOf('mesh') >= 0) {
+                data.url = newpath + '/geometry/' + req.path + '/' + req.type;
+            } else {
+                data.url = newpath + '/geometry/' + req.path;
+            }
+
         } else if (data.type === 'previewShell') {
             data.shellSize = req.shellSize;
             let newpath = req.baseURL;
             if(newpath[newpath.length - 1] === '/')
                 newpath = newpath.substring(0 , newpath.length - 1);
+
             data.url = newpath + '/geometry/' + req.path;
         }
         else if (data.type === "annotation") {
@@ -275,35 +280,57 @@ export default class DataLoader extends THREE.EventDispatcher {
         worker.postMessage(data);
     }
     
-    buildPreviewNC(data, req) {
+    buildPreviewNCJSON(data, req) {
+        let doc = JSON.parse(data);
+        let parts = req.base.split('/');
+        let baseUrl = parts.slice(0, 3).join('/');
+
         let nc = new NC(null, null, null, this);
-        
-        let color = DataLoader.parseColor('7d7d7d');
-        let transform = DataLoader.parseXform( [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1,
-        ], true);
-        
-        // Is this a shell
-        if(data.usage === 'cutter') {
-            color = DataLoader.parseColor("FF530D");
-        }
-        if(data.usage === 'fixture' && this._app.services.machine.dir === '') {
-            return;
-        }
-        if (data.usage === undefined) {
-            data.usage = 'tobe';
-        }
 
-        let boundingBox = new THREE.Box3();
+        _.each(doc.geom, (geomData) => {
+            let color = DataLoader.parseColor('7d7d7d');
+            let transform = DataLoader.parseXform(geomData.xform, true);
+            // Is this a shell
+            if (_.has(geomData, 'shell')) {
+                if(geomData.usage === 'cutter')
+                {
+                    color = DataLoader.parseColor("FF530D");
+                }
+                if(geomData.usage === 'fixture' && this._app.services.machine === null){
+                    return;
+                }
+                if (!geomData.usage) {
+                    geomData.usage = 'tobe';
+                }
 
-        let shell = new Shell(data.id, nc, nc, data.size, color, boundingBox);
+                let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
+                let shell = new Shell(geomData.id, nc, nc, geomData.size, color, boundingBox);
+                nc.addModel(shell, geomData.usage, 'shell', geomData.id, transform, boundingBox);
+                // Push the shell for later completion
 
-        nc.addModel(shell, data.usage, 'shell', data.id, transform, boundingBox);
-        shell.addGeometry(data.data.position, data.data.normals, data.data.color, data.data.faces);
-        
+                this._shells[geomData.shell] = shell;
+                this.addRequest({
+                    path: geomData.shell.split('.')[0],
+                    baseURL: baseUrl,
+                    type: 'shell',
+                });
+                // Is this a polyline
+            } else if (_.has(geomData, 'polyline')) {
+                let annotation = new Annotation(geomData.id, nc, nc);
+                nc.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
+                // Push the annotation for later completion
+                let name = geomData.polyline.split('.')[0];
+                this._annotations[name] = annotation;
+                this.addRequest({
+                    path: name,
+                    baseURL: baseUrl,
+                    type: 'annotation'
+                });
+            } else {
+                console.log('No idea what we found: ' + geomData);
+            }
+        });
+
         req.callback(undefined, nc);
     }
 

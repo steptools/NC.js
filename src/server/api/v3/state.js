@@ -21,6 +21,7 @@ var WSGCodeIndex = 0;
 var WSGCode = [];
 var WSArray = [];
 let nextSequence = 0;
+let changed=false;
 
 var MTCHold = {};
 
@@ -426,9 +427,30 @@ var _wsInit = function(req, res) {
         loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
       } else {
         // app.logger.debug('playback speed is zero, no timeout set');
-      }
-    });
+  		}
+		});
+	}
+}
+
+var _wsInit = function(req, res) {
+  let temp = false;
+  if (!req.params.command) {
+    return;
   }
+  if (typeof loopStates[path] === 'undefined') {
+    loopStates[path] = false;
+  }
+
+  handleWSInit(req.params.command, res);
+
+  getDelta(file.ms, false, function(b) {
+    app.ioServer.emit('nc:delta', JSON.parse(b));
+    if (playbackSpeed > 0) {
+      if (loopTimer !== undefined) {
+        clearTimeout(loopTimer);
+      }
+    }
+  });
 };
 
 var _getKeyState = function (req, res) {

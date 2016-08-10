@@ -2,6 +2,8 @@ import React from 'react';
 var md = require('node-markdown').Markdown;
 import Menu, {SubMenu, Item as MenuItem} from 'rc-menu';
 import _ from 'lodash';
+import request from 'superagent';
+let changetext='';
 
 function getIcon(type, data) {
   if (!data) {
@@ -78,11 +80,20 @@ export default class HeaderView extends React.Component {
   }
 
   componentDidMount() {
-    let changes = document.getElementById('changes');
-    let logbutton = document.getElementById('logbutton');
-    let log = this.props.cadManager.app.changelog;
-    changes.innerHTML = md(log);
-    logbutton.innerHTML = 'v' + md(log).split('\n')[0].split(' ')[1];
+    let changes = $('#changes');
+    let logbutton = $('#logbutton');
+
+    // get the current tool
+    let url = '/changelog/';
+    request
+      .get(url)
+      .end((err,res) => {
+        if (!err && res.ok) {
+          changetext=res.text;
+          changes.html(md(changetext));
+          logbutton.html('v' + md(changetext).split('\n')[0].split(' ')[1]);
+        }
+      });
   }
 
   renderMachineButton(machine) {

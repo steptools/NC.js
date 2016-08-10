@@ -27,16 +27,23 @@ export default class SidebarView extends React.Component {
     let update = (!this.state.scrolled) && (this.props.ws > -1);
     update = update && (this.props.mode !== 'tolerance');
     if (update) {
-      let currElem = $('.running-node');
-      if (currElem.length > 0) {
-        let tree = $('.m-tree,.treebeard');
-        let tOffset = tree.offset().top + tree.innerHeight();
-        let cOffset = currElem.offset().top + currElem.outerHeight();
-        if (tOffset < cOffset) {
-          tree.animate({scrollTop: (cOffset - tOffset)}, 1000);
-        }
-        this.setState({'scrolled': true});
+      let node = $('.running-node');
+      if (node.length <= 0) {
+        return;
       }
+
+      let tree = $('.m-tree,.treebeard');
+      let tOffset = tree.offset().top + tree.innerHeight();
+      let nOffset = node.offset().top + node.innerHeight();
+      let scroll = nOffset - tOffset;
+      if (scroll > 0) {
+        if (scroll >= node.innerHeight()) {
+          scroll += tree.innerHeight() / 2;
+          scroll -= node.innerHeight() / 2;
+        }
+        tree.animate({scrollTop: scroll}, 1000);
+      }
+      this.setState({'scrolled': true});
     }
   }
 
@@ -129,11 +136,14 @@ export default class SidebarView extends React.Component {
           cbMode={this.props.cbMode}
           cbTree={this.props.cbTree}
           propertyCb={this.props.openProperties}
+          workingstepCache={this.props.workingstepCache}
+          workingstepList={this.props.workingstepList}
           toleranceCache={this.props.toleranceCache}
           toleranceList={this.props.toleranceList}
           highlightedTolerances={this.props.highlightedTolerances}
           toggleHighlight={this.props.toggleHighlight}
           isMobile={this.props.isMobile}
+          ws={this.props.ws}
         />
       );
     } else if (this.props.mode === 'tools') {
@@ -154,8 +164,9 @@ export default class SidebarView extends React.Component {
     }
 
     let SVWidth;
-    if(this.props.isMobile)
-      SVWidth={"width": "100%"};
+    if (this.props.isMobile) {
+      SVWidth = {'width': '100%'};
+    }
 
     return (
       <div className='sidebar' style={SVWidth}>

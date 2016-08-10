@@ -1,12 +1,30 @@
+Version 1.7.1
+
+Features:
+- Added previous tolerances to the tolerances tab
+
+Bugfixes:
+
+- Tolerances can be examined in the properties pane again
+- Upcoming tolerances now lists tolerances for all upcoming workingsteps, not 5
+
 Version 1.7.0
 
 Features:
+
 - Modifiers for tolerances have been added
+- Tolerances for the next 5 workingsteps are displayed in the tolerance view
+- Datums for tolerances have been added to tolerance pane and properties pane
 
 Bugfixes:
 
 - Disabled workplans disable all children, not just immediate
 - Feedrate has proper rounding
+- Previewing a tool with multiple shells loads all shells in the tool
+- Workingstep transition bug fixed
+- Sidebar should scroll properly on initial load
+- Tool properties pane now shows/hides the correct workingsteps
+- Improved program flow
 
 Version 1.6.0
 
