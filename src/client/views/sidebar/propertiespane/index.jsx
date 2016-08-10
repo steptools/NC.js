@@ -525,6 +525,9 @@ export default class PropertiesPane extends React.Component {
 
     let asIs, toBe, delta;
 
+    // show tolerances for toBe
+    this.renderChildren(this.props.toleranceCache[entity.toBe.id]);
+
     if (entity.asIs &&
         entity.asIs.id !== 0 &&
         this.props.toleranceCache[entity.asIs.id]) {
@@ -568,8 +571,8 @@ export default class PropertiesPane extends React.Component {
       <MenuItem disabled key='workpieces' className='property children'>
         {title}
         <div className='list'>
-          {asIs}
           {toBe}
+          {asIs}
           {delta}
         </div>
       </MenuItem>
