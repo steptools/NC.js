@@ -2,16 +2,19 @@ import React from 'react';
 import {Treebeard} from 'react-treebeard';
 import ts from '../tree_style.jsx';
 
+var tolerances = [];
+
 export default class ToleranceList extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {curr: false};
 
+    this.getTolerances = this.getTolerances.bind(this);
     this.onToggle = this.onToggle.bind(this);
     this.addCurrent = this.addCurrent.bind(this);
     this.addUpcoming = this.addUpcoming.bind(this);
-    this.nextNWorkingsteps = this.nextNWorkingsteps.bind(this);
+    this.getUpcomingWorkingsteps = this.getUpcomingWorkingsteps.bind(this);
     this.upcomingTols = this.upcomingTols.bind(this);
     this.addWorkpieces = this.addWorkpieces.bind(this);
 
@@ -35,6 +38,19 @@ export default class ToleranceList extends React.Component {
       this.props.workingstepCache[i].leaf = true;
       delete this.props.workingstepCache[i].children;
       delete this.props.workingstepCache[i].icon;
+    }
+  }
+
+  // use props to get just the tolerances (no workpieces)
+  getTolerances() {
+    if (tolerances.length > 0) {
+      return;
+    }
+
+    for (let tol in this.props.toleranceCache) {
+      if (this.props.toleranceCache[tol].type === 'tolerance') {
+        tolerances.push(tol);
+      }
     }
   }
 
@@ -72,8 +88,8 @@ export default class ToleranceList extends React.Component {
   }
 
   addUpcoming(n, tolList) {
-    let upcomingWS = this.nextNWorkingsteps(n);
-    let upcomingTols = this.upcomingTols(upcomingWS);
+    let upcomingWorkingsteps = this.getUpcomingWorkingsteps();
+    let upcomingTols = this.upcomingTols(upcomingWorkingsteps);
     let upcoming = false;
 
     for (let i = 0; i < upcomingTols.length; i++) {
@@ -83,56 +99,54 @@ export default class ToleranceList extends React.Component {
       }
     }
 
-    if (upcoming) {
-      tolList.push({
-        name: 'Upcoming Tolerances',
-        leaf: true,
-        type: 'divider',
-        id: -2,
-      });
-
-      for (let i = 0; i < n; i++) {
-        if (!upcomingTols[i] || upcomingTols[i].length === 0) {
-          continue;
-        }
-        let ws = this.props.workingstepCache[upcomingWS[i]];
-        ws.children = upcomingTols[i];
-        ws.leaf = false;
-        ws.icon = <div className='icon custom letter'>{i + 1}</div>;
-        tolList.push(ws);
-      }
-    } else {
+    if (!upcoming) {
       tolList.push({
         name: 'No Upcoming Tolerances',
         leaf: true,
         type: 'divider',
         id: -2,
       });
+      return;
+    }
+
+    tolList.push({
+      name: 'Upcoming Tolerances',
+      leaf: true,
+      type: 'divider',
+      id: -2,
+    });
+
+    for (let i = 0; i < upcomingTols.length; i++) {
+      if (upcomingTols[i].length === 0) {
+        continue;
+      }
+      let ws = this.props.workingstepCache[upcomingWorkingsteps[i]];
+      ws.children = upcomingTols[i];
+      ws.leaf = false;
+      ws.icon = <div className='icon custom letter'>{i + 1}</div>;
+      tolList.push(ws);
     }
   }
 
-  nextNWorkingsteps(n) {
+  getUpcomingWorkingsteps() {
     let wsList = this.props.workingstepList;
-    let upcomingWS = [];
+    let upcomingWorkingsteps = [];
     let upcoming = false;
     for (let i = 0; i < wsList.length; i++) {
       if (wsList[i] === this.props.ws) {
         upcoming = true;
-      } else if (upcoming === true && n > 0) {
+      } else if (upcoming === true) {
         if (wsList[i] < 0 || !this.props.workingstepCache[wsList[i]].enabled) {
           continue;
         }
-        upcomingWS.push(wsList[i]);
-        n--;
-      } else if (n <= 0) {
-        break;
+        upcomingWorkingsteps.push(wsList[i]);
       }
     }
 
-    return upcomingWS;
+    return upcomingWorkingsteps;
   }
 
-  upcomingTols(upcomingWS) {
+  upcomingTols(upcomingWorkingsteps) {
     let tolerances = [];
     for (let tol in this.props.toleranceCache) {
       if (this.props.toleranceCache[tol].type === 'tolerance') {
@@ -141,8 +155,8 @@ export default class ToleranceList extends React.Component {
     }
 
     let upcoming = [];
-    for (let i in upcomingWS) {
-      let ws = upcomingWS[i];
+    for (let i in upcomingWorkingsteps) {
+      let ws = upcomingWorkingsteps[i];
       let tolsInWS = [];
       for (let tol in tolerances) {
         if (tolerances[tol].workingsteps.indexOf(ws) >= 0) {
@@ -171,10 +185,21 @@ export default class ToleranceList extends React.Component {
   }
 
   render() {
+    // TODO: pass tolerances by WS (in order) through props for optimization
+    this.getTolerances();
     let tolList = [];
     this.addCurrent(tolList);
-    let n = 5; // number of upcoming workingsteps to check for tolerances
-    this.addUpcoming(n, tolList);
+    if (tolerances.length === 0) {
+      tolList.push({
+        name: 'No Upcoming Tolerances',
+        leaf: true,
+        type: 'divider',
+        id: -2,
+      });
+    } else {
+      let n = 5; // number of upcoming workingsteps to check for tolerances
+      this.addUpcoming(n, tolList);
+    }
     //this.addWorkpieces(tolList, -(n + 1));
 
     if (tolList.length <= 0) {
