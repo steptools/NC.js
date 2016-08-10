@@ -270,7 +270,7 @@ $icons: '../icons/';
             display: flex;
             align-items: center;
             padding: 5px;
-            border-bottom: 1px solid #DDDDDD;
+            border-bottom: 2px solid #333333;
             background-color: inherit;
 
             .title {
@@ -439,25 +439,26 @@ $icons: '../icons/';
         
         .button-dock {
             z-index: 12;
-            flex-grow: 1;
             background-color: inherit;
-            max-height: 50px;
+            border-top: 2px solid #333333;
         }
         
         .button-dock .rc-menu {
+            z-index: inherit;
             min-height: 0px;
-            border-top: 1px solid #DDDDDD;
+            height: 46px;
             display: flex;
-            align-items: center;
-            margin: 1px;
-            margin-bottom: 0px;
+            align-items: stretch;
+            margin: 2px;
             background-color: inherit;
+            border: 0px;
             
             .button {
                 flex-grow: 1;
                 flex-basis: 0;
-                align-self: stretch;
-                text-align: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 background-color: #333333;
                 border-bottom: 2px solid #333333;
                 padding: 0px;
@@ -473,6 +474,7 @@ $icons: '../icons/';
                 .icon {
                     font-size: 20px;
                     margin-left: 5px;
+                    vertical-align: middle;
                 }
 
                 &:hover:not(.rc-menu-item-disabled) {
