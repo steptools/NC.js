@@ -72,8 +72,13 @@ function setToleranceInfo(node, props) {
     clickEvent = (ev) => {
       ev.stopPropagation();
       ev.preventDefault();
-      props.decorators.propertyCb(node.previewWS);
-      props.decorators.selectEntity({key: 'preview'}, node);
+      let prom = new Promise((resolve) => {
+        props.decorators.propertyCb(node.previewWS, false, resolve);
+      });
+
+      prom.then(() => {
+        props.decorators.selectEntity({key: 'preview'}, node);
+      });
     }
   }
 

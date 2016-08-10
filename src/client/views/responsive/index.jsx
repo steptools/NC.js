@@ -311,7 +311,7 @@ export default class ResponsiveView extends React.Component {
     this.setState({msGuiMode: newMode});
   }
 
-  openProperties(node, backtrack) {
+  openProperties(node, backtrack, cb) {
     let currEntity = this.state.selectedEntity;
     let prevEntities = this.state.previouslySelectedEntities;
     if (node === null) {
@@ -331,6 +331,10 @@ export default class ResponsiveView extends React.Component {
         previouslySelectedEntities: prevEntities,
         selectedEntity: node,
       });
+    }
+
+    if (cb) {
+      cb();
     }
   }
 
