@@ -89,6 +89,19 @@ export default class ToleranceList extends React.Component {
 
   addCurrent(tolList) {
     // Don't change this to use tolerancesByWS, it won't work
+    tolList.push({
+      name: 'Current Workingstep',
+      leaf: true,
+      type: 'divider',
+      id: -1,
+    });
+    let ws = this.props.ws;
+    let curWSIndex = wsList.indexOf(ws);
+    ws = this.props.workingstepCache[ws];
+    ws.leaf = true;
+    ws.icon = <div className='icon custom letter'>{curWSIndex + 1}</div>;
+    tolList.push(ws);
+
     if (!this.props.curWS.toBe || this.props.curWS.toBe <= 0) {
       return;
     }
@@ -98,7 +111,7 @@ export default class ToleranceList extends React.Component {
         name: 'Active Tolerances',
         leaf: true,
         type: 'divider',
-        id: -1,
+        id: -2,
       });
       Array.prototype.push.apply(tolList, wp.children);
     } else {
@@ -106,14 +119,8 @@ export default class ToleranceList extends React.Component {
         name: 'No Active Tolerances',
         leaf: true,
         type: 'divider',
-        id: -1,
+        id: -2,
       });
-      let ws = this.props.ws;
-      let curWSIndex = wsList.indexOf(ws);
-      ws = this.props.workingstepCache[ws];
-      ws.leaf = true;
-      ws.icon = <div className='icon custom letter'>{curWSIndex + 1}</div>;
-      tolList.push(ws);
     }
   }
 
@@ -134,7 +141,7 @@ export default class ToleranceList extends React.Component {
         name: 'No Upcoming Tolerances',
         leaf: true,
         type: 'divider',
-        id: -2,
+        id: -3,
       });
       return;
     }
@@ -143,7 +150,7 @@ export default class ToleranceList extends React.Component {
       name: 'Upcoming Tolerances',
       leaf: true,
       type: 'divider',
-      id: -2,
+      id: -3,
     });
 
     for (let i = curWSIndex + 1; i < tolerancesByWS.length; i++) {
@@ -175,7 +182,7 @@ export default class ToleranceList extends React.Component {
         name: 'No Previous Tolerances',
         leaf: true,
         type: 'divider',
-        id: -3,
+        id: -4,
       });
       return;
     }
@@ -184,7 +191,7 @@ export default class ToleranceList extends React.Component {
       name: 'Previous Tolerances',
       leaf: true,
       type: 'divider',
-      id: -3,
+      id: -4,
     });
 
     for (let i = 0; i < curWSIndex; i++) {
