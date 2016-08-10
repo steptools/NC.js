@@ -28,17 +28,12 @@ module.exports = function(environment) {
             "upload": true
           },
           "file" : {
-            "dir": "./data/boxy3/boxy3.stpnc"
+            "dir": "./boxy.stpnc"
           },
           "machine" : {
             "dir" : ""
-          },
-          "machineList" : [
-            {
-              name: 'Okuma',
-              address: '192.168.0.123:5000'
-            },
-          ],
+          }
+
     };
     try {
         config.env = environment;

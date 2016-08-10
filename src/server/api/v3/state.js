@@ -125,7 +125,7 @@ var findWS = function(current) {
   if (current < WSGCode['worksteps'][WSGCodeIndex]) {
     WSGCodeIndex = 0;
     change = true;
-    app.logger.debug("Starting from 0");
+    //app.logger.debug("Starting from 0");
   }
 
   while (current > WSGCode['worksteps'][WSGCodeIndex + 1]) {
@@ -189,16 +189,14 @@ function getPrev(ms, cb) {
 
 function getToWS(wsId, ms, cb) {
   ms.GoToWS(wsId);
-  //assume switch was successful
-  app.logger.debug('Switched! ' + wsId);
   cb();
 }
 
 var loop = function(ms, key, wsgcode) {
   if (loopStates[path] === true) {
-    app.logger.debug('Loop step ' + path);
     _getDelta(ms, key, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
+      app.ioServer.emit('nc:mtc', MTCHold);
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {
           clearTimeout(loopTimer);
@@ -420,6 +418,7 @@ var _wsInit = function(req, res) {
     }
     _getDelta(ms, false, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
+      app.ioServer.emit('nc:mtc', MTCHold);
       if (playbackSpeed > 0) {
         if (loopTimer !== undefined) {
           clearTimeout(loopTimer);
