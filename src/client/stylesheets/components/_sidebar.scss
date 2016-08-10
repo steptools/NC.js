@@ -44,8 +44,6 @@ $icons: '../icons/';
             
             .icon {
                 margin-right: 8px;
-                width: auto;
-                min-width: 30px;
             }
             
             .setup-textbox{
@@ -568,7 +566,7 @@ $icons: '../icons/';
         margin-right: 8px;
         font-size: 24px;
         
-        &.custom {
+        &.custom.letter {
             font-size: 14px;
         }
     }
@@ -617,6 +615,8 @@ $icons: '../icons/';
     }
     
     &.letter {
+        min-width: 30px;
+        width: auto;
         font-size: 14px;
         line-height: 20px;
         background-color: #333333;
