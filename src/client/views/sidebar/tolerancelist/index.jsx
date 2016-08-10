@@ -100,6 +100,9 @@ export default class ToleranceList extends React.Component {
     let ws = this.props.ws;
     let curWSIndex = wsList.indexOf(ws);
     ws = this.props.workingstepCache[ws];
+    _.each(ws.children, (child) => {
+      child.openPreview = false;
+    });
     ws.leaf = true;
     ws.icon = <div className='icon custom letter'>{curWSIndex + 1}</div>;
     tolList.push(ws);
