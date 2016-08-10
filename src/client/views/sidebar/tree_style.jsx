@@ -101,6 +101,26 @@ function setToggle(node) {
   }
 }
 
+function setWorkingstepInfo(node, props) {
+
+  node.highlightButton = (
+    <span
+      key='preview'
+      className='icon preview glyphicons glyphicons-new-window-alt'
+      onClick={(ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        let prom = new Promise((resolve) => {
+          props.decorators.propertyCb(node, false, resolve);
+        });
+
+        prom.then(() => {
+          props.decorators.selectEntity({key: 'preview'}, node.toBe);
+        });
+      }}
+    />);
+}
+
 function setNodeInfo(props) {
   let node = props.node;
   if (!node.icon) {
@@ -113,6 +133,10 @@ function setNodeInfo(props) {
     node.innerName += ' running-node';
   } else if (node.enabled === false) {
     node.innerName += ' disabled';
+  }
+
+  if (node.type === 'workingstep') {
+    setWorkingstepInfo(node, props);
   }
 
   setToggle(node);
