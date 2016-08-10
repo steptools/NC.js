@@ -444,7 +444,6 @@ $icons: '../icons/';
         }
         
         .button-dock .rc-menu {
-            z-index: inherit;
             min-height: 0px;
             height: 46px;
             display: flex;
@@ -456,6 +455,7 @@ $icons: '../icons/';
             .button {
                 flex-grow: 1;
                 flex-basis: 0;
+                height: 44px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
