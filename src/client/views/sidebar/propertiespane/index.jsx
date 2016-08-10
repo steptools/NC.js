@@ -125,7 +125,12 @@ export default class PropertiesPane extends React.Component {
       this.props.propertiesCb(this.props.tools[entity.tool]);
     } else if (event.key === 'preview') {
 
-      this.setState({'previewEntity': entity});
+      if (entity.type === 'workingstep') {
+        this.setState({'previewEntity': entity.toBe});
+      } else {
+        this.setState({'previewEntity': entity});
+      }
+
       this.props.previewCb(true);
       let prevId;
       if (entity.type === 'workingstep') {
@@ -324,7 +329,7 @@ export default class PropertiesPane extends React.Component {
 
   renderPreviewButton(entity) {
     if (entity.type === 'workplan' || entity.type === 'selective' ||
-        entity.type === 'workplan-setup' || entity.type === 'workingstep') {
+        entity.type === 'workplan-setup') {
       return;
     }
 
