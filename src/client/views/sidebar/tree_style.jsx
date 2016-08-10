@@ -62,14 +62,25 @@ function setToleranceInfo(node, props) {
   node.highlightIcon = 'highlight-button glyphicons glyphicons-eye-';
   node.highlightIcon += node.highlightName;
 
+  let clickEvent = (ev) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    props.decorators.toggleHighlight(node.id);
+  };
+
+  if (node.openPreview) {
+    clickEvent = (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      props.decorators.propertyCb(node.previewWS);
+      props.decorators.selectEntity({key: 'preview'}, node);
+    }
+  }
+
   node.highlightButton = (
     <span
       className={node.highlightIcon}
-      onClick={(ev) => {
-        ev.stopPropagation();
-        ev.preventDefault();
-        props.decorators.toggleHighlight(node.id);
-      }}
+      onClick={clickEvent}
     />
   );
 }

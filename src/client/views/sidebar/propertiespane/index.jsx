@@ -104,51 +104,13 @@ export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {previewEntity: null};
-
     this.properties = [];
     this.titleNameWidth = 0;
 
-    this.selectEntity = this.selectEntity.bind(this);
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
-  }
-
-  selectEntity(event, entity) {
-    if (event.key === 'goto') {
-      let url = '/v3/nc/state/ws/' + entity.id;
-      request.get(url).end();
-    } else if (event.key === 'tool') {
-      // open properties page for associated tool
-      this.props.propertiesCb(this.props.tools[entity.tool]);
-    } else if (event.key === 'preview') {
-
-      this.setState({'previewEntity': entity});
-      this.props.previewCb(true);
-      let prevId;
-      if (entity.type === 'workingstep') {
-        prevId = entity.toBe.id;
-      } else if (entity.type === 'tolerance') {
-        prevId = entity.workpiece;
-      } else if (entity.type === 'tool') {
-        prevId = entity.id + '/tool';
-      } else {
-        prevId = entity.id;
-      }
-
-      let url = this.props.manager.app.services.apiEndpoint
-        + this.props.manager.app.services.version + '/nc';
-      this.props.manager.dispatchEvent({
-        type: 'setModel',
-        viewType: 'preview',
-        path: prevId.toString(),
-        baseURL: url,
-        modelType: 'previewShell',
-      });
-    }
-    // some other menu item clicked, no need to do anything
   }
 
   getWPForEntity(entity) {
@@ -171,12 +133,12 @@ export default class PropertiesPane extends React.Component {
     }
 
     let newWP = this.getWPForEntity(nextProps.entity);
-    let prevWP = this.getWPForEntity(this.state.previewEntity);
+    let prevWP = this.getWPForEntity(this.props.previewEntity);
 
     if (nextProps.entity !== this.props.entity && newWP !== prevWP) {
       this.props.previewCb(false);
     } else if (nextProps.entity !== this.props.entity && newWP === prevWP) {
-      this.setState({'previewEntity': nextProps.entity});
+      this.props.previewEntityCb(nextProps.entity);
     }
   }
 
@@ -441,7 +403,7 @@ export default class PropertiesPane extends React.Component {
             ev.preventDefault();
             ev.stopPropagation();
             this.props.toggleHighlight(node.id);
-            this.selectEntity(
+            this.props.selectEntity(
               {key: 'preview'},
               this.props.toleranceCache[node.workpiece]
             );
@@ -455,7 +417,7 @@ export default class PropertiesPane extends React.Component {
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.selectEntity({key: 'preview'}, node);
+            this.props.selectEntity({key: 'preview'}, node);
           }}
         />);
     }
@@ -636,9 +598,9 @@ export default class PropertiesPane extends React.Component {
 
       content = (
         <GeometryView
-          key={this.getWPForEntity(this.state.previewEntity)}
+          key={this.getWPForEntity(this.props.previewEntity)}
           manager={this.props.manager}
-          selectedEntity={this.state.previewEntity}
+          selectedEntity={this.props.previewEntity}
           guiMode={this.props.guiMode}
           resize={this.props.resize}
           toleranceCache={this.props.toleranceCache}
@@ -718,7 +680,7 @@ export default class PropertiesPane extends React.Component {
         className='buttons'
         mode='horizontal'
         onClick={(event) => {
-          this.selectEntity(event, entity);
+          this.props.selectEntity(event, entity);
         }}
       >
         {this.buttons}
@@ -746,7 +708,7 @@ export default class PropertiesPane extends React.Component {
       <Menu
         className='properties'
         onClick={(event) => {
-          this.selectEntity(event, entity);
+          this.props.selectEntity(event, entity);
         }}
       >
         {this.properties}

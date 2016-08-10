@@ -20,6 +20,8 @@ export default class ToleranceList extends React.Component {
 
     this.decorators = ts.decorators;
     this.decorators.propertyCb = this.props.propertyCb;
+    this.decorators.openPreview = this.props.openPreview;
+    this.decorators.selectEntity = this.props.selectEntity;
     this.decorators.toggleHighlight = this.props.toggleHighlight;
     this.decorators.highlightedTolerances = this.props.highlightedTolerances;
   }
@@ -159,6 +161,10 @@ export default class ToleranceList extends React.Component {
       }
       let ws = wsCache[wsList[i]];
       ws.children = tolerancesByWS[i];
+      _.each(ws.children, (child) => {
+        child.openPreview = true;
+        child.previewWS = ws;
+      });
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
       tolList.push(ws);
@@ -200,6 +206,10 @@ export default class ToleranceList extends React.Component {
       }
       let ws = wsCache[wsList[i]];
       ws.children = tolerancesByWS[i];
+      _.each(ws.children, (child) => {
+        child.openPreview = true;
+        child.previewWS = ws;
+      });
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
       tolList.push(ws);
