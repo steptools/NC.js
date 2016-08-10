@@ -1,12 +1,17 @@
-Version 1.7.1
+Version 1.8.0
 
 Features:
 - Added previous tolerances to the tolerances tab
+- Added the ability to preview workingsteps and tolerances from tolerance list
+
+Bugfixes:
+- Upcoming tolerances now lists tolerances for all upcoming workingsteps, not 5
+
+Version 1.7.1
 
 Bugfixes:
 
 - Tolerances can be examined in the properties pane again
-- Upcoming tolerances now lists tolerances for all upcoming workingsteps, not 5
 
 Version 1.7.0
 
