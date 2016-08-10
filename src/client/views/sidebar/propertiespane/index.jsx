@@ -124,7 +124,6 @@ export default class PropertiesPane extends React.Component {
       // open properties page for associated tool
       this.props.propertiesCb(this.props.tools[entity.tool]);
     } else if (event.key === 'preview') {
-
       if (entity.type === 'workingstep') {
         this.setState({'previewEntity': entity.toBe});
       } else {
@@ -153,7 +152,6 @@ export default class PropertiesPane extends React.Component {
         modelType: 'previewShell',
       });
     }
-    // some other menu item clicked, no need to do anything
   }
 
   getWPForEntity(entity) {
