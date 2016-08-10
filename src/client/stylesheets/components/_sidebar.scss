@@ -441,13 +441,13 @@ $icons: '../icons/';
             z-index: 12;
             height: 50px;
             border-top: 1px solid #DDDDDD;
-            display: flex;
-            align-items: center;
             background-color: inherit;
             
             .rc-menu {
+                display: flex;
+                align-items: center;
                 min-height: 0px;
-                width: 50%;
+                //width: 50%;
                 margin: auto;
                 border: none;
                 background-color: transparent;
