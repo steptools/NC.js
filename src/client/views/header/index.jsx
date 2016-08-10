@@ -1,6 +1,9 @@
 import React from 'react';
 var md = require('node-markdown').Markdown;
-import Menu, {Item as MenuItem} from 'rc-menu';
+import Menu, {SubMenu, Item as MenuItem} from 'rc-menu';
+import _ from 'lodash';
+import request from 'superagent';
+let changetext='';
 
 function getIcon(type, data) {
   if (!data) {
@@ -38,6 +41,8 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-record';
     case 'gcode':
       return 'icon glyphicons glyphicons-chevron-right';
+    case 'machine':
+      return 'icon glyphicons glyphicons-settings';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -71,14 +76,37 @@ export default class HeaderView extends React.Component {
     this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
     this.updateSpindleSpeed = this.updateSpindleSpeed.bind(this);
     this.updateFeedrate = this.updateFeedrate.bind(this);
+    this.renderMachineButton = this.renderMachineButton.bind(this);
   }
 
   componentDidMount() {
-    let changes = document.getElementById('changes');
-    let logbutton = document.getElementById('logbutton');
-    let log = this.props.cadManager.app.changelog;
-    changes.innerHTML = md(log);
-    logbutton.innerHTML = 'v' + md(log).split('\n')[0].split(' ')[1];
+    let changes = $('#changes');
+    let logbutton = $('#logbutton');
+
+    // get the current tool
+    let url = '/changelog/';
+    request
+      .get(url)
+      .end((err,res) => {
+        if (!err && res.ok) {
+          changetext=res.text;
+          changes.html(md(changetext));
+          logbutton.html('v' + md(changetext).split('\n')[0].split(' ')[1]);
+        }
+      });
+  }
+
+  renderMachineButton(machine) {
+    let id = this.props.machineList.indexOf(machine);
+
+    return (
+      <MenuItem
+        className='machine-button'
+        key={'machine-'+id}
+      >
+        <span>{machine.name}</span>
+      </MenuItem>
+    );
   }
 
   getFeedSpeedInfo() {
@@ -126,6 +154,12 @@ export default class HeaderView extends React.Component {
           changelog.className = 'changelog';
           this.props.cbLogstate(false);
         }
+        break;
+      default:
+        if (info.key.indexOf('machine') >= 0) {
+          let id = info.key.split('-')[1];
+          this.props.changeMachine(Number(id));
+        }
     }
   }
 
@@ -135,6 +169,7 @@ export default class HeaderView extends React.Component {
         mode='horizontal'
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
+        openSubMenuOnMouseEnter={false}
       >
         <MenuItem disabled key='mtc' className='info mtc'/>
         <MenuItem disabled key='live' className='info live'>
@@ -170,6 +205,28 @@ export default class HeaderView extends React.Component {
             </div>
           </div>
         </MenuItem>
+        <SubMenu
+          disabled  // TODO: figure out server-side functionality for switching machines
+          title={
+            <div className='item'>
+              <div className={getIcon('machine')} />
+              <div className='text'>
+                <div className='title'>Current Machine:</div>
+                <div className='value'>
+                  {
+                    this.props.machineList[this.props.selectedMachine] ?
+                    this.props.machineList[this.props.selectedMachine].name
+                    : null
+                  }
+                </div>
+              </div>
+            </div>
+          }
+          key='machine'
+          className='info machine'  // TODO: add 'button' class when enabling machine switching
+        >
+          {_.map(_.values(this.props.machineList),this.renderMachineButton)}
+        </SubMenu>
         <Button key='changelog' id='logbutton'>
           <div className='version' id='logbutton'>v1.1.0</div>
         </Button>

@@ -17,7 +17,7 @@
     height: 100%;
     border-top: none;
 
-    .rc-menu-item {
+    .rc-menu-item,.rc-menu-submenu {
         min-width: 85px;
         height: inherit;
         border-bottom: 2px solid transparent;
@@ -27,12 +27,12 @@
         background: none;
         white-space: normal;
 
-        &:hover:not(.rc-menu-item-disabled) {
+        &:hover:not(.rc-menu-item-disabled,.rc-menu-submenu-disabled) {
             border-bottom-color: #2DB7F5;
         }
     }
 
-    li:last-child {
+    li:last-child:not(.machine-button) {
         float: right;
         border-left: 1px solid #DDDDDD;
     }
@@ -46,7 +46,7 @@
 
     &:hover {
         cursor: pointer;
-        
+
         .icon {
             color: rgba(#2BAEE9, 1);
         }
@@ -84,8 +84,12 @@
         }
     }
     
-    &.gcode {
+    &.machine {
         border-right: none;
+    }
+
+    .machine-button {
+        padding: 7px;
     }
     
     &.live {

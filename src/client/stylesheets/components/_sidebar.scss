@@ -44,8 +44,6 @@ $icons: '../icons/';
             
             .icon {
                 margin-right: 8px;
-                width: auto;
-                min-width: 30px;
             }
             
             .setup-textbox{
@@ -65,10 +63,9 @@ $icons: '../icons/';
 
 
     .highlight-button {
-
         font-size: 20px;
-        margin-left: auto;
-        margin-right: 15px;
+        margin-right: 5px;
+        margin-left: 8px;
 
         &.inactive {
             opacity: 0.5;
@@ -320,23 +317,6 @@ $icons: '../icons/';
             }
         }
 
-        .preview-icon {
-            font-size: 20px;
-            position: absolute;
-            right: 15px;
-
-            &:not(.preview-button) {
-                padding: 3px;
-                color: #F8F8F8;
-                background-color: #333333;
-                border-radius: 5px;
-
-                &:hover {
-                    color: #28AEE9;
-                }
-            }
-        }
-
         .properties {
             z-index: 12;
             flex-grow: 1;
@@ -375,34 +355,6 @@ $icons: '../icons/';
                     user-select: auto;
                 }
 
-                &.button {
-                    width: 50%;
-                    text-align: center;
-                    padding: 10px 0px;
-                    margin: 5px 25%;
-                    background-color: #333333;
-                    color: #F8F8F8;
-                    border-bottom: 2px solid transparent;
-                    cursor: default;
-                    -webkit-touch-callout: none;
-                    -webkit-user-select: none;
-                    -khtml-user-select: none;
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
-
-                    &:hover:not(.rc-menu-item-disabled) {
-                        cursor: pointer;
-                        color: #2BAEE9;
-                        background-color: #333333;
-                        border-bottom-color: #2BAEE9;
-                    }
-
-                    &.rc-menu-item-disabled {
-                        opacity: 0.5;
-                    }
-                }
-                
                 &.children {
                     cursor: default;
                     
@@ -423,6 +375,7 @@ $icons: '../icons/';
                     
                     .list {
                         cursor: default;
+                        
                         .node {
                             cursor: pointer;
                             width: 100%;
@@ -430,6 +383,25 @@ $icons: '../icons/';
                             align-items: center;
                             padding: 4px 0px;
                             margin: 1px 0px;
+                            
+                            .textbox {
+                                flex-grow: 1;
+                            }
+
+                            .icon.preview {
+                                margin-left: 8px;
+                                margin-right: 5px;
+                                font-size: 20px;
+                                padding: 3px;
+                                color: #F8F8F8;
+                                background-color: #333333;
+                                border-radius: 5px;
+                                text-align: center;
+                                
+                                &:hover {
+                                    color: #28AEE9;
+                                }
+                            }
 
                             &.invalid {
                                 cursor: default;
@@ -458,6 +430,10 @@ $icons: '../icons/';
                         }
                     }
                 }
+                
+                &:not(.children) {
+                    line-height: 30px;
+                }
             }
         }
 
@@ -483,6 +459,7 @@ $icons: '../icons/';
                     background-color: #333333;
                     border-bottom: 2px solid #333333;
                     color: #F8F8F8;
+                    cursor: pointer;
                     -webkit-touch-callout: none;
                     -webkit-user-select: none;
                     -khtml-user-select: none;
@@ -498,6 +475,11 @@ $icons: '../icons/';
 
                     &.rc-menu-item-disabled {
                         opacity: 0.5;
+                    }
+                    
+                    .icon {
+                        font-size: 20px;
+                        margin-left: 5px;
                     }
                 }
             }
@@ -520,23 +502,27 @@ $icons: '../icons/';
         align-items: center;
         box-sizing: border-box;
         width: 100%;
-        min-height: 38px;
         margin: 1px 0px;
+        
+        &:not(.divider) {
+            min-height: 38px;
+        }
 
         &.divider {
             align-items: center;
             border-top: 2px solid #666666;
             border-bottom: 2px solid #666666;
-
-            .textbox{
-                display: table;
-                margin: auto;
+            padding: 4px 5px;
+            cursor: default;
+            
+            .textbox {
+                text-align: center;
             }
         }
 
     }
 
-    .node .toggle-hidden {
+    &:not(.flat) .node .toggle-hidden {
         width: 15px;
     }
 
@@ -563,9 +549,12 @@ $icons: '../icons/';
     .node .inner {
         display: inline-flex;
         align-items: center;
-        width: calc(100% - 15px);
+        width: 100%;
         min-height: inherit;
-        padding: 0px 5px;
+        
+        &:not(.divider) {
+            padding: 0px 5px;
+        }
 
         &:hover:not(.divider) {
             cursor: pointer;
@@ -576,10 +565,14 @@ $icons: '../icons/';
     .node .icon {
         margin-right: 8px;
         font-size: 24px;
+        
+        &.custom.letter {
+            font-size: 14px;
+        }
     }
 
-    .node .node-text {
-        width: calc(100% - 38px);
+    .node .textbox {
+        flex-grow: 1;
     }
     
     .node .running-node .inner {
@@ -616,8 +609,14 @@ $icons: '../icons/';
         border-radius: 5px;
         background-image: url($icons + 'tools/tool.svg');
     }
+
+    &.datum {
+        background-image: url($icons + 'tolerance/datum.svg');
+    }
     
     &.letter {
+        min-width: 30px;
+        width: auto;
         font-size: 14px;
         line-height: 20px;
         background-color: #333333;

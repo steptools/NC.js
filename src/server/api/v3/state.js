@@ -21,8 +21,11 @@ var WSGCodeIndex = 0;
 var WSGCode = [];
 var WSArray = [];
 let nextSequence = 0;
+let changed=false;
 
 var MTCHold = {};
+
+let currentMachine = 0;
 /****************************** Helper Functions ******************************/
 
 function getWorkingstepsArray(id){
@@ -61,7 +64,9 @@ var MTListen = function() {
   var gcode;
 
   return new Promise(function(resolve) {
-    let mtc = request.get('http://192.168.0.123:5000/current');
+    let addr = 'http://' + app.config.machineList[currentMachine].address + '/current';
+
+    let mtc = request.get(addr);
     mtc.end(function (err, res) {
       if (err || !res.ok) {
         return;
@@ -80,7 +85,6 @@ var MTListen = function() {
         feedrate = pathtag["Samples"][0]['PathFeedrate'][1]['_'];
         gcode = pathtag['Events'][0]['Block'][0]['_'];
         currentgcode = pathtag['Events'][0]['e:BlockNumber'][0]['_'];
-
         let header = result['MTConnectStreams']['Header'][0].$;
         let next = header.nextSequence;
         if (next !== nextSequence) {
@@ -94,7 +98,9 @@ var MTListen = function() {
       coords[1] = parseInt(resCoords[1]);
       coords[2] = parseInt(resCoords[2]);
 
-      let mtc = request.get('http://192.168.0.123:5000/');
+      let addr = 'http://' + app.config.machineList[currentMachine].address + '/';
+      let mtc = request.get(addr);
+
       mtc.end(function (err, res) {
         parseXMLString.parseString(res.text, function (error, result) {
           let ret = result['MTConnectDevices']['Devices'][0]['Device'][0]['Components'][0]['Controller'][0]['Components'][0]['Path'][0]['DataItems'][0]['DataItem'];
@@ -149,12 +155,10 @@ var _getDelta = function(ms, key, cb) {
     MTCHold.realgcode = res[8];
 
     if (findWS(res[4]) ) {
-      //console.log('keystate');
       ms.GoToWS(WSArray[WSGCodeIndex]);
       holder = JSON.parse(ms.GetKeystateJSON());
       holder.next = true;
     } else {
-      //console.log('delta');
       holder = JSON.parse(ms.GetDeltaJSON());
       holder.next = false;
     }
@@ -222,8 +226,11 @@ var parseGCodes = function() {
             MTCcontent.push(lineNumber);
           }
         } else {
-          GCcontent.push(line);
-          lineNumber++;
+					if (line.substring(0,2) != 'IF') {
+	          GCcontent.push(line);
+	          lineNumber++;
+					}
+
         }
       });
       resolve([MTCcontent, GCcontent]);
@@ -419,9 +426,30 @@ var _wsInit = function(req, res) {
         loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
       } else {
         // app.logger.debug('playback speed is zero, no timeout set');
-      }
-    });
+  		}
+		});
+	}
+}
+
+var _wsInit = function(req, res) {
+  let temp = false;
+  if (!req.params.command) {
+    return;
   }
+  if (typeof loopStates[path] === 'undefined') {
+    loopStates[path] = false;
+  }
+
+  handleWSInit(req.params.command, res);
+
+  getDelta(file.ms, false, function(b) {
+    app.ioServer.emit('nc:delta', JSON.parse(b));
+    if (playbackSpeed > 0) {
+      if (loopTimer !== undefined) {
+        clearTimeout(loopTimer);
+      }
+    }
+  });
 };
 
 var _getKeyState = function (req, res) {
@@ -446,6 +474,19 @@ var _getMTCHold = function (req, res) {
   res.status(200).send(MTCHold);
 };
 
+let _machineInfo = (req, res) => {
+  if (req.params.id) {
+    currentMachine = Number(req.params.id);
+    res.status(200).send('OK');
+  } else {
+    res.status(200).send(currentMachine.toString());
+  }
+};
+
+let _getAllMachines = (req, res) => {
+  res.status(200).send(app.config.machineList);
+}
+
 module.exports = function(globalApp, cb) {
   app = globalApp;
   app.router.get('/v3/nc/state/key', _getKeyState);
@@ -454,6 +495,9 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
   app.router.get('/v3/nc/state/mtc', _getMTCHold);
+  app.router.get('/v3/nc/state/machine/:id', _machineInfo);
+  app.router.get('/v3/nc/state/machine', _machineInfo);
+  app.router.get('/v3/nc/state/machines', _getAllMachines);
   if (cb) {
     cb();
   }

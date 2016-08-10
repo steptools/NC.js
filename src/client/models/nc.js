@@ -96,7 +96,7 @@ export default class NC extends THREE.EventDispatcher {
         this._overlay3D.add(obj.overlay3D);
         this._annotation3D.add(obj.annotation3D);
         if (type === 'shell') {
-            model.addEventListener('shellEndLoad', function (event) {
+            model.addEventListener('shellEndLoad', (event) => {
                 //This is where the shell gets sent when its loaded so that the full mesh can be added to the 3D objects
                 let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
                 let mesh = new THREE.Mesh(event.shell.getGeometry(), material, false);
@@ -116,7 +116,7 @@ export default class NC extends THREE.EventDispatcher {
                 }
             });
         } else if (type === 'polyline') {
-            model.addEventListener('annotationEndLoad', function(event) {
+            model.addEventListener('annotationEndLoad', (event) => {
                 let lineGeometries = event.annotation.getGeometry();
                 let material = new THREE.LineBasicMaterial({
                     vertexColors: THREE.VertexColors,
@@ -132,14 +132,10 @@ export default class NC extends THREE.EventDispatcher {
                 }
             });
             model.addEventListener("annotationMakeVisible", (event)=>{
-              _.each(model._addedGeometry, (line)=>{
-                this._annotation3D.add(line);
-              });
+              this._annotation3D.add(obj.annotation3D);
             });
             model.addEventListener("annotationMakeNonVisible", (event)=>{
-              _.each(model._addedGeometry, (line)=>{
-                this._annotation3D.remove(line);
-              });
+                this._annotation3D.remove(obj.annotation3D);
             });
         }
     }
@@ -243,7 +239,6 @@ export default class NC extends THREE.EventDispatcher {
         if (delta.next) {
             //For keyframes, we need to remove current toolpaths, cutters,
             // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
-            // console.log("Keyframe recieved");
             // this._loader.annotations = {};
 
             // Delete existing Stuff.
@@ -257,9 +252,9 @@ export default class NC extends THREE.EventDispatcher {
                 geom.rendered = false;
             });
 
-            var oldannotations = this._annotation3D.children;
-            _.each(oldannotations, (anno) => {
-                this._annotation3D.remove(anno);
+            var oldannotations = this._loader._annotations;
+            _.each(_.values(this._loader._annotations), (anno) => {
+                anno.removeFromScene();
             });
 
             //Load new Stuff.

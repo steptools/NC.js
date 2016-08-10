@@ -23,6 +23,8 @@ function getIcon(type, data) {
       return 'icon custom workpiece';
     case 'diameter':
       return 'icon custom diameter';
+    case 'datum':
+      return 'icon custom datum';
     case 'tolerance':
       if (data) {
         return 'icon custom tolerance ' + data;
@@ -141,7 +143,7 @@ export default class PropertiesPane extends React.Component {
       this.props.manager.dispatchEvent({
         type: 'setModel',
         viewType: 'preview',
-        path: prevId,
+        path: prevId.toString(),
         baseURL: url,
         modelType: 'previewShell',
       });
@@ -326,17 +328,13 @@ export default class PropertiesPane extends React.Component {
       return;
     }
 
-    let cName = 'preview-button preview-icon';
-    cName += ' glyphicons glyphicons-new-window-alt';
     this.buttons.push(
       <MenuItem
         key='preview'
         className='button'
       >
         Preview
-        <span
-          className={cName}
-        />
+        <span className={'icon glyphicons glyphicons-new-window-alt'}/>
       </MenuItem>
     );
   }
@@ -372,7 +370,8 @@ export default class PropertiesPane extends React.Component {
         Value: {entity.value}{entity.unit}
       </MenuItem>
     );
-    if(entity.modifiers.length > 0){
+
+    if (entity.modifiers.length > 0) {
       this.properties.push(
         <MenuItem disabled key='modifier' className='property modifier'>
           <div className={getIcon('modifiers')}/>
@@ -452,7 +451,7 @@ export default class PropertiesPane extends React.Component {
       highlightButton = (
         <span
           key='preview'
-          className='preview-icon glyphicons glyphicons-new-window-alt'
+          className='icon preview glyphicons glyphicons-new-window-alt'
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -485,14 +484,19 @@ export default class PropertiesPane extends React.Component {
         entity.type !== 'tolerance') {
       return null;
     }
-    let title, steps;
-    if (entity.workingsteps.length > 0) {
+    let title, steps, node;
+    let nodes = [];
+    for (let i = 0; i < entity.workingsteps.length; i++) {
+      node = this.props.workingsteps[entity.workingsteps[i]];
+      if (node.enabled === true) {
+        nodes.push(node);
+      }
+    }
+    if (nodes.length > 0) {
       title = 'Used in Workingsteps:';
       steps = (
         <div className='list'>
-          {entity.workingsteps.map((step) =>
-            this.renderNode(this.props.workingsteps[step], false)
-          )}
+          {nodes.map((val) => this.renderNode(val, false))}
         </div>
       );
     } else {
@@ -568,8 +572,7 @@ export default class PropertiesPane extends React.Component {
   }
 
   renderChildren(entity) {
-    if (entity.type === 'workingstep' || entity.type === 'tool' ||
-        entity.type === 'tolerance') {
+    if (entity.type === 'workingstep' || entity.type === 'tool') {
       return null;
     }
     let children = entity.children; // this.normalizeChildren(entity);
@@ -579,6 +582,16 @@ export default class PropertiesPane extends React.Component {
         childrenTitle = 'Tolerances:';
       } else {
         childrenTitle = 'No tolerances defined.';
+      }
+    } else if (entity.type === 'tolerance') {
+      if (children && children.length > 0) {
+        if (children.length === 1) {
+          childrenTitle = 'Datum:';
+        } else {
+          childrenTitle = 'Datums:';
+        }
+      } else {
+        childrenTitle = 'No datums defined.';
       }
     } else if (children) {
       childrenTitle = 'Children:';
