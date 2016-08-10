@@ -616,6 +616,16 @@ function processAssembly(url, workerID, data) {
     });
 }
 
+function processPreviewJSON(url, workerID, data) {
+    // pass back to main thread
+    self.postMessage({
+        type: 'previewLoad',
+        url: url,
+        data: data,
+        workerID: workerID,
+    });
+}
+
 function processNCState(url, workerID, data) {
     // All we really need to do is pass this back to the main thread
     self.postMessage({
@@ -786,6 +796,13 @@ let messageHandler = function(e) {
                 processAnnotation(url, workerID, res.text);
                 break;
             case "previewShell":
+                file = parts.slice(-1).join('/');
+                if (file === 'tool') {
+                    file = parts.slice(-2).join('/');
+                }
+                file = 'preview-' + file;
+                processPreviewJSON(url, workerID, res.text);
+                break;
             case "shell":
                 // Try to parse the JSON file
                 let dataJSON;
@@ -804,26 +821,6 @@ let messageHandler = function(e) {
                 }
 
                 file = dataJSON.id;
-                if (e.data.type === 'previewShell') {
-                    file = 'preview-';
-                    if (parts[parts.length - 1] === 'tool') {
-                        file = file + parts[parts.length - 2] + '/tool';
-                    }
-                    else {
-                        file = file + parts[parts.length - 1];
-                    }
-                    _.each(dataJSON, (dat) => {
-                        if (_.has(dat, 'id'))
-                        processShellJSON(url, workerID, dat, true);
-                    });
-                    
-                    self.postMessage({
-                        type: "parseComplete",
-                        file: parts[parts.length - 2]
-                    });
-                    
-                    break;
-                }
                 self.postMessage({
                     type: "parseComplete",
                     file: parts[parts.length - 2]

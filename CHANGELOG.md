@@ -1,3 +1,11 @@
+Version 1.7.1
+
+Features:
+
+Bugfixes:
+
+- Tolerances can be examined in the properties pane again
+
 Version 1.7.0
 
 Features:
@@ -10,6 +18,7 @@ Bugfixes:
 
 - Disabled workplans disable all children, not just immediate
 - Feedrate has proper rounding
+- Previewing a tool with multiple shells loads all shells in the tool
 - Workingstep transition bug fixed
 - Sidebar should scroll properly on initial load
 - Tool properties pane now shows/hides the correct workingsteps
