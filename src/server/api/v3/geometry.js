@@ -29,10 +29,19 @@ function _getGeometry(req, res) {
   return;
 }
 
+function _getEIDfromUUID(req, res){
+  let ms = file.ms;
+  if(req.params.uuid){
+    res.status(200).send(JSON.stringify(ms.GetEIDfromUUID(req.params.uuid)));
+    return;
+  }
+}
+
 module.exports = function(app, cb) {
   app.router.get('/v3/nc/geometry', _getGeometry);
   app.router.get('/v3/nc/geometry/:id/:type', _getGeometry);
   app.router.get('/v3/nc/geometry/:eid', _getGeometry);
+  app.router.get('/v3/nc/id/:uuid', _getEIDfromUUID);
   if (cb) {
     cb();
   }
