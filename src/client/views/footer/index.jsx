@@ -81,10 +81,11 @@ export default class FooterView extends React.Component {
           return;
         }
 
+        let tHeight = tree.innerHeight();
         let tOffset = tree.offset().top;
+        let nHeight = node.innerHeight();
         let nOffset = node.offset().top;
-        let scroll = nOffset - tOffset;
-        console.log(tree.innerHeight() - tOffset, scroll);
+        let scroll = nOffset - tOffset - (tHeight / 2) + (nHeight / 2);
         if (scroll > (tree.innerHeight() - tOffset)) {
           tree.animate({scrollTop: scroll}, 1000);
         }
