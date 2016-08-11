@@ -4,13 +4,14 @@ Features:
 
 - Added previous tolerances to the tolerances tab
 - Added the ability to preview workingsteps and tolerances from tolerance list
-- Show datum information and preview datums with colored highlighting
 
 Bugfixes:
 
 - Upcoming tolerances now lists tolerances for all upcoming workingsteps, not 5
 - Previews work in mobile view again
 - Previewing a tolerance opens that tolerance's properties pane
+- Optimized the backend of the user interface
+- Fixed a variety of bugs relating to controlling the mobile interface
 
 Version 1.7.1
 
@@ -35,6 +36,7 @@ Bugfixes:
 - Sidebar should scroll properly on initial load
 - Tool properties pane now shows/hides the correct workingsteps
 - Improved program flow
+- Improved touch controls on mobile
 
 Version 1.6.0
 
