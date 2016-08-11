@@ -51,16 +51,15 @@ $icons: '../icons/';
                 margin: 0px auto;
             }
         }
+        
+        .disabled {
+            opacity: 0.5;
+        }
     }
 
     .running-node {
         background-color: #9BFA9B;
     }
-
-    .disabled {
-        opacity: 0.5;
-    }
-
 
     .highlight-button,.icon.preview {
         font-size: 20px;
@@ -572,24 +571,6 @@ $icons: '../icons/';
 
     .node .icon {
         margin-right: 8px;
-        font-size: 24px;
-        
-        //&.custom.letter {
-        //    font-size: 14px;
-        //}
-
-        //&.preview {
-        //    font-size: 20px;
-        //    padding: 3px;
-        //    color: #F8F8F8;
-        //    background-color: #333333;
-        //    border-radius: 5px;
-        //    text-align: center;
-
-        //    &:hover {
-        //        color: #28AEE9;
-        //    }
-        //}
     }
 
     .node .textbox {
@@ -601,7 +582,13 @@ $icons: '../icons/';
     }
 
     .node .disabled {
-        opacity: 0.5;
+        &:hover:not(.divider) {
+            background-color: rgba(#2BAEE9, 0.25);
+        }
+        
+        span {
+            opacity: 0.5;
+        }
     }
 }
 
@@ -628,6 +615,21 @@ $icons: '../icons/';
             background-color: #333333;
             color: #FFFFFF;
         }    
+    }
+    
+    &.preview {
+        font-size: 20px;
+        padding: 3px;
+        color: #F8F8F8;
+        background-color: #333333;
+        border-radius: 5px;
+        vertical-align: middle;
+        text-align: center;
+
+        &:hover {
+            color: #28AEE9;
+            opacity: 1 !important;  // I know and I'm sorry
+        }
     }
 
     &.workpiece {
