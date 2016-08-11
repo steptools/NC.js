@@ -48,12 +48,6 @@ class CADApp extends THREE.EventDispatcher {
       </div>
     );
 
-    ReactDOM.render(
-      view,
-      document.getElementById('primary-view'), function () {
-        // Dispatch setModel to the CADManager
-      }
-    );
     this.cadManager.dispatchEvent({
       type: 'setModel',
       viewType: 'cadjs',
@@ -61,6 +55,13 @@ class CADApp extends THREE.EventDispatcher {
       baseURL: this.services.apiEndpoint + this.services.version,
       modelType: 'nc',
     });
+
+    ReactDOM.render(
+      view,
+      document.getElementById('primary-view'), function () {
+        // Dispatch setModel to the CADManager
+      }
+    );
   }
 }
 

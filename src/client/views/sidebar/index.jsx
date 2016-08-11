@@ -48,6 +48,7 @@ export default class SidebarView extends React.Component {
   }
 
   render() {
+    console.log('render SIDEBAR');
     let properties = <PropertiesPane
       app={this.props.app}
       entity={this.props.selectedEntity}
