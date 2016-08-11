@@ -69,7 +69,7 @@ function setDatumInfo(node, props) {
 
   let workpiece = props.decorators.toleranceCache[node.workpiece];
 
-  if (node.openPreview) {
+  if (node.openPreview && props.decorators.highlightedTolerances.indexOf(node.id) < 0) {
     clickEvent = (ev) => {
       ev.stopPropagation();
       ev.preventDefault();
@@ -78,6 +78,7 @@ function setDatumInfo(node, props) {
       });
 
       prom.then(() => {
+        props.decorators.toggleHighlight(node.id);
         props.decorators.selectEntity({key: 'preview'}, node);
       });
     }
@@ -109,7 +110,7 @@ function setToleranceInfo(node, props) {
     props.decorators.toggleHighlight(node.id);
   };
 
-  if (node.openPreview) {
+  if (node.openPreview && props.decorators.highlightedTolerances.indexOf(node.id) < 0) {
     clickEvent = (ev) => {
       ev.stopPropagation();
       ev.preventDefault();
@@ -118,6 +119,7 @@ function setToleranceInfo(node, props) {
       });
 
       prom.then(() => {
+        props.decorators.toggleHighlight(node.id);
         props.decorators.selectEntity({key: 'preview'}, node);
       });
     }

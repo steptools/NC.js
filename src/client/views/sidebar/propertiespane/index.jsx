@@ -113,44 +113,6 @@ export default class PropertiesPane extends React.Component {
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
   }
 
-  selectEntity(event, entity) {
-    if (event.key === 'goto') {
-      let url = '/v3/nc/state/ws/' + entity.id;
-      request.get(url).end();
-    } else if (event.key === 'tool') {
-      // open properties page for associated tool
-      this.props.propertiesCb(this.props.tools[entity.tool]);
-    } else if (event.key === 'preview') {
-      if (entity.type === 'workingstep') {
-        this.setState({'previewEntity': entity.toBe});
-      } else {
-        this.setState({'previewEntity': entity});
-      }
-
-      this.props.previewCb(true);
-      let prevId;
-      if (entity.type === 'workingstep') {
-        prevId = entity.toBe.id;
-      } else if (entity.type === 'tolerance') {
-        prevId = entity.workpiece;
-      } else if (entity.type === 'tool') {
-        prevId = entity.id + '/tool';
-      } else {
-        prevId = entity.id;
-      }
-
-      let url = this.props.manager.app.services.apiEndpoint
-        + this.props.manager.app.services.version + '/nc';
-      this.props.manager.dispatchEvent({
-        type: 'setModel',
-        viewType: 'preview',
-        path: prevId.toString(),
-        baseURL: url,
-        modelType: 'previewShell',
-      });
-    }
-  }
-
   getWPForEntity(entity) {
     if (entity) {
       if (entity.type === 'workpiece') {

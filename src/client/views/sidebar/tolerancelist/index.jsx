@@ -56,8 +56,7 @@ export default class ToleranceList extends React.Component {
 
     let tolerances = [];
     for (let tol in this.props.toleranceCache) {
-      if (this.props.toleranceCache[tol].type === 'tolerance' ||
-          this.props.toleranceCache[tol].type === 'datum') {
+      if (this.props.toleranceCache[tol].type === 'tolerance') {
         tolerances.push(this.props.toleranceCache[tol]);
       }
     }
@@ -67,10 +66,7 @@ export default class ToleranceList extends React.Component {
       let ws = wsList[i];
       tolsInWS = [];
       for (let tol in tolerances) {
-        if ((tolerances[tol].type === 'datum' &&
-             this.props.workingstepCache[ws].toBe.id === tolerances[tol].workpiece) ||
-            (tolerances[tol].type === 'tolerance' &&
-             tolerances[tol].workingsteps.indexOf(ws) >= 0)) {
+        if (tolerances[tol].workingsteps.indexOf(ws) >= 0) {
           let tolToAdd = tolerances[tol];
           tolsInWS.push(tolToAdd);
         }
