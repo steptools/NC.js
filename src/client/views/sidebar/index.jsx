@@ -22,7 +22,7 @@ export default class SidebarView extends React.Component {
   }
 
   componentDidUpdate() {
-    let shouldUpdate = !this.state.scrolled;
+    let shouldUpdate = !scrolled;
     shouldUpdate = shouldUpdate && this.props.ws > -1;
     shouldUpdate = shouldUpdate && this.props.mode !== 'tolerance';
     shouldUpdate = shouldUpdate && !this.props.isMobile;

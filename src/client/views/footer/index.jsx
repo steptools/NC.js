@@ -1,10 +1,10 @@
 import React from 'react';
 import MobileSidebar from '../mobilesidebar';
 
-let soy = 0; // for detecting offset clicked from top of footerbar
+let actionOffset = 0;
 let firstTouch = {};
 let dragged = false;
-let fv, fb, db;
+let fv, fb, db, footerHeight;
 
 class ButtonImage extends React.Component {
   constructor(props) {
@@ -56,14 +56,11 @@ export default class FooterView extends React.Component {
   footerControlMode() {
     let mode = this.props.msGuiMode;
     let offset = fv.offset().top;
-    let height = db.height() + fb.height();
 
-    if (!mode && (window.innerHeight - offset) > (height * 2)) {
-      console.log((window.innerHeight - offset) + ' > ' + (height * 2));
+    if (!mode && (window.innerHeight - offset) > (footerHeight * 2)) {
       this.props.cbMobileSidebar(true);
       mode = true;
-    } else if (mode && (offset > height)) {
-      console.log(offset + ' > ' + height);
+    } else if (mode && (offset > footerHeight)) {
       this.props.cbMobileSidebar(false);
       mode = false;
     }
@@ -73,42 +70,44 @@ export default class FooterView extends React.Component {
 
   footerControlPosition(mode) {
     if (mode === false) {
-      let bottomPos = (window.innerHeight - (db.height() + fb.height()));
+      let bottomPos = (window.innerHeight - footerHeight);
       fv.stop().animate({top: bottomPos+'px'}, 500);
     } else if (mode === true) {
       fv.stop().animate({top: '0px'}, 500, 'swing', function() {
         // TODO: scroll sidebar
       });
     }
-    soy = 0;
   }
 
   footerMove(y) {
-    let footerHeight = fb.height() + db.height();
-    let maxTop = window.innerHeight - footerHeight;
-    if (soy > 0) {
-      let newTop = y - soy;
-      if (newTop < 0) {
-        newTop = 0;
-      } else if (newTop > maxTop) {
-        newTop = maxTop;
-      }
-      fv.css('top', newTop+'px');
+    let currOffset = fv.offset().top + (footerHeight / 2) - y;
+    if ((actionOffset > 0) !== (currOffset > actionOffset)) {
+      actionOffset = currOffset;
     }
+
+    let maxTop = window.innerHeight - footerHeight;
+    let newTop = y - (footerHeight / 2) + actionOffset;
+    if (newTop < 0) {
+      newTop = 0;
+    } else if (newTop > maxTop) {
+      newTop = maxTop;
+    }
+
+    fv.css('top', newTop+'px');
   }
 
   soMouseDown(info) {
-    console.log('mouse down');
+    //console.log('mouse down');
     $('.Footer-container .draggable').off('mousedown');
 
-    soy = (fv.offset().top + (db.height() + fb.height())) - info.clientY;
+    actionOffset = fv.offset().top + (footerHeight / 2) - info.clientY;
 
     $(window).on('mousemove', this.soMouseMove);
     $(window).on('mouseup', this.soMouseUp);
   }
 
   soMouseUp() {
-    console.log('mouse up');
+    //console.log('mouse up');
     $('.Footer-container .draggable').on('mousedown', this.soMouseDown);
     $(window).off('mousemove');
     $(window).off('mouseup');
@@ -121,23 +120,21 @@ export default class FooterView extends React.Component {
   }
 
   soMouseMove(info) {
-    console.log('mousemove');
+    //console.log('mousemove');
     dragged = true;
     this.footerMove(info.clientY);
   }
 
   soClick() {
-    console.log('click');
+    //console.log('click');
     if (dragged === true) {
       dragged = false;
       return;
     }
 
     let currentMSGuiMode = this.props.msGuiMode;
-
     currentMSGuiMode = !currentMSGuiMode;
     this.props.cbMobileSidebar(currentMSGuiMode);
-
     this.footerControlPosition(currentMSGuiMode);
   }
 
@@ -155,7 +152,7 @@ export default class FooterView extends React.Component {
       return;
     }
 
-    soy = (fv.offset().top + (db.height() + fb.height())) - touches[0].pageY;
+    actionOffset = fv.offset().top + (footerHeight / 2) - touches[0].pageY;
     firstTouch = touches[0];
     firstTouch.timeStamp = info.timeStamp;
   }
@@ -185,16 +182,14 @@ export default class FooterView extends React.Component {
     if (info.originalEvent) {
       info = info.originalEvent;
     }
-    let touch = info.touches[0];
-
-    let touchY = touch.pageY - touch.radiusY;
-    this.footerMove(touchY);
+    this.footerMove(info.touches[0].pageY);
   }
 
   componentDidMount() {
     fv = $('.Footer-container');
     fb = $('.Footer-bar');
     db = $('.drawerbutton');
+    footerHeight = db.height() + fb.height();
 
     $('.Footer-container .draggable').on('mousedown', this.soMouseDown);
     $('.Footer-container .draggable').on('click', this.soClick);
