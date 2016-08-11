@@ -4,7 +4,6 @@ Features:
 
 - Added previous tolerances to the tolerances tab
 - Added the ability to preview workingsteps and tolerances from tolerance list
-- Show datum information and preview datums with colored highlighting
 
 Bugfixes:
 
@@ -12,6 +11,7 @@ Bugfixes:
 - Previews work in mobile view again
 - Previewing a tolerance opens that tolerance's properties pane
 - Optimized the backend of the user interface
+- Fixed a variety of bugs relating to controlling the mobile interface
 
 Version 1.7.1
 
