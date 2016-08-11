@@ -358,7 +358,7 @@ export default class ResponsiveView extends React.Component {
       let prevId;
       if (entity.type === 'workingstep') {
         prevId = entity.toBe.id;
-      } else if (entity.type === 'tolerance') {
+      } else if (entity.type === 'tolerance' || entity.type === 'datum') {
         prevId = entity.workpiece;
       } else if (entity.type === 'tool') {
         prevId = entity.id + '/tool';
