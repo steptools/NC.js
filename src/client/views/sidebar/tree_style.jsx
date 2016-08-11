@@ -158,7 +158,7 @@ function setWorkingstepInfo(node, props) {
         });
 
         prom.then(() => {
-          props.decorators.selectEntity({key: 'preview'}, node.toBe);
+          props.decorators.selectEntity({key: 'preview'}, node);
         });
       }}
     />);

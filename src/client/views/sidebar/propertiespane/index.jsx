@@ -137,8 +137,6 @@ export default class PropertiesPane extends React.Component {
 
     if (nextProps.entity !== this.props.entity && newWP !== prevWP) {
       this.props.previewCb(false);
-    } else if (nextProps.entity !== this.props.entity && newWP === prevWP) {
-      this.props.previewEntityCb(nextProps.entity);
     }
   }
 
@@ -403,10 +401,7 @@ export default class PropertiesPane extends React.Component {
             ev.preventDefault();
             ev.stopPropagation();
             this.props.toggleHighlight(node.id);
-            this.props.selectEntity(
-              {key: 'preview'},
-              this.props.toleranceCache[node.workpiece]
-            );
+            this.props.selectEntity({key: 'preview'}, node);
           }}
         />);
     } else if (node.type === 'workpiece') {
@@ -641,7 +636,8 @@ export default class PropertiesPane extends React.Component {
         <GeometryView
           key={this.getWPForEntity(this.props.previewEntity)}
           manager={this.props.manager}
-          selectedEntity={this.props.previewEntity}
+          selectedEntity={this.props.entity}
+          previewEntity={this.props.previewEntity}
           guiMode={this.props.guiMode}
           resize={this.props.resize}
           toleranceCache={this.props.toleranceCache}
