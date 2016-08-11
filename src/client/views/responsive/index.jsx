@@ -350,28 +350,36 @@ export default class ResponsiveView extends React.Component {
       this.openProperties(this.state.toolCache[entity.tool]);
     } else if (event.key === 'preview') {
 
-      this.setState({'previewEntity': entity});
-      this.openPreview(true);
       let prevId;
+      let prevEntity = entity;
+
       if (entity.type === 'workingstep') {
         prevId = entity.toBe.id;
-      } else if (entity.type === 'tolerance') {
+        prevEntity = this.state.toleranceCache[entity.toBe.id];
+      } else if (entity.type === 'tolerance' || entity.type === 'datum') {
         prevId = entity.workpiece;
+        prevEntity = this.state.toleranceCache[entity.workpiece];
       } else if (entity.type === 'tool') {
         prevId = entity.id + '/tool';
       } else {
         prevId = entity.id;
       }
 
-      let url = this.props.app.services.apiEndpoint
-        + this.props.app.services.version + '/nc';
-      this.props.app.cadManager.dispatchEvent({
-        type: 'setModel',
-        viewType: 'preview',
-        path: prevId.toString(),
-        baseURL: url,
-        modelType: 'previewShell',
-      });
+      if (this.state.previewEntity !== prevEntity || !this.state.preview) {
+        this.setState({'previewEntity': prevEntity});
+
+        let url = this.props.app.services.apiEndpoint
+          + this.props.app.services.version + '/nc';
+        this.props.app.cadManager.dispatchEvent({
+          type: 'setModel',
+          viewType: 'preview',
+          path: prevId.toString(),
+          baseURL: url,
+          modelType: 'previewShell',
+        });
+      }
+
+      this.openPreview(true);
     }
   }
 

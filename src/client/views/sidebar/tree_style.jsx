@@ -48,6 +48,48 @@ function hasActiveChildren(node, id) {
   return 'inactive';
 }
 
+function setDatumInfo(node, props) {
+
+  if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
+    node.highlightName = 'open';
+  } else {
+    node.highlightName = 'close inactive';
+  }
+
+  node.highlightIcon = 'highlight-button glyphicons glyphicons-eye-';
+  node.highlightIcon += node.highlightName;
+
+  let clickEvent = (ev) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    props.decorators.toggleHighlight(node.id);
+  };
+
+  let workpiece = props.decorators.toleranceCache[node.workpiece];
+
+  if (node.openPreview && props.decorators.highlightedTolerances.indexOf(node.id) < 0) {
+    clickEvent = (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      let prom = new Promise((resolve) => {
+        props.decorators.propertyCb(workpiece, false, resolve);
+      });
+
+      prom.then(() => {
+        props.decorators.toggleHighlight(node.id);
+        props.decorators.selectEntity({key: 'preview'}, node);
+      });
+    }
+  }
+
+  node.highlightButton = (
+    <span
+      className={node.highlightIcon}
+      onClick={clickEvent}
+    />
+  );
+}
+
 function setToleranceInfo(node, props) {
   node.name += ' - ' + node.value + node.unit + ' ' + node.rangeName;
 
@@ -66,7 +108,7 @@ function setToleranceInfo(node, props) {
     props.decorators.toggleHighlight(node.id);
   };
 
-  if (node.openPreview) {
+  if (node.openPreview && props.decorators.highlightedTolerances.indexOf(node.id) < 0) {
     clickEvent = (ev) => {
       ev.stopPropagation();
       ev.preventDefault();
@@ -75,6 +117,7 @@ function setToleranceInfo(node, props) {
       });
 
       prom.then(() => {
+        props.decorators.toggleHighlight(node.id);
         props.decorators.selectEntity({key: 'preview'}, node);
       });
     }
@@ -113,7 +156,7 @@ function setWorkingstepInfo(node, props) {
         });
 
         prom.then(() => {
-          props.decorators.selectEntity({key: 'preview'}, node.toBe);
+          props.decorators.selectEntity({key: 'preview'}, node);
         });
       }}
     />);
@@ -142,6 +185,9 @@ function setNodeInfo(props) {
   if (node.type === 'tolerance') {
     setToleranceInfo(node, props);
   }
+  if (node.type === 'datum') {
+    setDatumInfo(node, props);
+  }
 
   if (node.type === 'divider') {
     node.outerName += ' divider';
@@ -168,7 +214,7 @@ const Container = (props) => {
       <div
         className={node.innerName}
         onClick={() => {
-          if (!node.outerName.includes('divider')) {
+          if (!node.outerName.includes('divider') && node.type !== 'datum') {
             props.decorators.propertyCb(node);
           }
         }}

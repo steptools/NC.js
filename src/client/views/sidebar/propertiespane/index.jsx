@@ -111,44 +111,6 @@ export default class PropertiesPane extends React.Component {
     this.handleMouseLeave = this.handleMouseLeave.bind(this);
   }
 
-  selectEntity(event, entity) {
-    if (event.key === 'goto') {
-      let url = '/v3/nc/state/ws/' + entity.id;
-      request.get(url).end();
-    } else if (event.key === 'tool') {
-      // open properties page for associated tool
-      this.props.propertiesCb(this.props.tools[entity.tool]);
-    } else if (event.key === 'preview') {
-      if (entity.type === 'workingstep') {
-        this.setState({'previewEntity': entity.toBe});
-      } else {
-        this.setState({'previewEntity': entity});
-      }
-
-      this.props.previewCb(true);
-      let prevId;
-      if (entity.type === 'workingstep') {
-        prevId = entity.toBe.id;
-      } else if (entity.type === 'tolerance') {
-        prevId = entity.workpiece;
-      } else if (entity.type === 'tool') {
-        prevId = entity.id + '/tool';
-      } else {
-        prevId = entity.id;
-      }
-
-      let url = this.props.manager.app.services.apiEndpoint
-        + this.props.manager.app.services.version + '/nc';
-      this.props.manager.dispatchEvent({
-        type: 'setModel',
-        viewType: 'preview',
-        path: prevId.toString(),
-        baseURL: url,
-        modelType: 'previewShell',
-      });
-    }
-  }
-
   getWPForEntity(entity) {
     if (entity) {
       if (entity.type === 'workpiece') {
@@ -173,8 +135,6 @@ export default class PropertiesPane extends React.Component {
 
     if (nextProps.entity !== this.props.entity && newWP !== prevWP) {
       this.props.previewCb(false);
-    } else if (nextProps.entity !== this.props.entity && newWP === prevWP) {
-      this.props.previewEntityCb(nextProps.entity);
     }
   }
 
@@ -439,10 +399,7 @@ export default class PropertiesPane extends React.Component {
             ev.preventDefault();
             ev.stopPropagation();
             this.props.toggleHighlight(node.id);
-            this.props.selectEntity(
-              {key: 'preview'},
-              this.props.toleranceCache[node.workpiece]
-            );
+            this.props.selectEntity({key: 'preview'}, node);
           }}
         />);
     } else if (node.type === 'workpiece') {
@@ -677,7 +634,8 @@ export default class PropertiesPane extends React.Component {
         <GeometryView
           key={this.getWPForEntity(this.props.previewEntity)}
           manager={this.props.manager}
-          selectedEntity={this.props.previewEntity}
+          selectedEntity={this.props.entity}
+          previewEntity={this.props.previewEntity}
           guiMode={this.props.guiMode}
           resize={this.props.resize}
           toleranceCache={this.props.toleranceCache}
