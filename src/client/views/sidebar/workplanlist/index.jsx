@@ -57,6 +57,7 @@ export default class WorkplanList extends React.Component {
   }
 
   render() {
+    console.log('render WORKPLAN LIST');
     this.decorators.ws = this.props.ws;
     if (this.props.isMobile) {
       ts.style.tree.base.height = '100%';

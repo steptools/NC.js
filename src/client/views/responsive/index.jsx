@@ -451,7 +451,7 @@ export default class ResponsiveView extends React.Component {
 
   render() {
     console.log('render RESPONSIVE VIEW');
-    let HV, SV, FV;
+    let HV, SV, FV, cadviewStyle;
     if (this.state.guiMode === 0) {
       HV = (
         <HeaderView
@@ -516,6 +516,12 @@ export default class ResponsiveView extends React.Component {
           highlightedTolerances={this.state.highlightedTolerances}
         />
       );
+      cadviewStyle = {
+        'left': '390px',
+        'top': '90px',
+        'bottom': '0px',
+        'right': '0px',
+      };
     } else {
       FV = (
         <FooterView
@@ -531,7 +537,6 @@ export default class ResponsiveView extends React.Component {
           ppbutton={this.state.ppbutton}
           cbMobileSidebar={this.toggleMobileSidebar}
           msGuiMode={this.state.msGuiMode}
-          //
           app={this.props.app}
           mode={this.state.svmode}
           tree={this.state.svtree}
@@ -561,20 +566,6 @@ export default class ResponsiveView extends React.Component {
           highlightedTolerances={this.state.highlightedTolerances}
         />
       );
-    }
-
-    let cadviewStyle;
-
-    // squish the cad view down to appropriate size
-    if (this.state.guiMode === 0) {
-      cadviewStyle =
-      {
-        'left': '390px',
-        'top': '90px',
-        'bottom': '0px',
-        'right': '0px',
-      };
-    } else {
       let cadviewHeight = '80%';
       let fv = $('.Footer-container');
       let rv = $('.RespView');

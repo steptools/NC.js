@@ -31,6 +31,7 @@ class CADApp extends THREE.EventDispatcher {
         console.log('Socket client connected');
       });
     }
+
     // Create data manager
     this.cadManager = new CADManager(this.config, this.socket,this);
 

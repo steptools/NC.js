@@ -63,9 +63,10 @@ export default class WorkingstepList extends React.Component {
   }
 
   render() {
+    console.log('render WORKINGSTEP LIST');
     let treeHeight;
     if (this.props.isMobile) {
-      treeHeight={'height': '100%'};
+      treeHeight = {'height': '100%'};
     }
 
     return (
