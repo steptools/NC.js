@@ -346,13 +346,14 @@ export default class ResponsiveView extends React.Component {
           _.each(cache.children, (t) => {
             tols.push(t.id);
           });
-          this.setState({
-            'ws': workingstep.id,
-            'wstext':workingstep.name.trim(),
-            'highlightedTolerances': tols,
-          });
-
-          this.setState({'curtool': workingstep.tool});
+          if (this.state.ws !== workingstep.id) {
+            this.setState({
+              'ws': workingstep.id,
+              'wstext':workingstep.name.trim(),
+              'highlightedTolerances': tols,
+              'curtool': workingstep.tool,
+            });
+          }
         } else {
           this.setState({'ws':ws,'wstxt':'Operation Unknown'});
         }
@@ -414,7 +415,11 @@ export default class ResponsiveView extends React.Component {
   }
 
   cbWS(newWS) {
-    this.setState({ws: newWS});
+    console.log('cbWS(' + newWS + ')');
+    newWS = parseInt(newWS, 10);
+    if (newWS !== this.state.ws) {
+      this.setState({ws: newWS});
+    }
   }
 
   speedChanged(speed) {
@@ -450,7 +455,10 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
-    console.log('render RESPONSIVE VIEW');
+    if (this.state.ws <= 0) { // hacky way of preventing an extra render
+      return <div className='RespView' style={{height:'100%'}}/>;
+    }
+    console.log('1. render RESPONSIVE VIEW');
     let HV, SV, FV, cadviewStyle;
     if (this.state.guiMode === 0) {
       HV = (

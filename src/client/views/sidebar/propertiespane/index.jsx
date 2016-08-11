@@ -784,6 +784,7 @@ export default class PropertiesPane extends React.Component {
   }
 
   render() {
+    console.log('4. render PROPERTIES');
     let entityData = this.getEntityData();
     return (
       <div className={entityData.paneName}>

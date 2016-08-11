@@ -185,6 +185,7 @@ export default class ToleranceList extends React.Component {
   }
 
   render() {
+    console.log('5. render TOLERANCES');
     // TODO: pass tolerances by WS (in order) through props for optimization
     this.getTolerances();
     let tolList = [];
