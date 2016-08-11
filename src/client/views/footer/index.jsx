@@ -1,4 +1,3 @@
-import React from 'react';
 import MobileSidebar from '../mobilesidebar';
 
 let soy = 0; //for detecting offset clicked from top of footerbar

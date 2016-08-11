@@ -1,6 +1,3 @@
-import React from 'react';
-import _ from 'lodash';
-import request from 'superagent';
 import CADView from '../cad';
 import HeaderView from '../header';
 import SidebarView from '../sidebar';

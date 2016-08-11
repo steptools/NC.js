@@ -1,7 +1,5 @@
-import React from 'react';
 import Menu,{Item as MenuItem} from 'rc-menu';
 import GeometryView from '../../geometry';
-import request from 'superagent';
 
 function getIcon(type, data) {
   if (!data) {

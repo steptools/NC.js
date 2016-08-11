@@ -1,6 +1,3 @@
-import React from 'react';
-import request from 'superagent';
-
 export default class WorkingstepList extends React.Component {
   constructor(props) {
     super(props);

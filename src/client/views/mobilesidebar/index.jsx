@@ -1,6 +1,4 @@
 // NOTE: styleguide compliant
-import React from 'react';
-import _ from 'lodash';
 import SidebarView from '../sidebar';
 
 export default class MobileSidebar extends React.Component {

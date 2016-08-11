@@ -1,6 +1,3 @@
-import React from 'react';
-import _ from 'lodash';
-
 export default class ToolList extends React.Component {
   constructor(props) {
     super(props);
