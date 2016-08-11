@@ -46,6 +46,7 @@ export default class ResponsiveView extends React.Component {
       preview: false,
       feedRate: 0,
       spindleSpeed: 0,
+      previewEntity: null,
     };
 
     // get the workplan
@@ -177,7 +178,7 @@ export default class ResponsiveView extends React.Component {
           let workingsteps = [];
           for (let i of json[node.workpiece].workingsteps) {
             let ws = this.state.workingstepCache[i];
-            if (node.workpiece === ws.toBe.id) {
+            if (ws && node.workpiece === ws.toBe.id) {
               workingsteps.push(i);
             }
           }
@@ -225,6 +226,7 @@ export default class ResponsiveView extends React.Component {
 
     this.openProperties = this.openProperties.bind(this);
     this.openPreview = this.openPreview.bind(this);
+    this.selectEntity = this.selectEntity.bind(this);
 
     this.toggleHighlight = this.toggleHighlight.bind(this);
   }
@@ -309,7 +311,7 @@ export default class ResponsiveView extends React.Component {
     this.setState({msGuiMode: newMode});
   }
 
-  openProperties(node, backtrack) {
+  openProperties(node, backtrack, cb) {
     let currEntity = this.state.selectedEntity;
     let prevEntities = this.state.previouslySelectedEntities;
     if (node === null) {
@@ -330,11 +332,49 @@ export default class ResponsiveView extends React.Component {
         selectedEntity: node,
       });
     }
+
+    if (cb) {
+      cb();
+    }
   }
 
   openPreview(state) {
     if (state === true || state === false && state !== this.state.preview) {
       this.setState({preview: state});
+    }
+  }
+
+  selectEntity(event, entity) {
+    if (event.key === 'goto') {
+      let url = '/v3/nc/state/ws/' + entity.id;
+      request.get(url).end();
+    } else if (event.key === 'tool') {
+      // open properties page for associated tool
+      this.openProperties(this.state.toolCache[entity.tool]);
+    } else if (event.key === 'preview') {
+
+      this.setState({'previewEntity': entity});
+      this.openPreview(true);
+      let prevId;
+      if (entity.type === 'workingstep') {
+        prevId = entity.toBe.id;
+      } else if (entity.type === 'tolerance') {
+        prevId = entity.workpiece;
+      } else if (entity.type === 'tool') {
+        prevId = entity.id + '/tool';
+      } else {
+        prevId = entity.id;
+      }
+
+      let url = this.props.app.services.apiEndpoint
+        + this.props.app.services.version + '/nc';
+      this.props.app.cadManager.dispatchEvent({
+        type: 'setModel',
+        viewType: 'preview',
+        path: prevId.toString(),
+        baseURL: url,
+        modelType: 'previewShell',
+      });
     }
   }
 
@@ -517,6 +557,9 @@ export default class ResponsiveView extends React.Component {
           openPreview={this.openPreview}
           toggleHighlight={this.toggleHighlight}
           highlightedTolerances={this.state.highlightedTolerances}
+          selectEntity={this.selectEntity}
+          previewEntity={this.state.previewEntity}
+          previewEntityCb={(e) => {this.setState({'previewEntity': e})}}
         />
       );
     } else {

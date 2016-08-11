@@ -44,8 +44,6 @@ $icons: '../icons/';
             
             .icon {
                 margin-right: 8px;
-                width: auto;
-                min-width: 30px;
             }
             
             .setup-textbox{
@@ -64,7 +62,7 @@ $icons: '../icons/';
     }
 
 
-    .highlight-button {
+    .highlight-button,.icon.preview {
         font-size: 20px;
         margin-right: 5px;
         margin-left: 8px;
@@ -272,7 +270,7 @@ $icons: '../icons/';
             display: flex;
             align-items: center;
             padding: 5px;
-            border-bottom: 1px solid #DDDDDD;
+            border-bottom: 2px solid #333333;
             background-color: inherit;
 
             .title {
@@ -438,51 +436,59 @@ $icons: '../icons/';
                 }
             }
         }
-
+        
         .button-dock {
             z-index: 12;
-            height: 50px;
-            border-top: 1px solid #DDDDDD;
-            display: flex;
-            align-items: center;
             background-color: inherit;
+            border-top: 2px solid #333333;
+        }
+        
+        .button-dock .rc-menu {
+            min-height: 0px;
+            height: 46px;
+            display: flex;
+            align-items: stretch;
+            margin: 2px;
+            background-color: inherit;
+            border: 0px;
             
-            .rc-menu {
-                min-height: 0px;
-                width: 50%;
-                margin: auto;
-                border: none;
-                background-color: transparent;
+            .button {
+                flex-grow: 1;
+                flex-basis: 0;
+                height: 44px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #333333;
+                border-bottom: 2px solid #333333;
+                padding: 0px;
+                color: #F8F8F8;
+                cursor: pointer;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
                 
-                .button {
-                    float: none;
-                    padding: 10px 20px;
-                    text-align: center;
-                    background-color: #333333;
-                    border-bottom: 2px solid #333333;
-                    color: #F8F8F8;
+                .icon {
+                    font-size: 20px;
+                    margin-left: 5px;
+                    vertical-align: middle;
+                }
+
+                &:hover:not(.rc-menu-item-disabled) {
                     cursor: pointer;
-                    -webkit-touch-callout: none;
-                    -webkit-user-select: none;
-                    -khtml-user-select: none;
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
+                    color: #2BAEE9;
+                    border-bottom-color: #2BAEE9;
+                }
 
-                    &:hover:not(.rc-menu-item-disabled) {
-                        cursor: pointer;
-                        color: #2BAEE9;
-                        border-bottom-color: #2BAEE9;
-                    }
-
-                    &.rc-menu-item-disabled {
-                        opacity: 0.5;
-                    }
-                    
-                    .icon {
-                        font-size: 20px;
-                        margin-left: 5px;
-                    }
+                &.rc-menu-item-disabled {
+                    opacity: 0.5;
+                }
+                
+                &:first-child {
+                    margin-right: 2px;
                 }
             }
         }
@@ -567,6 +573,23 @@ $icons: '../icons/';
     .node .icon {
         margin-right: 8px;
         font-size: 24px;
+        
+        //&.custom.letter {
+        //    font-size: 14px;
+        //}
+
+        //&.preview {
+        //    font-size: 20px;
+        //    padding: 3px;
+        //    color: #F8F8F8;
+        //    background-color: #333333;
+        //    border-radius: 5px;
+        //    text-align: center;
+
+        //    &:hover {
+        //        color: #28AEE9;
+        //    }
+        //}
     }
 
     .node .textbox {
@@ -620,7 +643,7 @@ $icons: '../icons/';
     &.datum {
         background-image: url($icons + 'tolerance/datum.svg');
     }
-    
+
     &.angularity {
         background-image: url($icons + 'tolerance/angularity.svg');
     }
