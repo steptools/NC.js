@@ -21,25 +21,29 @@ export default class SidebarView extends React.Component {
   }
 
   componentDidUpdate() {
-    let update = (!scrolled) && (this.props.ws > -1);
-    update = update && (this.props.mode !== 'tolerance');
-    if (update) {
-      let node = $('.running-node');
-      if (node.length <= 0) {
-        return;
-      }
+    let shouldUpdate = !scrolled;
+    shouldUpdate = shouldUpdate && this.props.ws > -1;
+    shouldUpdate = shouldUpdate && this.props.mode !== 'tolerance';
+    shouldUpdate = shouldUpdate && !this.props.isMobile;
+    if (!shouldUpdate) {
+      return;
+    }
 
-      let tree = $('.m-tree,.treebeard');
-      let tOffset = tree.offset().top + tree.innerHeight();
-      let nOffset = node.offset().top + node.innerHeight();
-      let scroll = nOffset - tOffset;
-      if (scroll > 0) {
-        if (scroll >= node.innerHeight()) {
-          scroll += tree.innerHeight() / 2;
-          scroll -= node.innerHeight() / 2;
-        }
-        tree.animate({scrollTop: scroll}, 1000);
+    let tree = $('.m-tree,.treebeard');
+    let node = $('.running-node');
+    if (node.length <= 0) {
+      return;
+    }
+
+    let tOffset = tree.offset().top + tree.outerHeight();
+    let nOffset = node.offset().top + node.outerHeight();
+    let scroll = nOffset - tOffset;
+    if (scroll > 0) {
+      if (scroll >= node.outerHeight()) {
+        scroll += tree.outerHeight() / 2;
+        scroll -= node.outerHeight() / 2;
       }
+      tree.animate({scrollTop: scroll}, 1000);
       scrolled = true;
     }
   }
