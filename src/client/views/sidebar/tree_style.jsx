@@ -73,7 +73,7 @@ function setToleranceInfo(node, props) {
       ev.stopPropagation();
       ev.preventDefault();
       let prom = new Promise((resolve) => {
-        props.decorators.propertyCb(node.previewWS, false, resolve);
+        props.decorators.propertyCb(node, false, resolve);
       });
 
       prom.then(() => {

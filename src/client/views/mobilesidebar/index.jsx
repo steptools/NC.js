@@ -40,6 +40,9 @@ export default class MobileSidebar extends React.Component {
           openPreview={this.props.openPreview}
           toggleHighlight={this.props.toggleHighlight}
           highlightedTolerances={this.props.highlightedTolerances}
+          selectEntity={this.props.selectEntity}
+          previewEntity={this.props.previewEntity}
+          previewEntityCb={this.props.previewEntityCb}
         />
       );
 

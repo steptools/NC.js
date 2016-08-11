@@ -37,26 +37,30 @@ export default class ToolList extends React.Component {
   }
 
   render() {
-
     let treeHeight;
-    if(this.props.isMobile)
-      treeHeight={"height": "100%"};
+    if (this.props.isMobile) {
+      treeHeight = {'height': '100%'};
+    }
 
-    let tListActive=(_.values(this.props.tools).map((tool, i) => {
-          if(tool.enabled === true)
-            return (<div className='m-node' key={i}>
-              {this.renderNode(tool)}
-            </div>);
-          else return "";
-        }));
+    let tListActive = (_.values(this.props.tools).map((tool, i) => {
+      if (tool.enabled === true) {
+        return (<div className='m-node' key={i}>
+          {this.renderNode(tool)}
+        </div>);
+      } else {
+        return '';
+      }
+    }));
 
-    let tListDisabled=(_.values(this.props.tools).map((tool, i) => {
-          if(tool.enabled === false)
-            return (<div className='m-node' key={i}>
-              {this.renderNode(tool)}
-            </div>);
-          else return "";
-        }));
+    let tListDisabled = (_.values(this.props.tools).map((tool, i) => {
+      if (tool.enabled === false) {
+        return (<div className='m-node' key={i}>
+          {this.renderNode(tool)}
+        </div>);
+      } else {
+        return '';
+      }
+    }));
 
     return (
       <div className='m-tree' style={treeHeight}>
