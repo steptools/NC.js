@@ -1,7 +1,5 @@
 'use-strict';
 
-import React from 'react';
-
 function getNodeIcon(node) {
   if (node.type === 'workplan') {
     return <span className='icon glyphicons glyphicons-cube-empty'/>;

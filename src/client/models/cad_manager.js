@@ -3,8 +3,6 @@
  */
 "use strict";
 
-
-let _           = require('lodash');
 import DataLoader  from './data_loader';
 
 /*************************************************************************/

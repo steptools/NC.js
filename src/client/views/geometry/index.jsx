@@ -1,6 +1,5 @@
 'use strict';
 
-import React from 'react';
 import ViewerControls   from './viewer_controls';
 import CompassView      from '../compass/compass';
 
