@@ -45,10 +45,12 @@ function getModIcon(mod){
 
 function getDatum(dat){
   let label = tol.GetDatumLabel(dat);
+  let faces = tol.GetDatumFaceAll(dat);
   let ret = {
     'type' : 'datum',
     'name' : label,
     'id' : dat,
+    'faces' : faces,
   }
   return ret;
 }
@@ -102,7 +104,6 @@ function getTolerance(id) {
     'rangeName': rangeName,
     'modifiers': mods,
     'modName': modName,
-    'datum' : datum,
     'children' : datumLabels,
   };
 }
@@ -111,12 +112,15 @@ function getWp(id, type) {
   let name = find.GetWorkpieceName(id);
   let steps = apt.GetWorkpieceExecutableAll(id);
   let tolerances = tol.GetWorkpieceToleranceAll(id);
+  let datums = tol.GetWorkpieceDatumAllAll(id);
+  let datumLabels = datums.map((dat) => getDatum(dat));
   let ret = {
     'id': id,
     'name': name,
     'workingsteps': steps,
     'wpType': type,
     'tolerances': tolerances,
+    'datums' : datumLabels,
     'children': [],
     'subs': [],
   };
