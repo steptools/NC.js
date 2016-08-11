@@ -74,7 +74,24 @@ export default class FooterView extends React.Component {
       fv.stop().animate({top: bottomPos+'px'}, 500);
     } else if (mode === true) {
       fv.stop().animate({top: '0px'}, 500, 'swing', function() {
-        // TODO: scroll sidebar
+        // scroll the sidebar after the footer is open
+        let node = $('.running-node');
+        if (node.length <= 0) {
+          return;
+        }
+
+        let tree = $('.m-tree,.treebeard');
+        let tOffset = tree.offset().top + tree.outerHeight();
+        let nOffset = node.offset().top + node.outerHeight();
+        let scroll = nOffset - tOffset;
+        console.log(tree.offset().top, tree.outerHeight(), node.offset().top, node.outerHeight());
+        if (scroll > 0) {
+          if (scroll >= node.outerHeight()) {
+            scroll += tree.outerHeight() / 2;
+            scroll -= node.outerHeight() / 2;
+          }
+          tree.animate({scrollTop: scroll}, 1000);
+        }
       });
     }
   }

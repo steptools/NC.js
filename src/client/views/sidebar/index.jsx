@@ -36,13 +36,14 @@ export default class SidebarView extends React.Component {
     }
 
     let tree = $('.m-tree,.treebeard');
-    let tOffset = tree.offset().top + tree.innerHeight();
-    let nOffset = node.offset().top + node.innerHeight();
+    let tOffset = tree.offset().top + tree.outerHeight();
+    let nOffset = node.offset().top + node.outerHeight();
     let scroll = nOffset - tOffset;
+    console.log(tree.offset().top, tree.outerHeight(), node.offset().top, node.outerHeight());
     if (scroll > 0) {
-      if (scroll >= node.innerHeight()) {
-        scroll += tree.innerHeight() / 2;
-        scroll -= node.innerHeight() / 2;
+      if (scroll >= node.outerHeight()) {
+        scroll += tree.outerHeight() / 2;
+        scroll -= node.outerHeight() / 2;
       }
       tree.animate({scrollTop: scroll}, 1000);
       scrolled = true;
