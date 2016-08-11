@@ -6,6 +6,7 @@ Features:
 
 Bugfixes:
 - Upcoming tolerances now lists tolerances for all upcoming workingsteps, not 5
+- Optimized the backend of the user interface
 
 Version 1.7.1
 
