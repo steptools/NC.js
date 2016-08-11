@@ -433,7 +433,7 @@ export default class PropertiesPane extends React.Component {
       highlightName = 'close inactive';
     }
 
-    if (node.type === 'tolerance') {
+    if (node.type === 'tolerance' || node.type === 'datum') {
       highlightButton = (
         <span
           className={getIcon('highlight', highlightName)}
@@ -466,7 +466,9 @@ export default class PropertiesPane extends React.Component {
           id={node.id}
           className={cName}
           onClick={() => {
-            this.props.propertiesCb(node);
+            if (node.type !== 'datum') {
+              this.props.propertiesCb(node);
+            }
           }}
         >
           {icon}
@@ -522,6 +524,7 @@ export default class PropertiesPane extends React.Component {
 
     // show tolerances for toBe
     this.renderChildren(this.props.toleranceCache[entity.toBe.id]);
+    this.renderDatums(this.props.toleranceCache[entity.toBe.id]);
 
     if (entity.asIs &&
         entity.asIs.id !== 0 &&
@@ -570,6 +573,41 @@ export default class PropertiesPane extends React.Component {
           {asIs}
           {delta}
         </div>
+      </MenuItem>
+    );
+  }
+
+  renderDatums(entity) {
+    if (entity.type !== 'workpiece') {
+      return;
+    }
+
+    let children = entity.datums;
+    let childrenTitle;
+
+    if (children && children.length > 0) {
+      if (children.length === 1) {
+        childrenTitle = 'Datum:';
+      } else {
+        childrenTitle = 'Datums:';
+      }
+    } else {
+      childrenTitle = 'No datums defined.';
+    }
+
+    childrenTitle = (<div className='title'>{childrenTitle}</div>);
+    if (children) {
+      children = (
+        <div className='list'>
+          {children.map(this.renderNode)}
+        </div>
+      );
+    }
+
+    this.properties.push(
+      <MenuItem disabled key='datums' className='property children'>
+        {childrenTitle}
+        {children}
       </MenuItem>
     );
   }
@@ -744,6 +782,7 @@ export default class PropertiesPane extends React.Component {
     this.renderTolerance(entity);
     this.renderWorkingsteps(entity);
     this.renderChildren(entity);
+    this.renderDatums(entity);
 
     return (
       <Menu

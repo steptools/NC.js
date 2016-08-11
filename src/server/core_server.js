@@ -81,8 +81,6 @@ function CoreServer() {
   file.init(this.project, this.machinetool);
 
   // Establish core
-  this.models = {};
-  this.controllers = {};
   this.logger = new winston.Logger({
     transports: [
       new (winston.transports.Console)({level: 'debug'}),
