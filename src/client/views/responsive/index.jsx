@@ -361,15 +361,15 @@ export default class ResponsiveView extends React.Component {
         prevEntity = this.state.toleranceCache[entity.toBe.id];
       } else if (entity.type === 'tolerance' || entity.type === 'datum') {
         prevId = entity.workpiece;
+        prevEntity = this.state.toleranceCache[entity.workpiece];
       } else if (entity.type === 'tool') {
         prevId = entity.id + '/tool';
       } else {
         prevId = entity.id;
       }
 
-      if (this.state.previewEntity !== prevEntity) {
+      if (this.state.previewEntity !== prevEntity || !this.state.preview) {
         this.setState({'previewEntity': prevEntity});
-        this.openPreview(true);
 
         let url = this.props.app.services.apiEndpoint
           + this.props.app.services.version + '/nc';
@@ -381,6 +381,8 @@ export default class ResponsiveView extends React.Component {
           modelType: 'previewShell',
         });
       }
+
+      this.openPreview(true);
     }
   }
 
