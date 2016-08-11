@@ -216,7 +216,6 @@ export default class HeaderView extends React.Component {
   }
 
   render() {
-    console.log('2. render HEADER');
     let ppbtntxt = '';
     let ppbutton = this.props.ppbutton;
     if (this.props.ppbutton === 'play') {

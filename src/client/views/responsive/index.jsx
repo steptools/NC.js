@@ -455,10 +455,6 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
-    if (this.state.ws <= 0) { // hacky way of preventing an extra render
-      return <div className='RespView' style={{height:'100%'}}/>;
-    }
-    console.log('1. render RESPONSIVE VIEW');
     let HV, SV, FV, cadviewStyle;
     if (this.state.guiMode === 0) {
       HV = (

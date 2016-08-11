@@ -13,14 +13,11 @@ export default class SidebarView extends React.Component {
   constructor(props) {
     super(props);
 
-    //this.state = {scrolled: false};
-
     this.selectMenuItem = this.selectMenuItem.bind(this);
   }
 
   selectMenuItem(info) {
     this.props.cbMode(info.key);
-    //this.setState({'scrolled': false});
     scrolled = false;
   }
 
@@ -44,13 +41,11 @@ export default class SidebarView extends React.Component {
         }
         tree.animate({scrollTop: scroll}, 1000);
       }
-      //this.setState({'scrolled': true});
       scrolled = true;
     }
   }
 
   render() {
-    console.log('3. render SIDEBAR');
     let properties = <PropertiesPane
       app={this.props.app}
       entity={this.props.selectedEntity}

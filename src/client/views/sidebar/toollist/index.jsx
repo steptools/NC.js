@@ -37,7 +37,6 @@ export default class ToolList extends React.Component {
   }
 
   render() {
-    console.log('5. render TOOLS');
     let treeHeight;
     if (this.props.isMobile) {
       treeHeight = {'height': '100%'};
