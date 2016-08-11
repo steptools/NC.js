@@ -127,14 +127,14 @@ export default class GeometryView extends React.Component {
 
   componentWillUpdate(nextProps) {
     let highlightColors = {
-      'default': { r: 1.0, g: 0, b: 1.0, },
-      'A': { r: 1.0, g: 0, b: 1.0, },
-      'B': { r: 1.0, g: 0, b: 1.0, },
-      'C': { r: 1.0, g: 0, b: 1.0, },
-      'D': { r: 1.0, g: 0, b: 1.0, },
-      'E': { r: 1.0, g: 0, b: 1.0, },
-      'F': { r: 1.0, g: 0, b: 1.0, },
-      'G': { r: 1.0, g: 0, b: 1.0, },
+      'default': { r: 1.0, g: 0, b: 1.0, }, // pink
+      'A': { r: 1.0, g: 0.6, b: 0.0, }, // orange
+      'B': { r: 0.0, g: 1.0, b: 0.0, }, // green
+      'C': { r: 0.0, g: 0.0, b: 1.0, }, // blue
+      'D': { r: 0.0, g: 0.6, b: 0.1, }, // purple
+      'E': { r: 1.0, g: 1.0, b: 0.0, }, // yellow
+      'F': { r: 0.0, g: 1.0, b: 1.0, }, // cyan
+      'G': { r: 1.0, g: 0.0, b: 1.0, }, // also pink
     };
     
     let rootModelName = 'state/key';
