@@ -26,7 +26,8 @@ export default class FooterView extends React.Component {
     this.btnClicked = this.btnClicked.bind(this);
     this.ffBtnClicked = this.ffBtnClicked.bind(this);
     this.bbBtnClicked = this.bbBtnClicked.bind(this);
-    this.footerController = this.footerController.bind(this);
+    this.footerControlMode = this.footerControlMode.bind(this);
+    this.footerControlPosition = this.footerControlPosition.bind(this);
     this.footerMove = this.footerMove.bind(this);
     this.soMouseDown = this.soMouseDown.bind(this);
     this.soMouseUp = this.soMouseUp.bind(this);
@@ -53,31 +54,28 @@ export default class FooterView extends React.Component {
   }
 
   footerControlMode() {
-
-  }
-
-  footerControlPosition() {
-
-  }
-
-  footerController() {
     let mode = this.props.msGuiMode;
     let offset = fv.offset().top;
     let height = db.height() + fb.height();
-    let newMode = false;
 
     if (!mode && (window.innerHeight - offset) > (height * 2)) {
+      console.log((window.innerHeight - offset) + ' > ' + (height * 2));
       this.props.cbMobileSidebar(true);
-      newMode = true;
+      mode = true;
     } else if (mode && (offset > height)) {
+      console.log(offset + ' > ' + height);
       this.props.cbMobileSidebar(false);
-      newMode = false;
+      mode = false;
     }
 
-    if (newMode === false) {
+    this.footerControlPosition(mode);
+  }
+
+  footerControlPosition(mode) {
+    if (mode === false) {
       let bottomPos = (window.innerHeight - (db.height() + fb.height()));
       fv.stop().animate({top: bottomPos+'px'}, 500);
-    } else if (newMode === true) {
+    } else if (mode === true) {
       fv.stop().animate({top: '0px'}, 500, 'swing', function() {
         // TODO: scroll sidebar
       });
@@ -86,12 +84,10 @@ export default class FooterView extends React.Component {
   }
 
   footerMove(y) {
-    //let mode = this.props.msGuiMode;
     let footerHeight = fb.height() + db.height();
     let maxTop = window.innerHeight - footerHeight;
     if (soy > 0) {
       let newTop = y - soy;
-      //console.log(y, soy, newTop);
       if (newTop < 0) {
         newTop = 0;
       } else if (newTop > maxTop) {
@@ -102,7 +98,7 @@ export default class FooterView extends React.Component {
   }
 
   soMouseDown(info) {
-    //console.log('mouse down');
+    console.log('mouse down');
     $('.Footer-container .draggable').off('mousedown');
 
     soy = (fv.offset().top + (db.height() + fb.height())) - info.clientY;
@@ -112,7 +108,7 @@ export default class FooterView extends React.Component {
   }
 
   soMouseUp() {
-    //console.log('mouse up');
+    console.log('mouse up');
     $('.Footer-container .draggable').on('mousedown', this.soMouseDown);
     $(window).off('mousemove');
     $(window).off('mouseup');
@@ -121,16 +117,17 @@ export default class FooterView extends React.Component {
       return;
     }
 
-    this.footerController();
+    this.footerControlMode();
   }
 
   soMouseMove(info) {
-    //console.log('mousemove');
+    console.log('mousemove');
+    dragged = true;
     this.footerMove(info.clientY);
   }
 
   soClick() {
-    //console.log('click');
+    console.log('click');
     if (dragged === true) {
       dragged = false;
       return;
@@ -141,13 +138,7 @@ export default class FooterView extends React.Component {
     currentMSGuiMode = !currentMSGuiMode;
     this.props.cbMobileSidebar(currentMSGuiMode);
 
-    if (currentMSGuiMode === false) {
-      let bottomPos = (window.innerHeight - (db.height() + fb.height()));
-      fv.stop().animate({top: bottomPos+'px'}, 500);
-    } else if (currentMSGuiMode === true) {
-      fv.stop().animate({top: '0px'}, 500);
-    }
-    soy = 0;
+    this.footerControlPosition(currentMSGuiMode);
   }
 
   soTouchStart(info) {
@@ -184,7 +175,7 @@ export default class FooterView extends React.Component {
       return;
     }
 
-    this.footerController(this.msGuiMode);
+    this.footerControlMode();
   }
 
   soTouchMove(info) {
