@@ -158,7 +158,7 @@ export default class HeaderView extends React.Component {
     let ss = 'Not defined';
     let ssIcon = null;
     if (this.props.feedRate !== undefined) {
-      fr = this.props.feedRate.toFixed(1) + ' ' + 'mm/min'//this.props.feedRateUnits;
+      fr = this.props.feedRate.toFixed(1) + ' ' + 'mm/min';
     }
     if (this.props.spindleSpeed !== 0) {
       ss = Math.abs(this.props.spindleSpeed) + ' rev/min';
@@ -183,7 +183,7 @@ export default class HeaderView extends React.Component {
     this.props.spindleUpdateCb(info.speed);
   }
 
-  updateFeedrate(info){
+  updateFeedrate(info) {
     this.props.feedUpdateCb(info.feed);
   }
 
