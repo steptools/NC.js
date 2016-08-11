@@ -30,10 +30,6 @@ export default class ToleranceList extends React.Component {
     $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard flat');
   }
 
-  shouldComponentUpdate(nextProps) {
-    return typeof nextProps.ws === 'number';
-  }
-
   componentWillReceiveProps(nextProps) {
     this.decorators.highlightedTolerances = nextProps.highlightedTolerances;
   }
