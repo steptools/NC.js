@@ -4,6 +4,7 @@ Features:
 
 - Added previous tolerances to the tolerances tab
 - Added the ability to preview workingsteps and tolerances from tolerance list
+- Show datum information and preview datums with colored highlighting
 
 Bugfixes:
 

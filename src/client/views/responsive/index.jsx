@@ -170,6 +170,10 @@ export default class ResponsiveView extends React.Component {
           node.leaf = true;
         }
 
+        if (node.datums && node.datums.length > 0) {
+          _.each(node.datums, nodeCheck);
+        }
+
         if (node.wpType) {
           ids.push(node.id);
         }
