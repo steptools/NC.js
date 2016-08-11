@@ -162,7 +162,6 @@ export default class ToleranceList extends React.Component {
       ws.children = tolerancesByWS[i];
       _.each(ws.children, (child) => {
         child.openPreview = true;
-        child.previewWS = ws;
       });
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
@@ -207,7 +206,6 @@ export default class ToleranceList extends React.Component {
       ws.children = tolerancesByWS[i];
       _.each(ws.children, (child) => {
         child.openPreview = true;
-        child.previewWS = ws;
       });
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
