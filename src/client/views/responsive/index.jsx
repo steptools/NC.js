@@ -605,6 +605,9 @@ export default class ResponsiveView extends React.Component {
           openPreview={this.openPreview}
           toggleHighlight={this.toggleHighlight}
           highlightedTolerances={this.state.highlightedTolerances}
+          selectEntity={this.selectEntity}
+          previewEntity={this.state.previewEntity}
+          previewEntityCb={(e) => {this.setState({'previewEntity': e})}}
         />
       );
     }
