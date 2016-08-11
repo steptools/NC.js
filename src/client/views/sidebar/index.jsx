@@ -7,20 +7,18 @@ import ToleranceList from './tolerancelist';
 import PropertiesPane from './propertiespane';
 import cadManager from '../../models/cad_manager';
 
+var scrolled = false;
+
 export default class SidebarView extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {scrolled: false};
-
     this.selectMenuItem = this.selectMenuItem.bind(this);
-
-    this.props.actionManager.on('change-workingstep', this.props.cbWS);
   }
 
   selectMenuItem(info) {
     this.props.cbMode(info.key);
-    this.setState({'scrolled': false});
+    scrolled = false;
   }
 
   componentDidUpdate() {
@@ -47,8 +45,8 @@ export default class SidebarView extends React.Component {
         scroll -= node.innerHeight() / 2;
       }
       tree.animate({scrollTop: scroll}, 1000);
+      scrolled = true;
     }
-    this.setState({'scrolled': true});
   }
 
   render() {
