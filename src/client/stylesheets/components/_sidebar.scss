@@ -62,7 +62,7 @@ $icons: '../icons/';
     }
 
 
-    .highlight-button {
+    .highlight-button,.icon.preview {
         font-size: 20px;
         margin-right: 5px;
         margin-left: 8px;
@@ -576,6 +576,19 @@ $icons: '../icons/';
         
         &.custom.letter {
             font-size: 14px;
+        }
+
+        &.preview {
+            font-size: 20px;
+            padding: 3px;
+            color: #F8F8F8;
+            background-color: #333333;
+            border-radius: 5px;
+            text-align: center;
+
+            &:hover {
+                color: #28AEE9;
+            }
         }
     }
 

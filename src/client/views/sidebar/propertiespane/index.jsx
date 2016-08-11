@@ -104,12 +104,9 @@ export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {previewEntity: null};
-
     this.properties = [];
     this.titleNameWidth = 0;
 
-    this.selectEntity = this.selectEntity.bind(this);
     this.renderNode = this.renderNode.bind(this);
     this.renderWorkingsteps = this.renderWorkingsteps.bind(this);
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
@@ -174,12 +171,12 @@ export default class PropertiesPane extends React.Component {
     }
 
     let newWP = this.getWPForEntity(nextProps.entity);
-    let prevWP = this.getWPForEntity(this.state.previewEntity);
+    let prevWP = this.getWPForEntity(this.props.previewEntity);
 
     if (nextProps.entity !== this.props.entity && newWP !== prevWP) {
       this.props.previewCb(false);
     } else if (nextProps.entity !== this.props.entity && newWP === prevWP) {
-      this.setState({'previewEntity': nextProps.entity});
+      this.props.previewEntityCb(nextProps.entity);
     }
   }
 
@@ -444,7 +441,7 @@ export default class PropertiesPane extends React.Component {
             ev.preventDefault();
             ev.stopPropagation();
             this.props.toggleHighlight(node.id);
-            this.selectEntity(
+            this.props.selectEntity(
               {key: 'preview'},
               this.props.toleranceCache[node.workpiece]
             );
@@ -458,7 +455,7 @@ export default class PropertiesPane extends React.Component {
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.selectEntity({key: 'preview'}, node);
+            this.props.selectEntity({key: 'preview'}, node);
           }}
         />);
     }
@@ -642,9 +639,9 @@ export default class PropertiesPane extends React.Component {
 
       content = (
         <GeometryView
-          key={this.getWPForEntity(this.state.previewEntity)}
+          key={this.getWPForEntity(this.props.previewEntity)}
           manager={this.props.manager}
-          selectedEntity={this.state.previewEntity}
+          selectedEntity={this.props.previewEntity}
           guiMode={this.props.guiMode}
           resize={this.props.resize}
           toleranceCache={this.props.toleranceCache}
@@ -724,7 +721,7 @@ export default class PropertiesPane extends React.Component {
         className='buttons'
         mode='horizontal'
         onClick={(event) => {
-          this.selectEntity(event, entity);
+          this.props.selectEntity(event, entity);
         }}
       >
         {this.buttons}
@@ -752,7 +749,7 @@ export default class PropertiesPane extends React.Component {
       <Menu
         className='properties'
         onClick={(event) => {
-          this.selectEntity(event, entity);
+          this.props.selectEntity(event, entity);
         }}
       >
         {this.properties}
