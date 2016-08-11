@@ -9,6 +9,7 @@ Bugfixes:
 
 - Upcoming tolerances now lists tolerances for all upcoming workingsteps, not 5
 - Previews work in mobile view again
+- Previewing a tolerance opens that tolerance's properties pane
 
 Version 1.7.1
 

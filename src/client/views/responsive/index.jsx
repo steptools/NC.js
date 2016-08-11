@@ -260,10 +260,6 @@ export default class ResponsiveView extends React.Component {
     });
   }
 
-  componentWillMount() {
-    //
-  }
-
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
     window.addEventListener('keydown', this.handleKeydown);
@@ -390,13 +386,14 @@ export default class ResponsiveView extends React.Component {
           _.each(cache.children, (t) => {
             tols.push(t.id);
           });
-          this.setState({
-            'ws': workingstep.id,
-            'wstext':workingstep.name.trim(),
-            'highlightedTolerances': tols,
-          });
-
-          this.setState({'curtool': workingstep.tool});
+          if (this.state.ws !== workingstep.id) {
+            this.setState({
+              'ws': workingstep.id,
+              'wstext':workingstep.name.trim(),
+              'highlightedTolerances': tols,
+              'curtool': workingstep.tool,
+            });
+          }
         } else {
           this.setState({'ws':ws,'wstxt':'Operation Unknown'});
         }
@@ -458,7 +455,11 @@ export default class ResponsiveView extends React.Component {
   }
 
   cbWS(newWS) {
-    this.setState({ws: newWS});
+    console.log('cbWS(' + newWS + ')');
+    newWS = parseInt(newWS, 10);
+    if (newWS !== this.state.ws) {
+      this.setState({ws: newWS});
+    }
   }
 
   speedChanged(speed) {
@@ -494,7 +495,7 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
-    let HV, SV, FV;
+    let HV, SV, FV, cadviewStyle;
     if (this.state.guiMode === 0) {
       HV = (
         <HeaderView
@@ -562,6 +563,12 @@ export default class ResponsiveView extends React.Component {
           previewEntityCb={(e) => {this.setState({'previewEntity': e})}}
         />
       );
+      cadviewStyle = {
+        'left': '390px',
+        'top': '90px',
+        'bottom': '0px',
+        'right': '0px',
+      };
     } else {
       FV = (
         <FooterView
@@ -577,7 +584,6 @@ export default class ResponsiveView extends React.Component {
           ppbutton={this.state.ppbutton}
           cbMobileSidebar={this.toggleMobileSidebar}
           msGuiMode={this.state.msGuiMode}
-          //
           app={this.props.app}
           mode={this.state.svmode}
           tree={this.state.svtree}
@@ -610,20 +616,6 @@ export default class ResponsiveView extends React.Component {
           previewEntityCb={(e) => {this.setState({'previewEntity': e})}}
         />
       );
-    }
-
-    let cadviewStyle;
-
-    // squish the cad view down to appropriate size
-    if (this.state.guiMode === 0) {
-      cadviewStyle =
-      {
-        'left': '390px',
-        'top': '90px',
-        'bottom': '0px',
-        'right': '0px',
-      };
-    } else {
       let cadviewHeight = '80%';
       let fv = $('.Footer-container');
       let rv = $('.RespView');
