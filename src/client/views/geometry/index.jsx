@@ -143,7 +143,7 @@ export default class GeometryView extends React.Component {
       let tolerance = this.props.toleranceCache[tol];
       faces = faces.concat(tolerance.faces);
     });
-    this.highlightFaces(faces, nextProps.manager.getRootModel(rootModelName), true);
+    this.highlightFaces(faces, this.props.manager.getRootModel(rootModelName), true);
 
     if (this.props.viewType === 'preview') {
       rootModelName = nextProps.selectedEntity.id;

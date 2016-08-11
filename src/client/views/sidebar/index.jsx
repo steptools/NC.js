@@ -64,6 +64,9 @@ export default class SidebarView extends React.Component {
       toggleHighlight={this.props.toggleHighlight}
       highlightedTolerances={this.props.highlightedTolerances}
       isMobile={this.props.isMobile}
+      selectEntity={this.props.selectEntity}
+      previewEntity={this.props.previewEntity}
+      previewEntityCb={this.props.previewEntityCb}
     />;
 
     const tabs = (
@@ -142,6 +145,8 @@ export default class SidebarView extends React.Component {
           toggleHighlight={this.props.toggleHighlight}
           isMobile={this.props.isMobile}
           ws={this.props.ws}
+          selectEntity={this.props.selectEntity}
+          openPreview={this.props.openPreview}
         />
       );
     } else if (this.props.mode === 'tools') {
