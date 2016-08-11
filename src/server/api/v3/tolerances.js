@@ -55,7 +55,7 @@ function getDatum(dat){
   return ret;
 }
 
-function getTolerance(id) {
+function getTolerance(id, wp) {
   let name = apt.SetNameGet(id);
   let tolTypeName = tol.GetToleranceType(id);
   let unit = tol.GetToleranceUnit(id);
@@ -113,7 +113,12 @@ function getWp(id, type) {
   let steps = apt.GetWorkpieceExecutableAll(id);
   let tolerances = tol.GetWorkpieceToleranceAll(id);
   let datums = tol.GetWorkpieceDatumAllAll(id);
-  let datumLabels = datums.map((dat) => getDatum(dat));
+  let datumLabels = datums.map((dat) => {
+    let func = getDatum(dat);
+    func.workpiece = id;
+    return func;
+  });
+
   let ret = {
     'id': id,
     'name': name,
@@ -148,6 +153,7 @@ function getWsTols(wsId, wpId) {
   } else {  // we are looking for a tolerance
     let tol = getTolerance(Number(wsId));
     tol.workpiece = wpId;
+    _.each(tol.children, (datum) => {datum.workpiece = wpId})
     return tol;
   }
 }
