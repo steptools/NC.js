@@ -126,10 +126,15 @@ export default class GeometryView extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
-    let highlightColor = {
-      r: 1.0,
-      g: 0,
-      b: 1.0,
+    let highlightColors = {
+      'default': { r: 1.0, g: 0, b: 1.0, },
+      'A': { r: 1.0, g: 0, b: 1.0, },
+      'B': { r: 1.0, g: 0, b: 1.0, },
+      'C': { r: 1.0, g: 0, b: 1.0, },
+      'D': { r: 1.0, g: 0, b: 1.0, },
+      'E': { r: 1.0, g: 0, b: 1.0, },
+      'F': { r: 1.0, g: 0, b: 1.0, },
+      'G': { r: 1.0, g: 0, b: 1.0, },
     };
     
     let rootModelName = 'state/key';
@@ -149,25 +154,33 @@ export default class GeometryView extends React.Component {
       rootModelName = nextProps.selectedEntity.id;
     }
 
+    let color = highlightColors['default'];
     // now highlight tolerances selected
-    faces = [];
     _.each(nextProps.highlightedTolerances, (tol) => {
+
       let tolerance = nextProps.toleranceCache[tol];
-      faces = faces.concat(tolerance.faces);
+
+      if (tolerance.type === 'datum') {
+        color = highlightColors[tolerance.name];
+        if (!color) {
+          color = highlightColors['default'];
+        }
+      }
+
+      this.highlightFaces(
+        tolerance.faces,
+        nextProps.manager.getRootModel(rootModelName),
+        false,
+        color
+      );
     });
- 
-    this.highlightFaces(
-      faces,
-      nextProps.manager.getRootModel(rootModelName),
-      false,
-      highlightColor
-    );
+
 
     if (this.props.viewType === 'preview') {
-
       // unhighlight old faces first if we're switching entities
       if (this.props.selectedEntity &&
-          this.props.selectedEntity.type === 'tolerance' &&
+          (this.props.selectedEntity.type === 'tolerance' ||
+           this.props.selectedEntity.type === 'datum') &&
           this.props.selectedEntity !== nextProps.selectedEntity) {
         
         this.highlightFaces(
@@ -179,13 +192,21 @@ export default class GeometryView extends React.Component {
       
       // then highlight new faces
       if (nextProps.selectedEntity &&
-        nextProps.selectedEntity.type === 'tolerance') {
+        (nextProps.selectedEntity.type === 'tolerance' ||
+         nextProps.selectedEntity.type === 'datum')) {
+
+        if (nextProps.selectedEntity.type === 'datum') {
+          color = highlightColors[nextProps.selectedEntity.name];
+          if (!color) {
+            color = highlightColors['default'];
+          }
+        }
 
         this.highlightFaces(
           nextProps.selectedEntity.faces,
           nextProps.manager.getRootModel(nextProps.selectedEntity.workpiece),
           false,
-          highlightColor
+          color
         );
       }
     }

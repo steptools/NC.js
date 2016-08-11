@@ -433,7 +433,7 @@ export default class PropertiesPane extends React.Component {
       highlightName = 'close inactive';
     }
 
-    if (node.type === 'tolerance') {
+    if (node.type === 'tolerance' || node.type === 'datum') {
       highlightButton = (
         <span
           className={getIcon('highlight', highlightName)}
