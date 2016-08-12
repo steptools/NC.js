@@ -133,7 +133,7 @@ export default class GeometryView extends React.Component {
       'D': {r: 0.0, g: 0.6, b: 0.1}, // purple
       'E': {r: 1.0, g: 1.0, b: 0.0}, // yellow
       'F': {r: 0.0, g: 1.0, b: 1.0}, // cyan
-      'G': {r: 1.0, g: 0.0, b: 1.0}, // also pink
+      'G': {r: 1.0, g: 0.0, b: 0.0}, // red
     };
 
     let rootModelName = 'state/key';
