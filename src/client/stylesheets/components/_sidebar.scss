@@ -692,7 +692,7 @@ $icons: '../icons/';
         }
     }
     
-    .properties-pane-container 
+    .properties-pane-container {
         .preview-exit.icon:hover {
             cursor: pointer;
             color: #2BAEE9;
@@ -703,7 +703,7 @@ $icons: '../icons/';
             color: #2BAEE9;
         }
         
-        .properties .property
+        .properties .property {
             &:hover:not(.rc-menu-item-disabled) {
                 cursor: pointer;
                 background-color: rgba(#2BAEE9, 0.5);
@@ -726,7 +726,7 @@ $icons: '../icons/';
             color: #2BAEE9;
             border-bottom-color: #2BAEE9;
         }
-    }
+    }   
     
     .treebeard {
         .node .toggle:hover {
