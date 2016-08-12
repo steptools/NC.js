@@ -263,7 +263,8 @@ export default class FooterView extends React.Component {
         </div>
         <div className='Footer-bar'>
           <div className='op-text draggable'>
-            <p>{this.props.wstext}</p>
+            <p className='first'>{this.props.wstext}</p>
+            <p className='last'>{this.props.wstext}</p>
           </div>
           <div className='footer-buttons'>
             <ButtonImage onBtnClick={this.bbBtnClicked} icon='step-backward'/>
