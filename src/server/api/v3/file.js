@@ -1,5 +1,5 @@
 'use strict';
-let StepNC = require('../../../../../STEPNode/build/Release/StepNode');
+let StepNC = require('STEPNode');
 let fs = require('fs');
 
 function init(path, machinetool) {
