@@ -129,8 +129,8 @@ export default class GeometryView extends React.Component {
       'default': {r: 1.0, g: 0, b: 1.0}, // pink
       'A': {r: 1.0, g: 0.6, b: 0.0}, // orange
       'B': {r: 0.0, g: 1.0, b: 0.0}, // green
-      'C': {r: 0.0, g: 0.0, b: 1.0}, // blue
-      'D': {r: 0.0, g: 0.6, b: 0.1}, // purple
+      'C': {r: 0.6, g: 0.0, b: 0.6}, // purple
+      'D': {r: 0.0, g: 0.0, b: 1.0}, // blue
       'E': {r: 1.0, g: 1.0, b: 0.0}, // yellow
       'F': {r: 0.0, g: 1.0, b: 1.0}, // cyan
       'G': {r: 1.0, g: 0.0, b: 0.0}, // red

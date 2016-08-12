@@ -14,7 +14,7 @@ function getNodeIcon(node) {
   } else if (node.type === 'workpiece') {
     return <span className='icon custom workpiece'/>;
   } else if (node.type === 'datum') {
-    return <span className='icon custom datum'/>;
+    return <span className={'icon custom datum ' + node.name} />;
   } else if (node.type === 'divider') {
     return null;
   } else {

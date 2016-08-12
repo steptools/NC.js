@@ -22,7 +22,7 @@ function getIcon(type, data) {
     case 'diameter':
       return 'icon custom diameter';
     case 'datum':
-      return 'icon custom datum';
+      return 'icon custom datum ' + data;
     case 'tolerance':
       if (data) {
         return 'icon custom tolerance ' + data;
@@ -377,9 +377,13 @@ export default class PropertiesPane extends React.Component {
       cName = 'node disabled';
     }
 
-    let icon = <span className={getIcon(node.type)}/>;
+    let icon;
     if (node.type === 'tolerance') {
       icon = <span className={getIcon(node.type, node.toleranceType)}/>;
+    } else if (node.type === 'datum') {
+      icon = <span className={getIcon(node.type, node.name)} />;
+    } else {
+      icon = <span className={getIcon(node.type)}/>;
     }
 
     let highlightButton;

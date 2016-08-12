@@ -571,7 +571,33 @@ $icons: '../icons/';
     }
 
     &.datum {
-        background-image: url($icons + 'tolerance/datum.svg');
+        -webkit-mask-image: url($icons + 'tolerance/datum.svg');
+        -webkit-mask-size: cover;
+        mask-image: url($icons + 'tolerance/datum.svg');
+        mask-size: cover;
+        background-color: #000000;
+
+        &.A {
+            background-color: rgb(255,153,0);
+        }
+        &.B {
+            background-color: rgb(0,215,0);
+        }
+        &.C {
+            background-color: rgb(153,0,153);
+        }
+        &.D {
+            background-color: rgb(0,0,255);
+        }
+        &.E {
+            background-color: rgb(255,215,0);
+        }
+        &.F {
+            background-color: rgb(0,215,215);
+        }
+        &.G {
+            background-color: rgb(255, 0, 0);
+        }
     }
 
     &.angularity {
@@ -655,7 +681,33 @@ $icons: '../icons/';
     }
 
     &.datum {
-        background-image: url($icons + 'tolerance/datum.svg');
+        -webkit-mask-image: url($icons + 'tolerance/datum.svg');
+        -webkit-mask-size: cover;
+        mask-image: url($icons + 'tolerance/datum.svg');
+        mask-size: cover;
+        background-color: #000000;
+
+        &.A {
+            background-color: rgb(255,153,0);
+        }
+        &.B {
+            background-color: rgb(0,215,0);
+        }
+        &.C {
+            background-color: rgb(153,0,153);
+        }
+        &.D {
+            background-color: rgb(0,0,255);
+        }
+        &.E {
+            background-color: rgb(255,215,0);
+        }
+        &.F {
+            background-color: rgb(0,215,215);
+        }
+        &.G {
+            background-color: rgb(255, 0, 0);
+        }
     }
 
     &.datum-target {
