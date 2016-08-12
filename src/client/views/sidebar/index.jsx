@@ -171,12 +171,15 @@ export default class SidebarView extends React.Component {
     }
 
     let SVWidth;
+    let cName = 'sidebar';
     if (this.props.isMobile) {
       SVWidth = {'width': '100%'};
+    } else {
+      cName += ' notouch';
     }
 
     return (
-      <div className='sidebar' style={SVWidth}>
+      <div className={cName} style={SVWidth}>
         {properties}
         {tabs}
         {currentView}
