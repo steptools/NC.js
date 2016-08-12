@@ -402,6 +402,9 @@ export default class ResponsiveView extends React.Component {
           let workingstep = JSON.parse(response.text);
           let tols = [];
           let cache = this.state.toleranceCache[workingstep.toBe.id];
+          _.each(cache.datums, (t) => {
+            tols.push(t.id);
+          });
           _.each(cache.children, (t) => {
             tols.push(t.id);
           });
