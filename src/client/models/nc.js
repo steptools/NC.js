@@ -73,11 +73,11 @@ export default class NC extends THREE.EventDispatcher {
                 //This is where the shell gets sent when its loaded so that the full mesh can be added to the 3D objects
                 let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
                 let mesh = new THREE.Mesh(event.shell.getGeometry(), material, false);
-                
+
                 if (obj.bbox.isEmpty()) {
                     obj.bbox = event.shell.getBoundingBox();
                 }
-                
+
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 mesh.userData = obj;
@@ -187,7 +187,7 @@ export default class NC extends THREE.EventDispatcher {
         mouse.x = (mouseX / window.innerWidth) * 2 - 1;
         mouse.y = -(mouseY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(mouse, camera);
-        
+
         let objs = _.map(_.values(this._objects), (obj) => obj.object3D);
         let intersections = this.raycaster.intersectObjects(objs, true);
         // Did we hit anything?
@@ -220,13 +220,14 @@ export default class NC extends THREE.EventDispatcher {
 
             // Delete existing Stuff.
             var oldgeom = _.filter(_.values(this._objects), (geom) => (
-                geom.usage =="cutter" || geom.usage =="tobe" || 
+                geom.usage =="cutter" || geom.usage =="tobe" ||
                 geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture")
             );
             _.each(oldgeom,(geom)=> {
-                this._object3D.remove(geom.object3D);
-                this._overlay3D.remove(geom.object3D);
+                //this._object3D.remove(geom.object3D);
+                //this._overlay3D.remove(geom.object3D);
                 geom.rendered = false;
+                geom.object3D.visible = false;
             });
 
             var oldannotations =_.values(this._loader._annotations);
@@ -237,7 +238,7 @@ export default class NC extends THREE.EventDispatcher {
             //Load new Stuff.
             var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
             var geoms = _.filter(delta.geom, (geom) => (
-                geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) || 
+                geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) ||
                 geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
             );
             _.each(toolpaths, (geomData) => {
@@ -267,8 +268,9 @@ export default class NC extends THREE.EventDispatcher {
                 if(this._objects[name]) {
                     let obj = this._objects[name];
                     if (!obj.rendered) {
-                        this._overlay3D.add(obj.object3D);
+                        //this._overlay3D.add(obj.object3D);
                         obj.rendered = true;
+                        obj.visible = true;
                         obj.setVisible();
                         this._objects[name] = obj;
                     }
@@ -331,9 +333,9 @@ export default class NC extends THREE.EventDispatcher {
         return alter;
     }
 
-    getSelected() { 
-       if(this.state.selected) 
-        return [this]; 
+    getSelected() {
+       if(this.state.selected)
+        return [this];
         else
             return [];
     }
