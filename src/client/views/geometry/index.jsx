@@ -126,16 +126,16 @@ export default class GeometryView extends React.Component {
 
   componentWillUpdate(nextProps) {
     let highlightColors = {
-      'default': { r: 1.0, g: 0, b: 1.0, }, // pink
-      'A': { r: 1.0, g: 0.6, b: 0.0, }, // orange
-      'B': { r: 0.0, g: 1.0, b: 0.0, }, // green
-      'C': { r: 0.0, g: 0.0, b: 1.0, }, // blue
-      'D': { r: 0.0, g: 0.6, b: 0.1, }, // purple
-      'E': { r: 1.0, g: 1.0, b: 0.0, }, // yellow
-      'F': { r: 0.0, g: 1.0, b: 1.0, }, // cyan
-      'G': { r: 1.0, g: 0.0, b: 1.0, }, // also pink
+      'default': {r: 1.0, g: 0, b: 1.0}, // pink
+      'A': {r: 1.0, g: 0.6, b: 0.0}, // orange
+      'B': {r: 0.0, g: 1.0, b: 0.0}, // green
+      'C': {r: 0.0, g: 0.0, b: 1.0}, // blue
+      'D': {r: 0.0, g: 0.6, b: 0.1}, // purple
+      'E': {r: 1.0, g: 1.0, b: 0.0}, // yellow
+      'F': {r: 0.0, g: 1.0, b: 1.0}, // cyan
+      'G': {r: 1.0, g: 0.0, b: 1.0}, // also pink
     };
-    
+
     let rootModelName = 'state/key';
     if (this.props.viewType === 'preview') {
       rootModelName = this.props.previewEntity.id;
@@ -156,7 +156,8 @@ export default class GeometryView extends React.Component {
       let tolerance = this.props.toleranceCache[tol];
       faces = faces.concat(tolerance.faces);
     });
-    this.highlightFaces(faces, this.props.manager.getRootModel(rootModelName), true);
+    let rootModel = this.props.manager.getRootModel(rootModelName);
+    this.highlightFaces(faces, rootModel, true);
 
     if (this.props.viewType === 'preview') {
       rootModelName = nextProps.previewEntity.id;
