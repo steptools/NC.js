@@ -13,6 +13,7 @@ Bugfixes:
 - Previewing a tolerance opens that tolerance's properties pane
 - Optimized the backend of the user interface
 - Fixed a variety of bugs relating to controlling the mobile interface
+- Don't show duplicate tolerances in tolerance view on sidebar
 
 Version 1.7.1
 
