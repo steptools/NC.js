@@ -4,11 +4,8 @@
 // Necessary modules
 require('./stylesheets/base.scss');
 require('bootstrap-webpack');
-let io = require('socket.io-client');
 let actionManager = require('./actionmanager');
 import CADManager from './models/cad_manager';
-import React from 'react';
-import ReactDOM from 'react-dom';
 import ResponsiveView from './views/responsive';
 
 /*************************************************************************/
@@ -31,14 +28,24 @@ class CADApp extends THREE.EventDispatcher {
         console.log('Socket client connected');
       });
     }
+
     // Create data manager
     this.cadManager = new CADManager(this.config, this.socket,this);
 
     // Create application-level action manager
     this.actionManager = actionManager;
 
+    this.cadManager.dispatchEvent({
+      type: 'setModel',
+      viewType: 'cadjs',
+      path: 'state/key',
+      baseURL: this.services.apiEndpoint + this.services.version,
+      modelType: 'nc',
+    });
+
     // Initialize views
     $body.toggleClass('non-initialized');
+
     // Initialize the views and dispatch the event to set the model
     let view = (
       <div style={{height:'100%'}}>
@@ -54,13 +61,6 @@ class CADApp extends THREE.EventDispatcher {
         // Dispatch setModel to the CADManager
       }
     );
-    this.cadManager.dispatchEvent({
-      type: 'setModel',
-      viewType: 'cadjs',
-      path: 'state/key',
-      baseURL: this.services.apiEndpoint + this.services.version,
-      modelType: 'nc',
-    });
   }
 }
 

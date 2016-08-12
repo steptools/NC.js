@@ -1,6 +1,8 @@
-import React from 'react';
 import {Treebeard} from 'react-treebeard';
 import ts from '../tree_style.jsx';
+
+let wsList = [];
+var tolerancesByWS = [];
 
 export default class ToleranceList extends React.Component {
   constructor(props) {
@@ -8,15 +10,18 @@ export default class ToleranceList extends React.Component {
 
     this.state = {curr: false};
 
+    this.getTolerancesByWS = this.getTolerancesByWS.bind(this);
     this.onToggle = this.onToggle.bind(this);
     this.addCurrent = this.addCurrent.bind(this);
     this.addUpcoming = this.addUpcoming.bind(this);
-    this.nextNWorkingsteps = this.nextNWorkingsteps.bind(this);
-    this.upcomingTols = this.upcomingTols.bind(this);
+    this.addPrevious = this.addPrevious.bind(this);
     this.addWorkpieces = this.addWorkpieces.bind(this);
 
     this.decorators = ts.decorators;
     this.decorators.propertyCb = this.props.propertyCb;
+    this.decorators.toleranceCache = this.props.toleranceCache;
+    this.decorators.openPreview = this.props.openPreview;
+    this.decorators.selectEntity = this.props.selectEntity;
     this.decorators.toggleHighlight = this.props.toggleHighlight;
     this.decorators.highlightedTolerances = this.props.highlightedTolerances;
   }
@@ -38,6 +43,37 @@ export default class ToleranceList extends React.Component {
     }
   }
 
+  // use props to get just the tolerances (no workpieces)
+  getTolerancesByWS() {
+    if (tolerancesByWS.length > 0) {
+      return;
+    }
+
+    wsList = this.props.workingstepList.filter(function(x) {
+      return x > -1;
+    });
+
+    let tolerances = [];
+    for (let tol in this.props.toleranceCache) {
+      if (this.props.toleranceCache[tol].type === 'tolerance') {
+        tolerances.push(this.props.toleranceCache[tol]);
+      }
+    }
+
+    let tolsInWS;
+    for (let i in wsList) {
+      let ws = wsList[i];
+      tolsInWS = [];
+      for (let tol in tolerances) {
+        if (tolerances[tol].workingsteps.indexOf(ws) >= 0) {
+          let tolToAdd = tolerances[tol];
+          tolsInWS.push(tolToAdd);
+        }
+      }
+      tolerancesByWS.push(tolsInWS);
+    }
+  }
+
   onToggle(node, toggled) {
     if (this.state.cursor) {
       this.state.cursor.active = false;
@@ -50,111 +86,139 @@ export default class ToleranceList extends React.Component {
   }
 
   addCurrent(tolList) {
-    if (this.props.curWS.toBe && this.props.curWS.toBe.id > 0) {
-      let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
-      if (wp && wp.children && wp.children.length > 0) {
+    // Don't change this to use tolerancesByWS, it won't work
+    tolList.push({
+      name: 'Current Workingstep',
+      leaf: true,
+      type: 'divider',
+      id: -1,
+    });
+    let ws = this.props.ws;
+    let curWSIndex = wsList.indexOf(ws);
+    ws = this.props.workingstepCache[ws];
+    _.each(ws.children, (child) => {
+      child.openPreview = false;
+    });
+    ws.leaf = true;
+    ws.icon = <div className='icon custom letter'>{curWSIndex + 1}</div>;
+    tolList.push(ws);
+
+    if (!this.props.curWS.toBe || this.props.curWS.toBe <= 0) {
+      return;
+    }
+    let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
+    if (wp) {
+      if ((wp.children && wp.children.length > 0)
+      || (wp.datums && wp.datums.length > 0)) {
         tolList.push({
-          name: 'Active Tolerances',
+          name: 'Active Tolerances / Datums',
           leaf: true,
           type: 'divider',
-          id: -1,
-        });
-        Array.prototype.push.apply(tolList, wp.children);
-      } else {
-        tolList.push({
-          name: 'No Active Tolerances',
-          leaf: true,
-          type: 'divider',
-          id: -1,
+          id: -2,
         });
       }
+      if (wp.children) {
+        Array.prototype.push.apply(tolList, wp.children);
+      }
+      if (wp.datums) {
+        Array.prototype.push.apply(tolList, wp.datums);
+      }
+    } else {
+      tolList.push({
+        name: 'No Active Tolerances / Datums',
+        leaf: true,
+        type: 'divider',
+        id: -2,
+      });
     }
   }
 
-  addUpcoming(n, tolList) {
-    let upcomingWS = this.nextNWorkingsteps(n);
-    let upcomingTols = this.upcomingTols(upcomingWS);
+  addUpcoming(tolList) {
+    let wsCache = this.props.workingstepCache;
+    let curWSIndex = wsList.indexOf(this.props.ws);
     let upcoming = false;
 
-    for (let i = 0; i < upcomingTols.length; i++) {
-      if (upcomingTols[i].length !== 0) {
+    for (let i = curWSIndex + 1; i < tolerancesByWS.length; i++) {
+      if (tolerancesByWS[i] && tolerancesByWS[i].length > 0) {
         upcoming = true;
         break;
       }
     }
 
-    if (upcoming) {
-      tolList.push({
-        name: 'Upcoming Tolerances',
-        leaf: true,
-        type: 'divider',
-        id: -2,
-      });
-
-      for (let i = 0; i < n; i++) {
-        if (!upcomingTols[i] || upcomingTols[i].length === 0) {
-          continue;
-        }
-        let ws = this.props.workingstepCache[upcomingWS[i]];
-        ws.children = upcomingTols[i];
-        ws.leaf = false;
-        ws.icon = <div className='icon custom letter'>{i + 1}</div>;
-        tolList.push(ws);
-      }
-    } else {
+    if (!upcoming) {
       tolList.push({
         name: 'No Upcoming Tolerances',
         leaf: true,
         type: 'divider',
-        id: -2,
+        id: -3,
       });
+      return;
+    }
+
+    tolList.push({
+      name: 'Upcoming Tolerances',
+      leaf: true,
+      type: 'divider',
+      id: -3,
+    });
+
+    for (let i = curWSIndex + 1; i < tolerancesByWS.length; i++) {
+      if (tolerancesByWS[i] && tolerancesByWS[i].length === 0) {
+        continue;
+      }
+      let ws = wsCache[wsList[i]];
+      ws.children = tolerancesByWS[i];
+      _.each(ws.children, (child) => {
+        child.openPreview = true;
+      });
+      ws.leaf = false;
+      ws.icon = <div className='icon custom letter'>{i + 1}</div>;
+      tolList.push(ws);
     }
   }
 
-  nextNWorkingsteps(n) {
-    let wsList = this.props.workingstepList;
-    let upcomingWS = [];
-    let upcoming = false;
-    for (let i = 0; i < wsList.length; i++) {
-      if (wsList[i] === this.props.ws) {
-        upcoming = true;
-      } else if (upcoming === true && n > 0) {
-        if (wsList[i] < 0 || !this.props.workingstepCache[wsList[i]].enabled) {
-          continue;
-        }
-        upcomingWS.push(wsList[i]);
-        n--;
-      } else if (n <= 0) {
+  addPrevious(tolList) {
+    let wsCache = this.props.workingstepCache;
+    let curWSIndex = wsList.indexOf(this.props.ws);
+    let previous = false;
+
+    for (let i = 0; i < curWSIndex; i++) {
+      if (tolerancesByWS[i] && tolerancesByWS[i].length > 0) {
+        previous = true;
         break;
       }
     }
 
-    return upcomingWS;
-  }
-
-  upcomingTols(upcomingWS) {
-    let tolerances = [];
-    for (let tol in this.props.toleranceCache) {
-      if (this.props.toleranceCache[tol].type === 'tolerance') {
-        tolerances.push(this.props.toleranceCache[tol]);
-      }
+    if (!previous) {
+      tolList.push({
+        name: 'No Previous Tolerances',
+        leaf: true,
+        type: 'divider',
+        id: -4,
+      });
+      return;
     }
 
-    let upcoming = [];
-    for (let i in upcomingWS) {
-      let ws = upcomingWS[i];
-      let tolsInWS = [];
-      for (let tol in tolerances) {
-        if (tolerances[tol].workingsteps.indexOf(ws) >= 0) {
-          let tolToAdd = tolerances[tol];
-          tolToAdd.upcoming = true;
-          tolsInWS.push(tolToAdd);
-        }
-      }
-      upcoming.push(tolsInWS);
-    }
+    tolList.push({
+      name: 'Previous Tolerances',
+      leaf: true,
+      type: 'divider',
+      id: -4,
+    });
 
-    return upcoming;
+    for (let i = 0; i < curWSIndex; i++) {
+      if (tolerancesByWS[i] && tolerancesByWS[i].length === 0) {
+        continue;
+      }
+      let ws = wsCache[wsList[i]];
+      ws.children = tolerancesByWS[i];
+      _.each(ws.children, (child) => {
+        child.openPreview = true;
+      });
+      ws.leaf = false;
+      ws.icon = <div className='icon custom letter'>{i + 1}</div>;
+      tolList.push(ws);
+    }
   }
 
   addWorkpieces(tolList, dividerId) {
@@ -171,10 +235,12 @@ export default class ToleranceList extends React.Component {
   }
 
   render() {
+    // TODO: pass tolerances by WS (in order) through props for optimization
+    this.getTolerancesByWS();
     let tolList = [];
     this.addCurrent(tolList);
-    let n = 5; // number of upcoming workingsteps to check for tolerances
-    this.addUpcoming(n, tolList);
+    this.addUpcoming(tolList);
+    this.addPrevious(tolList);
     //this.addWorkpieces(tolList, -(n + 1));
 
     if (tolList.length <= 0) {

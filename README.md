@@ -60,9 +60,7 @@
   > npm run make-release
   ```
   ------------------------------------------------------------------------------
- 
-
- 7. Start a server
+  7. Start a server
 
   If a server doesn't need to be rebuilt, this will be faster than making everytime. 
 

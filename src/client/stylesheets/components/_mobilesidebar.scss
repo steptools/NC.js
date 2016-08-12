@@ -3,4 +3,8 @@
     width: 100%;
     z-index: 98;
     position: absolute;
+    
+    .m-tree {
+        max-height: calc(100% - #{$sidebarTabBarHeight});
+    }
 }

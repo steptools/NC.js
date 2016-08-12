@@ -296,7 +296,7 @@ export default class NC extends THREE.EventDispatcher {
 
             this._loader.runLoadQueue();
             alter = true;
-            this.app.actionManager.emit('change-workingstep',delta.workingstep);
+            this.app.actionManager.emit('change-workingstep', delta.workingstep);
             //  let lineGeometries = event.annotation.getGeometry();
         }
         else {

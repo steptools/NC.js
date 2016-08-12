@@ -1,6 +1,3 @@
-import React from 'react';
-import request from 'superagent';
-
 export default class WorkingstepList extends React.Component {
   constructor(props) {
     super(props);
@@ -65,7 +62,7 @@ export default class WorkingstepList extends React.Component {
   render() {
     let treeHeight;
     if (this.props.isMobile) {
-      treeHeight={'height': '100%'};
+      treeHeight = {'height': '100%'};
     }
 
     return (
