@@ -1,4 +1,3 @@
-import React from 'react';
 import SidebarView from '../sidebar';
 
 export default class MobileSidebar extends React.Component {

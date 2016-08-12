@@ -1,4 +1,3 @@
-import React from 'react';
 import MobileSidebar from '../mobilesidebar';
 
 let actionOffset = 0;
