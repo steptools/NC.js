@@ -14,6 +14,7 @@ Bugfixes:
 - Optimized the backend of the user interface
 - Fixed a variety of bugs relating to controlling the mobile interface
 - Don't show duplicate tolerances in tolerance view on sidebar
+- Tools are no longer shown as enabled if they are not used in any active steps
 
 Version 1.7.1
 

@@ -48,15 +48,18 @@ export default class ResponsiveView extends React.Component {
 
     // get the workplan
     this.getWorkPlan = this.getWorkPlan.bind(this);
-    request.get('/v3/nc/workplan/').end(this.getWorkPlan);
+    this.getToolCache = this.getToolCache.bind(this);
+
+    request.get('/v3/nc/workplan/').end((req, res) => {
+      this.getWorkPlan(req, res);
+
+      // get the cache of tools, need workplan first
+      request.get('/v3/nc/tools/').end(this.getToolCache);
+    });
 
     // get the project loopstate
     this.getLoopState = this.getLoopState.bind(this);
     request.get('/v3/nc/state/loop/').end(this.getLoopState);
-
-    // get the cache of tools
-    this.getToolCache = this.getToolCache.bind(this);
-    request.get('/v3/nc/tools/').end(this.getToolCache);
 
     // get the current tool
     request.get('/v3/nc/tools/' + this.state.ws).end((err, res) => {
@@ -141,6 +144,13 @@ export default class ResponsiveView extends React.Component {
 
       _.each(json, (tool) => {
         tool.icon = <span className='icon custom tool' />;
+        tool.enabled = false;
+        _.each(tool.workingsteps, (step) => {
+          if (this.state.workingstepCache[step].enabled) {
+            tool.enabled = true;
+          }
+        });
+
         tools[tool.id] = tool;
       });
 
