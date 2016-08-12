@@ -109,10 +109,20 @@ export default class NC extends THREE.EventDispatcher {
                 obj.annotation3D.add(line);
               });
             });
+
+            let removeAnno = () => {
+                model.removeEventListener('annotationEndLoad', removeAnno);
+                _.each(model._addedGeometry, (line)=>{
+                    obj.annotation3D.remove(line);
+                });
+            };
+
             model.addEventListener("annotationMakeNonVisible", (event)=>{
-              _.each(model._addedGeometry, (line)=>{
-                obj.annotation3D.remove(line);
-              });
+              if (!model._addedGeometry || model._addedGeometry.length === 0) {
+                  model.addEventListener('annotationEndLoad', removeAnno);
+              } else {
+                  removeAnno();
+              }
             });
         }
     }
