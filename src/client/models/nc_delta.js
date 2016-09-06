@@ -9,7 +9,9 @@ function unindexValues(data, values, buffers) {
     let numValues = data.pointsIndex.length;
     for (let i = 0; i < numValues; i++) {
         buffers.position[i] = values[data.pointsIndex[i]];
+        if (buffers.position[i]===undefined|| isNaN(buffers.position[i])) buffers.position[i]=0;
         buffers.normal[i] = values[data.normalsIndex[i]];
+        if (buffers.normal[i]===undefined ||isNaN(buffers.normal[i])) buffers.normal[i]=0;
     }
 }
 
