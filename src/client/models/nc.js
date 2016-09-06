@@ -220,64 +220,70 @@ export default class NC extends THREE.EventDispatcher {
         return object;
     }
     handleInprocessGeom(geom){
-        // Two types of changes: Keyframe and delta.
-        // Keyframe has version property and doesn't have prev_version
-        if (geom.hasOwnProperty('version') && !geom.hasOwnProperty('prev_version')) {
-            //console.log(geom.version + ' - Keyframe');
-            let obj = this._objects[geom.id];
-            if (obj !== undefined) {
-                // Process new geometry
-                let geometry = makeGeometry(processKeyframe(geom));
-                // Remove all old geometry -- mesh's only
-                obj.object3D.traverse(function(child) {
-                    if (child.type === "Mesh") {
-                        obj.object3D.remove(child);
-                    }
-                });
-                // Add in new geometry
-                let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
-                let mesh = new THREE.Mesh(geometry, material);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                mesh.userData = obj;
-                obj.object3D.add(mesh);
-                // Make sure to update the model geometry
-                obj.model.setGeometry(geometry);
-                obj.version = geom.version;
-                obj.precision = geom.precision;
-            }
-            return true;
-            // Delta changes have prev_version and not version fields
-        } else if (geom.hasOwnProperty('prev_version') && geom.hasOwnProperty('base_version')) {
-            //console.log(geom.version + ' - Delta');
-            // Are we moving the geometry or modifying it
-            if (!geom.hasOwnProperty('remove')) {
-                console.log('Delta: just moving things');
-            } else {
-                let obj = this._objects[geom.id];
-                if (obj !== undefined) {
-                    // Process new data
-                    let geometry = makeGeometry(processDelta(geom, obj));
-                    // Remove all old geometry -- mesh's only
-                    obj.object3D.traverse(function (child) {
-                        if (child.type === "Mesh") {
-                            obj.object3D.remove(child);
-                        }
-                    });
-                    // Create new modified geometry and add to obj
-                    let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
-                    let mesh = new THREE.Mesh(geometry, material);
-                    mesh.castShadow = true;
-                    mesh.receiveShadow = true;
-                    mesh.userData = obj;
-                    obj.object3D.add(mesh);
-                    // Make sure to update the model geometry
-                    obj.model.setGeometry(geometry);
+        let parseDynamicUpdate = (geom,obj)=> {
+            let geometry = makeGeometry(processDelta(geom, obj));
+            // Remove all old geometry -- mesh's only
+            obj.object3D.traverse(function (child) {
+                if (child.type === "Mesh") {
+                    obj.object3D.remove(child);
                 }
-            }
+            });
+            // Create new modified geometry and add to obj
+            let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
+            let mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            mesh.userData = obj;
+            obj.object3D.add(mesh);
+            // Make sure to update the model geometry
+            obj.model.setGeometry(geometry);
+        };
+        let parseDynamicFull = (geom,obj)=>{
+            let geometry = makeGeometry(processKeyframe(geom));
+            // Remove all old geometry -- mesh's only
+            obj.object3D.traverse(function(child) {
+                if (child.type === "Mesh") {
+                    obj.object3D.remove(child);
+                }
+            });
+            // Add in new geometry
+            let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
+            let mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            mesh.userData = obj;
+            obj.object3D.add(mesh);
+            // Make sure to update the model geometry
+            obj.model.setGeometry(geometry);
+            obj.version = geom.version;
+            obj.precision = geom.precision;
             return true;
-            // Don't know what kind of update this is
+        };
+        let existingobj = this._objects[geom.id];
+        if(existingobj === undefined) { //Need a full dynamic shell.
+            //Setup the memory
+            let color = DataLoader.parseColor("BE17FF");
+            let boundingBox = DataLoader.parseBoundingBox(geom.bbox);
+            let transform =DataLoader.parseXform(geom.xform,true);
+            let shell = new Shell(geom.id,this,this,geom.size,color,boundingBox);
+            this.addModel(shell,geom.usage,'shell',geom.id,transform,boundingBox);
+            existingobj = this._objects[geom.id];
+
+            request.get('/v3/nc/geometry/delta/-1')
+                .end((err,res)=>{
+                    let fulldynamic = JSON.parse(res.text);
+                    parseDynamicFull(fulldynamic,existingobj);
+                });
         }
+        else{ //Need an updated dynamic shell.
+            request.get('/v3/nc/geometry/delta/'+existingobj.version)
+                .end((err,res)=> {
+                    let updateddynamic = JSON.parse(res.text);
+                    parseDynamicUpdate(updateddynamic,existingobj);
+                });
+        }
+        return true;
+        // Don't know what kind of update this is
     }
 
     applyDelta(delta) {
