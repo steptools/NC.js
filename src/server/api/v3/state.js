@@ -2,7 +2,6 @@
 var file = require('./file');
 var step = require('./step');
 var find = file.find;
-
 var app;
 var loopTimer;
 var loopStates = {};
@@ -25,11 +24,21 @@ function updateSpeed(speed) {
 function getDelta(ms, key, cb) {
   var response = '';
   if (key) {
-    response = ms.GetKeystateJSON();
+    response = ms.GetKeyStateJSON();
   } else {
-    response = ms.GetDeltaJSON();
+    response = ms.GetDeltaStateJSON();
   }
-  cb(response);
+  //HACK: Fix this when the delta parser is done
+  let resp = JSON.parse(response);
+  let i = 0;
+  for(i=0;i<resp.geom.length;i++) {
+	  if(resp.geom[i].usage ==='inprocess') {
+		  let ds = ms.GetDeltaGeometryJSON(Number(-1));
+		  resp.geom[i] = JSON.parse(ds).geom[0];
+		  resp.geom[i].usage = 'inprocess';
+	  }
+  }
+  cb(JSON.stringify(resp));
 }
 
 function getNext(ms, cb) {
@@ -294,7 +303,7 @@ function _getKeyState(req, res) {
     res.status(404).send('Machine state could not be found');
     return;
   }
-  res.status(200).send(ms.GetKeystateJSON());
+  getDelta(ms,true,(r)=>{res.status(200).send(r)});
 }
 
 function _getDeltaState(req, res) {
@@ -303,7 +312,7 @@ function _getDeltaState(req, res) {
     res.status(404).send('Machine state could not be found');
     return;
   }
-  res.status(200).send(ms.GetDeltaJSON());
+  getDelta(ms,false,(r)=>{res.status(200).send(r)});
 }
 
 module.exports = function(globalApp, cb) {

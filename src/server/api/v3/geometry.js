@@ -3,10 +3,22 @@ var file = require('./file');
 
 /***************************** Endpoint Functions *****************************/
 
+function _getDelta(req,res){
+    //TODO: Fix lower-level code and remove this garbage HACK!!!!!!!!!!!!
+  let rtn = file.ms.GetDeltaGeometryJSON(Number(req.params.current));
+  let rrtn = JSON.parse(rtn).geom[0];
+  res.status(200).send(rrtn)
+}
+
 function _getGeometry(req, res) {
   let ms = file.ms;
   let find = file.find;
-
+  //Route the /geometry/delta/:current endpoint first.
+  if(req.params.id === 'delta') {
+    req.params.current = req.params.type;
+    _getDelta(req, res);
+    return;
+  }
   if (req.params.type === 'shell') {
     res.status(200).send(ms.GetGeometryJSON(req.params.id , 'MESH'));
     return;

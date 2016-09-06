@@ -8,6 +8,7 @@ import Assembly from './assembly';
 import Annotation          from './annotation';
 import DataLoader from './data_loader';
 import Shell from './shell';
+import {makeGeometry, processKeyframe, processDelta} from './nc_delta';
 
 /*************************************************************************/
 
@@ -82,6 +83,7 @@ export default class NC extends THREE.EventDispatcher {
                 mesh.receiveShadow = true;
                 mesh.userData = obj;
                 obj.object3D.add(mesh);
+                obj.version = 0;
                 if (usage === 'asis') {
                     // TODO: add selector for displaying asis geometry or not
                     obj.rendered = false;
@@ -217,22 +219,85 @@ export default class NC extends THREE.EventDispatcher {
         }
         return object;
     }
+    handleInprocessGeom(geom){
+        // Two types of changes: Keyframe and delta.
+        // Keyframe has version property and doesn't have prev_version
+        if (geom.hasOwnProperty('version') && !geom.hasOwnProperty('prev_version')) {
+            //console.log(geom.version + ' - Keyframe');
+            let obj = this._objects[geom.id];
+            if (obj !== undefined) {
+                // Process new geometry
+                let geometry = makeGeometry(processKeyframe(geom));
+                // Remove all old geometry -- mesh's only
+                obj.object3D.traverse(function(child) {
+                    if (child.type === "Mesh") {
+                        obj.object3D.remove(child);
+                    }
+                });
+                // Add in new geometry
+                let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
+                let mesh = new THREE.Mesh(geometry, material);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                mesh.userData = obj;
+                obj.object3D.add(mesh);
+                // Make sure to update the model geometry
+                obj.model.setGeometry(geometry);
+                obj.version = geom.version;
+                obj.precision = geom.precision;
+            }
+            return true;
+            // Delta changes have prev_version and not version fields
+        } else if (geom.hasOwnProperty('prev_version') && geom.hasOwnProperty('base_version')) {
+            //console.log(geom.version + ' - Delta');
+            // Are we moving the geometry or modifying it
+            if (!geom.hasOwnProperty('remove')) {
+                console.log('Delta: just moving things');
+            } else {
+                let obj = this._objects[geom.id];
+                if (obj !== undefined) {
+                    // Process new data
+                    let geometry = makeGeometry(processDelta(geom, obj));
+                    // Remove all old geometry -- mesh's only
+                    obj.object3D.traverse(function (child) {
+                        if (child.type === "Mesh") {
+                            obj.object3D.remove(child);
+                        }
+                    });
+                    // Create new modified geometry and add to obj
+                    let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
+                    let mesh = new THREE.Mesh(geometry, material);
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
+                    mesh.userData = obj;
+                    obj.object3D.add(mesh);
+                    // Make sure to update the model geometry
+                    obj.model.setGeometry(geometry);
+                }
+            }
+            return true;
+            // Don't know what kind of update this is
+        }
+    }
 
     applyDelta(delta) {
         let alter = false;
-        //Two types of changes- Keyframe and delta.
-        //Keyframe doesn't have a 'prev' property.
-        if (!delta.hasOwnProperty('prev')){
-            //For keyframes, we need to remove current toolpaths, cutters,
-            // As-Is, and To-Be geometry (Collectively, "Stuff") and load new ones.
-            // console.log("Keyframe recieved");
-            // this._loader.annotations = {};
+        //There are two types of 'State' that we get- KeyState or DeltaState.
+        //KeyState - {'project':string,'workingstep':uint,'time_in_workingstep':0,'geom':geom[{shell,polyline,deltaShell}]}
+        //DeltaState - {'project':string,'workingstep':uint,'time_in_workingstep':0,'prev','geom':[{shell,polyline,deltaShell}]}
+        //shell- {'id':uuid,'shell':uuid+'.json','xform':int[16],'bbox',double[6],'usage':{'cutter','asis','tobe','removal','fixture','machine'}}
+        //polyline- {'id':uuid,'polyline':uuid+'.json','xform':int[16],'bbox',double[6],'usage':'toolpath'}
+        //deltaShell- {'id':uuid,'shell':uuid+'.json','xform':int[16],'bbox',double[6],'usage':'inprocess'}
 
-            // Delete existing Stuff.
-            var oldgeom = _.filter(_.values(this._objects), (geom) => (
-                geom.usage =="cutter" || geom.usage =="tobe" ||
-                geom.usage =="asis"|| geom.usage=="machine" || geom.usage=="fixture")
-            );
+        //If we get a KeyState, we need to re-render the scene.
+        //If we get a DeltaState, we need to update the scene.
+        //First we handle KeyState.
+        if (!delta.hasOwnProperty('prev')){
+            //For keyframes, we need to hide the currently drawn but unused geometry,
+            //Unhide anything we have that is needed but hidden,
+            //And load and display any new things we don't have.
+            // Hide existing Stuff. Keep it around in case we need to use it later.
+            var oldgeom = _.filter(_.values(this._objects), ['type','shell']);
             _.each(oldgeom,(geom)=> {
                 //this._object3D.remove(geom.object3D);
                 //this._overlay3D.remove(geom.object3D);
@@ -246,11 +311,13 @@ export default class NC extends THREE.EventDispatcher {
             });
 
             //Load new Stuff.
-            var toolpaths = _.filter(delta.geom, (geom) => geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe"));
+            var toolpaths = _.filter(delta.geom, (geom) => (geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe")));
             var geoms = _.filter(delta.geom, (geom) => (
                 geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) ||
                 geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
             );
+            var delta = _.filter(delta.geom, ['usage','inprocess']);
+            _.each(delta, this.handleInprocessGeom(delta));
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
@@ -273,6 +340,7 @@ export default class NC extends THREE.EventDispatcher {
 
             _.each(geoms, (geomData)=>{
                 let name = geomData.id;
+                //Don't show as-is geom of fixture
                 if(geomData.usage =='asis' || (this.app.services.machine === null && geomData.usage == 'fixture')) return;
 
                 if(this._objects[name]) {
@@ -311,8 +379,9 @@ export default class NC extends THREE.EventDispatcher {
         }
         else {
             // Handle each geom update in the delta
-            // This is usually just a tool movement.
+            // This is usually just a tool movement (and volume removal update).
             _.each(delta.geom, (geom) => {
+		    if(geom.usage ==='inprocess') return this.handleInprocessGeom(geom);
                 if (!window.geom || window.geom.length < 100){
                     window.geom = window.geom || [];
                     window.geom.push(geom);
