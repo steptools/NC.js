@@ -323,7 +323,7 @@ export default class NC extends THREE.EventDispatcher {
                 geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
             );
             let inproc = _.filter(delta.geom, ['usage','inprocess']);
-            _.each(inproc, this.handleInprocessGeom(inproc));
+            _.each(inproc, (ip)=>{this.handleInprocessGeom(ip);});
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
