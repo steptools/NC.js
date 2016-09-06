@@ -6,8 +6,8 @@
 
 import Assembly from './assembly';
 import Annotation          from './annotation';
-import DataLoader from './data_loader'
-import Shell from './shell'
+import DataLoader from './data_loader';
+import Shell from './shell';
 
 /*************************************************************************/
 
