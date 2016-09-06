@@ -298,7 +298,9 @@ export default class NC extends THREE.EventDispatcher {
             //Unhide anything we have that is needed but hidden,
             //And load and display any new things we don't have.
             // Hide existing Stuff. Keep it around in case we need to use it later.
-            var oldgeom = _.filter(_.values(this._objects), ['type','shell']);
+            var oldgeom = _.filter(_.values(this._objects), (p)=>{
+                return(p.type ==='shell'&& p.usage!=='inprocess');
+            });
             _.each(oldgeom,(geom)=> {
                 //this._object3D.remove(geom.object3D);
                 //this._overlay3D.remove(geom.object3D);
