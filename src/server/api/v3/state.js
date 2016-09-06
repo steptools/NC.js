@@ -28,17 +28,7 @@ function getDelta(ms, key, cb) {
   } else {
     response = ms.GetDeltaStateJSON();
   }
-  //HACK: Fix this when the delta parser is done
-  let resp = JSON.parse(response);
-  let i = 0;
-  for(i=0;i<resp.geom.length;i++) {
-	  if(resp.geom[i].usage ==='inprocess') {
-		  let ds = ms.GetDeltaGeometryJSON(Number(-1));
-		  resp.geom[i] = JSON.parse(ds).geom[0];
-		  resp.geom[i].usage = 'inprocess';
-	  }
-  }
-  cb(JSON.stringify(resp));
+  cb(response);
 }
 
 function getNext(ms, cb) {
