@@ -289,11 +289,6 @@ export default class NC extends THREE.EventDispatcher {
     applyDelta(delta) {
         let alter = false;
         //There are two types of 'State' that we get- KeyState or DeltaState.
-        //KeyState - {'project':string,'workingstep':uint,'time_in_workingstep':0,'geom':geom[{shell,polyline,deltaShell}]}
-        //DeltaState - {'project':string,'workingstep':uint,'time_in_workingstep':0,'prev','geom':[{shell,polyline,deltaShell}]}
-        //shell- {'id':uuid,'shell':uuid+'.json','xform':int[16],'bbox',double[6],'usage':{'cutter','asis','tobe','removal','fixture','machine'}}
-        //polyline- {'id':uuid,'polyline':uuid+'.json','xform':int[16],'bbox',double[6],'usage':'toolpath'}
-        //deltaShell- {'id':uuid,'shell':uuid+'.json','xform':int[16],'bbox',double[6],'usage':'inprocess'}
 
         //If we get a KeyState, we need to re-render the scene.
         //If we get a DeltaState, we need to update the scene.
