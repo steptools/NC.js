@@ -316,8 +316,8 @@ export default class NC extends THREE.EventDispatcher {
                 geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) ||
                 geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
             );
-            var delta = _.filter(delta.geom, ['usage','inprocess']);
-            _.each(delta, this.handleInprocessGeom(delta));
+            let inproc = _.filter(delta.geom, ['usage','inprocess']);
+            _.each(inproc, this.handleInprocessGeom(inproc));
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
