@@ -220,24 +220,6 @@ export default class NC extends THREE.EventDispatcher {
         return object;
     }
     handleInprocessGeom(geom){
-        let parseDynamicUpdate = (geom,obj)=> {
-            let geometry = makeGeometry(processDelta(geom, obj));
-            // Remove all old geometry -- mesh's only
-            obj.object3D.traverse(function (child) {
-                if (child.type === "Mesh") {
-                    obj.object3D.remove(child);
-                }
-            });
-            // Create new modified geometry and add to obj
-            let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
-            let mesh = new THREE.Mesh(geometry, material);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            mesh.userData = obj;
-            obj.object3D.add(mesh);
-            // Make sure to update the model geometry
-            obj.model.setGeometry(geometry);
-        };
         let parseDynamicFull = (geom,obj)=>{
             let geometry = makeGeometry(processKeyframe(geom));
             // Remove all old geometry -- mesh's only
@@ -258,6 +240,27 @@ export default class NC extends THREE.EventDispatcher {
             obj.version = geom.version;
             obj.precision = geom.precision;
             return true;
+        };
+        let parseDynamicUpdate = (geom,obj)=> {
+            if(!geom.hasOwnProperty('prev_version')){
+                return parseDynamicFull(geom,obj);
+            }
+            let geometry = makeGeometry(processDelta(geom, obj));
+            // Remove all old geometry -- mesh's only
+            obj.object3D.traverse(function (child) {
+                if (child.type === "Mesh") {
+                    obj.object3D.remove(child);
+                }
+            });
+            // Create new modified geometry and add to obj
+            let material = new THREE.ShaderMaterial(new THREE.VelvetyShader());
+            let mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            mesh.userData = obj;
+            obj.object3D.add(mesh);
+            // Make sure to update the model geometry
+            obj.model.setGeometry(geometry);
         };
         let existingobj = this._objects[geom.id];
         if(existingobj === undefined) { //Need a full dynamic shell.
