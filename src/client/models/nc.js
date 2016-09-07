@@ -224,7 +224,6 @@ export default class NC extends THREE.EventDispatcher {
         }
         return object;
     }
-    handleInprocessGeom(geom){
     dynqueue(cb) {
         if (dynqueuegetting){ //getting something already
             dynqueuenext = true;
@@ -243,6 +242,7 @@ export default class NC extends THREE.EventDispatcher {
                     return;
             });
     };
+    handleDynamicGeom(geom){
         let parseDynamicFull = (geom,obj)=>{
             let geometry = makeGeometry(processKeyframe(geom));
             // Remove all old geometry -- mesh's only
@@ -343,7 +343,7 @@ export default class NC extends THREE.EventDispatcher {
                 geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
             );
             let inproc = _.filter(delta.geom, ['usage','inprocess']);
-            _.each(inproc, (ip)=>{this.handleInprocessGeom(ip);});
+            _.each(inproc, (ip)=>{this.handleDynamicGeom(ip);});
             _.each(toolpaths, (geomData) => {
                 let name = geomData.polyline.split('.')[0];
                 if (!this._loader._annotations[name]){
@@ -408,7 +408,7 @@ export default class NC extends THREE.EventDispatcher {
             // Handle each geom update in the delta
             // This is usually just a tool movement (and volume removal update).
             _.each(delta.geom, (geom) => {
-		    if(geom.usage ==='inprocess') return this.handleInprocessGeom(geom);
+		    if(geom.usage ==='inprocess') return this.handleDynamicGeom(geom);
                 if (!window.geom || window.geom.length < 100){
                     window.geom = window.geom || [];
                     window.geom.push(geom);
