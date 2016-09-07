@@ -4,10 +4,7 @@ var file = require('./file');
 /***************************** Endpoint Functions *****************************/
 
 function _getDelta(req,res){
-    //TODO: Fix lower-level code and remove this garbage HACK!!!!!!!!!!!!
-  let rtn = file.ms.GetDeltaGeometryJSON(Number(req.params.current));
-  let rrtn = JSON.parse(rtn).geom[0];
-  res.status(200).send(rrtn)
+  res.status(200).send(file.ms.GetDeltaGeometryJSON(Number(req.params.current)));
 }
 
 function _getGeometry(req, res) {
