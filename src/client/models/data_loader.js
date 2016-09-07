@@ -358,6 +358,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         req.callback(undefined, assembly);
     }
     //This is the initial load that then loads all shells below it
+    //TODO: FFS consolidate this shit with the NC.js ApplyDelta function.
     buildNCStateJSON(jsonText, req) {
         let doc = JSON.parse(jsonText);
         //console.log('Process NC: ' + doc.project);

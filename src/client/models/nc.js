@@ -11,6 +11,11 @@ import Shell from './shell';
 import {makeGeometry, processKeyframe, processDelta} from './nc_delta';
 
 /*************************************************************************/
+//HACK: FIXME.
+let dynqueuegetting = false;
+let dynqueuenext = false;
+let dynqueuecur = -1;
+let dynqueuecb = ()=>{};
 
 export default class NC extends THREE.EventDispatcher {
     constructor(project, workingstep, timeIn, loader) {
@@ -220,6 +225,24 @@ export default class NC extends THREE.EventDispatcher {
         return object;
     }
     handleInprocessGeom(geom){
+    dynqueue(cb) {
+        if (dynqueuegetting){ //getting something already
+            dynqueuenext = true;
+            dynqueuecb = cb;
+            return;
+        }
+        request.get('/v3/nc/geometry/delta/'+dynqueuecur)
+            .end((err,res)=>{
+                let dyn = JSON.parse(res.text)
+                cb(dyn);
+                dynqueuegetting = false;
+                dynqueuecur = dyn.version;
+                if(dynqueuenext === true)
+                    this.dynqueue(dynqueuecb);
+                else
+                    return;
+            });
+    };
         let parseDynamicFull = (geom,obj)=>{
             let geometry = makeGeometry(processKeyframe(geom));
             // Remove all old geometry -- mesh's only
@@ -272,16 +295,13 @@ export default class NC extends THREE.EventDispatcher {
             this.addModel(shell,geom.usage,'shell',geom.id,transform,boundingBox);
             existingobj = this._objects[geom.id];
 
-            request.get('/v3/nc/geometry/delta/-1')
-                .end((err,res)=>{
-                    let fulldynamic = JSON.parse(res.text);
+            this.dynqueue((fulldynamic)=>{
                     parseDynamicFull(fulldynamic,existingobj);
                 });
         }
-        else{ //Need an updated dynamic shell. HACK: Always get fullDynamic since updateDynamics are borked
-            request.get('/v3/nc/geometry/delta/-1')//+existingobj.version)
-                .end((err,res)=> {
-                    let updateddynamic = JSON.parse(res.text);
+        else{ //Need an updated dynamic shell.
+            if(existingobj.version !== geom.version)
+                this.dynqueue((updateddynamic)=>{
                     parseDynamicUpdate(updateddynamic,existingobj);
                 });
         }
