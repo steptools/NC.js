@@ -1,10 +1,12 @@
 'use strict';
 var file = require('./file');
-
+var fs = require('fs');
 /***************************** Endpoint Functions *****************************/
 
 function _getDelta(req,res){
-  res.status(200).send(file.ms.GetDeltaGeometryJSON(Number(req.params.current)));
+    var rtn = file.ms.GetDeltaGeometryJSON(Number(req.params.current));
+  fs.writeFile("./deltas/Delta"+req.params.current+".json",rtn,(err)=>{});
+  res.status(200).send(rtn);
 }
 
 function _getGeometry(req, res) {
