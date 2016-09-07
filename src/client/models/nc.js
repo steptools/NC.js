@@ -343,6 +343,7 @@ export default class NC extends THREE.EventDispatcher {
 
             _.each(geoms, (geomData)=>{
                 let name = geomData.id;
+                if(geomData.usage !=='cutter') return;
                 //Don't show as-is geom of fixture
                 if(geomData.usage =='asis' || (this.app.services.machine === null && geomData.usage == 'fixture')) return;
 
