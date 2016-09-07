@@ -278,8 +278,8 @@ export default class NC extends THREE.EventDispatcher {
                     parseDynamicFull(fulldynamic,existingobj);
                 });
         }
-        else{ //Need an updated dynamic shell.
-            request.get('/v3/nc/geometry/delta/'+existingobj.version)
+        else{ //Need an updated dynamic shell. HACK: Always get fullDynamic since updateDynamics are borked
+            request.get('/v3/nc/geometry/delta/-1')//+existingobj.version)
                 .end((err,res)=> {
                     let updateddynamic = JSON.parse(res.text);
                     parseDynamicUpdate(updateddynamic,existingobj);
