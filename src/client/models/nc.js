@@ -230,6 +230,7 @@ export default class NC extends THREE.EventDispatcher {
             dynqueuecb = cb;
             return;
         }
+        dynqueuegetting = true;
         request.get('/v3/nc/geometry/delta/'+dynqueuecur)
             .end((err,res)=>{
                 let dyn = JSON.parse(res.text)
