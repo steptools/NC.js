@@ -284,6 +284,7 @@ export default class NC extends THREE.EventDispatcher {
             obj.object3D.add(mesh);
             // Make sure to update the model geometry
             obj.model.setGeometry(geometry);
+            obj.version = geom.version;
         };
         let existingobj = this._objects[geom.id];
         if(existingobj === undefined) { //Need a full dynamic shell.
