@@ -157,16 +157,6 @@ export function processDelta(dataJSON, obj) {
         // Different approach here
         uncompressColorsB(dataJSON, deltaBuffers.color);
     }
-
-    let nullNonet = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    // Trim out the remove values
-    for (let i = 0; i < dataJSON.remove.length; ++i) {
-        let pos = dataJSON.remove[i] * 9;
-        oldPositions.set(nullNonet, pos);
-        oldNormals.set(nullNonet, pos);
-        oldColors.set(nullNonet, pos);
-    }
-
     // Concatenate together the new position, normal and color values
     buffers.position.set(oldPositions);
     buffers.position.set(deltaBuffers.position, offset);
@@ -174,6 +164,16 @@ export function processDelta(dataJSON, obj) {
     buffers.normal.set(deltaBuffers.normal, offset);
     buffers.color.set(oldColors);
     buffers.color.set(deltaBuffers.color, offset);
-    // And, we are done
+
+    let nullNonet = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    // Trim out the remove values
+    for (let i = 0; i < dataJSON.remove.length; ++i) {
+        let pos = dataJSON.remove[i] * 9;
+        buffers.position.set(nullNonet, pos);
+        buffers.normal.set(nullNonet, pos);
+        buffers.color.set(nullNonet, pos);
+    }
+
+   // And, we are done
     return buffers;
 }
