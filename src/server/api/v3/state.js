@@ -71,13 +71,6 @@ function loop(ms, key) {
     //get the delta
     getDelta(ms, key, function(b) {
       app.ioServer.emit('nc:delta', JSON.parse(b));
-      if (playbackSpeed > 0) {
-        if (loopTimer !== undefined) {
-          clearTimeout(loopTimer);
-        }
-        loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
-      }
-    });
     //change the working step
     let rc = ms.AdvanceState();
     if (rc === 1) {
@@ -94,6 +87,13 @@ function loop(ms, key) {
         });
       }
     }
+      if (playbackSpeed > 0) {
+        if (loopTimer !== undefined) {
+          clearTimeout(loopTimer);
+        }
+        loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
+      }
+    });
   }
 }
 
