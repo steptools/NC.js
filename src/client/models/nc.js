@@ -243,7 +243,9 @@ export default class NC extends THREE.EventDispatcher {
                     return;
             });
     };
-    handleDynamicGeom(geom){
+
+
+    handleDynamicGeom(geom,cb,cbdata){
         let parseDynamicFull = (geom,obj)=>{
             let geometry = makeGeometry(processKeyframe(geom));
             // Remove all old geometry -- mesh's only
@@ -299,12 +301,14 @@ export default class NC extends THREE.EventDispatcher {
 
             this.dynqueue((fulldynamic)=>{
                     parseDynamicFull(fulldynamic,existingobj);
+                    cb(cbdata);
                 });
         }
         else{ //Need an updated dynamic shell.
             if(existingobj.version !== geom.version)
                 this.dynqueue((updateddynamic)=>{
                     parseDynamicUpdate(updateddynamic,existingobj);
+                    cb(cbdata);
                 });
         }
         return true;
@@ -409,33 +413,35 @@ export default class NC extends THREE.EventDispatcher {
         else {
             // Handle each geom update in the delta
             // This is usually just a tool movement (and volume removal update).
-            _.each(delta.geom, (geom) => {
-		    if(geom.usage ==='inprocess') return this.handleDynamicGeom(geom);
-                if (!window.geom || window.geom.length < 100){
-                    window.geom = window.geom || [];
-                    window.geom.push(geom);
-                }
-                let obj = this._objects[geom.id];
-                if(obj !== undefined) {
-                    if (obj.rendered !== false) {
-                        let transform = new THREE.Matrix4();
-                        if (!geom.xform) return;
-                        transform.fromArray(geom.xform);
-                        let position = new THREE.Vector3();
-                        let quaternion = new THREE.Quaternion();
-                        let scale = new THREE.Vector3();
-                        transform.decompose(position, quaternion, scale);
-                        // we need to update all 3D properties so that
-                        // annotations, overlays and objects are all updated
-                        obj.object3D.position.copy(position);
-                        obj.object3D.quaternion.copy(quaternion);
-                        obj.annotation3D.position.copy(position);
-                        obj.annotation3D.quaternion.copy(quaternion);
-                        obj.overlay3D.position.copy(position);
-                        obj.overlay3D.quaternion.copy(quaternion);
-                        alter = true;
+            var dyn = _.remove(delta.geom,['usage','inprocess'])[0];
+            this.handleDynamicGeom(dyn,()=> {
+                _.each(delta.geom, (geom) => {
+                    if (!window.geom || window.geom.length < 100) {
+                        window.geom = window.geom || [];
+                        window.geom.push(geom);
                     }
-                }
+                    let obj = this._objects[geom.id];
+                    if (obj !== undefined) {
+                        if (obj.rendered !== false) {
+                            let transform = new THREE.Matrix4();
+                            if (!geom.xform) return;
+                            transform.fromArray(geom.xform);
+                            let position = new THREE.Vector3();
+                            let quaternion = new THREE.Quaternion();
+                            let scale = new THREE.Vector3();
+                            transform.decompose(position, quaternion, scale);
+                            // we need to update all 3D properties so that
+                            // annotations, overlays and objects are all updated
+                            obj.object3D.position.copy(position);
+                            obj.object3D.quaternion.copy(quaternion);
+                            obj.annotation3D.position.copy(position);
+                            obj.annotation3D.quaternion.copy(quaternion);
+                            obj.overlay3D.position.copy(position);
+                            obj.overlay3D.quaternion.copy(quaternion);
+                            alter = true;
+                        }
+                    }
+                });
             });
         }
         return alter;
