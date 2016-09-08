@@ -305,11 +305,13 @@ export default class NC extends THREE.EventDispatcher {
                 });
         }
         else{ //Need an updated dynamic shell.
-            if(existingobj.version !== geom.version)
-                this.dynqueue((updateddynamic)=>{
-                    parseDynamicUpdate(updateddynamic,existingobj);
+            if(existingobj.version !== geom.version) {
+                this.dynqueue((updateddynamic)=> {
+                    parseDynamicUpdate(updateddynamic, existingobj);
                     cb(cbdata);
                 });
+            }
+            else cb(cbdata);
         }
         return true;
         // Don't know what kind of update this is
