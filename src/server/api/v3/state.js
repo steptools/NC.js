@@ -21,29 +21,24 @@ function updateSpeed(speed) {
   app.ioServer.emit('nc:speed', speed);
 }
 
-function getDelta(ms, key, cb) {
-  var response = '';
+function getDelta(ms, key) {
   if (key) {
-    response = ms.GetKeyStateJSON();
+    return ms.GetKeyStateJSON();
   } else {
-    response = ms.GetDeltaStateJSON();
+    return ms.GetDeltaStateJSON();
   }
-  cb(response);
 }
 
-function getNext(ms, cb) {
-  ms.NextWS();
-  cb();
+function getNext(ms) {
+  return ms.NextWS();
 }
 
-function getPrev(ms, cb) {
-  ms.PrevWS();
-  cb();
+function getPrev(ms) {
+  return ms.PrevWS();
 }
 
-function getToWS(wsId, ms, cb) {
-  ms.GoToWS(wsId);
-  cb();
+function getToWS(wsId, ms) {
+  return ms.GoToWS(wsId);
 }
 
 function loop(ms, key) {
@@ -51,48 +46,64 @@ function loop(ms, key) {
     if(changed)
     {
       changed=false;
-      getNext(ms, function() {
-        loop(ms, true);
-      });
+      getNext(ms)
+        .then(()=>{
+          loop(ms, true,spindleSpeed,feedRate);
+        });
     }
     //spindle speed and feedrate
-    let spindleSpeedNew;
-    let feedRateNew;
-    spindleSpeedNew = Number(ms.GetCurrentSpindleSpeed());
-    feedRateNew = Number(ms.GetCurrentFeedrate());
-    if(spindleSpeed !== spindleSpeedNew){
-      spindleSpeed = spindleSpeedNew;
-      app.ioServer.emit('nc:spindle', spindleSpeed);
-    }
-    if(feedRate !== feedRateNew){
-      feedRate = feedRateNew;
-      app.ioServer.emit('nc:feed', feedRate);
-    }
-    //get the delta
-    getDelta(ms, key, function(b) {
-      app.ioServer.emit('nc:delta', JSON.parse(b));
-    //change the working step
-    let rc = ms.AdvanceState();
-    if (rc === 1) {
-      let setup = sameSetup(ms.GetWSID(), ms.GetNextWSID());
-      if (!setup) {
-        loopStates[path] = false;
-        update('pause');
-        changed=true;
-      }
-      else
-      {
-        getNext(ms, function() {
-          loop(ms, true);
-        });
-      }
-    }
-      if (playbackSpeed > 0) {
-        if (loopTimer !== undefined) {
-          clearTimeout(loopTimer);
+    ms.GetCurrentSpindleSpeed().then((spindleSpeedNew)=> {
+      spindleSpeedNew = Number(spindleSpeedNew);
+      ms.GetCurrentFeedrate().then((feedRateNew)=> {
+        feedRateNew = Number(feedRateNew);
+        if (spindleSpeed !== spindleSpeedNew) {
+          spindleSpeed = spindleSpeedNew;
+          app.ioServer.emit('nc:spindle', spindleSpeed);
         }
-        loopTimer = setTimeout(() => loop(ms, false), 50/(playbackSpeed/200));
-      }
+        if (feedRate !== feedRateNew) {
+          feedRate = feedRateNew;
+          app.ioServer.emit('nc:feed', feedRate);
+        }
+        //get the delta
+        getDelta(ms, key)
+          .then((b)=> {
+            app.ioServer.emit('nc:delta', JSON.parse(b));
+            //change the working step
+            ms.AdvanceState()
+              .then((rc)=>{
+                if (rc === 1) {
+                  ms.GetWSID().then((wsid)=>{ms.GetNextWSID().then((nextwsid)=>{
+                    let setup = sameSetup(wsid,nextwsid);
+                    if (!setup) {
+                      loopStates[path] = false;
+                      update('pause');
+                      changed = true;
+                      if (playbackSpeed > 0) {
+                        if (loopTimer !== undefined) {
+                          clearTimeout(loopTimer);
+                        }
+                        loopTimer = setTimeout(() => loop(ms, false), 50 / (playbackSpeed / 200));
+                      }
+                    }
+                    else {
+                      getNext(ms)
+                        .then(()=> {
+                          loop(ms, true);
+                        });
+                    }
+                  });});
+                }
+                else {
+                  if (playbackSpeed > 0) {
+                    if (loopTimer !== undefined) {
+                      clearTimeout(loopTimer);
+                    }
+                    loopTimer = setTimeout(() => loop(ms, false), 50 / (playbackSpeed / 200));
+                  }
+                }
+              });
+          });
+      });
     });
   }
 }
@@ -190,77 +201,81 @@ function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
   var ms = file.ms;
   //console.log(req);
-  spindleSpeed = Number(ms.GetCurrentSpindleSpeed());
-  feedRate = Number(ms.GetCurrentFeedrate());
-  if (req.params.loopstate === undefined) {
-    if (loopStates[path] === true) {
-      res.status(200).send(JSON.stringify({
-        'state': 'play',
-        'speed': playbackSpeed,
-        'spindle': spindleSpeed,
-        'feed': feedRate,
-      }));
-    } else {
-      res.status(200).send(JSON.stringify({
-        'state': 'pause',
-        'speed': playbackSpeed,
-        'spindle': spindleSpeed,
-        'feed': feedRate,
-      }));
-    }
-  } else {
-    let loopstate = req.params.loopstate;
-    //var ms = file.ms;
-    if (typeof loopStates[path] === 'undefined') {
-      loopStates[path] = false;
-    }
-    switch (loopstate) {
-      case 'start':
-        if (loopStates[path] === true) {
-          res.status(200).send('Already running');
-          return;
-        }
-        // app.logger.debug('Looping ' + path);
-        loopStates[path] = true;
-        res.sendStatus(200);
-        update('play');
-        loop(ms, false);
-        break;
-      case 'stop':
-        if (loopStates[path] === false) {
-          res.status(200).send('Already stopped');
-          return;
-        }
-        loopStates[path] = false;
-        update('pause');
-        res.sendStatus(200);
-        break;
-      default:
-        if (isNaN(parseFloat(loopstate)) || !isFinite(loopstate)) {
-          break;
-        }
-        let newSpeed = Number(loopstate);
-
-        if (Number(playbackSpeed) !== newSpeed) {
-          playbackSpeed = newSpeed;
-          // app.logger.debug('Changing speed to ' + newSpeed);
-        }
-
-        if (loopStates[path] === true) {
-          loop(ms, false);
-          res.status(200).send(JSON.stringify({
-            'state': 'play',
-            'speed': playbackSpeed,
-          }));
+  ms.GetCurrentSpindleSpeed()
+    .then((initialspindleSpeed)=>{
+      ms.GetCurrentFeedrate().then((initialfeedRate)=>{
+        if (req.params.loopstate === undefined) {
+          spindleSpeed = initialspindleSpeed;
+          feedRate = initialfeedRate;
+          if (loopStates[path] === true) {
+            res.status(200).send({
+              'state': 'play',
+              'speed': playbackSpeed,
+              'spindle': spindleSpeed,
+              'feed': feedRate,
+            });
+          } else {
+            res.status(200).send({
+              'state': 'pause',
+              'speed': playbackSpeed,
+              'spindle': spindleSpeed,
+              'feed': feedRate,
+            });
+          }
         } else {
-          res.status(200).send(JSON.stringify({
-            'state': 'pause',
-            'speed': playbackSpeed,
-          }));
+          let loopstate = req.params.loopstate;
+          if (typeof loopStates[path] === 'undefined') {
+            loopStates[path] = false;
+          }
+          switch (loopstate) {
+            case 'start':
+              if (loopStates[path] === true) {
+                res.status(200).send('Already running');
+                return;
+              }
+              // app.logger.debug('Looping ' + path);
+              loopStates[path] = true;
+              res.sendStatus(200);
+              update('play');
+              loop(ms, false);
+              break;
+            case 'stop':
+              if (loopStates[path] === false) {
+                res.status(200).send('Already stopped');
+                return;
+              }
+              loopStates[path] = false;
+              update('pause');
+              res.sendStatus(200);
+              break;
+            default:
+              if (isNaN(parseFloat(loopstate)) || !isFinite(loopstate)) {
+                break;
+              }
+              let newSpeed = Number(loopstate);
+
+              if (Number(playbackSpeed) !== newSpeed) {
+                playbackSpeed = newSpeed;
+                // app.logger.debug('Changing speed to ' + newSpeed);
+              }
+
+              if (loopStates[path] === true) {
+                loop(ms, false);
+                res.status(200).send({
+                  'state': 'play',
+                  'speed': playbackSpeed,
+                });
+              } else {
+                res.status(200).send({
+                  'state': 'pause',
+                  'speed': playbackSpeed,
+                });
+              }
+              updateSpeed(playbackSpeed);
+          }
         }
-        updateSpeed(playbackSpeed);
-    }
-  }
+      });
+    });
 }
 
 var _wsInit = function(req, res) {
@@ -274,17 +289,18 @@ var _wsInit = function(req, res) {
 
   handleWSInit(req.params.command, res);
 
-  getDelta(file.ms, false, function(b) {
-    app.ioServer.emit('nc:delta', JSON.parse(b));
-    if (playbackSpeed > 0) {
-      if (loopTimer !== undefined) {
-        clearTimeout(loopTimer);
+  getDelta(file.ms, false)
+    .then((b)=> {
+      app.ioServer.emit('nc:delta', JSON.parse(b));
+      if (playbackSpeed > 0) {
+        if (loopTimer !== undefined) {
+          clearTimeout(loopTimer);
+        }
+        loopTimer = setTimeout(function () {
+          loop(file.ms, false);
+        }, 50 / (playbackSpeed / 200));
       }
-      loopTimer = setTimeout(function () {
-        loop(file.ms, false);
-      }, 50 / (playbackSpeed / 200));
-    }
-  });
+    });
 };
 
 function _getKeyState(req, res) {
@@ -293,7 +309,10 @@ function _getKeyState(req, res) {
     res.status(404).send('Machine state could not be found');
     return;
   }
-  getDelta(ms,true,(r)=>{res.status(200).send(r)});
+  getDelta(ms,true)
+    .then((r)=>{
+      res.status(200).send(r)
+    });
 }
 
 function _getDeltaState(req, res) {
@@ -302,7 +321,10 @@ function _getDeltaState(req, res) {
     res.status(404).send('Machine state could not be found');
     return;
   }
-  getDelta(ms,false,(r)=>{res.status(200).send(r)});
+  getDelta(ms,false)
+    .then((r)=>{
+      res.status(200).send(r)
+    });
 }
 
 module.exports = function(globalApp, cb) {

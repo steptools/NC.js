@@ -4,9 +4,10 @@ var fs = require('fs');
 /***************************** Endpoint Functions *****************************/
 
 function _getDelta(req,res){
-    var rtn = file.ms.GetDeltaGeometryJSON(Number(req.params.current));
-  fs.writeFile("./deltas/Delta"+req.params.current+".json",rtn,(err)=>{});
-  res.status(200).send(rtn);
+  file.ms.GetDeltaGeometryJSON(Number(req.params.current))
+    .then((rtn)=>{
+      res.status(200).send(rtn);
+    });
 }
 
 function _getGeometry(req, res) {
@@ -19,10 +20,16 @@ function _getGeometry(req, res) {
     return;
   }
   if (req.params.type === 'shell') {
-    res.status(200).send(ms.GetGeometryJSON(req.params.id , 'MESH'));
+    ms.GetGeometryJSON(req.params.id , 'MESH')
+      .then((out)=>{
+        res.status(200).send(out);
+      });
     return;
   } else if (req.params.type === 'annotation') {
-    res.status(200).send(ms.GetGeometryJSON(req.params.id , 'POLYLINE'));
+    ms.GetGeometryJSON(req.params.id , 'POLYLINE')
+      .then((out)=>{
+        res.status(200).send(out);
+      });
     return;
   } else if (req.params.type === 'tool') {
     let toolId = find.GetToolWorkpiece(Number(req.params.id));
@@ -36,14 +43,20 @@ function _getGeometry(req, res) {
     }
     return;
   }
-  res.status(200).send(ms.GetGeometryJSON());
+  ms.GetGeometryJSON()
+    .then((out)=>{
+      res.status(200).send(out);
+    });
   return;
 }
 
 function _getEIDfromUUID(req, res){
   let ms = file.ms;
   if(req.params.uuid){
-    res.status(200).send(JSON.stringify(ms.GetEIDfromUUID(req.params.uuid)));
+    ms.GetEIDfromUUID(req.params.uuid)
+      .then((out)=>{
+        res.status(200).send(out)
+      });
     return;
   }
 }
