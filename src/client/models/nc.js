@@ -325,7 +325,7 @@ export default class NC extends THREE.EventDispatcher {
         //If we get a DeltaState, we need to update the scene.
         //First we handle KeyState.
         if (!delta.hasOwnProperty('prev')){
-            //For keyframes, we need to hide the currently drawn but unused geometry,
+            //For keystates, we need to hide the currently drawn but unused geometry,
             //Unhide anything we have that is needed but hidden,
             //And load and display any new things we don't have.
             // Hide existing Stuff. Keep it around in case we need to use it later.
