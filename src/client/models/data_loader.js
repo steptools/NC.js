@@ -398,6 +398,10 @@ export default class DataLoader extends THREE.EventDispatcher {
                     baseURL: req.base,
                     type: 'annotation'
                 });
+            } else if(_.has(geomData,'dynamicshell')) {
+
+                nc.handleDynamicGeom(geomData, ()=> {
+                });
             } else {
                 console.log('No idea what we found: ' + geomData);
             }
