@@ -231,13 +231,22 @@ export default class NC extends THREE.EventDispatcher {
             return;
         }
         dynqueuegetting = true;
-        request.get('/v3/nc/geometry/delta/'+dynqueuecur)
+        request.get('/v3/nc/geometry/delta/'+dynqueuecur).timeout(1000)
             .end((err,res)=>{
-                let dyn = JSON.parse(res.text)
-                try {
-                    cb(dyn);
+                let dyn = {'version':dynqueuecur};
+                if(err.timeout!==0) {
+                    console.log("TIMEOUT");
                 }
-                catch (e){console.log("COULDNT PROCESS DYNAMICGEOM. Something's borked. Let's see what the error was:");console.log(e);}
+                else {
+                     dyn = JSON.parse(res.text)
+                    try {
+                        cb(dyn);
+                    }
+                    catch (e) {
+                        console.log("COULDNT PROCESS DYNAMICGEOM. Something's borked. Let's see what the error was:");
+                        console.log(e);
+                    }
+                }
                 dynqueuegetting = false;
                 dynqueuecur = dyn.version;
                 if(dynqueuenext === true)
