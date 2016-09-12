@@ -52,10 +52,13 @@ function loop(ms, key) {
         });
     }
     //spindle speed and feedrate
-    ms.GetCurrentSpindleSpeed().then((spindleSpeedNew)=> {
-      spindleSpeedNew = Number(spindleSpeedNew);
-      ms.GetCurrentFeedrate().then((feedRateNew)=> {
-        feedRateNew = Number(feedRateNew);
+    Promise.all([
+        ms.GetCurrentSpindleSpeed(),
+        ms.GetCurrentFeedrate()
+      ])
+      .then((newspeedfeed)=> {
+        let spindleSpeedNew = Number(newspeedfeed[0]);
+        let feedRateNew = Number(newspeedfeed[1]);
         if (spindleSpeed !== spindleSpeedNew) {
           spindleSpeed = spindleSpeedNew;
           app.ioServer.emit('nc:spindle', spindleSpeed);
@@ -201,80 +204,83 @@ function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
   var ms = file.ms;
   //console.log(req);
-  ms.GetCurrentSpindleSpeed()
-    .then((initialspindleSpeed)=>{
-      ms.GetCurrentFeedrate().then((initialfeedRate)=>{
-        if (req.params.loopstate === undefined) {
-          spindleSpeed = initialspindleSpeed;
-          feedRate = initialfeedRate;
-          if (loopStates[path] === true) {
-            res.status(200).send({
-              'state': 'play',
-              'speed': playbackSpeed,
-              'spindle': spindleSpeed,
-              'feed': feedRate,
-            });
-          } else {
-            res.status(200).send({
-              'state': 'pause',
-              'speed': playbackSpeed,
-              'spindle': spindleSpeed,
-              'feed': feedRate,
-            });
-          }
+  Promise.all([
+    ms.GetCurrentSpindleSpeed(),
+    ms.GetCurrentFeedrate()
+  ])
+    .then((initialspeedfeed)=>{
+      let initialspindleSpeed = initialspeedfeed[0];
+      let initialfeedRate = initialspeedfeed[1];
+      if (req.params.loopstate === undefined) {
+        spindleSpeed = initialspindleSpeed;
+        feedRate = initialfeedRate;
+        if (loopStates[path] === true) {
+          res.status(200).send({
+            'state': 'play',
+            'speed': playbackSpeed,
+            'spindle': spindleSpeed,
+            'feed': feedRate,
+          });
         } else {
-          let loopstate = req.params.loopstate;
-          if (typeof loopStates[path] === 'undefined') {
-            loopStates[path] = false;
-          }
-          switch (loopstate) {
-            case 'start':
-              if (loopStates[path] === true) {
-                res.status(200).send('Already running');
-                return;
-              }
-              // app.logger.debug('Looping ' + path);
-              loopStates[path] = true;
-              res.sendStatus(200);
-              update('play');
-              loop(ms, false);
-              break;
-            case 'stop':
-              if (loopStates[path] === false) {
-                res.status(200).send('Already stopped');
-                return;
-              }
-              loopStates[path] = false;
-              update('pause');
-              res.sendStatus(200);
-              break;
-            default:
-              if (isNaN(parseFloat(loopstate)) || !isFinite(loopstate)) {
-                break;
-              }
-              let newSpeed = Number(loopstate);
-
-              if (Number(playbackSpeed) !== newSpeed) {
-                playbackSpeed = newSpeed;
-                // app.logger.debug('Changing speed to ' + newSpeed);
-              }
-
-              if (loopStates[path] === true) {
-                loop(ms, false);
-                res.status(200).send({
-                  'state': 'play',
-                  'speed': playbackSpeed,
-                });
-              } else {
-                res.status(200).send({
-                  'state': 'pause',
-                  'speed': playbackSpeed,
-                });
-              }
-              updateSpeed(playbackSpeed);
-          }
+          res.status(200).send({
+            'state': 'pause',
+            'speed': playbackSpeed,
+            'spindle': spindleSpeed,
+            'feed': feedRate,
+          });
         }
-      });
+      } else {
+        let loopstate = req.params.loopstate;
+        if (typeof loopStates[path] === 'undefined') {
+          loopStates[path] = false;
+        }
+        switch (loopstate) {
+          case 'start':
+            if (loopStates[path] === true) {
+              res.status(200).send('Already running');
+              return;
+            }
+            // app.logger.debug('Looping ' + path);
+            loopStates[path] = true;
+            res.sendStatus(200);
+            update('play');
+            loop(ms, false);
+            break;
+          case 'stop':
+            if (loopStates[path] === false) {
+              res.status(200).send('Already stopped');
+              return;
+            }
+            loopStates[path] = false;
+            update('pause');
+            res.sendStatus(200);
+            break;
+          default:
+            if (isNaN(parseFloat(loopstate)) || !isFinite(loopstate)) {
+              break;
+            }
+            let newSpeed = Number(loopstate);
+
+            if (Number(playbackSpeed) !== newSpeed) {
+              playbackSpeed = newSpeed;
+              // app.logger.debug('Changing speed to ' + newSpeed);
+            }
+
+            if (loopStates[path] === true) {
+              loop(ms, false);
+              res.status(200).send({
+                'state': 'play',
+                'speed': playbackSpeed,
+              });
+            } else {
+              res.status(200).send({
+                'state': 'pause',
+                'speed': playbackSpeed,
+              });
+            }
+            updateSpeed(playbackSpeed);
+        }
+      }
     });
 }
 
