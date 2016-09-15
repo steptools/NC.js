@@ -107,7 +107,6 @@ function loop(ms, key) {
               });
           });
       });
-    });
   }
 }
 
