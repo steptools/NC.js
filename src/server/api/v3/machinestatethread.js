@@ -17,7 +17,12 @@ onmessage = (f)=>{
       }
       //Node Native Module calls need to invoke apply with the relevant object.
       //This next line is hairy, but it basically invokes the function our caller wants with the arguments array we have
-      out = ms[f.fun].apply(ms,Array.prototype.slice.call(f.args));
+      if(f.fun==='AdvanceState') {
+        ms.AdvanceState().then((r)=>{postMessage({'cb':f.callback,'val':r});});
+        return;
+      }
+      else
+        out = ms[f.fun].apply(ms,Array.prototype.slice.call(f.args));
     }
     postMessage({'cb':f.callback,'val':out});
   }
