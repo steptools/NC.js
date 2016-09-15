@@ -123,6 +123,32 @@ Slider.propTypes = {
   icons: React.PropTypes.string.isRequired,
 };
 
+class FeedSpeed extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render(){return (        <MenuItem {...this.props} key='feed-speed' className='info feed-speed'>
+          <div className='item'>
+            <div className={getIcon('feedrate')}/>
+            <div className='text'>
+              <div className='title'>Feed rate:</div>
+              <div className='value'>{this.props.feed}</div>
+            </div>
+          </div>
+          <div className='item'>
+            <div className={this.props.rotation}/>
+            <div className='text'>
+              <div className='title'>Spindle speed:</div>
+              <div className='value'>{this.props.speed}</div>
+            </div>
+          </div>
+        </MenuItem>)}
+}
+FeedSpeed.propTypes = {
+  feed: React.PropTypes.number.isRequired,
+  speed: React.PropTypes.number.isRequired,
+  rotation: React.PropTypes.string.isRequired
+}
 export default class HeaderView extends React.Component {
   constructor(props) {
     super(props);
@@ -239,22 +265,7 @@ export default class HeaderView extends React.Component {
           val={this.props.speed}
           icons='true'
         />
-        <MenuItem disabled key='feed-speed' className='info feed-speed'>
-          <div className='item'>
-            <div className={getIcon('feedrate')}/>
-            <div className='text'>
-              <div className='title'>Feed rate:</div>
-              <div className='value'>{feedSpeedInfo[0]}</div>
-            </div>
-          </div>
-          <div className='item'>
-            <div className={feedSpeedInfo[2]}/>
-            <div className='text'>
-              <div className='title'>Spindle speed:</div>
-              <div className='value'>{feedSpeedInfo[1]}</div>
-            </div>
-          </div>
-        </MenuItem>
+        <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <Button key='changelog'>
           <div className='version' id='logbutton'>v1.1.0</div>
         </Button>
