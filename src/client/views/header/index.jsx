@@ -1,5 +1,5 @@
 var md = require('node-markdown').Markdown;
-import Menu, {Item as MenuItem} from 'rc-menu';
+import Menu, {SubMenu, Item as MenuItem} from 'rc-menu';
 let changetext='';
 
 function getIcon(type, data) {
@@ -34,6 +34,16 @@ function getIcon(type, data) {
       }
     case 'changelog':
       return 'icon glyphicon glyphicon-book';
+    case 'live':
+      return 'icon glyphicons glyphicons-record';
+    case 'geometry':
+      return 'icon glyphicons glyphicons-cube-empty';
+    case 'reset':
+      return 'icon glyphicons glyphicons-recycle';
+    case 'view':
+      return 'icon glyphicons glyphicons-eye-open';
+    case 'noview':
+      return 'icon glyphicons glyphicons-eye-close';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -149,6 +159,38 @@ FeedSpeed.propTypes = {
   speed: React.PropTypes.number.isRequired,
   rotation: React.PropTypes.string.isRequired
 }
+
+class GeomMenu extends React.Component {
+  constructor(props){
+    super(props);
+    this.itemClicked = this.itemClicked.bind(this);
+  }
+  itemClicked(info){
+    this.props.actionManager.emit('changeVis',info.key);
+  }
+  render(){ return(
+      <SubMenu {...this.props} title={
+        <div className='item'>
+          <div className={getIcon('geometry')} />
+          <div className='text'>
+            <div className='title'>Geometry</div>
+          </div>
+        </div>
+      }
+               onClick={this.itemClicked} class="GeomMenu">
+        <Button key='asisvis'>As-Is</Button>
+        <Button key='tobevis'>To-Be</Button>
+        <Button key='cuttervis'>Tool</Button>
+        <Button key='machinevis'>Machine</Button>
+        <Button key='removalvis'>Removal</Button>
+        <Button key='pathvis'>Toolpath</Button>
+      </SubMenu>
+  )}
+}
+
+let resetProcessVolume = function(){
+  request.get("/v3/nc/geometry/delta/reset").end();
+}
 export default class HeaderView extends React.Component {
   constructor(props) {
     super(props);
@@ -236,7 +278,16 @@ export default class HeaderView extends React.Component {
           changelog.className = 'changelog';
           this.props.cbLogstate(false);
         }
+        break;
+      case 'reset':
+        resetProcessVolume();
+        break;
+      default:
+        if (info.key.indexOf('machine') >= 0) {
+          let id = info.key.split('-')[1];
+          this.props.changeMachine(Number(id));
     }
+  }
   }
 
   render() {
@@ -265,6 +316,7 @@ export default class HeaderView extends React.Component {
           val={this.props.speed}
           icons='true'
         />
+	<GeomMenu />
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <Button key='changelog'>
           <div className='version' id='logbutton'>v1.1.0</div>
