@@ -402,6 +402,7 @@ export default class NC extends THREE.EventDispatcher {
             mesh.userData = obj;
             obj.object3D.add(mesh);
             // Make sure to update the model geometry
+            if(obj.model.getGeometry()) obj.model.getGeometry().dispose();
             obj.model.setGeometry(geometry);
             obj.model.live = true;
             obj.version = geom.version;
@@ -427,6 +428,7 @@ export default class NC extends THREE.EventDispatcher {
             mesh.userData = obj;
             obj.object3D.add(mesh);
             // Make sure to update the model geometry
+            if(obj.model.getGeometry()) obj.model.getGeometry().dispose();
             obj.model.setGeometry(geometry);
             obj.version = geom.version;
         };
