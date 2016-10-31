@@ -217,7 +217,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                     delete this._shells[event.data.id+".json"];
 
                     //Data.color is passed from the buffers.color from webworker.js 695
-                    shell.addGeometry(data.position, data.normals, data.color, data.faces);
+                    shell.addGeometry(data.position, data.normals, data.color, data.values, data.faces);
                     this.dispatchEvent({ type: "shellLoad", file: event.data.file });
                 }
                 break;
@@ -358,6 +358,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         req.callback(undefined, assembly);
     }
     //This is the initial load that then loads all shells below it
+    //TODO: FFS consolidate this shit with the NC.js ApplyDelta function.
     buildNCStateJSON(jsonText, req) {
         let doc = JSON.parse(jsonText);
         //console.log('Process NC: ' + doc.project);
@@ -396,6 +397,10 @@ export default class DataLoader extends THREE.EventDispatcher {
                     path: name,
                     baseURL: req.base,
                     type: 'annotation'
+                });
+            } else if(_.has(geomData,'dynamicshell')) {
+
+                nc.handleDynamicGeom(geomData, ()=> {
                 });
             } else {
                 console.log('No idea what we found: ' + geomData);

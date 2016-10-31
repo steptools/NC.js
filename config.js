@@ -28,7 +28,7 @@ module.exports = function(environment) {
             "upload": true
           },
           "file" : {
-            "dir": "./model.stpnc"
+            "dir": "D:\\GIT\\StepNCViewer\\boxytest94.stpnc"
           },
           "machine" : {
             "dir" : ""
