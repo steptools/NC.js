@@ -28,10 +28,10 @@ module.exports = function(environment) {
             "upload": true
           },
           "file" : {
-            "dir": "D:\\GIT\\StepNCViewer\\boxytest94.stpnc"
+            "dir": "./boxy.stpnc"
           },
           "machine" : {
-            "dir" : ""
+            "dir" : "C:/Program Files (x86)/STEP Tools/STEP-NC Machine/machines/okuma_M560-V.xml"
           }
 
     };
