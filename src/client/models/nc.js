@@ -39,6 +39,7 @@ export default class NC extends THREE.EventDispatcher {
             explodeDistance: 0,
             collapsed:      false
         }
+        this.vis = this.vis.bind(this);
     }
 
     addModel(model, usage, type, id, transform, bbox) {

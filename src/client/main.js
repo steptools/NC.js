@@ -29,12 +29,11 @@ class CADApp extends THREE.EventDispatcher {
       });
     }
 
-    // Create data manager
-    this.cadManager = new CADManager(this.config, this.socket,this);
-
     // Create application-level action manager
     this.actionManager = actionManager;
 
+    // Create data manager
+    this.cadManager = new CADManager(this.config, this.socket,this);
     this.cadManager.dispatchEvent({
       type: 'setModel',
       viewType: 'cadjs',
