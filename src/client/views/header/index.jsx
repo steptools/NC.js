@@ -38,6 +38,8 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-record';
     case 'geometry':
       return 'icon glyphicons glyphicons-cube-empty';
+    case 'download':
+      return 'icon glyphicons glyphicons-cloud-download';
     case 'reset':
       return 'icon glyphicons glyphicons-recycle';
     case 'view':

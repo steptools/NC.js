@@ -65,9 +65,10 @@ module.exports = {
             "jQuery":   "jquery",
             "Backbone": "backbone",
             "THREE":    "three",
-            "request":  "superagent",
-            "ReactDOM":  "react-dom",
-            "io":        "socket.io-client",
+	    "FileSaver": "file-saver",
+	    "request":  "superagent",
+	    "ReactDOM": "react-dom",
+	    "io":	"socket.io-client"
         })
         ,new ExtractTextPlugin("[name].css")
     ],
