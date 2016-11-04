@@ -69,9 +69,35 @@ class Button extends React.Component {
     );
   }
 }
-
-class Slider extends React.Component {
+class GeomBtn extends React.Component {
   constructor(props) {
+    super(props);
+    this.dlClick = this.dlClick.bind(this);
+    this.visClick = this.visClick.bind(this);
+  }
+
+  dlClick(info){
+    this.props.actionManager.emit('STLDL',this.props.type);
+  }
+  visClick(info){
+    this.props.actionManager.emit('changeVis',this.props.type);
+  }
+  render() {
+    let icon = getIcon('view');
+    let iid='';
+    if(this.props.iid) iid=this.props.iid;
+    return (
+      <MenuItem {...this.props} className = "button">
+        <div className="geom">
+          <div className={icon} id={iid} onClick = {this.visClick} />
+          <div className={getIcon("download")} onClick = {this.dlClick} />
+        </div>
+        {this.props.children}
+      </MenuItem>
+    );
+  }  
+}
+class Slider extends React.Component {  constructor(props) {
     super(props);
     this.changed = this.changed.bind(this);
   }
@@ -165,27 +191,26 @@ FeedSpeed.propTypes = {
 class GeomMenu extends React.Component {
   constructor(props){
     super(props);
-    this.itemClicked = this.itemClicked.bind(this);
+    this.pathClick = this.pathClick.bind(this);
   }
-  itemClicked(info){
+  pathClick(info){
     this.props.actionManager.emit('changeVis',info.key);
   }
   render(){ return(
-      <SubMenu {...this.props} title={
+      <SubMenu {...this.props} className="geommenu" title={
         <div className='item'>
           <div className={getIcon('geometry')} />
           <div className='text'>
             <div className='title'>Geometry</div>
           </div>
         </div>
-      }
-               onClick={this.itemClicked} class="GeomMenu">
-        <Button key='asisvis'>As-Is</Button>
-        <Button key='tobevis'>To-Be</Button>
-        <Button key='cuttervis'>Tool</Button>
-        <Button key='machinevis'>Machine</Button>
-        <Button key='removalvis'>Removal</Button>
-        <Button key='pathvis'>Toolpath</Button>
+      } >
+        <GeomBtn actionManager = {this.props.actionManager} type='asis'>As-Is</GeomBtn>
+        <GeomBtn actionManager = {this.props.actionManager} type='tobe'>To-Be</GeomBtn>
+        <GeomBtn actionManager = {this.props.actionManager} type='cutter'>Tool</GeomBtn>
+        <GeomBtn actionManager = {this.props.actionManager} type='machine'>Machine</GeomBtn>
+        <GeomBtn actionManager = {this.props.actionManager} type='removal'>Removal</GeomBtn>
+        <Button icon='view' onClick = {this.pathClick}>Toolpath</Button>
       </SubMenu>
   )}
 }
