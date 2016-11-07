@@ -693,7 +693,13 @@ function faceLoad(data, buffers) {
 
 //This is the data that is getting passed to the data_loader.js line 201
 function processShellJSON(url, workerID, dataJSON, signalFinish) {
-
+    // Just copy the data into arrays
+    let buffers = {
+        position: new Float32Array(dataJSON.pointsIndex.length),
+        normals: new Float32Array(dataJSON.pointsIndex.length),
+        color: new Float32Array(dataJSON.pointsIndex.length),
+        faces: new Object()
+    };
 
     if (dataJSON.values) {
         if (dataJSON.precision) {
@@ -703,15 +709,8 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
                 dataJSON.values[i] /= factor;
             }
         }
+	unindexValues(dataJSON,buffers);
     }
-    // Just copy the data into arrays
-    let buffers = {
-        position: new Float32Array(dataJSON.pointsIndex.length),
-        normals: new Float32Array(dataJSON.pointsIndex.length),
-        color: new Float32Array(dataJSON.pointsIndex.length),
-        faces: new Object()
-    };
-    unindexValues(dataJSON,buffers);
     if (dataJSON.faces)
         faceLoad(dataJSON, buffers);
     let parts = url.split("/");
