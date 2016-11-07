@@ -40,7 +40,8 @@ export default class NC extends THREE.EventDispatcher {
             collapsed:      false
         }
         this.vis = this.vis.bind(this);
-        this.app.actionManager.on('changeVis',this.vis);
+        this.save = this.save.bind(this);
+        this.app.actionManager.on('STLDL',this.save);
     }
 
     //gist.github.com/paulkaplan/6513707
@@ -114,7 +115,7 @@ export default class NC extends THREE.EventDispatcher {
             let outgeom = new THREE.Geometry().fromBufferGeometry(changes[i].model._geometry);
             let dv = this.geometryToDataView(outgeom);
             let blob = new Blob([dv], {type: 'application/octet-binary'});
-            FileSaver.saveAs(blob, "model" + i + ".stl");
+            FileSaver.saveAs(blob, arg+" model" + i + ".stl");
         }
     }
     vis(arg){
@@ -384,6 +385,7 @@ export default class NC extends THREE.EventDispatcher {
             obj.object3D.add(mesh);
             // Make sure to update the model geometry
             obj.model.setGeometry(geometry);
+            obj.model.live = true;
             obj.version = geom.version;
             obj.precision = geom.precision;
             return true;
