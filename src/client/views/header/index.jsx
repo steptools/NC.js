@@ -361,7 +361,7 @@ export default class HeaderView extends React.Component {
           val={this.props.speed}
           icons='true'
         />
-	<GeomMenu />
+	<GeomMenu actionManager = {this.props.actionManager}/>
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <Button key='changelog'>
           <div className='version' id='logbutton'>v1.1.0</div>
