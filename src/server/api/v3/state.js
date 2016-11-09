@@ -1,6 +1,7 @@
 'use strict';
 let file = require('./file');
 let step = require('./step');
+let _ = require('lodash');
 let find = file.find;
 let app;
 let loopTimer = {};
@@ -41,15 +42,23 @@ function getToWS(wsId, ms) {
   return ms.GoToWS(wsId);
 }
 
+function promiseTimeout(msec){
+  return new Promise((resolve)=>{
+    setTimeout(resolve,msec);
+  });
+}
+
 function loop(ms, key) {
+  if(!_.isEmpty(loopTimer)) return; //If a loop is running, don't start a new one.
   if (loopStates[path] === true) {
     if(changed)
     {
       changed=false;
       getNext(ms)
         .then(()=>{
-          loop(ms, true,spindleSpeed,feedRate);
+          loop(ms, true);
         });
+      return;
     }
     //spindle speed and feedrate
     Promise.all([
@@ -82,10 +91,12 @@ function loop(ms, key) {
                       update('pause');
                       changed = true;
                       if (playbackSpeed > 0) {
-                        if (loopTimer !== undefined) {
-                          clearTimeout(loopTimer);
+                        if (!_.isEmpty(loopTimer)) {
+                          //Badness.
+                          throw Error('Multiple Loops Running.');
                         }
-                        loopTimer = setTimeout(() => loop(ms, false), 50 / (playbackSpeed / 200));
+                        loopTimer = promiseTimeout(50/(playbackSpeed/200));
+                        loopTimer.then(() => {loopTimer = {}; loop(ms, false);});
                       }
                     }
                     else {
@@ -98,10 +109,12 @@ function loop(ms, key) {
                 }
                 else {
                   if (playbackSpeed > 0) {
-                    if (loopTimer !== undefined) {
-                      clearTimeout(loopTimer);
+                    if (!_.isEmpty(loopTimer)) {
+                      //Badness.
+                      throw Error('Multiple Loops Running.');
                     }
-                    loopTimer = setTimeout(() => loop(ms, false), 50 / (playbackSpeed / 200));
+                    loopTimer = promiseTimeout(50/(playbackSpeed/200));
+                    loopTimer.then(() => {loopTimer = {}; loop(ms, false);});
                   }
                 }
               });
