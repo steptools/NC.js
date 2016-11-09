@@ -316,17 +316,9 @@ var _wsInit = function(req, res) {
 
   handleWSInit(req.params.command, res);
 
-  getDelta(file.ms, false)
+  getDelta(file.ms, true)
     .then((b)=> {
       app.ioServer.emit('nc:delta', JSON.parse(b));
-      if (playbackSpeed > 0) {
-        if (loopTimer !== undefined) {
-          clearTimeout(loopTimer);
-        }
-        loopTimer = setTimeout(function () {
-          loop(file.ms, false);
-        }, 50 / (playbackSpeed / 200));
-      }
     });
 };
 
