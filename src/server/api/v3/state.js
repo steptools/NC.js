@@ -1,10 +1,10 @@
 'use strict';
-var file = require('./file');
-var step = require('./step');
-var find = file.find;
-var app;
-var loopTimer;
-var loopStates = {};
+let file = require('./file');
+let step = require('./step');
+let find = file.find;
+let app;
+let loopTimer = {};
+let loopStates = {};
 let playbackSpeed = 100;
 let spindleSpeed;
 let feedRate;
