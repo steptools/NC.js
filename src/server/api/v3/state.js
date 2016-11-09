@@ -128,14 +128,14 @@ function sameSetup(newid, oldid) {
 }
 
 function handleWSInit(command, res) {
-  let temp = loopStates[path];
+  let wasLooping = loopStates[path];
   loopStates[path] = true;
   /*if (!temp) {
     loop(file.ms, false);
   }*/
   switch (command) {
     case 'next':
-      if (temp) {
+      if (wasLooping) {
         if(!changed)
         {
           getNext(file.ms, function() {
@@ -158,7 +158,7 @@ function handleWSInit(command, res) {
       res.sendStatus(200);
       break;
     case 'prev':
-      if (temp) {
+      if (wasLooping) {
         if(!changed)
         {
           getPrev(file.ms, function() {
