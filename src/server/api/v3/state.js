@@ -138,8 +138,9 @@ function handleWSInit(command, res) {
       if (wasLooping) {
         if(!changed)
         {
-          getNext(file.ms, function() {
-            loop(file.ms, true);
+          getNext(file.ms)
+            .then(()=> {
+              loop(file.ms, true);
           });
         }
         else loop(file.ms, true);
@@ -147,8 +148,9 @@ function handleWSInit(command, res) {
       } else {
         if(!changed)
         {
-          getNext(file.ms, function() {
-            loop(file.ms, true);
+          getNext(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         }
         else loop(file.ms, true);
@@ -161,33 +163,39 @@ function handleWSInit(command, res) {
       if (wasLooping) {
         if(!changed)
         {
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         }
         else
         {
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         } 
       } else {
         if(!changed)
         {
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         }
         else
         {
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         }
         loopStates[path] = false;
@@ -201,8 +209,9 @@ function handleWSInit(command, res) {
         break;
       }
       let ws = Number(command);
-      getToWS(ws, file.ms, function() {
-        loop(file.ms, true);
+      getToWS(ws, file.ms)
+        .then(()=>{
+          loop(file.ms, true);
       });
       loopStates[path] = false;
       update('pause');
