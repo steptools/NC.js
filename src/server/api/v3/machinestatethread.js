@@ -37,3 +37,7 @@ rl.on('line',(input)=>{
 });
 
 console.log('MachineState worker started PID %s\r\n',process.pid);
+
+//Make sure event loop doesn't die.
+let a = ()=>{setTimeout(a,100);};
+a();
