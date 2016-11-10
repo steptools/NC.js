@@ -1,6 +1,8 @@
 'use strict';
 let file = require('./file');
 let step = require('./step');
+let scache = require('./statecache');
+scache.Initialize();
 let _ = require('lodash');
 let find = file.find;
 let app;
@@ -131,6 +133,7 @@ function sameSetup(newid, oldid) {
 }
 
 function handleWSInit(command, res) {
+  let ms = scache;
   let wasLooping = loopStates[path];
   loopStates[path] = true;
   /*if (!temp) {
@@ -141,22 +144,22 @@ function handleWSInit(command, res) {
       if (wasLooping) {
         if(!changed)
         {
-          getNext(file.ms)
+          getNext(ms)
             .then(()=> {
-              loop(file.ms, true);
+              loop(ms, true);
           });
         }
-        else loop(file.ms, true);
+        else loop(ms, true);
         
       } else {
         if(!changed)
         {
-          getNext(file.ms)
+          getNext(ms)
             .then(()=>{
-              loop(file.ms, true);
+              loop(ms, true);
           });
         }
-        else loop(file.ms, true);
+        else loop(ms, true);
         loopStates[path] = false;
         update('pause');
       }
@@ -166,39 +169,39 @@ function handleWSInit(command, res) {
       if (wasLooping) {
         if(!changed)
         {
-          getPrev(file.ms)
+          getPrev(ms)
             .then(()=>{
-              loop(file.ms, true);
+              loop(ms, true);
           });
         }
         else
         {
-          getPrev(file.ms)
+          getPrev(ms)
             .then(()=>{
-              loop(file.ms, true);
+              loop(ms, true);
           });
-          getPrev(file.ms)
+          getPrev(ms)
             .then(()=>{
-              loop(file.ms, true);
+              loop(ms, true);
           });
         } 
       } else {
         if(!changed)
         {
-          getPrev(file.ms)
+          getPrev(ms)
             .then(()=>{
-              loop(file.ms, true);
+              loop(ms, true);
           });
         }
         else
         {
-          getPrev(file.ms)
+          getPrev(ms)
             .then(()=>{
-              loop(file.ms, true);
+              loop(ms, true);
           });
-          getPrev(file.ms)
+          getPrev(ms)
             .then(()=>{
-              loop(file.ms, true);
+              loop(ms, true);
           });
         }
         loopStates[path] = false;
@@ -212,9 +215,9 @@ function handleWSInit(command, res) {
         break;
       }
       let ws = Number(command);
-      getToWS(ws, file.ms)
+      getToWS(ws, ms)
         .then(()=>{
-          loop(file.ms, true);
+          loop(ms, true);
       });
       loopStates[path] = false;
       update('pause');
@@ -226,8 +229,8 @@ function handleWSInit(command, res) {
 
 function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
-  var ms = file.ms;
   //console.log(req);
+  var ms = scache;
   Promise.all([
     ms.GetCurrentSpindleSpeed(),
     ms.GetCurrentFeedrate()
@@ -319,14 +322,14 @@ var _wsInit = function(req, res) {
 
   handleWSInit(req.params.command, res);
 
-  getDelta(file.ms, true)
+  getDelta(scache, true)
     .then((b)=> {
       app.ioServer.emit('nc:delta', JSON.parse(b));
     });
 };
 
 function _getKeyState(req, res) {
-  var ms = file.ms;
+  var ms = scache;
   if (ms === undefined) {
     res.status(404).send('Machine state could not be found');
     return;
@@ -338,7 +341,7 @@ function _getKeyState(req, res) {
 }
 
 function _getDeltaState(req, res) {
-  var ms = file.ms;
+  var ms = scache;
   if (ms === undefined) {
     res.status(404).send('Machine state could not be found');
     return;
