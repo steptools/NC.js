@@ -275,7 +275,7 @@ export default class HeaderView extends React.Component {
       ss = Math.abs(this.props.spindleSpeed) + ' rev/min';
       if (this.props.spindleSpeed > 0) {
         ss += ' (CCW)';
-        ssIcom = getIcon('spindlespeed', 'CCW');
+        ssIcon = getIcon('spindlespeed', 'CCW');
       } else {
         ss += ' (CW)';
         ssIcon = getIcon('spindlespeed', 'CW');
