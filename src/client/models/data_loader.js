@@ -362,12 +362,14 @@ export default class DataLoader extends THREE.EventDispatcher {
         let doc = JSON.parse(jsonText);
         //console.log('Process NC: ' + doc.project);
         let nc = new NC(doc.project, doc.workingstep, doc.time_in_workingstep, this);
-        nc.applyDelta(doc,true);
-        this._app.actionManager.emit('invalidate',{'boundingBox': true, 'model': nc});
-        if (doc.workingstep) {
-            this._app.actionManager.emit('change-workingstep', doc.workingstep);
-        }
-        req.callback(undefined, nc);
+        nc.applyDelta(doc,true)
+          .then(()=>{
+            this._app.actionManager.emit('invalidate', {'boundingBox': true, 'model': nc});
+            if (doc.workingstep) {
+                this._app.actionManager.emit('change-workingstep', doc.workingstep);
+            }
+            req.callback(undefined, nc);
+        });
     }
 
     buildProductJSON(req, doc, assembly, id, isRoot) {
