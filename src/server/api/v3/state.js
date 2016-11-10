@@ -136,9 +136,6 @@ function handleWSInit(command, res) {
   let ms = scache;
   let wasLooping = loopStates[path];
   loopStates[path] = true;
-  /*if (!temp) {
-    loop(file.ms, false);
-  }*/
   switch (command) {
     case 'next':
       if (wasLooping) {
@@ -229,7 +226,6 @@ function handleWSInit(command, res) {
 
 function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
-  //console.log(req);
   var ms = scache;
   Promise.all([
     ms.GetCurrentSpindleSpeed(),
@@ -312,7 +308,6 @@ function _loopInit(req, res) {
 }
 
 var _wsInit = function(req, res) {
-  let temp = false;
   if (!req.params.command) {
     return;
   }
