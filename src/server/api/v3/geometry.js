@@ -1,10 +1,11 @@
 'use strict';
 var file = require('./file');
 var fs = require('fs');
+var ms = require('./statecache');
 /***************************** Endpoint Functions *****************************/
 
 function _getDelta(req,res){
-  file.ms.GetDeltaGeometryJSON(Number(req.params.current))
+  ms.GetDynamicGeometryJSON(Number(req.params.current))
     .then((rtn)=>{
       res.status(200).send(rtn);
       rtn=null;
@@ -12,7 +13,7 @@ function _getDelta(req,res){
 }
 
 function _resetDelta(res){
-  file.ms.ResetDeltaGeometry().then(res.status(200).send());
+  ms.ResetDeltaGeometry().then(res.status(200).send());
 }
 
 let geomcache = {};
@@ -21,7 +22,7 @@ function _getMesh(id,res){
       res.status(200).send(geomcache[id]);
       return;
   }
-  file.ms.GetGeometryJSON(id , 'MESH')
+  ms.GetGeometryJSON(id , 'MESH')
       .then((out)=>{
         geomcache[id]=out;
         res.status(200).send(out);
@@ -34,7 +35,7 @@ function _getPoly(id,res){
         res.status(200).send(polycache[id]);
         return;
     }
-    file.ms.GetGeometryJSON(id , 'POLYLINE')
+    ms.GetGeometryJSON(id , 'POLYLINE')
       .then((out)=>{
         polycache[id] = out;
         res.status(200).send(out);
