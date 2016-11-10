@@ -226,6 +226,7 @@ function handleWSInit(command, res) {
 
 function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
+  //console.log(req);
   var ms = scache;
   Promise.all([
     ms.GetCurrentSpindleSpeed(),
