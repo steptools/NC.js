@@ -1,10 +1,11 @@
 'use strict';
-var file = require('./file');
-var step = require('./step');
-var find = file.find;
-var app;
-var loopTimer;
-var loopStates = {};
+let file = require('./file');
+let step = require('./step');
+let _ = require('lodash');
+let find = file.find;
+let app;
+let loopTimer = {};
+let loopStates = {};
 let playbackSpeed = 100;
 let spindleSpeed;
 let feedRate;
@@ -41,73 +42,88 @@ function getToWS(wsId, ms) {
   return ms.GoToWS(wsId);
 }
 
+function promiseTimeout(msec){
+  return new Promise((resolve)=>{
+    setTimeout(resolve,msec);
+  });
+}
+
 function loop(ms, key) {
-  if (loopStates[path] === true) {
-    if(changed)
-    {
-      changed=false;
-      getNext(ms)
-        .then(()=>{
-          loop(ms, true,spindleSpeed,feedRate);
-        });
-    }
-    //spindle speed and feedrate
-    Promise.all([
-        ms.GetCurrentSpindleSpeed(),
-        ms.GetCurrentFeedrate()
-      ])
-      .then((newspeedfeed)=> {
-        let spindleSpeedNew = Number(newspeedfeed[0]);
-        let feedRateNew = Number(newspeedfeed[1]);
-        if (spindleSpeed !== spindleSpeedNew) {
-          spindleSpeed = spindleSpeedNew;
-          app.ioServer.emit('nc:spindle', spindleSpeed);
-        }
-        if (feedRate !== feedRateNew) {
-          feedRate = feedRateNew;
-          app.ioServer.emit('nc:feed', feedRate);
-        }
-        //get the delta
-        getDelta(ms, key)
-          .then((b)=> {
-            app.ioServer.emit('nc:delta', JSON.parse(b));
-            //change the working step
-            ms.AdvanceState()
-              .then((rc)=>{
-                if (rc === 1) {
-                  ms.GetWSID().then((wsid)=>{ms.GetNextWSID().then((nextwsid)=>{
-                    let setup = sameSetup(wsid,nextwsid);
-                    if (!setup) {
-                      loopStates[path] = false;
-                      update('pause');
-                      changed = true;
-                      if (playbackSpeed > 0) {
-                        if (loopTimer !== undefined) {
-                          clearTimeout(loopTimer);
-                        }
-                        loopTimer = setTimeout(() => loop(ms, false), 50 / (playbackSpeed / 200));
-                      }
-                    }
-                    else {
-                      getNext(ms)
-                        .then(()=> {
-                          loop(ms, true);
-                        });
-                    }
-                  });});
-                }
-                else {
-                  if (playbackSpeed > 0) {
-                    if (loopTimer !== undefined) {
-                      clearTimeout(loopTimer);
-                    }
-                    loopTimer = setTimeout(() => loop(ms, false), 50 / (playbackSpeed / 200));
-                  }
-                }
-              });
-          });
+  if(!_.isEmpty(loopTimer)) return; //If a loop is running, don't start a new one.
+  if (loopStates[path] !== true) return;
+  if(changed)
+  {
+    changed=false;
+    getNext(ms)
+      .then(()=>{
+        loop(ms, true);
       });
+    return;
   }
+  //spindle speed and feedrate
+  Promise.all([
+      ms.GetCurrentSpindleSpeed(),
+      ms.GetCurrentFeedrate()
+    ])
+    .then((newspeedfeed)=> {
+      let spindleSpeedNew = Number(newspeedfeed[0]);
+      let feedRateNew = Number(newspeedfeed[1]);
+      if (spindleSpeed !== spindleSpeedNew) {
+        spindleSpeed = spindleSpeedNew;
+        app.ioServer.emit('nc:spindle', spindleSpeed);
+      }
+      if (feedRate !== feedRateNew) {
+        feedRate = feedRateNew;
+        app.ioServer.emit('nc:feed', feedRate);
+      }
+      //get the delta
+      return getDelta(ms, key);
+    })
+    .then((newState)=> {
+      app.ioServer.emit('nc:delta', JSON.parse(newState));
+      //change the working step
+      return ms.AdvanceState();
+    })
+    .then((shouldSwitch)=>{
+      if (shouldSwitch === 1) {
+        Promise.all([
+          ms.GetWSID(),
+          ms.GetNextWSID()
+        ])
+        .then((wsids)=>{
+          let keepSetup = sameSetup(wsids[0],wsids[1]);
+          if (!keepSetup) {
+            loopStates[path] = false;
+            update('pause');
+            changed = true;
+            if (playbackSpeed > 0) {
+              if (!_.isEmpty(loopTimer)) {
+                //Badness.
+                throw Error('Multiple Loops Running.');
+              }
+              loopTimer = promiseTimeout(50/(playbackSpeed/200));
+              loopTimer.then(() => {loopTimer = {}; loop(ms, false);});
+            }
+          }
+          else {
+            getNext(ms)
+              .then(()=> {
+                loop(ms, true);
+              });
+          }
+        });
+      }
+      else {
+        if (playbackSpeed > 0) {
+          if (!_.isEmpty(loopTimer)) {
+            //Badness.
+            throw Error('Multiple Loops Running.');
+          }
+          loopTimer = promiseTimeout(50/(playbackSpeed/200));
+          loopTimer.then(() => {loopTimer = {}; loop(ms, false);});
+        }
+      }
+    });
 }
 
 function sameSetup(newid, oldid) {
@@ -115,18 +131,19 @@ function sameSetup(newid, oldid) {
 }
 
 function handleWSInit(command, res) {
-  let temp = loopStates[path];
+  let wasLooping = loopStates[path];
   loopStates[path] = true;
   /*if (!temp) {
     loop(file.ms, false);
   }*/
   switch (command) {
     case 'next':
-      if (temp) {
+      if (wasLooping) {
         if(!changed)
         {
-          getNext(file.ms, function() {
-            loop(file.ms, true);
+          getNext(file.ms)
+            .then(()=> {
+              loop(file.ms, true);
           });
         }
         else loop(file.ms, true);
@@ -134,8 +151,9 @@ function handleWSInit(command, res) {
       } else {
         if(!changed)
         {
-          getNext(file.ms, function() {
-            loop(file.ms, true);
+          getNext(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         }
         else loop(file.ms, true);
@@ -145,36 +163,42 @@ function handleWSInit(command, res) {
       res.sendStatus(200);
       break;
     case 'prev':
-      if (temp) {
+      if (wasLooping) {
         if(!changed)
         {
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         }
         else
         {
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         } 
       } else {
         if(!changed)
         {
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         }
         else
         {
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
-          getPrev(file.ms, function() {
-            loop(file.ms, true);
+          getPrev(file.ms)
+            .then(()=>{
+              loop(file.ms, true);
           });
         }
         loopStates[path] = false;
@@ -188,8 +212,9 @@ function handleWSInit(command, res) {
         break;
       }
       let ws = Number(command);
-      getToWS(ws, file.ms, function() {
-        loop(file.ms, true);
+      getToWS(ws, file.ms)
+        .then(()=>{
+          loop(file.ms, true);
       });
       loopStates[path] = false;
       update('pause');
@@ -294,17 +319,9 @@ var _wsInit = function(req, res) {
 
   handleWSInit(req.params.command, res);
 
-  getDelta(file.ms, false)
+  getDelta(file.ms, true)
     .then((b)=> {
       app.ioServer.emit('nc:delta', JSON.parse(b));
-      if (playbackSpeed > 0) {
-        if (loopTimer !== undefined) {
-          clearTimeout(loopTimer);
-        }
-        loopTimer = setTimeout(function () {
-          loop(file.ms, false);
-        }, 50 / (playbackSpeed / 200));
-      }
     });
 };
 

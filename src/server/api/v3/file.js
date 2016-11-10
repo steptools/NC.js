@@ -2,14 +2,34 @@
 let StepNC = require('STEPNode');
 let fs = require('fs');
 let _ = require('lodash');
-let Worker = require('tiny-worker');
-let worker = new Worker('./src/server/api/v3/machinestatethread.js');
+let Worker = require('child_process');
+let worker = Worker.fork('./src/server/api/v3/machinestatethread.js',{silent:true});
+worker.stdout.pipe(process.stdout);
+worker.stderr.pipe(process.stderr);
 let Path = require('path');
 let resolves = {};
-worker.onmessage = (ev)=>{
-  let cb = eval(ev.data.cb);
-  cb(ev.data.val);
+
+
+let waittosend=false;
+worker.on('message',(ev)=>{
+  let cb = eval(ev.cb);
+  cb(ev.val);
+});
+worker.on('error',(err)=>{console.log(err);});
+let drainqueue=[];
+let runningdrainqueue=false;
+let emptydrainqueue = ()=>{
+  if(runningdrainqueue) return;
+  runningdrainqueue = true;
+  while(!_.isEmpty(drainqueue) && !waittosend){
+    let msg = drainqueue.shift();
+    let shouldntwait = worker.stdin.write(JSON.stringify(msg) + '\r\n');
+    waittosend = !shouldntwait;
+  }
+  runningdrainqueue=false;
 };
+worker.stdin.on('drain',()=>{waittosend=false; emptydrainqueue();});
+
 let msid = 0;
 
 function init(path, machinetool) {
@@ -27,7 +47,7 @@ function init(path, machinetool) {
   this.find.OpenProject(path);
   let setms ={ 'msg':'setMachineState','path':path,'sim':true};
   if(machinetool!=="") setms.tool = machinetool;
-	worker.postMessage(setms);
+	worker.stdin.write(JSON.stringify(setms)+'\r\n');
   this.ms = {};
   //The following function maps STEPNode.machineState functions into worker-thread message calls.
   //It's kinda like black magic.
@@ -39,8 +59,14 @@ function init(path, machinetool) {
         let mas="(data)=>{resolves["+msid+"](data);};";
         let msg = {'msg':'getMachine','fun':key,'callback':mas};
         if(arguments.length>0) msg['args']=arguments;
-        worker.postMessage(msg);
-        msid++
+        if(waittosend ===true) {
+          drainqueue.push(msg);
+        }
+        else {
+          let shouldntwait = worker.stdin.write(JSON.stringify(msg) + '\r\n');
+          waittosend = !shouldntwait;
+        }
+        msid++;
       });
     };
   });

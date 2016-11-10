@@ -1,5 +1,5 @@
 var md = require('node-markdown').Markdown;
-import Menu, {Item as MenuItem} from 'rc-menu';
+import Menu, {SubMenu, Item as MenuItem} from 'rc-menu';
 let changetext='';
 
 function getIcon(type, data) {
@@ -34,6 +34,18 @@ function getIcon(type, data) {
       }
     case 'changelog':
       return 'icon glyphicon glyphicon-book';
+    case 'live':
+      return 'icon glyphicons glyphicons-record';
+    case 'geometry':
+      return 'icon glyphicons glyphicons-cube-empty';
+    case 'download':
+      return 'icon glyphicons glyphicons-cloud-download';
+    case 'reset':
+      return 'icon glyphicons glyphicons-recycle';
+    case 'view':
+      return 'icon glyphicons glyphicons-eye-open';
+    case 'noview':
+      return 'icon glyphicons glyphicons-eye-close';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -57,9 +69,35 @@ class Button extends React.Component {
     );
   }
 }
-
-class Slider extends React.Component {
+class GeomBtn extends React.Component {
   constructor(props) {
+    super(props);
+    this.dlClick = this.dlClick.bind(this);
+    this.visClick = this.visClick.bind(this);
+  }
+
+  dlClick(info){
+    this.props.actionManager.emit('STLDL',this.props.type);
+  }
+  visClick(info){
+    this.props.actionManager.emit('changeVis',this.props.type);
+  }
+  render() {
+    let icon = getIcon(this.props.view);
+    let iid='';
+    if(this.props.iid) iid=this.props.iid;
+    return (
+      <MenuItem {...this.props} className = "button">
+        <div className="geom">
+          <div className={icon} id={iid} onClick = {this.visClick} />
+          <div className={getIcon("download")} onClick = {this.dlClick} />
+        </div>
+        {this.props.children}
+      </MenuItem>
+    );
+  }  
+}
+class Slider extends React.Component {  constructor(props) {
     super(props);
     this.changed = this.changed.bind(this);
   }
@@ -149,6 +187,55 @@ FeedSpeed.propTypes = {
   speed: React.PropTypes.number.isRequired,
   rotation: React.PropTypes.string.isRequired
 }
+
+class GeomMenu extends React.Component {
+  constructor(props){
+    super(props);
+    this.pathClick = this.pathClick.bind(this);
+    this.state = {
+      path:'view',
+      asis:'noview',
+      tobe:'noview',
+      machine:'view',
+      removal:'view',
+      cutter:'view'
+    };
+    this.props.actionManager.on('changeVis',(arg)=>{
+      let l={}; 
+      if(this.state[arg]==='view')
+        l[arg]='noview'; 
+      else
+        l[arg]='view';
+      this.setState(l);
+    });
+  }
+
+  pathClick(info){
+    if(info.key==='path')
+      this.props.actionManager.emit('changeVis','path');
+  }
+  render(){ return(
+      <SubMenu {...this.props} onClick={this.pathClick} className="geommenu" title={
+        <div className='item'>
+          <div className={getIcon('geometry')} />
+          <div className='text'>
+            <div className='title'>Geometry</div>
+          </div>
+        </div>
+      } >
+        <GeomBtn actionManager = {this.props.actionManager} view={this.state.asis} type='asis'>As-Is</GeomBtn>
+        <GeomBtn actionManager = {this.props.actionManager} view={this.state.tobe} type='tobe'>To-Be</GeomBtn>
+        <GeomBtn actionManager = {this.props.actionManager} view={this.state.cutter} type='cutter'>Tool</GeomBtn>
+        <GeomBtn actionManager = {this.props.actionManager} view={this.state.machine} type='machine'>Machine</GeomBtn>
+        <GeomBtn actionManager = {this.props.actionManager} view={this.state.removal} type='removal'>Removal</GeomBtn>
+        <Button icon={this.state.path} key='path'>Toolpath</Button>
+      </SubMenu>
+  )}
+}
+
+let resetProcessVolume = function(){
+  request.get("/v3/nc/geometry/delta/reset").end();
+}
 export default class HeaderView extends React.Component {
   constructor(props) {
     super(props);
@@ -188,7 +275,7 @@ export default class HeaderView extends React.Component {
       ss = Math.abs(this.props.spindleSpeed) + ' rev/min';
       if (this.props.spindleSpeed > 0) {
         ss += ' (CCW)';
-        ssIcom = getIcon('spindlespeed', 'CCW');
+        ssIcon = getIcon('spindlespeed', 'CCW');
       } else {
         ss += ' (CW)';
         ssIcon = getIcon('spindlespeed', 'CW');
@@ -236,7 +323,16 @@ export default class HeaderView extends React.Component {
           changelog.className = 'changelog';
           this.props.cbLogstate(false);
         }
+        break;
+      case 'reset':
+        resetProcessVolume();
+        break;
+      default:
+        if (info.key.indexOf('machine') >= 0) {
+          let id = info.key.split('-')[1];
+          this.props.changeMachine(Number(id));
     }
+  }
   }
 
   render() {
@@ -265,6 +361,7 @@ export default class HeaderView extends React.Component {
           val={this.props.speed}
           icons='true'
         />
+	<GeomMenu actionManager = {this.props.actionManager}/>
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <Button key='changelog'>
           <div className='version' id='logbutton'>v1.1.0</div>

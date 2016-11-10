@@ -37,10 +37,133 @@ export default class NC extends THREE.EventDispatcher {
             visible:        true,
             opacity:        1.0,
             explodeDistance: 0,
-            collapsed:      false
+            collapsed:      false,
+            usagevis: {
+                asis:       false,
+                tobe:       false,
+                machine:    true,
+                cutter:     true,
+                inprocess:  true,
+                toolpath:   true,
+                fixture:    true
+            }
         }
+        this.vis = this.vis.bind(this);
+        this.getVis = this.getVis.bind(this);
+        this.save = this.save.bind(this);
+        this.app.actionManager.on('STLDL',this.save);
     }
 
+    //gist.github.com/paulkaplan/6513707
+
+    // Given a THREE.Geometry, create a STL binary
+    geometryToDataView(geometry){
+        var writeFloat = (dataview, offset, float, isLittleEndian)=>{
+            dataview.setFloat32(offset, float, isLittleEndian);
+            return offset + 4;
+        };
+        var writeVector = (dataview, offset, vector, isLittleEndian)=>{
+            offset = writeFloat(dataview, offset, vector.x, isLittleEndian);
+            offset = writeFloat(dataview, offset, vector.y, isLittleEndian);
+            return writeFloat(dataview, offset, vector.z, isLittleEndian);
+        };
+        let compareVertex = (v1,v2)=>{
+            return ((v1.x === v2.x) && (v1.y === v2.y) && (v1.z === v2.z));
+        }
+
+        let tris = geometry.faces;
+        let verts = geometry.vertices;
+
+        let isLittleEndian = true; // STL files assume little endian, see wikipedia page
+        tris = _.filter(tris,(t)=>{ //Remove degenerates. 2016 election joke- Trump would like to do this.
+            return !(compareVertex(verts[t.a],verts[t.b]) && compareVertex(verts[t.b],verts[t.c]));
+        });
+
+        let bufferSize = 84 + (50 * tris.length);
+        let buffer = new ArrayBuffer(bufferSize);
+        let dv = new DataView(buffer);
+        let offset = 0;
+
+        offset += 80; // Header is empty
+
+        dv.setUint32(offset, tris.length, isLittleEndian);
+        offset += 4;
+
+        for(let n = 0; n < tris.length; n++) {
+            offset = writeVector(dv, offset, tris[n].normal, isLittleEndian);
+            offset = writeVector(dv, offset, verts[tris[n].a], isLittleEndian);
+            offset = writeVector(dv, offset, verts[tris[n].b], isLittleEndian);
+            offset = writeVector(dv, offset, verts[tris[n].c], isLittleEndian);
+            offset += 2; // unused 'attribute byte count' is a Uint16
+        }
+
+        return dv;
+    };
+
+    save(arg){
+        let changes = {};
+        switch(arg){
+            case 'asis':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='asis' && obj.model.live});
+                break;
+            case 'tobe':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='tobe' && obj.model.live});
+                break;
+            case 'machine':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='machine' && obj.model.live});
+                break;
+            case 'cutter':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='cutter' && obj.model.live});
+                break;
+            case 'removal':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='inprocess' && obj.model.live});
+                break;
+            default:
+                break;
+        }
+        for(let i=0;i<changes.length;i++) {
+            let outgeom = new THREE.Geometry().fromBufferGeometry(changes[i].model._geometry);
+            let dv = this.geometryToDataView(outgeom);
+            let blob = new Blob([dv], {type: 'application/octet-binary'});
+            FileSaver.saveAs(blob, arg+" model" + i + ".stl");
+        }
+    }
+    vis(arg){
+        let changes = {};
+        switch(arg){
+            case 'asis':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='asis' && obj.model.live});
+                this.state.usagevis.asis= !this.state.usagevis.asis;
+                break;
+            case 'tobe':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='tobe' && obj.model.live});
+                this.state.usagevis.tobe= !this.state.usagevis.tobe;
+                break;
+            case 'machine':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='machine' && obj.model.live});
+                this.state.usagevis.machine = !this.state.usagevis.machine;
+                break;
+            case 'cutter':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='cutter' && obj.model.live});
+                this.state.usagevis.cutter=!this.state.usagevis.cutter;
+                break;
+            case 'removal':
+                changes = _.filter(this._objects,(obj)=>{return obj.usage==='inprocess' && obj.model.live});
+              this.state.usagevis.inprocess = !this.state.usagevis.inprocess;
+                break;
+            case 'path':
+                changes = _.filter(this._loader._annotations,(anno)=>{return anno.live});
+                _.each(changes,(anno)=>{anno.toggleScene();});
+                this.state.usagevis.toolpath=!this.state.usagevis.toolpath;
+                return;
+            default:
+                break;
+        }
+        _.each(changes,(obj)=>{obj.toggleVisibility();});
+    }
+    getVis(usage){
+        return this.state[usage];
+    }
     addModel(model, usage, type, id, transform, bbox) {
         // console.log('Add Model(' + usage + '): ' + id);
         // Setup 3D object holder
@@ -89,9 +212,8 @@ export default class NC extends THREE.EventDispatcher {
                 mesh.userData = obj;
                 obj.object3D.add(mesh);
                 obj.version = 0;
-                if (usage === 'asis') {
-                    // TODO: add selector for displaying asis geometry or not
-                    obj.rendered = false;
+                if (!this.state.usagevis[usage]) {
+                    //obj.rendered = false;
                     obj.setInvisible();
                 }
             });
@@ -242,10 +364,10 @@ export default class NC extends THREE.EventDispatcher {
             else
                 return;
         };
-        request.get('/v3/nc/geometry/delta/'+dynqueuecur).timeout(1000)
+        request.get('/v3/nc/geometry/delta/-1').timeout(1000)
           .then((res)=>{
-              let dyn = {'version':dynqueuecur};
-              dyn = JSON.parse(res.text)
+              //let dyn = {'version':dynqueuecur};
+              let dyn = JSON.parse(res.text)
               try {
                   cb(dyn);
               }
@@ -280,8 +402,11 @@ export default class NC extends THREE.EventDispatcher {
             mesh.userData = obj;
             obj.object3D.add(mesh);
             // Make sure to update the model geometry
+            if(obj.model.getGeometry()) obj.model.getGeometry().dispose();
             obj.model.setGeometry(geometry);
+            obj.model.live = true;
             obj.version = geom.version;
+            obj.baseVersion= geom.base_version;
             obj.precision = geom.precision;
             return true;
         };
@@ -289,6 +414,9 @@ export default class NC extends THREE.EventDispatcher {
             if(!geom.hasOwnProperty('prev_version')){
                 return parseDynamicFull(geom,obj);
             }
+            if(geom.version <= obj.version) return;
+            if(obj.baseVersion !== geom.base_version) return;
+            if(obj.version !== geom.prev_version) return;
             let geometry = makeGeometry(processDelta(geom, obj));
             // Remove all old geometry -- mesh's only
             obj.object3D.traverse(function (child) {
@@ -304,6 +432,7 @@ export default class NC extends THREE.EventDispatcher {
             mesh.userData = obj;
             obj.object3D.add(mesh);
             // Make sure to update the model geometry
+            if(obj.model.getGeometry()) obj.model.getGeometry().dispose();
             obj.model.setGeometry(geometry);
             obj.version = geom.version;
         };
@@ -335,14 +464,14 @@ export default class NC extends THREE.EventDispatcher {
         // Don't know what kind of update this is
     }
 
-    applyDelta(delta) {
+    applyDelta(delta,force) {
         let alter = false;
         //There are two types of 'State' that we get- KeyState or DeltaState.
 
         //If we get a KeyState, we need to re-render the scene.
         //If we get a DeltaState, we need to update the scene.
         //First we handle KeyState.
-        if (!delta.hasOwnProperty('prev')){
+        if (force || !delta.hasOwnProperty('prev')){
             //For keystates, we need to hide the currently drawn but unused geometry,
             //Unhide anything we have that is needed but hidden,
             //And load and display any new things we don't have.
@@ -354,12 +483,14 @@ export default class NC extends THREE.EventDispatcher {
                 //this._object3D.remove(geom.object3D);
                 //this._overlay3D.remove(geom.object3D);
                 geom.rendered = false;
+                geom.model.live = false;
                 geom.object3D.visible = false;
             });
 
             var oldannotations =_.values(this._loader._annotations);
             _.each(oldannotations, (oldannotation) => {
                 oldannotation.removeFromScene();
+                oldannotation.live = false;
             });
 
             //Load new Stuff.
@@ -368,12 +499,12 @@ export default class NC extends THREE.EventDispatcher {
                 geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) ||
                 geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
             );
-            let inproc = _.remove(delta.geom, ['usage','inprocess'])[0];
+            let inproc = _.filter(delta.geom, ['usage','inprocess'])[0];
             this.handleDynamicGeom(inproc,()=>{
                 _.each(toolpaths, (geomData) => {
                     let name = geomData.polyline.split('.')[0];
                     if (!this._loader._annotations[name]){
-                        let annotation = new Annotation(geomData.id, this, this);
+                        let annotation = new Annotation(geomData.id, this, true);
                         let transform = DataLoader.parseXform(geomData.xform, true);
                         this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
                         // Push the annotation for later completion
@@ -385,26 +516,33 @@ export default class NC extends THREE.EventDispatcher {
                             type: 'annotation'
                         });
                     } else {
-                        this._loader._annotations[name].addToScene();
+                        if(this.state.usagevis[geomData.usage]) {
+                            this._loader._annotations[name].addToScene();
+                        }
+                        this._loader._annotations[name].live = true;
                     }
                 });
 
 
                 _.each(geoms, (geomData)=>{
                     let name = geomData.id;
-                    if(geomData.usage !=='cutter') return;
+                    //if(geomData.usage !=='cutter') return;
                     //Don't show as-is geom of fixture
-                    if(geomData.usage =='asis' || (this.app.services.machine === null && geomData.usage == 'fixture')) return;
+                    //if(geomData.usage =='asis' || (this.app.services.machine === null && geomData.usage == 'fixture')) return;
 
                     if(this._objects[name]) {
                         let obj = this._objects[name];
-                        if (!obj.rendered) {
+                        if (!obj.visible) {
                             //this._overlay3D.add(obj.object3D);
                             obj.rendered = true;
-                            obj.visible = true;
-                            obj.setVisible();
+                            if(this.state.usagevis[geomData.usage]) {
+                                obj.visible = true;
+                                obj.setVisible();
+                            }
+                            obj.usage = geomData.usage;
                             this._objects[name] = obj;
                         }
+                        obj.model.live = true;
                     }
                     else {
                         let color = DataLoader.parseColor("7d7d7d");
@@ -413,7 +551,7 @@ export default class NC extends THREE.EventDispatcher {
                         }
                         let transform = DataLoader.parseXform(geomData.xform,true);
                         let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
-                        let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox);
+                        let shell = new Shell(geomData.id,this,this,geomData.size,color,boundingBox,true);
                         this.addModel(shell,geomData.usage,'shell',geomData.id,transform,boundingBox);
                         this._loader._shells[geomData.shell]=shell;
                         var url = "/v3/nc/";
@@ -444,6 +582,7 @@ export default class NC extends THREE.EventDispatcher {
                     }
                     let obj = this._objects[geom.id];
                     if (obj !== undefined) {
+                        obj.model.live = true;
                         if (obj.rendered !== false) {
                             let transform = new THREE.Matrix4();
                             if (!geom.xform) return;

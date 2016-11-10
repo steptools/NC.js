@@ -35,6 +35,17 @@
         }
     }
 
+    .geommenu {
+        .geom {
+            display: flex;
+            .icon{
+                flex: 2;
+            }
+        }
+        li:last-child{
+            float: none;
+        }
+    }
     li:last-child {
         float: right;
         border-left: 1px solid #DDDDDD;
