@@ -5,9 +5,9 @@ let _ = require('lodash');
 let ws = 0;
 let step = 0;
 let ms = file.ms;
-
+let firstws = 0;
 let _load = ()=>{
-  return ms.GetWSID().then((r)=>{ws=r;});
+  return ms.GetWSID().then((r)=>{ws=r;firstws=r;});
 }
 let exists = (path)=>{
   return new Promise((resolve,reject)=>{
@@ -124,7 +124,9 @@ let _init = ()=> {
         return ms.NextWS();
       }
       else step++;
-    }).then(()=>{
+      return Number(-1);
+    }).then((id)=>{
+      if(id === firstws) return 0;
       return cachify(next);
     });
   };
