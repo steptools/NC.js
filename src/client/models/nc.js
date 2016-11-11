@@ -507,7 +507,8 @@ export default class NC extends THREE.EventDispatcher {
                         if (!this._loader._annotations[name]){
                             let annotation = new Annotation(geomData.id, this, true);
                             let transform = DataLoader.parseXform(geomData.xform, true);
-                            this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, undefined);
+                            let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
+                            this.addModel(annotation, geomData.usage, 'polyline', geomData.id, transform, boundingBox);
                             // Push the annotation for later completion
                             this._loader._annotations[name] = annotation;
                             var url = '/v3/nc/';
