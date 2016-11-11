@@ -64,7 +64,6 @@ let reader = (type,wsnum,stepnum)=> {
 let popStatic = (key)=>{
   let state = JSON.parse(key);
   _.forEach(state.geom,(obj)=>{
-    console.log("obj %j",obj);
     if((obj.hasOwnProperty('shell'))){
       ms.GetGeometryJSON(obj.id,'MESH')
         .then((j)=>{
