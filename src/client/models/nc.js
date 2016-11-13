@@ -476,15 +476,25 @@ export default class NC extends THREE.EventDispatcher {
                 //For keystates, we need to hide the currently drawn but unused geometry,
                 //Unhide anything we have that is needed but hidden,
                 //And load and display any new things we don't have.
-                // Hide existing Stuff. Keep it around in case we need to use it later.
+                var toolpaths = _.filter(delta.geom, (geom) => (geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe")));
+                var geoms = _.filter(delta.geom, (geom) => (
+                  geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) ||
+                  geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
+                );
+                let inproc = _.filter(delta.geom, ['usage','inprocess'])[0];
                 var oldgeom = _.filter(_.values(this._objects), (p)=>{
                     return(p.type ==='shell'&& p.usage!=='inprocess');
                 });
+
+                // Hide old Stuff. Keep it around in case we need to use it later.
+                //Don't hide things in the new geom list though.
                 _.each(oldgeom,(geom)=> {
                     //this._object3D.remove(geom.object3D);
                     //this._overlay3D.remove(geom.object3D);
+                    if(_.find(geoms,(g)=>{return g.id===geom.id;})) return;
                     geom.rendered = false;
                     geom.model.live = false;
+                    geom.visible = false;
                     geom.object3D.visible = false;
                 });
 
@@ -495,12 +505,6 @@ export default class NC extends THREE.EventDispatcher {
                 });
 
                 //Load new Stuff.
-                var toolpaths = _.filter(delta.geom, (geom) => (geom.usage == 'toolpath' || (_.has(geom, 'polyline') && geom.usage =="tobe")));
-                var geoms = _.filter(delta.geom, (geom) => (
-                  geom.usage =='cutter' || (geom.usage =='tobe' && _.has(geom, 'shell')) ||
-                  geom.usage =="asis"||geom.usage=='machine' || geom.usage=="fixture")
-                );
-                let inproc = _.filter(delta.geom, ['usage','inprocess'])[0];
                 this.handleDynamicGeom(inproc,()=>{
                     _.each(toolpaths, (geomData) => {
                         let name = geomData.polyline.split('.')[0];
