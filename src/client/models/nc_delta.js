@@ -6,11 +6,13 @@
 
 
 function unindexValues(data, values, buffers) {
-    let numValues = data.pointsIndex.length;
+    let numValues = data.points.length;
+    let precision = data.precision || 2;
+    let factor = Math.pow(10, precision);
     for (let i = 0; i < numValues; i++) {
-        buffers.position[i] = values[data.pointsIndex[i]];
+        buffers.position[i] = data.points[i]/factor;
         if (buffers.position[i]===undefined|| isNaN(buffers.position[i])) buffers.position[i]=0;
-        buffers.normal[i] = values[data.normalsIndex[i]];
+        buffers.normal[i] = data.normals[i]/factor;
         if (buffers.normal[i]===undefined ||isNaN(buffers.normal[i])) buffers.normal[i]=0;
     }
 }
@@ -72,7 +74,6 @@ export function makeGeometry(buffers) {
     geometry.addAttribute('position', new THREE.BufferAttribute(size * 3, 3));
     geometry.addAttribute('normal',   new THREE.BufferAttribute(size * 3, 3), true);
     geometry.addAttribute('color',    new THREE.BufferAttribute(size * 3, 3));
-    geometry.addAttribute('values',   new THREE.BufferAttribute(buffers.values, 1));
 
     // Now load the rest of the data
     geometry.attributes.position.array = buffers.position;
@@ -86,22 +87,13 @@ export function makeGeometry(buffers) {
 
 
 export function processKeyframe(dataJSON) {
-    // Correct precision
-    if (dataJSON.values) {
-        let precision = dataJSON.precision || 2;
-        let factor = Math.pow(10, precision);
-        let length = dataJSON.values.length;
-        for (let i = 0; i < length; i++) {
-            dataJSON.values[i] /= factor;
-        }
-    }
     // Just copy the data into arrays
     var buffers = {
-        position:   new Float32Array(dataJSON.pointsIndex.length),
-        normal:    new Float32Array(dataJSON.pointsIndex.length),
-        color:     new Float32Array(dataJSON.pointsIndex.length),
-        values:     new Float32Array(dataJSON.values)
+        position:   new Float32Array(dataJSON.points.length),
+        normal:    new Float32Array(dataJSON.points.length),
+        color:     new Float32Array(dataJSON.points.length),
     };
+    // Correct precision
     unindexValues(dataJSON, dataJSON.values, buffers);
     // Handle colors
     if (dataJSON.colorsData) {
@@ -112,7 +104,7 @@ export function processKeyframe(dataJSON) {
     return buffers;
 }
 
-
+//TODO: Update to accomidate new format
 export function processDelta(dataJSON, obj) {
     let oldGeom = obj.model.getGeometry();
     let oldValues = oldGeom.getAttribute('values').array;

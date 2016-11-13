@@ -654,10 +654,11 @@ function processAnnotation(url, workerID, data) {
 /*********************************************************************/
 
 function unindexValues(data, buffers) {
-    let numValues = data.pointsIndex.length;
+    let numValues = data.points.length;
+    let factor = Math.pow(10, data.precision);
     for (let i = 0; i < numValues; i++) {
-        buffers.position[i] = data.values[data.pointsIndex[i]];
-        buffers.normals[i] = data.values[data.normalsIndex[i]];
+        buffers.position[i] = data.points[i]/factor;
+        buffers.normals[i] = data.normals[i]/factor;
     }
 }
 
@@ -695,22 +696,13 @@ function faceLoad(data, buffers) {
 function processShellJSON(url, workerID, dataJSON, signalFinish) {
     // Just copy the data into arrays
     let buffers = {
-        position: new Float32Array(dataJSON.pointsIndex.length),
-        normals: new Float32Array(dataJSON.pointsIndex.length),
-        color: new Float32Array(dataJSON.pointsIndex.length),
+        position: new Float32Array(dataJSON.points.length),
+        normals: new Float32Array(dataJSON.points.length),
+        color: new Float32Array(dataJSON.points.length),
         faces: new Object()
     };
 
-    if (dataJSON.values) {
-        if (dataJSON.precision) {
-            let factor = Math.pow(10, dataJSON.precision);
-            let length = dataJSON.values.length;
-            for (let i = 0; i < length; i++) {
-                dataJSON.values[i] /= factor;
-            }
-        }
-	unindexValues(dataJSON,buffers);
-    }
+    unindexValues(dataJSON,buffers);
     if (dataJSON.faces)
         faceLoad(dataJSON, buffers);
     let parts = url.split("/");
