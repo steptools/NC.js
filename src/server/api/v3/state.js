@@ -13,6 +13,7 @@ let spindleSpeed;
 let feedRate;
 let path = find.GetProjectName();
 let changed=false;
+let setupFlag = false;
 
 /****************************** Helper Functions ******************************/
 
@@ -34,16 +35,19 @@ function getDelta(ms, key) {
 
 function getNext(ms) {
   changed=true;
+  setupFlag =false;
   return ms.NextWS();
 }
 
 function getPrev(ms) {
   changed=true;
+  setupFlag =false;
   return ms.PrevWS();
 }
 
 function getToWS(wsId, ms) {
   changed=true;
+  setupFlag =false;
   return ms.GoToWS(wsId);
 }
 
@@ -64,7 +68,12 @@ function looptick(){
       app.ioServer.emit('nc:delta', JSON.parse(newState))
     });
   } else if(loopStates[path]===true) {
-    loop(scache,false);
+    if(setupFlag===true){ //Somebody pushed play after it paused for a setup end
+      movequeue.push(()=>{return getNext(scache);});
+      setupFlag =false;
+    }else {
+      loop(scache, false);
+    }
   }
   loopTimer = promiseTimeout(50/(playbackSpeed/200));
   return loopTimer.then(() => {loopTimer = {}; return looptick();});
@@ -111,6 +120,7 @@ function loop(ms, key) {
             if (!keepSetup) { //Stop on setup changes.
               loopStates[path] = false;
               update('pause');
+              setupFlag = true;
               return;
             }
             else {
