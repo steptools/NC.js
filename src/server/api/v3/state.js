@@ -258,7 +258,7 @@ function _getKeyState(req, res) {
   }
   getDelta(ms,true)
     .then((r)=>{
-      res.status(200).send(r)
+      res.status(200).send(JSON.parse(r));
     });
 }
 
@@ -270,7 +270,7 @@ function _getDeltaState(req, res) {
   }
   getDelta(ms,false)
     .then((r)=>{
-      res.status(200).send(r)
+      res.status(200).send(JSON.parse(r));
     });
 }
 
