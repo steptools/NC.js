@@ -25,7 +25,7 @@ function updateSpeed(speed) {
 }
 
 function getDelta(ms, key) {
-  if (key) {
+  if (key===true) {
     return ms.GetKeyStateJSON();
   } else {
     return ms.GetDeltaStateJSON();
@@ -33,14 +33,17 @@ function getDelta(ms, key) {
 }
 
 function getNext(ms) {
+  changed=true;
   return ms.NextWS();
 }
 
 function getPrev(ms) {
+  changed=true;
   return ms.PrevWS();
 }
 
 function getToWS(wsId, ms) {
+  changed=true;
   return ms.GoToWS(wsId);
 }
 
@@ -50,17 +53,28 @@ function promiseTimeout(msec){
   });
 }
 
+let isTicking = false;
+let movequeue = [];
+function looptick(){
+  if(movequeue.length > 0){
+    let move = movequeue.shift();
+    move().then(()=>{
+     return getDelta(scache,true);
+    }).then((newState)=>{
+      app.ioServer.emit('nc:delta', JSON.parse(newState))
+    });
+  } else if(loopStates[path]===true) {
+    loop(scache,false);
+  }
+  loopTimer = promiseTimeout(50/(playbackSpeed/200));
+  return loopTimer.then(() => {loopTimer = {}; return looptick();});
+}
+
 function loop(ms, key) {
-  if(!_.isEmpty(loopTimer)) return; //If a loop is running, don't start a new one.
-  if (loopStates[path] !== true) return;
   if(changed)
   {
     changed=false;
-    getNext(ms)
-      .then(()=>{
-        loop(ms, true);
-      });
-    return;
+    key = true;
   }
   //spindle speed and feedrate
   Promise.all([
@@ -88,42 +102,21 @@ function loop(ms, key) {
     })
     .then((shouldSwitch)=>{
       if (shouldSwitch === 1) {
-        Promise.all([
-          ms.GetWSID(),
-          ms.GetNextWSID()
-        ])
-        .then((wsids)=>{
-          let keepSetup = sameSetup(wsids[0],wsids[1]);
-          if (!keepSetup) {
-            loopStates[path] = false;
-            update('pause');
-            changed = true;
-            if (playbackSpeed > 0) {
-              if (!_.isEmpty(loopTimer)) {
-                //Badness.
-                throw Error('Multiple Loops Running.');
-              }
-              loopTimer = promiseTimeout(50/(playbackSpeed/200));
-              loopTimer.then(() => {loopTimer = {}; loop(ms, false);});
+        return Promise.all([
+            ms.GetWSID(),
+            ms.GetNextWSID()
+          ])
+          .then((wsids)=>{
+            let keepSetup = sameSetup(wsids[0],wsids[1]);
+            if (!keepSetup) { //Stop on setup changes.
+              loopStates[path] = false;
+              update('pause');
+              return;
             }
-          }
-          else {
-            getNext(ms)
-              .then(()=> {
-                loop(ms, true);
-              });
-          }
-        });
-      }
-      else {
-        if (playbackSpeed > 0) {
-          if (!_.isEmpty(loopTimer)) {
-            //Badness.
-            throw Error('Multiple Loops Running.');
-          }
-          loopTimer = promiseTimeout(50/(playbackSpeed/200));
-          loopTimer.then(() => {loopTimer = {}; loop(ms, false);});
-        }
+            else {
+              movequeue.push(()=>{return getNext(ms);});
+            }
+          });
       }
     });
 }
@@ -134,77 +127,12 @@ function sameSetup(newid, oldid) {
 
 function handleWSInit(command, res) {
   let ms = scache;
-  let wasLooping = loopStates[path];
-  loopStates[path] = true;
   switch (command) {
     case 'next':
-      if (wasLooping) {
-        if(!changed)
-        {
-          getNext(ms)
-            .then(()=> {
-              loop(ms, true);
-          });
-        }
-        else loop(ms, true);
-        
-      } else {
-        if(!changed)
-        {
-          getNext(ms)
-            .then(()=>{
-              loop(ms, true);
-          });
-        }
-        else loop(ms, true);
-        loopStates[path] = false;
-        update('pause');
-      }
-      res.sendStatus(200);
+      movequeue.push(()=>{return getNext(ms);});
       break;
     case 'prev':
-      if (wasLooping) {
-        if(!changed)
-        {
-          getPrev(ms)
-            .then(()=>{
-              loop(ms, true);
-          });
-        }
-        else
-        {
-          getPrev(ms)
-            .then(()=>{
-              loop(ms, true);
-          });
-          getPrev(ms)
-            .then(()=>{
-              loop(ms, true);
-          });
-        } 
-      } else {
-        if(!changed)
-        {
-          getPrev(ms)
-            .then(()=>{
-              loop(ms, true);
-          });
-        }
-        else
-        {
-          getPrev(ms)
-            .then(()=>{
-              loop(ms, true);
-          });
-          getPrev(ms)
-            .then(()=>{
-              loop(ms, true);
-          });
-        }
-        loopStates[path] = false;
-        update('pause');
-      }
-      res.sendStatus(200);
+      movequeue.push(()=>{return getPrev(ms);});
       break;
     default:
       if (isNaN(parseFloat(command))
@@ -212,14 +140,9 @@ function handleWSInit(command, res) {
         break;
       }
       let ws = Number(command);
-      getToWS(ws, ms)
-        .then(()=>{
-          loop(ms, true);
-      });
-      loopStates[path] = false;
-      update('pause');
-      res.sendStatus(200);
+      movequeue.push(()=>{return getToWS(ws,ms);});
   }
+  res.sendStatus(200);
 }
 
 /***************************** Endpoint Functions *****************************/
@@ -227,6 +150,10 @@ function handleWSInit(command, res) {
 function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
   var ms = scache;
+  if(!isTicking){
+    isTicking=true;
+    looptick();
+  }
   Promise.all([
     ms.GetCurrentSpindleSpeed(),
     ms.GetCurrentFeedrate()
@@ -267,7 +194,7 @@ function _loopInit(req, res) {
             loopStates[path] = true;
             res.sendStatus(200);
             update('play');
-            loop(ms, false);
+            //loop(ms, false);
             break;
           case 'stop':
             if (loopStates[path] === false) {
@@ -290,7 +217,7 @@ function _loopInit(req, res) {
             }
 
             if (loopStates[path] === true) {
-              loop(ms, false);
+              //loop(ms, false);
               res.status(200).send({
                 'state': 'play',
                 'speed': playbackSpeed,
