@@ -5,10 +5,25 @@ let _ = require('lodash');
 let ws = 0;
 let step = 0;
 let ms = file.ms;
-let firstws = 0;
+let wsteps = [];
 let _load = ()=>{
-  return ms.GetWSID().then((r)=>{ws=r;firstws=r;});
-}
+  return new Promise((resolve)=> {
+    let b = ()=>
+    {
+      ms.GetWSID().then((id)=> {
+        if (id === wsteps[0]) {
+          ws = 0;
+          resolve();
+        }
+        else {
+          wsteps.push(id);
+          ms.NextWS().then(b);
+        }
+      });
+    };
+    b();
+  });
+};
 let exists = (path)=>{
   return new Promise((resolve,reject)=>{
     fs.access(path,(err)=> {
@@ -139,22 +154,22 @@ let _init = ()=> {
   });
 };
 let _dynamicState = ()=>{
-  return reader('dynamic',ws,step);
+  return reader('dynamic',wsteps[ws],step);
 };
 let _geometry = (id)=>{
   return reader('static',id);
 }
 let _deltaState = ()=>{
-  return reader('delta',ws,step);
+  return reader('delta',wsteps[ws],step);
 };
 let _keyState = ()=>{
-  return reader('key',ws,step);
+  return reader('key',wsteps[ws],step);
 };
 let _spindleSpeed = ()=>{
-  return reader('spindle',ws,step);
+  return reader('spindle',wsteps[ws],step);
 };
 let _feedRate = ()=>{
-  return reader('feed',ws,step);
+  return reader('feed',wsteps[ws],step);
 };
 
 let _advanceState = ()=>{
@@ -170,38 +185,30 @@ let _advanceState = ()=>{
   });
 };
 let _nextWs = ()=>{
-  return ms.GoToWS(ws)
-    .then(()=>{
-      return ms.GetNextWSID();
-    }).then((id)=>{
-      ws=id;
-      step=0;
-    });
+  step=0;
+  ws++;
+  if(ws>=wsteps.length) ws = 0;
+  return Promise.resolve();
 };
 let _prevWs = ()=>{
-  return ms.GoToWS(ws)
-    .then(()=>{
-      return ms.GetPrevWSID();
-    }).then((id)=>{
-      ws=id;
-      step=0;
-    });
+  step=0;
+  ws--;
+  if(ws<0) ws = wsteps.length-1;
+  return Promise.resolve();
 };
 
 //TODO: This should be made safer.
-let _goToWs = (wsid)=>{ws = wsid;step=0;return Promise.resolve(0);};
-let _getID = ()=>{return Promise.resolve(ws);};
+let _goToWs = (wsid)=>{ws = _.findIndex(wsteps,(id)=>{return id ===wsid;});console.log(ws); step=0;return Promise.resolve(0);};
+let _getID = ()=>{return Promise.resolve(wsteps[ws]);};
 let _getlastID = ()=>{
-  return ms.GoToWS(ws)
-    .then(()=>{
-      return ms.GetPrevWSID();
-    });
+  if(ws-1<0)
+    return Promise.resolve(wsteps[wsteps.length-1]);
+  return Promise.resolve(wsteps[ws-1]);
 };
 let _getnextID = ()=>{
-  return ms.GoToWS(ws)
-    .then(()=>{
-      return ms.GetNextWSID();
-    });
+  if(ws+1>=wsteps.length)
+    return Promise.resolve(wsteps[0]);
+  return Promise.resolve(wsteps[ws+1]);
 };
 
 module.exports.Initialize = _load;
