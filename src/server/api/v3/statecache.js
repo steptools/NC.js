@@ -47,7 +47,7 @@ let fread = (path)=>{
       }
     });
   });
-}
+};
 
 //wsnum is UUID if type is static
 let writer = (type,json,wsnum,stepnum)=>{
@@ -158,7 +158,7 @@ let _dynamicState = ()=>{
 };
 let _geometry = (id)=>{
   return reader('static',id);
-}
+};
 let _deltaState = ()=>{
   return reader('delta',wsteps[ws],step);
 };
