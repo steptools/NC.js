@@ -180,6 +180,7 @@ let _advanceState = ()=>{
   }).catch((err)=>{
     if(err.code==='ENOENT') {
       console.log('should switch');
+      step--;
       return 1;
     }
   });
