@@ -50,6 +50,14 @@ let fread = (path)=>{
   });
 };
 
+let promisewriteFile = (fname,data)=>{
+  return new Promise((resolve,reject)=>{
+    fs.writeFile(fname,data,(err)=>{
+      if(err) reject(err);
+      else resolve();
+    });
+  });
+};
 //wsnum is UUID if type is static
 let writer = (type,json,wsnum,stepnum)=>{
   let fname = '';
@@ -62,11 +70,11 @@ let writer = (type,json,wsnum,stepnum)=>{
     .then((r)=>{
       if(r) {
         console.log("%s exists", fname);//If the file exists, fast fail.
-        return;
+        return Promise.resolve();
       } else {
-        fs.writeFile(fname, json);
+        return promisewriteFile(fname,json);
       }
-    })
+    });
 };
 let reader = (type,wsnum,stepnum)=> {
   let fname = '';
@@ -83,12 +91,12 @@ let popStatic = (key)=>{
     if((obj.hasOwnProperty('shell'))){
       ms.GetGeometryJSON(obj.id,'MESH')
         .then((j)=>{
-          writer('static',j,obj.id)
+          writer('static',j,obj.id).then(()=>{j=null;});
         });
     } else if((obj.hasOwnProperty('polyline'))){
       ms.GetGeometryJSON(obj.id,'POLYLINE')
         .then((j)=>{
-          writer('static',j,obj.id)
+          writer('static',j,obj.id).then(()=>{j=null;});
         });
     }
   });
