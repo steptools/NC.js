@@ -105,15 +105,17 @@ let _init = ()=> {
   let cachify = (NextWS)=>{
     let pmise = {};
     let next = false;
+    let id = -1;
     if(NextWS) {
-      pmise = ms.GetWSID()
-        .then((id)=> {
+      pmise = _getID()
+        .then((wsid)=> {
+          id = wsid;
+          return ms.GoToWS(id);
+        }).then(()=>{
           console.log("WS ID: %d",id);
-          ws = id;
-          step = 0;
-          return exists(process.cwd()+'/cache/'+ws);
+          return Promise.all([exists(dir+id),Promise.resolve(id)]);
         }).then((r)=>{
-          if(!r) fs.mkdir(process.cwd()+'/cache/'+ws);
+          if(!r[0]) fs.mkdir(dir+r[1]);
           return ms.GetKeyStateJSON()
             .then((j)=>{ popStatic(j);});
         });
@@ -121,7 +123,7 @@ let _init = ()=> {
       pmise = Promise.resolve(0);
     }
     pmise.then(()=>{
-      return exists(process.cwd() + '/cache/' + ws + '/' + step + '.dynamic.json');
+      return exists(dir + wsteps[ws] + '/' + step + '.dynamic.json');
     }).then((r)=>{
       if(r) //file exists, advance and don't worry.
         return ms.AdvanceState();
@@ -137,28 +139,27 @@ let _init = ()=> {
             let i=0;
             let fnames = ['key','delta','dynamic','spindle','feed'];
             _.forEach(jsons,(j)=>{
-              writer(fnames[i++],j,ws,step);
+              writer(fnames[i++],j,wsteps[ws],step).then(()=>{j=null;});
             });
             return ms.AdvanceState();
           });
     }).then((rtn)=>{
       if(rtn>0) {
         next = true;
-        return ms.NextWS();
+        return _nextWs();
       }
       else step++;
       return Number(-1);
     }).then((id)=>{
-      if(id === firstws) return 0;
+      if(id === wsteps[0]) return 0;
       return cachify(next);
     });
   };
-  console.log('here');
-  exists(process.cwd()+'/cache/').then((r)=>{
-    if(!r) fs.mkdir(process.cwd()+'/cache/');
-    return exists(process.cwd()+'/cache/static');
+  exists(dir).then((r)=>{
+    if(!r) fs.mkdir(dir);
+    return exists(dir+'static');
   }).then((r)=>{
-    if(!r) fs.mkdir(process.cwd()+'/cache/static');
+    if(!r) fs.mkdir(dir+'static');
     return cachify(true);
   });
 };
