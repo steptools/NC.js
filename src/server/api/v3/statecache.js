@@ -6,6 +6,7 @@ let ws = 0;
 let step = 0;
 let ms = file.ms;
 let wsteps = [];
+let dir = process.cwd()+"/"+file.project +"cache/" ;
 let _load = ()=>{
   return new Promise((resolve)=> {
     let b = ()=>
@@ -53,9 +54,9 @@ let fread = (path)=>{
 let writer = (type,json,wsnum,stepnum)=>{
   let fname = '';
   if(type==='static') {
-    fname = process.cwd()+'/cache/static/'+wsnum+'.json';
+    fname = dir+'static/'+wsnum+'.json';
   } else {
-    fname = process.cwd() + '/cache/' + wsnum + '/' + stepnum + '.' + type + '.json';
+    fname = dir + wsnum + '/' + stepnum + '.' + type + '.json';
   }
   return exists(fname)
     .then((r)=>{
@@ -70,9 +71,9 @@ let writer = (type,json,wsnum,stepnum)=>{
 let reader = (type,wsnum,stepnum)=> {
   let fname = '';
   if(type==='static'){ //wsnum is UUID if type is static
-    fname = process.cwd()+'/cache/static/'+wsnum+'.json';
+    fname = dir + 'static/'+wsnum+'.json';
   } else {
-    fname = process.cwd()+'/cache/'+wsnum+'/'+stepnum+'.'+type+'.json';
+    fname = dir+wsnum+'/'+stepnum+'.'+type+'.json';
   }
   return fread(fname);
 };

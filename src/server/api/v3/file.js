@@ -9,6 +9,8 @@ worker.stderr.pipe(process.stderr);
 let Path = require('path');
 let resolves = {};
 
+let project = "";
+
 
 let waittosend=false;
 worker.on('message',(ev)=>{
@@ -34,6 +36,8 @@ let msid = 0;
 
 function init(path, machinetool) {
   fs.accessSync(path, fs.R_OK , () => process.exit());
+
+  this.project = Path.basename(path,Path.extname(path));
   this.apt = new StepNC.AptStepMaker();
   try {
     fs.accessSync(machinetool,fs.R_OK)
@@ -75,6 +79,7 @@ function init(path, machinetool) {
 }
 
 module.exports.init = init;
+module.exports.project = this.project;
 module.exports.find = this.find;
 module.exports.apt = this.apt;
 module.exports.tol = this.tol;
