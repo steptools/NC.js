@@ -60,7 +60,7 @@ function init(path, machinetool) {
     this.ms[key] = function(){
       return new Promise((resolve)=>{
         resolves[msid] = (d)=>{resolve(d)};
-        let mas="(data)=>{resolves["+msid+"](data);};";
+        let mas="(data)=>{resolves["+msid+"](data);resolves["+msid+"]=null;data=null;};";
         let msg = {'msg':'getMachine','fun':key,'callback':mas};
         if(arguments.length>0) msg['args']=arguments;
         if(waittosend ===true) {
