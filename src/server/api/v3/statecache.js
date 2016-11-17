@@ -197,14 +197,32 @@ let _advanceState = ()=>{
 let _nextWs = ()=>{
   step=0;
   ws++;
-  if(ws>=wsteps.length) ws = 0;
-  return Promise.resolve();
+  let rtn = -1;
+  if(ws>=wsteps.length) {
+    ws--;
+  } else {
+    rtn = wsteps[ws];
+  }
+  return Promise.resolve(rtn);
 };
 let _prevWs = ()=>{
   step=0;
   ws--;
-  if(ws<0) ws = wsteps.length-1;
-  return Promise.resolve();
+  let rtn = -1;
+  if(ws<0) {
+    ws=0;
+  } else {
+    rtn = wsteps[ws];
+  }
+  return Promise.resolve(rtn);
+};
+let _firstWs = ()=>{
+  ws=0;
+  return Promise.resolve(wsteps[ws]);
+};
+let _lastWs = ()=>{
+  ws = wsteps.length-1;
+  return Promise.resolve(wsteps[ws]);
 };
 
 //TODO: This should be made safer.
@@ -212,12 +230,12 @@ let _goToWs = (wsid)=>{ws = _.findIndex(wsteps,(id)=>{return id ===wsid;});conso
 let _getID = ()=>{return Promise.resolve(wsteps[ws]);};
 let _getlastID = ()=>{
   if(ws-1<0)
-    return Promise.resolve(wsteps[wsteps.length-1]);
+    return Promise.resolve(-1);
   return Promise.resolve(wsteps[ws-1]);
 };
 let _getnextID = ()=>{
   if(ws+1>=wsteps.length)
-    return Promise.resolve(wsteps[0]);
+    return Promise.resolve(-1);
   return Promise.resolve(wsteps[ws+1]);
 };
 
@@ -230,6 +248,8 @@ module.exports.GetKeyStateJSON = _keyState;
 module.exports.GetCurrentSpindleSpeed = _spindleSpeed;
 module.exports.GetCurrentFeedrate = _feedRate;
 module.exports.AdvanceState = _advanceState;
+module.exports.FirstWS = _firstWs;
+module.exports.LastWS = _lastWs;
 module.exports.NextWS = _nextWs;
 module.exports.PrevWS = _prevWs;
 module.exports.GoToWS = _goToWs;
