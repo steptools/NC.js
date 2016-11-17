@@ -53,7 +53,7 @@ function exeFromId(id) {
     }
   }
 
-  if (!find.IsWorkingstep(id)) {
+  if (!find.IsWorkingstep(id) && !find.IsNcFunction()) {
     let children = find.GetNestedExecutableAll(id);
     if (children !== undefined) {
       ws.children = children.map(exeFromId);
@@ -81,6 +81,8 @@ function exeFromId(id) {
     ws.type = 'workplan-setup';
   } else if (find.IsWorkplan(id)) {
     ws.type = 'workplan';
+  } else if(find.IsNcFunction(id)) {
+    ws.type = 'Nc Function';
   }
 
   return ws;
