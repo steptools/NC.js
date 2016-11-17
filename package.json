@@ -10,7 +10,9 @@
     "start-debug": "node-debug -p 8085 src/server/api_server.js",
     "start-dev": "node src/server/api_server.js -e development",
     "make": "./node_modules/.bin/webpack --progress --bail && node src/server/api_server.js",
+    "make-MT": "./node_modules/.bin/webpack --config ./MTwebpack.config.js --progress --bail && node src/server/api_server.js",
     "make-release": "./node_modules/.bin/webpack --minimize --progress --bail && node src/server/api_server.js",
+    "make-release-MT": "./node_modules/.bin/webpack --config ./MTwebpack.config.js --minimize --progress --bail && node src/server/api_server.js --mt-connect",
     "make-cache": "node --max_old_space_size=4096 ./scripts/Cacheify.js"
   },
   "author": "G. Hemingway",
@@ -43,7 +45,8 @@
     "superagent": "^2.0.0",
     "three": "^0.78.0",
     "webpack-sources": "^0.1.0",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "xml2js": "latest"
   },
   "devDependencies": {
     "babel": "^6.5.2",
