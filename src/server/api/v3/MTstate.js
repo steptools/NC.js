@@ -328,11 +328,11 @@ var _loopInit = function(req, res) {
           if (loopStates[path] === true) {
             res
                 .status(200)
-                .send(JSON.stringify({'state': 'play', 'speed': playbackSpeed}));
+                .send(JSON.stringify({'state': 'play', 'speed': '100'}));
           } else {
             res
                 .status(200)
-                .send(JSON.stringify({'state': 'pause', 'speed': playbackSpeed}));
+                .send(JSON.stringify({'state': 'pause', 'speed': '100'}));
           }
         } else {
           let loopstate = req.params.loopstate;
