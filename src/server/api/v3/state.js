@@ -305,7 +305,9 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
-
+  if(app.config.noCache){
+    scache = file.ms;
+  }
   if (cb) {
     cb();
   }

@@ -1,7 +1,7 @@
 'use strict';
 var file = require('./file');
 var fs = require('fs');
-var ms = require('./statecache');
+var ms ={};//statecache or file.ms depending on config.UseCache
 /***************************** Endpoint Functions *****************************/
 
 function _getDelta(req,res){
@@ -44,7 +44,6 @@ function _getPoly(id,res){
 }
 
 function _getGeometry(req, res) {
-  let ms = file.ms;
   let find = file.find;
   //Route the /geometry/delta/:current endpoint first.
   if(req.params.id === 'delta') {
@@ -83,9 +82,8 @@ function _getGeometry(req, res) {
 }
 
 function _getEIDfromUUID(req, res){
-  let ms = file.ms;
   if(req.params.uuid){
-    ms.GetEIDfromUUID(req.params.uuid)
+    file.ms.GetEIDfromUUID(req.params.uuid)
       .then((out)=>{
         res.status(200).send(out)
       });
@@ -98,6 +96,11 @@ module.exports = function(app, cb) {
   app.router.get('/v3/nc/geometry/:id/:type', _getGeometry);
   app.router.get('/v3/nc/geometry/:eid', _getGeometry);
   app.router.get('/v3/nc/id/:uuid', _getEIDfromUUID);
+  if(app.config.noCache){
+    ms = file.ms;
+  } else {
+    ms = require('./statecache');
+  }
   if (cb) {
     cb();
   }

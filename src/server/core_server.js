@@ -38,10 +38,18 @@ function CoreServer() {
       'Step NC filepath to use [""]',
       ''
     )
+    .option(
+      '--no-cache',
+      'Run from simulation instead of cached data.'
+    )
+    .option(
+      '--mt-connect',
+      'Run the MT Connect server mode. Implies --no-cache.'
+    )
     .parse(process.argv);
   this.config = configurator(opts.config, opts.environment);
   this.port = opts.port || this.config.port || 8080;
-
+  if(this.config.mtConnect) this.config.noCache = true;
   // set up machine tool option
   if(opts.tool){
     try{
