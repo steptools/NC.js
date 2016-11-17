@@ -9,11 +9,10 @@ var parseXMLString = require('xml2js');
 var _ = require('lodash');
 var fs = require('fs');
 
-var Worker = require('tiny-worker');
-let worker = {};
-try{
-  worker = new Worker('./src/server/api/v3/parseupdatethread.js');
-} catch(e){console.log(e);};
+var Worker = require('child_process');
+let worker = Worker.fork('./src/server/api/v3/parseupdatethread.js',{silent:true});
+worker.stdout.pipe(process.stdout);
+worker.stderr.pipe(process.stderr);
 
 var app;
 var loopTimer;
@@ -209,9 +208,9 @@ var feedUpdate=function(feedrate){
 };
 //==========END STATE UPDATERS==========
 //==========WORKER THREAD PROCESSOR=====
-worker.onmessage = (ev)=>{
-  _.forIn(ev.data,(val,key)=>{
-    switch(key){
+worker.on('message',(ev)=> {
+  _.forIn(ev, (val, key)=> {
+    switch (key) {
       case "pathUpdate":
         pathUpdate(val);
         break;
@@ -229,7 +228,7 @@ worker.onmessage = (ev)=>{
         break;
     }
   });
-}
+});
 //==========END PROCESSOR===============
 
 let mtcFile = null;
@@ -356,7 +355,15 @@ var _loopInit = function(req, res) {
               let machineAddress = app.config.machineList[0].address.split(':')[0];
               let machinePort = app.config.machineList[0].address.split(':')[1];
               loadMTCHold(machineAddress,machinePort)
-                  .then(()=>{worker.postMessage({'msg':'start','machineAddress':machineAddress,'machinePort':machinePort,'startSequence':startSequence});});
+                  .then(()=>{
+                    let message = {
+                      'msg':'start',
+                      'machineAddress':machineAddress,
+                      'machinePort':machinePort,
+                      'startSequence':startSequence
+                    };
+                    worker.stdin.write(JSON.stringify(message)+'\n');
+                  });
               break;
             case 'stop':
               if (loopStates[path] === false) {

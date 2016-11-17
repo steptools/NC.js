@@ -1,10 +1,12 @@
-var xml2js = require('xml2js');
-var getMultipartRequest = require(process.cwd()+'/src/server/api/v3/getmultipartrequest.js');
-var _ = require('lodash');
+'use strict';
+let xml2js = require('xml2js');
+let getMultipartRequest = require(process.cwd()+'/src/server/api/v3/getmultipartrequest.js');
+let _ = require('lodash');
+let readline = require('readline');
 
-var dump=1;
-var sdump=1;
-var fdump=1;
+let dump=1;
+let sdump=1;
+let fdump=1;
 var updateLoop = function(data){
     xml2js.parseString(data,(err,res)=>{
         if(err){
@@ -29,17 +31,17 @@ var updateLoop = function(data){
                                     case "MS1speed":
                                         if(sdump++%100) break;
                                         sdump=1;
-                                        postMessage({'speedUpdate':g._});
+                                        process.send({'speedUpdate':g._});
                                         break;
                                     case "Mp1Fact":
                                         if(fdump++%100) break;
                                         fdump=1;
-                                        postMessage({'feedUpdate':g._});
+                                        process.send({'feedUpdate':g._});
                                         break;
                                     case "Mp1LPathPos":
                                         if(dump++%10) break;
                                         dump=1;
-                                        postMessage({'pathUpdate':g._});
+                                        process.send({'pathUpdate':g._});
                                         break;
                                 }
                             });
@@ -50,10 +52,10 @@ var updateLoop = function(data){
                             _.each(val,(g)=>{
                                 switch(g.$.dataItemId){
                                     case "Mp1BlockNumber":
-                                        postMessage({'blockNumberUpdate':g._});
+                                        process.send({'blockNumberUpdate':g._});
                                         break;
                                     case "Mp1block":
-                                        postMessage({'blockUpdate':g._});
+                                        process.send({'blockUpdate':g._});
                                         break;
                                 }
                             });
@@ -66,9 +68,16 @@ var updateLoop = function(data){
     })
 };
 
-onmessage =function(f){
-    f=f.data;
+let parseMessage = (f)=>{
     if(f.msg==='start'){
         getMultipartRequest({'hostname':f.machineAddress,'port':f.machinePort,'path':'/sample?from='+f.startSequence+'&interval=0&heartbeat=10000'},(r)=>{updateLoop(r);});
     }
 };
+
+let rl = readline.createInterface({input:process.stdin,output:process.stdout});
+rl.on('line',(input)=>{
+    let i = JSON.parse(input);
+    parseMessage(i);
+});
+
+console.log('ParseThread worker started PID %s\r\n',process.pid);
