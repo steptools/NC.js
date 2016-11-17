@@ -36,13 +36,25 @@ function getDelta(ms, key) {
 function getNext(ms) {
   changed=true;
   setupFlag =false;
-  return ms.NextWS();
+  return ms.NextWS().then((r)=>{
+    if(r==-1) {
+      return ms.FirstWS();
+    } else {
+      return r;
+    }
+  });
 }
 
 function getPrev(ms) {
   changed=true;
   setupFlag =false;
-  return ms.PrevWS();
+  return ms.PrevWS().then((r)=>{
+    if(r==-1) {
+      return ms.LastWS();
+    } else {
+      return r;
+    }
+  });
 }
 
 function getToWS(wsId, ms) {
@@ -116,7 +128,9 @@ function loop(ms, key) {
             ms.GetNextWSID()
           ])
           .then((wsids)=>{
-            let keepSetup = sameSetup(wsids[0],wsids[1]);
+            let keepSetup = false;
+            if(!(wsids[1]===-1))
+              keepSetup = sameSetup(wsids[0],wsids[1]);
             if (!keepSetup) { //Stop on setup changes.
               loopStates[path] = false;
               update('pause');
