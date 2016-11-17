@@ -8,7 +8,7 @@ module.exports = {
     debug: true,
     devtool: 'inline-source-map',
     sourceMapFileName: "[file].map",
-    context: path.join(__dirname, "/src/client"),
+    context: path.join(__dirname, "/src/MTclient"),
     entry: {
         main: "./main",
         webworker: "./models/webworker"
