@@ -159,11 +159,12 @@ export default class CADManager extends THREE.EventDispatcher {
         }
         _.each(this._models, (model) => {
             if (model.project === delta.project) {
-                if (model.applyDelta(delta)) {
-                    model.calcBoundingBox();
-                    // Only redraw if there were changes
-                    this.dispatchEvent({ type: 'invalidate', 'boundingBox': true, 'model': model});
-                }
+                model.applyDelta(delta).then((alter)=>{
+                    if(alter)
+                        model.calcBoundingBox();
+                        // Only redraw if there were changes
+                        this.dispatchEvent({ type: 'invalidate', 'boundingBox': true, 'model': model});
+                });
             }
         });
     }
