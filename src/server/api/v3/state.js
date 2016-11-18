@@ -3,6 +3,7 @@ let file = require('./file');
 let step = require('./step');
 let ms = {}; //module.exports defines it.
 let _ = require('lodash');
+let scache = require('./statecache');
 let find = file.find;
 let app;
 let loopTimer = {};
@@ -300,11 +301,11 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
-  if(app.config.noCache){
+  if(app.config.noCache===true){
     ms = file.ms;
   }
   else {
-    ms = require('./statecache');
+    ms = scache;
     ms.Initialize();
   }
   if (cb) {

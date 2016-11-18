@@ -49,7 +49,7 @@ function CoreServer() {
   let configurator = require(path.join(process.cwd(),opts.config));
   this.config = configurator(opts.environment);
   this.port = opts.port || this.config.port || 8080;
-  if(opts.mtConnect) opts.noCache = true;
+  if(opts.mtConnect) opts.cache = false;
   this.config.noCache = !opts.cache;
   this.config.mtConnect = opts.mtConnect;
   // set up machine tool option

@@ -1,7 +1,8 @@
 'use strict';
 var file = require('./file');
 var fs = require('fs');
-var ms ={};//statecache or file.ms depending on config.UseCache
+let scache = require('./statecache');
+let ms ={};//statecache or file.ms depending on config.UseCache
 /***************************** Endpoint Functions *****************************/
 
 function _getDelta(req,res){
@@ -96,10 +97,10 @@ module.exports = function(app, cb) {
   app.router.get('/v3/nc/geometry/:id/:type', _getGeometry);
   app.router.get('/v3/nc/geometry/:eid', _getGeometry);
   app.router.get('/v3/nc/id/:uuid', _getEIDfromUUID);
-  if(app.config.noCache){
+  if(app.config.noCache ===true){
     ms = file.ms;
   } else {
-    ms = require('./statecache');
+    ms = scache;
   }
   if (cb) {
     cb();
