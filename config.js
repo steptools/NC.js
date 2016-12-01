@@ -33,6 +33,12 @@ module.exports = function(environment) {
           "machine" : {
             "dir" : "C:/Program Files (x86)/STEP Tools/STEP-NC Machine/machines/okuma_M560-V.xml"
           }
+    "machineList" : [
+      {
+        name: 'Okuma',
+        address: 'okuma.steptools.com:5000'
+      }
+    ]
 
     };
     try {
