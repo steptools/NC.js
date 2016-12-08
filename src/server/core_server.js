@@ -38,11 +38,11 @@ function CoreServer() {
       ''
     )
     .option(
-      '--no-cache',
+      '-n, --no-cache',
       'Run from simulation instead of cached data.'
     )
     .option(
-      '--mt-connect',
+      '-m, --mt-connect',
       'Run the MT Connect server mode. Implies --no-cache.'
     )
     .parse(process.argv);
