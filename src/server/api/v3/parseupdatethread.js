@@ -5,8 +5,6 @@ let _ = require('lodash');
 let readline = require('readline');
 
 let dump=1;
-let sdump=1;
-let fdump=1;
 var updateLoop = function(data){
     xml2js.parseString(data,(err,res)=>{
         if(err){
@@ -29,13 +27,9 @@ var updateLoop = function(data){
                             _.each(val,(g)=>{
                                 switch(g.$.dataItemId){
                                     case "MS1speed":
-                                        if(sdump++%100) break;
-                                        sdump=1;
                                         process.send({'speedUpdate':g._});
                                         break;
                                     case "Mp1Fact":
-                                        if(fdump++%100) break;
-                                        fdump=1;
                                         process.send({'feedUpdate':g._});
                                         break;
                                     case "Mp1LPathPos":
