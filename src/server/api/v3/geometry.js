@@ -5,12 +5,27 @@ let scache = require('./statecache');
 let ms ={};//statecache or file.ms depending on config.UseCache
 /***************************** Endpoint Functions *****************************/
 
-function _getDelta(req,res){
-  ms.GetDynamicGeometryJSON(Number(req.params.current))
-    .then((rtn)=>{
-      res.status(200).send(rtn);
-      rtn=null;
+let __curdelt = {};
+let _curdeltv = -1;
+
+function _updateDelta(){
+  return ms.GetDynamicGeometryVersion()
+    .then((v)=> {
+      if (v <= _curdeltv) {
+        v = undefined;
+        return;
+      }
+      v = undefined;
+      return ms.GetDynamicGeometryJSON(Number(-1))
+        .then((rtn)=> {
+          __curdelt = JSON.parse(rtn);
+          _curdeltv = __curdelt.version;
+          return;
+        });
     });
+};
+function _getDelta(req,res){
+  res.status(200).send(__curdelt);
 }
 
 function _resetDelta(res){
@@ -92,7 +107,8 @@ function _getEIDfromUUID(req, res){
   }
 }
 
-module.exports = function(app, cb) {
+module.exports = function(app, cb){
+  app.updateDynamic = _updateDelta;
   app.router.get('/v3/nc/geometry', _getGeometry);
   app.router.get('/v3/nc/geometry/:id/:type', _getGeometry);
   app.router.get('/v3/nc/geometry/:eid', _getGeometry);

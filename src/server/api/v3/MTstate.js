@@ -163,11 +163,12 @@ var blockUpdate=function(number,block){
       file.ms.GoToWS(WSArray[WSGCodeIndex])
           .then(()=> {
             return file.ms.GetKeyStateJSON();
-          })
-          .then((r)=>{
+          }).then((r)=>{
             let key = JSON.parse(r);
             keyCache = key;
-            app.ioServer.emit('nc:delta',key);
+            return app.updateDynamic();
+          }).then(()=>{
+            app.ioServer.emit('nc:delta',keyCache);
           });
     }
     updateMTC();
@@ -190,11 +191,17 @@ var pathUpdate=function(position){
     coords.y = Number(incoords[1]);
     coords.z = Number(incoords[2]);
     file.ms.SetToolPosition(coords.x, coords.y, coords.z, 0, 0, 1)
-        .then(()=> {
+        .then((r)=> {
+          if(r.more === true) {
+            resolve();
+            return;
+          }
           return file.ms.GetDeltaStateJSON();
-        })
-        .then((d)=> {
-          app.ioServer.emit('nc:delta', JSON.parse(d));
+        }).then((d)=> {
+          deltaCache = JSON.parse(d);
+          return app.updateDynamic();
+        }).then(()=> {
+          app.ioServer.emit('nc:delta', deltaCache);
           resolve();
         });
   });
@@ -407,11 +414,18 @@ var _getKeyState = function (req, res) {
   }
   ms.GetKeyStateJSON()
       .then((r)=>{
-        res.status(200).send(r);
+        keyCache = JSON.parse(r);
+        return app.updateDynamic();
+      }).then(()=>{
+        res.status(200).send(keyCache);
       });
 };
 
 var _getDeltaState = function (req, res) {
+  if(!_.isEmpty(deltaCache)){
+    res.status(200).send(deltaCache);
+    return;
+  }
   var ms = file.ms;
   if (ms === undefined) {
     res.status(404).send('Machine state could not be found');
@@ -419,7 +433,10 @@ var _getDeltaState = function (req, res) {
   }
   ms.GetDeltaStateJSON()
       .then((r)=>{
-        res.status(200).send(r);
+        deltaCache = JSON.parse(r);
+        return app.updateDynamic();
+      }).then(()=>{
+        res.status(200).send(deltaCache);
       });
 };
 
