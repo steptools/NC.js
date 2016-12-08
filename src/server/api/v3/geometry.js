@@ -29,7 +29,7 @@ function _getDelta(req,res){
 }
 
 function _resetDelta(res){
-  ms.ResetDeltaGeometry().then(res.status(200).send());
+  ms.ResetDynamicGeometry().then(res.status(200).send());
 }
 
 let geomcache = {};
