@@ -31,6 +31,7 @@ let MTCHold = {'feedrateUnits':'Millimeters/Second'};
 let currentMachine = 0;
 
 let keyCache = {};
+let deltaCache = {};
 
 /****************************** Helper Functions ******************************/
 
