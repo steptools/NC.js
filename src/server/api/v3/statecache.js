@@ -144,7 +144,7 @@ let _init = ()=> {
             return ms.AdvanceState();
           });
     }).then((rtn)=>{
-      if(rtn>0) {
+      if(rtn.value>0) {
         next = true;
         return _nextWs();
       }
@@ -186,11 +186,11 @@ let _advanceState = ()=>{
   step++;
   return _keyState()
     .then(()=>{
-      return 0;
+      return {'value':0,'more':false};
   }).catch((err)=>{
     if(err.code==='ENOENT') {
       step--;
-      return 1;
+      return {'value':1,'more':false};
     }
   });
 };
