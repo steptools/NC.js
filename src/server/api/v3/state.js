@@ -16,7 +16,8 @@ let changed=false;
 let setupFlag = false;
 
 /****************************** Helper Functions ******************************/
-
+let keyCache = {};
+let deltaCache = {};
 function update(val) {
   app.ioServer.emit('nc:state', val);
 }
@@ -77,7 +78,10 @@ function looptick(){
     move().then(()=>{
      return getDelta(true);
     }).then((newState)=>{
-      app.ioServer.emit('nc:delta', JSON.parse(newState))
+      keyCache = JSON.parse(newState);
+      return app.updateDynamic();
+    }).then(()=>{
+      app.ioServer.emit('nc:delta', keyCache);
     });
   } else if(loopStates[path]===true) {
     if(setupFlag===true){ //Somebody pushed play after it paused for a setup end
@@ -117,12 +121,19 @@ function loop(key) {
       return getDelta(key);
     })
     .then((newState)=> {
-      app.ioServer.emit('nc:delta', JSON.parse(newState));
+      if(key){
+        keyCache = JSON.parse(newState);
+      } else {
+        deltaCache = JSON.parse(newState);
+      }
+      return app.updateDynamic();
+    }).then(()=>{
+      app.ioServer.emit('nc:delta', key?keyCache:deltaCache);
       //change the working step
       return ms.AdvanceState();
     })
     .then((shouldSwitch)=>{
-      if (shouldSwitch === 1) {
+      if (shouldSwitch.value === 1) {
         return Promise.all([
             ms.GetWSID(),
             ms.GetNextWSID()
@@ -266,10 +277,11 @@ var _wsInit = function(req, res) {
 
   handleWSInit(req.params.command, res);
 
-  getDelta(true)
-    .then((b)=> {
-      app.ioServer.emit('nc:delta', JSON.parse(b));
-    });
+//  getDelta(true)
+//    .then((b)=> {
+
+//      app.ioServer.emit('nc:delta', JSON.parse(b));
+//    });
 };
 
 function _getKeyState(req, res) {
@@ -277,10 +289,15 @@ function _getKeyState(req, res) {
     res.status(404).send('Machine state could not be found');
     return;
   }
-  getDelta(true)
+  if(_.isEmpty(keyCache)){
+    getDelta(true)
     .then((r)=>{
-      res.status(200).send(JSON.parse(r));
+      keyCache = JSON.parse(r);
+      return app.updateDynamic();
+    }).then(()=>{
+      res.status(200).send(keyCache);
     });
+  }
 }
 
 function _getDeltaState(req, res) {
@@ -288,10 +305,15 @@ function _getDeltaState(req, res) {
     res.status(404).send('Machine state could not be found');
     return;
   }
-  getDelta(false)
+  if(_.isEmpty(deltaCache)){
+    getDelta(false)
     .then((r)=>{
-      res.status(200).send(JSON.parse(r));
+      deltaCache = JSON.parse(r);
+      return app.updateDynamic();
+    }).then(()=>{
+      res.status(200).send(deltaCache);
     });
+  }
 }
 
 module.exports = function(globalApp, cb) {

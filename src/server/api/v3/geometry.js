@@ -11,7 +11,7 @@ let _curdeltv = -1;
 function _updateDelta(){
   return ms.GetDynamicGeometryVersion()
     .then((v)=> {
-      if (v <= _curdeltv) {
+      if (v != -1 && v <= _curdeltv) {
         v = undefined;
         return;
       }

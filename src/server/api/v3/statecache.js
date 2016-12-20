@@ -242,6 +242,7 @@ let _getnextID = ()=>{
 module.exports.Initialize = _load;
 module.exports.CreateCache = _init;
 module.exports.GetDynamicGeometryJSON = _dynamicState;
+module.exports.GetDynamicGeometryVersion = ()=>{return Promise.resolve(-1);};
 module.exports.GetGeometryJSON = _geometry;
 module.exports.GetDeltaStateJSON = _deltaState;
 module.exports.GetKeyStateJSON = _keyState;
