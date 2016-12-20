@@ -131,7 +131,7 @@ let _init = ()=> {
         return Promise.all([
             ms.GetKeyStateJSON(),
             ms.GetDeltaStateJSON(),
-            ms.GetDeltaGeometryJSON(Number(-1)),
+            ms.GetDynamicGeometryJSON(Number(-1)),
             ms.GetCurrentSpindleSpeed(),
             ms.GetCurrentFeedrate()
           ])
