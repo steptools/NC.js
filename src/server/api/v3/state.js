@@ -297,6 +297,8 @@ function _getKeyState(req, res) {
     }).then(()=>{
       res.status(200).send(keyCache);
     });
+  } else {
+    res.status(200).send(keyCache);
   }
 }
 
@@ -313,6 +315,8 @@ function _getDeltaState(req, res) {
     }).then(()=>{
       res.status(200).send(deltaCache);
     });
+  } else {
+    res.status(200).send(deltaCache);
   }
 }
 
