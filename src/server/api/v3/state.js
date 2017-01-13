@@ -133,7 +133,7 @@ function loop(key) {
       return ms.AdvanceState();
     })
     .then((shouldSwitch)=>{
-      if (shouldSwitch.value === 1) {
+      if (shouldSwitch.value >0) {
         return Promise.all([
             ms.GetWSID(),
             ms.GetNextWSID()
