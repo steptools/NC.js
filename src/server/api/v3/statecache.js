@@ -131,7 +131,7 @@ let _init = ()=> {
         return Promise.all([
             ms.GetKeyStateJSON(),
             ms.GetDeltaStateJSON(),
-            ms.GetDeltaGeometryJSON(Number(-1)),
+            ms.GetDynamicGeometryJSON(Number(-1)),
             ms.GetCurrentSpindleSpeed(),
             ms.GetCurrentFeedrate()
           ])
@@ -144,7 +144,7 @@ let _init = ()=> {
             return ms.AdvanceState();
           });
     }).then((rtn)=>{
-      if(rtn>0) {
+      if(rtn.value>0) {
         next = true;
         return _nextWs();
       }
@@ -186,11 +186,11 @@ let _advanceState = ()=>{
   step++;
   return _keyState()
     .then(()=>{
-      return 0;
+      return {'value':0,'more':false};
   }).catch((err)=>{
     if(err.code==='ENOENT') {
       step--;
-      return 1;
+      return {'value':1,'more':false};
     }
   });
 };
@@ -242,6 +242,7 @@ let _getnextID = ()=>{
 module.exports.Initialize = _load;
 module.exports.CreateCache = _init;
 module.exports.GetDynamicGeometryJSON = _dynamicState;
+module.exports.GetDynamicGeometryVersion = ()=>{return Promise.resolve(-1);};
 module.exports.GetGeometryJSON = _geometry;
 module.exports.GetDeltaStateJSON = _deltaState;
 module.exports.GetKeyStateJSON = _keyState;

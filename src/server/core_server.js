@@ -3,10 +3,9 @@
 
 var opts = require('commander');
 var winston = require('winston');
-var configurator = require('../../config');
 var file = require('./api/v3/file.js');
 var fs = require('fs');
-
+var path = require('path');
 /******************************************************************************/
 
 function CoreServer() {
@@ -20,8 +19,8 @@ function CoreServer() {
     )
     .option(
       '-c, --config [file]',
-      'Configuration File [./config/config.json]',
-      './config/config.json'
+      'Configuration File [./config.js]',
+      './config.js'
     )
     .option(
       '-e, --environment [env]',
@@ -38,10 +37,21 @@ function CoreServer() {
       'Step NC filepath to use [""]',
       ''
     )
+    .option(
+      '-n, --no-cache',
+      'Run from simulation instead of cached data.'
+    )
+    .option(
+      '-m, --mt-connect',
+      'Run the MT Connect server mode. Implies --no-cache.'
+    )
     .parse(process.argv);
-  this.config = configurator(opts.config, opts.environment);
+  let configurator = require(path.join(process.cwd(),opts.config));
+  this.config = configurator(opts.environment);
   this.port = opts.port || this.config.port || 8080;
-
+  if(opts.mtConnect) opts.cache = false;
+  this.config.noCache = !opts.cache;
+  this.config.mtConnect = opts.mtConnect;
   // set up machine tool option
   if(opts.tool){
     try{

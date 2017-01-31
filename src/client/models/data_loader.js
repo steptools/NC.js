@@ -237,6 +237,10 @@ export default class DataLoader extends THREE.EventDispatcher {
                 });
                 break;
         }
+        if ((this._freeWorkers.length === this._workers.length)
+              && this._queue.length === 0){ //Done Loading?
+          this.dispatchEvent({type:'QueueFinish'});
+        }
     }
 
     initRequest(req) {

@@ -1,19 +1,35 @@
 'use strict';
 var file = require('./file');
 var fs = require('fs');
-var ms = require('./statecache');
+let scache = require('./statecache');
+let ms ={};//statecache or file.ms depending on config.UseCache
 /***************************** Endpoint Functions *****************************/
 
-function _getDelta(req,res){
-  ms.GetDynamicGeometryJSON(Number(req.params.current))
-    .then((rtn)=>{
-      res.status(200).send(rtn);
-      rtn=null;
+let __curdelt = {};
+let _curdeltv = -1;
+
+function _updateDelta(){
+  return ms.GetDynamicGeometryVersion()
+    .then((v)=> {
+      if (v != -1 && v <= _curdeltv) {
+        v = undefined;
+        return;
+      }
+      v = undefined;
+      return ms.GetDynamicGeometryJSON(Number(-1))
+        .then((rtn)=> {
+          __curdelt = JSON.parse(rtn);
+          _curdeltv = __curdelt.version;
+          return;
+        });
     });
+};
+function _getDelta(req,res){
+  res.status(200).send(__curdelt);
 }
 
 function _resetDelta(res){
-  ms.ResetDeltaGeometry().then(res.status(200).send());
+  ms.ResetDynamicGeometry().then(res.status(200).send());
 }
 
 let geomcache = {};
@@ -44,7 +60,6 @@ function _getPoly(id,res){
 }
 
 function _getGeometry(req, res) {
-  let ms = file.ms;
   let find = file.find;
   //Route the /geometry/delta/:current endpoint first.
   if(req.params.id === 'delta') {
@@ -83,9 +98,8 @@ function _getGeometry(req, res) {
 }
 
 function _getEIDfromUUID(req, res){
-  let ms = file.ms;
   if(req.params.uuid){
-    ms.GetEIDfromUUID(req.params.uuid)
+    file.ms.GetEIDfromUUID(req.params.uuid)
       .then((out)=>{
         res.status(200).send(out)
       });
@@ -93,11 +107,17 @@ function _getEIDfromUUID(req, res){
   }
 }
 
-module.exports = function(app, cb) {
+module.exports = function(app, cb){
+  app.updateDynamic = _updateDelta;
   app.router.get('/v3/nc/geometry', _getGeometry);
   app.router.get('/v3/nc/geometry/:id/:type', _getGeometry);
   app.router.get('/v3/nc/geometry/:eid', _getGeometry);
   app.router.get('/v3/nc/id/:uuid', _getEIDfromUUID);
+  if(app.config.noCache ===true){
+    ms = file.ms;
+  } else {
+    ms = scache;
+  }
   if (cb) {
     cb();
   }

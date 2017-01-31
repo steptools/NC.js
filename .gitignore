@@ -9,6 +9,8 @@
 npm-debug.log
 /src/client/fonts/*
 /src/client/stylesheets/fonts/*
+/src/MTclient/fonts/*
+/src/MTclient/stylesheets/fonts/*
 *.stpnc
 *.min
 *.mtc
