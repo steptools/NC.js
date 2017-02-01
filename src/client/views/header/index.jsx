@@ -187,7 +187,23 @@ FeedSpeed.propTypes = {
   speed: React.PropTypes.number.isRequired,
   rotation: React.PropTypes.string.isRequired
 }
-
+class ProbeMessage extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render(){
+    if(this.props.msg==='') return null; //Empty object
+    return (
+      <MenuItem {...this.props} key='probe-message' className='info probe'>
+      <div className='text'>
+      {this.props.msg}
+      </div>
+      </MenuItem>);
+  }
+}
+ProbeMessage.propTypes = {
+  msg: React.PropTypes.string.isRequired
+}
 class GeomMenu extends React.Component {
   constructor(props){
     super(props);
@@ -345,7 +361,10 @@ export default class HeaderView extends React.Component {
     }
 
     let feedSpeedInfo = this.getFeedSpeedInfo();
-
+    let probeMsg='';
+    if (this.props.probeMsg){
+       probeMsg = 'Probe Result: '+this.props.probeMsg;
+     }
     const headerMenu = (
       <Menu
         mode='horizontal'
@@ -363,6 +382,7 @@ export default class HeaderView extends React.Component {
         />
 	<GeomMenu actionManager = {this.props.actionManager}/>
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
+        <ProbeMessage msg={probeMsg}/>
         <Button key='changelog'>
           <div className='version' id='logbutton'>v1.1.0</div>
         </Button>

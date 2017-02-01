@@ -133,6 +133,11 @@ function loop(key) {
       return ms.AdvanceState();
     })
     .then((shouldSwitch)=>{
+      if (shouldSwitch.hasOwnProperty('probe')) {
+        app.ioServer.emit('nc:probe',shouldSwitch.probe);
+        loopStates[path] = false;
+        update('pause');
+      }
       if (shouldSwitch.value >0) {
         return Promise.all([
             ms.GetWSID(),

@@ -224,6 +224,9 @@ export default class ResponsiveView extends React.Component {
     this.props.app.socket.on('nc:state', (state) => {
       this.ppstate(state);
     });
+    this.props.app.socket.on('nc:probe', (probe)=>{
+      this.setState({'probe':probe});
+    })
 
     this.props.app.actionManager.on('sim-pp', this.ppBtnClicked);
     this.props.app.actionManager.on('sim-f', () => {
@@ -524,6 +527,10 @@ export default class ResponsiveView extends React.Component {
     if(!(this.state.workplanLoad && this.state.toolCacheLoad && this.state.loopStateLoad && this.state.curtoolLoad && this.state.WPTLoad)){
       return (<div></div>);
     }
+    let probeMsg;
+    if (this.state.probe){
+      probeMsg = JSON.stringify(this.state.probe.contact);
+    }
     let HV, SV, FV, cadviewStyle;
     if (this.state.guiMode === 0) {
       HV = (
@@ -550,6 +557,7 @@ export default class ResponsiveView extends React.Component {
           feedUpdateCb={
             (newFeedRate) => this.setState({feedRate: newFeedRate})
           }
+          probeMsg = {probeMsg}
         />
       );
       SV = (
