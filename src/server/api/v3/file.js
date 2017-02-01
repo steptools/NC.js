@@ -99,7 +99,9 @@ function init(path, machinetool) {
   } catch (e){
     machinetool='';
   }
+  openSimpleNcs = openSimpleNcs.bind(this);
   openSimpleNcs(path);
+  openMachineState = openMachineState.bind(this);
   openMachineState(path,machinetool);
 	return;
 }
