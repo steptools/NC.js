@@ -137,6 +137,11 @@ function loop(key) {
         app.ioServer.emit('nc:probe',shouldSwitch.probe);
         loopStates[path] = false;
         update('pause');
+        return getDelta(true)
+          .then((key)=>{
+            keyCache = JSON.parse(key);
+            app.ioServer.emit('nc:delta', keyCache);
+          });
       }
       if (shouldSwitch.value >0) {
         return Promise.all([
