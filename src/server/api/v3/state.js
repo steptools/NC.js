@@ -38,7 +38,7 @@ function getNext() {
   changed=true;
   setupFlag =false;
   return ms.NextWS().then((r)=>{
-    if(r==-1) {
+    if (r===-1) {
       return ms.FirstWS();
     } else {
       return r;
@@ -50,7 +50,7 @@ function getPrev() {
   changed=true;
   setupFlag =false;
   return ms.PrevWS().then((r)=>{
-    if(r==-1) {
+    if (r===-1) {
       return ms.LastWS();
     } else {
       return r;
@@ -73,31 +73,36 @@ function promiseTimeout(msec){
 let isTicking = false;
 let movequeue = [];
 function looptick(){
-  if(movequeue.length > 0){
+  if (movequeue.length > 0) {
     let move = movequeue.shift();
-    move().then(()=>{
-     return getDelta(true);
-    }).then((newState)=>{
-      keyCache = JSON.parse(newState);
-      return app.updateDynamic();
-    }).then(()=>{
-      app.ioServer.emit('nc:delta', keyCache);
-    });
-  } else if(loopStates[path]===true) {
-    if(setupFlag===true){ //Somebody pushed play after it paused for a setup end
-      movequeue.push(()=>{return getNext();});
+    move()
+      .then(()=>{
+        return getDelta(true);
+      }).then((newState)=>{
+        keyCache = JSON.parse(newState);
+        return app.updateDynamic();
+      }).then(()=>{
+        app.ioServer.emit('nc:delta', keyCache);
+      });
+  } else if (loopStates[path]===true) {
+    if (setupFlag===true){ //Somebody pushed play after it paused for a setup end
+      movequeue.push(()=>{
+        return getNext();
+      });
       setupFlag =false;
-    }else {
+    } else {
       loop(false);
     }
   }
   loopTimer = promiseTimeout(50/(playbackSpeed/200));
-  return loopTimer.then(() => {loopTimer = {}; return looptick();});
+  return loopTimer.then(() => {
+    loopTimer = {};
+    return looptick();
+  });
 }
 
 function loop(key) {
-  if(changed)
-  {
+  if (changed) {
     changed=false;
     key = true;
   }
@@ -119,9 +124,8 @@ function loop(key) {
       }
       //get the delta
       return getDelta(key);
-    })
-    .then((newState)=> {
-      if(key){
+    }).then((newState)=> {
+      if (key) {
         keyCache = JSON.parse(newState);
       } else {
         deltaCache = JSON.parse(newState);
@@ -131,8 +135,7 @@ function loop(key) {
       app.ioServer.emit('nc:delta', key?keyCache:deltaCache);
       //change the working step
       return ms.AdvanceState();
-    })
-    .then((shouldSwitch)=>{
+    }).then((shouldSwitch)=>{
       if (shouldSwitch.hasOwnProperty('probe')) {
         app.ioServer.emit('nc:probe',shouldSwitch.probe);
         loopStates[path] = false;
@@ -150,16 +153,18 @@ function loop(key) {
           ])
           .then((wsids)=>{
             let keepSetup = false;
-            if(!(wsids[1]===-1))
+            if (!(wsids[1]===-1)) {
               keepSetup = sameSetup(wsids[0],wsids[1]);
+            }
             if (!keepSetup) { //Stop on setup changes.
               loopStates[path] = false;
               update('pause');
               setupFlag = true;
               return;
-            }
-            else {
-              movequeue.push(()=>{return getNext();});
+            } else {
+              movequeue.push(()=>{
+                return getNext();
+              });
             }
           });
       }
@@ -173,10 +178,14 @@ function sameSetup(newid, oldid) {
 function handleWSInit(command, res) {
   switch (command) {
     case 'next':
-      movequeue.push(()=>{return getNext();});
+      movequeue.push(()=>{
+        return getNext();
+      });
       break;
     case 'prev':
-      movequeue.push(()=>{return getPrev();});
+      movequeue.push(()=>{
+        return getPrev();
+      });
       break;
     default:
       if (isNaN(parseFloat(command))
@@ -184,7 +193,9 @@ function handleWSInit(command, res) {
         break;
       }
       let ws = Number(command);
-      movequeue.push(()=>{return getToWS(ws);});
+      movequeue.push(()=>{
+        return getToWS(ws);
+      });
   }
   res.sendStatus(200);
 }
@@ -193,7 +204,7 @@ function handleWSInit(command, res) {
 
 function _loopInit(req, res) {
   // app.logger.debug('loopstate is ' + req.params.loopstate);
-  if(!isTicking){
+  if (!isTicking) {
     isTicking=true;
     looptick();
   }
@@ -299,7 +310,7 @@ function _getKeyState(req, res) {
     res.status(404).send('Machine state could not be found');
     return;
   }
-  if(_.isEmpty(keyCache)){
+  if (_.isEmpty(keyCache)) {
     getDelta(true)
     .then((r)=>{
       keyCache = JSON.parse(r);
@@ -317,14 +328,14 @@ function _getDeltaState(req, res) {
     res.status(404).send('Machine state could not be found');
     return;
   }
-  if(_.isEmpty(deltaCache)){
+  if (_.isEmpty(deltaCache)) {
     getDelta(false)
-    .then((r)=>{
-      deltaCache = JSON.parse(r);
-      return app.updateDynamic();
-    }).then(()=>{
-      res.status(200).send(deltaCache);
-    });
+      .then((r)=>{
+        deltaCache = JSON.parse(r);
+        return app.updateDynamic();
+      }).then(()=>{
+        res.status(200).send(deltaCache);
+      });
   } else {
     res.status(200).send(deltaCache);
   }
@@ -337,10 +348,9 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
-  if(app.config.noCache===true){
+  if (app.config.noCache===true) {
     ms = file.ms;
-  }
-  else {
+  } else {
     ms = scache;
     ms.Initialize();
   }
