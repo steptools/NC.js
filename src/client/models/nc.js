@@ -624,6 +624,18 @@ export default class NC extends THREE.EventDispatcher {
               this._objects[name] = obj;
             }
             obj.model.live = true;
+            let transform = new THREE.Matrix4();
+            if (!geomData.xform) {
+              return;
+            }
+            transform.fromArray(geomData.xform);
+            let position = new THREE.Vector3();
+            let quaternion = new THREE.Quaternion();
+            let scale = new THREE.Vector3();
+            transform.decompose(position, quaternion, scale);
+            // we need to update all 3D properties so that
+            // annotations, overlays and objects are all updated
+            this.updateObjectAllPositionQuaternion(obj,position,quaternion);
           } else {
             let color = DataLoader.parseColor('7d7d7d');
             if (geomData.usage ==='cutter'){
