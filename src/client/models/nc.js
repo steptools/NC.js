@@ -382,7 +382,7 @@ export default class NC extends THREE.EventDispatcher {
     let objs = _.map(_.values(this._objects), (obj) => obj.object3D);
     let intersections = this.raycaster.intersectObjects(objs, true);
     // Did we hit anything?
-    if (intersections.length < 0) {
+    if (intersections.length < 1) {
       return undefined;
     }
     let hit = undefined;
