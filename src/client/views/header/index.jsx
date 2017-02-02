@@ -250,7 +250,7 @@ class GeomMenu extends React.Component {
 }
 
 let resetProcessVolume = function(){
-  request.get("/v3/nc/geometry/delta/reset").end();
+  request.get('/v3/nc/geometry/delta/reset').end();
 }
 export default class HeaderView extends React.Component {
   constructor(props) {
