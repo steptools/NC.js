@@ -375,8 +375,8 @@ export default class NC extends THREE.EventDispatcher {
 
   select(camera, mouseX, mouseY) {
     let mouse = new THREE.Vector2();
-    mouse.x = (mouseX / window.innerWidth) * 2 - 1;
-    mouse.y = -(mouseY / window.innerHeight) * 2 + 1;
+    mouse.x = (mouseX) * 2 - 1;
+    mouse.y = -(mouseY) * 2 + 1;
     this.raycaster.setFromCamera(mouse, camera);
 
     let objs = _.map(_.values(this._objects), (obj) => obj.object3D);
