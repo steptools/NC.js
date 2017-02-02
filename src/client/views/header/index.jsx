@@ -192,17 +192,24 @@ class ProbeMessage extends React.Component {
     super(props);
   }
   render(){
-    if(this.props.msg==='') return null; //Empty object
+    if (this.props.msg.length<3) {
+      return null; //Empty object
+    }
     return (
       <MenuItem {...this.props} key='probe-message' className='info probe'>
-      <div className='text'>
-      {this.props.msg}
+      <div className='item'>
+        <div className='text'>
+        Probe Results-
+          X:{this.props.msg[0].toFixed(3)+' '}
+          Y:{this.props.msg[1].toFixed(3)+' '}
+          Z:{this.props.msg[2].toFixed(3)+' '}
+      </div>
       </div>
       </MenuItem>);
   }
 }
 ProbeMessage.propTypes = {
-  msg: React.PropTypes.string.isRequired
+  msg: React.PropTypes.arrayOf(React.PropTypes.number).isRequired
 }
 class GeomMenu extends React.Component {
   constructor(props){
@@ -361,9 +368,9 @@ export default class HeaderView extends React.Component {
     }
 
     let feedSpeedInfo = this.getFeedSpeedInfo();
-    let probeMsg='';
+    let probeMsg=[];
     if (this.props.probeMsg){
-       probeMsg = 'Probe Result: '+this.props.probeMsg;
+       probeMsg = this.props.probeMsg;
      }
     const headerMenu = (
       <Menu

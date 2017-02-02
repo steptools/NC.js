@@ -529,7 +529,7 @@ export default class ResponsiveView extends React.Component {
     }
     let probeMsg;
     if (this.state.probe){
-      probeMsg = JSON.stringify(this.state.probe.contact);
+      probeMsg = this.state.probe.contact; //JSON.stringify(this.state.probe.contact);
     }
     let HV, SV, FV, cadviewStyle;
     if (this.state.guiMode === 0) {
