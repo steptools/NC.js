@@ -1,7 +1,6 @@
 'use strict';
 let file = require('./file');
 let step = require('./step');
-let mtcadapter = require('./ProbeAdapter');
 let ms = {}; //module.exports defines it.
 let _ = require('lodash');
 let scache = require('./statecache');
@@ -15,6 +14,8 @@ let feedRate;
 let path = find.GetProjectName();
 let changed=false;
 let setupFlag = false;
+let mtcadapter = require('./ProbeAdapter');
+mtcadapter.ProgramID(find.GetProjectName());
 
 /****************************** Helper Functions ******************************/
 let keyCache = {};
