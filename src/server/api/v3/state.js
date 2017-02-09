@@ -1,6 +1,7 @@
 'use strict';
 let file = require('./file');
 let step = require('./step');
+let mtcadapter = require('./ProbeAdapter');
 let ms = {}; //module.exports defines it.
 let _ = require('lodash');
 let scache = require('./statecache');
@@ -137,6 +138,11 @@ function loop(key) {
       return ms.AdvanceState();
     }).then((shouldSwitch)=>{
       if (shouldSwitch.hasOwnProperty('probe')) {
+        ms.GetWSID()
+          .then((id)=>{
+            let probedata = file.tol.GetProbeResults(id,shouldSwitch.probe.contact[0],shouldSwitch.probe.contact[1],shouldSwitch.probe.contact[2]);
+            mtcadapter.write(probedata);
+          });
         app.ioServer.emit('nc:probe',shouldSwitch.probe);
         loopStates[path] = false;
         update('pause');
