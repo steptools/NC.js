@@ -3,15 +3,16 @@ let net = require('net');
 let server = net.createServer((socket)=>{
 });
 let ports = [];
-
-let ping = (data)=>{
+let ping = (data,socket)=>{
     socket.write("* PONG 10000");
 };
 server.listen(7878);
 server.on('connection',(socket)=>{
     console.log("connection");
     socket.setKeepAlive({enable:true});
-    socket.on('data',ping);
+    socket.on('data',(r)=>{
+        ping(r,socket);
+    });
     ports.push(socket);
 });
 
