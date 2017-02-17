@@ -11,7 +11,7 @@ var updateLoop = function(data){
             console.log(err);
             return;
         }
-        if(res===undefined) return;
+        if(res===undefined || res.MTConnectStreams.Streams === undefined || res.MTConnectStreams.Streams[0] ==='' ) return;
         //Need to parse samples and events.
         //Important things are:
         //MS1speed (spindle speed update)
@@ -33,8 +33,6 @@ var updateLoop = function(data){
                                         process.send({'feedUpdate':g._});
                                         break;
                                     case "Mp1LPathPos":
-                                        if(dump++%10) break;
-                                        dump=1;
                                         process.send({'pathUpdate':g._});
                                         break;
                                 }
