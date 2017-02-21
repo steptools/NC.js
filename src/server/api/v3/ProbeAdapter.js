@@ -15,7 +15,8 @@ server.on('connection',(socket)=>{
         ping(r,socket);
     });
     socket.write(new Date(Date.now()).toISOString()+"|program|"+program);
-    ports.push(socket);
+    let socketpos = (ports.push(socket) - 1);
+    socket.on('close',()=>{ports.splice(socketpos,1);});
 });
 
 let sendClients = (msg)=>{
