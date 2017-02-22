@@ -21,7 +21,7 @@ server.on('connection',(socket)=>{
 
 let sendClients = (msg)=>{
     ports.forEach((client)=>{
-        client.write(msg,()=>{console.log("wrote %j to %j",client,msg)});
+        client.write(msg+"\n",()=>{});
     });
 };
 
