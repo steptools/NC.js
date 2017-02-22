@@ -74,10 +74,17 @@ function promiseTimeout(msec){
 
 let isTicking = false;
 let movequeue = [];
+let loopTimeout = ()=>{
+  loopTimer = promiseTimeout(50/(playbackSpeed/200));
+  return loopTimer.then(() => {
+    loopTimer = {};
+    return looptick();
+  });
+};
 function looptick(){
   if (movequeue.length > 0) {
     let move = movequeue.shift();
-    move()
+    return move()
       .then(()=>{
         return getDelta(true);
       }).then((newState)=>{
@@ -85,6 +92,8 @@ function looptick(){
         return app.updateDynamic();
       }).then(()=>{
         app.ioServer.emit('nc:delta', keyCache);
+      }).then(()=>{
+        return loopTimeout();
       });
   } else if (loopStates[path]===true) {
     if (setupFlag===true){ //Somebody pushed play after it paused for a setup end
@@ -92,15 +101,16 @@ function looptick(){
         return getNext();
       });
       setupFlag =false;
+      return loopTimeout();
     } else {
-      loop(false);
+      loop(false).then(()=>{
+        return loopTimeout();
+      });
     }
   }
-  loopTimer = promiseTimeout(50/(playbackSpeed/200));
-  return loopTimer.then(() => {
-    loopTimer = {};
-    return looptick();
-  });
+  else {
+    return loopTimeout();
+  }
 }
 
 function loop(key) {
@@ -108,8 +118,7 @@ function loop(key) {
     changed=false;
     key = true;
   }
-  //spindle speed and feedrate
-  Promise.all([
+  return Promise.all([
       ms.GetCurrentSpindleSpeed(),
       ms.GetCurrentFeedrate()
     ])
