@@ -11,6 +11,7 @@ server.listen(7878);
 server.on('connection',(socket)=>{
     console.log("connection");
     socket.setKeepAlive({enable:true});
+    socket.setNoDelay(true);
     socket.on('data',(r)=>{
         ping(r,socket);
     });
