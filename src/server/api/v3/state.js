@@ -356,7 +356,15 @@ function _getDeltaState(req, res) {
     res.status(200).send(deltaCache);
   }
 }
-
+function _saveDeltaState(req,res){
+  if (ms===undefined) {
+    res.status(404).send('Machine state could not be found');
+    return;
+  }
+  let fname = find.GetProjectName();
+  ms.WriteDynamicGeometrySTEP(fname+"delta.stp");
+  res.status(200).send();
+}
 module.exports = function(globalApp, cb) {
   app = globalApp;
   app.router.get('/v3/nc/state/key', _getKeyState);
@@ -364,6 +372,7 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/ws/:command', _wsInit);
+  app.router.get('/v3/nc/state/delta/save', _saveDeltaState);
   if (app.config.noCache===true) {
     ms = file.ms;
   } else {
