@@ -17,6 +17,7 @@ let setupFlag = false;
 let mtcadapter = require('./ProbeAdapter');
 mtcadapter.ProgramID(find.GetProjectName());
 
+let probepause = false;
 /****************************** Helper Functions ******************************/
 let keyCache = {};
 let deltaCache = {};
@@ -158,8 +159,10 @@ function loop(key) {
             mtcadapter.write(probedata);
           });
         app.ioServer.emit('nc:probe',shouldSwitch.probe);
-        loopStates[path] = false;
-        update('pause');
+        if(probepause){
+          loopStates[path] = false;
+          update('pause');
+        }
         return getDelta(true)
           .then((key)=>{
             keyCache = JSON.parse(key);
