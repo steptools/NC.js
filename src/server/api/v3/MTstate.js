@@ -249,10 +249,10 @@ var makeMTC = function(fname){
       let lineNumber = 0;
       let GCodes = null;
       let FeedContent = {};
-	
-      let feed_re = /\FEED OVERRIDE ([\d.]+) X ([\d.]+)/;	
+
+      let feed_re = /\FEED OVERRIDE ([\d.]+) X ([\d.]+)/;
       let feed_parse;
-	
+
       if (res) {
         GCodes = res.toString().split('\r\n');
       }
@@ -266,12 +266,12 @@ var makeMTC = function(fname){
 	      let percent = new Number(feed_parse[2]);
 
 	      let optfeed = basefeed * percent / 100;
-	      
+
             FeedContent[lineNumber+1] = {};
 //	      console.log ("Base=" + base + "  percent=" + percent);
               FeedContent[lineNumber+1].optimized = optfeed;
               FeedContent[lineNumber+1].base = basefeed;
-          } 
+          }
         } else {
           if (line.substring(0,2) != 'IF') {
             GCcontent.push(line);
