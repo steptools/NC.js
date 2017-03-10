@@ -120,7 +120,7 @@ export default class ToleranceList extends React.Component {
         });
       }
       if (wp.children) {
-        _.each(ws.children, (child) => {
+        _.each(wp.children, (child) => {
           child.openPreview = false;
         });
         Array.prototype.push.apply(tolList, wp.children);
