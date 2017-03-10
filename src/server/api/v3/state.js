@@ -76,7 +76,11 @@ function promiseTimeout(msec){
 let isTicking = false;
 let movequeue = [];
 let loopTimeout = ()=>{
-  loopTimer = promiseTimeout(50/(playbackSpeed/200));
+  if (playbackSpeed===0) {
+    loopTimer = promiseTimeout(20000);
+  } else {
+    loopTimer = promiseTimeout(50/(playbackSpeed/200));
+  }
   return loopTimer.then(() => {
     loopTimer = {};
     return looptick();
