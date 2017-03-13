@@ -120,15 +120,16 @@ export default class ToleranceList extends React.Component {
         });
       }
       if (wp.children) {
-        let tols = _.clone(wp.children);
-        _.each(tols, (child) => {
-          child.openPreview = false;
+        let tols = [];
+        _.each(wp.children, (child) => {
+          let tol = _.clone(child);
+          tols.push(tol);
+          tol.openPreview = false;
         });
         Array.prototype.push.apply(tolList, tols);
       }
       if (wp.datums) {
-        let tols = _.clone(wp.datums);
-        Array.prototype.push.apply(tolList, tols);
+        Array.prototype.push.apply(tolList, wp.datums);
       }
     } else {
       tolList.push({
@@ -175,12 +176,14 @@ export default class ToleranceList extends React.Component {
       }
       let ws = wsCache[wsList[i]];
       ws.children = tolerancesByWS[i];
+      let tols = _.clone(ws);
       _.each(ws.children, (child) => {
-        child.openPreview = true;
+        let tol = _.clone(child);
+        tol.openPreview = true;
+        tols.push(tol);
       });
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
-      let tols = _.clone(ws);
       tolList.push(tols);
     }
   }
@@ -220,12 +223,14 @@ export default class ToleranceList extends React.Component {
       }
       let ws = wsCache[wsList[i]];
       ws.children = tolerancesByWS[i];
+      let tols = [];
       _.each(ws.children, (child) => {
-        child.openPreview = true;
+        let tol = _.clone(child);
+        tol.openPreview = true;
+        tols.push(tol);
       });
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
-      let tols = _.clone(ws);
       tolList.push(tols);
     }
   }
