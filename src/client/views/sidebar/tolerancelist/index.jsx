@@ -176,14 +176,14 @@ export default class ToleranceList extends React.Component {
       }
       let ws = wsCache[wsList[i]];
       ws.children = tolerancesByWS[i];
-      let tols = [];
-      _.each(ws.children, (child) => {
+      let tols = _.clone(ws);
+      _.each(tols.children, (child,key) => {
         let tol = _.clone(child);
         tol.openPreview = true;
-        tols.push(tol);
+        tols[key]=tol;
       });
-      ws.leaf = false;
-      ws.icon = <div className='icon custom letter'>{i + 1}</div>;
+      tols.leaf = false;
+      tols.icon = <div className='icon custom letter'>{i + 1}</div>;
       tolList.push(tols);
     }
   }
@@ -223,14 +223,14 @@ export default class ToleranceList extends React.Component {
       }
       let ws = wsCache[wsList[i]];
       ws.children = tolerancesByWS[i];
-      let tols = [];
-      _.each(ws.children, (child) => {
+      let tols = _.clone(ws);
+      _.each(tols.children, (child,key) => {
         let tol = _.clone(child);
         tol.openPreview = true;
-        tols.push(tol);
+        tols[key]=(tol);
       });
-      ws.leaf = false;
-      ws.icon = <div className='icon custom letter'>{i + 1}</div>;
+      tols.leaf = false;
+      tols.icon = <div className='icon custom letter'>{i + 1}</div>;
       tolList.push(tols);
     }
   }
