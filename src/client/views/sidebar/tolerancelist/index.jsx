@@ -120,13 +120,15 @@ export default class ToleranceList extends React.Component {
         });
       }
       if (wp.children) {
-        _.each(wp.children, (child) => {
+        let tols = _.cloneDeep(wp.children);
+        _.each(tols, (child) => {
           child.openPreview = false;
         });
-        Array.prototype.push.apply(tolList, wp.children);
+        Array.prototype.push.apply(tolList, tols);
       }
       if (wp.datums) {
-        Array.prototype.push.apply(tolList, wp.datums);
+        let tols = _.cloneDeep(wp.datums);
+        Array.prototype.push.apply(tolList, tols);
       }
     } else {
       tolList.push({
@@ -178,7 +180,8 @@ export default class ToleranceList extends React.Component {
       });
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
-      tolList.push(ws);
+      let tols = _.cloneDeep(ws);
+      tolList.push(tols);
     }
   }
 
@@ -222,7 +225,8 @@ export default class ToleranceList extends React.Component {
       });
       ws.leaf = false;
       ws.icon = <div className='icon custom letter'>{i + 1}</div>;
-      tolList.push(ws);
+      let tols = _.cloneDeep(ws);
+      tolList.push(tols);
     }
   }
 
