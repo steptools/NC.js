@@ -176,7 +176,7 @@ export default class ToleranceList extends React.Component {
       }
       let ws = wsCache[wsList[i]];
       ws.children = tolerancesByWS[i];
-      let tols = _.clone(ws);
+      let tols = [];
       _.each(ws.children, (child) => {
         let tol = _.clone(child);
         tol.openPreview = true;
