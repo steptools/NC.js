@@ -108,28 +108,28 @@ export default class ToleranceList extends React.Component {
     if (!this.props.curWS.toBe || this.props.curWS.toBe <= 0) {
       return;
     }
-    let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
-    if (wp) {
-      if ((wp.children && wp.children.length > 0)
-      || (wp.datums && wp.datums.length > 0)) {
-        tolList.push({
-          name: 'Active Tolerances / Datums',
-          leaf: true,
-          type: 'divider',
-          id: -2,
-        });
-      }
-      if (wp.children) {
-        let tols = [];
-        _.each(wp.children, (child) => {
-          let tol = _.clone(child);
-          tols.push(tol);
+    //let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
+    if (_.has(ws,'tolerances')) {
+      tolList.push({
+        name: 'Active Tolerances / Datums',
+        leaf: true,
+        type: 'divider',
+        id: -2,
+      });
+      let datums = [];
+      _.each(ws.tolerances, (child) => {
+        request.get('/api/v3/tolerances/' + child).then((tol) => {
           tol.openPreview = false;
+          Array.prototype.push.apply(tolList, tol);
+          if (_.has(tol, 'children')) {
+            _.each(tol.children, (datum) => {
+              datums.push(datum);
+            });
+            }
         });
-        Array.prototype.push.apply(tolList, tols);
-      }
-      if (wp.datums) {
-        Array.prototype.push.apply(tolList, wp.datums);
+      });
+      if (datums.length > 0) {
+        Array.prototype.push.apply(tolList, datum);
       }
     } else {
       tolList.push({
