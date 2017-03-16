@@ -118,7 +118,7 @@ export default class ToleranceList extends React.Component {
       });
       let datums = [];
       _.each(ws.tolerances, (child) => {
-        request.get('/api/v3/tolerances/' + child).then((tol) => {
+        request.get('/v3/nc/tolerances/' + child).then((tol) => {
           tol.openPreview = false;
           Array.prototype.push.apply(tolList, tol);
           if (_.has(tol, 'children')) {
