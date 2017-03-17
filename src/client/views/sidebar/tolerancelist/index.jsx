@@ -119,6 +119,7 @@ export default class ToleranceList extends React.Component {
       let datums = [];
       _.each(ws.tolerances, (child) => {
         let tolsolve = (tol) => {
+          tol = _.clone(tol); //We want a copy so that openPreview is unique.
           tol.openPreview = false;
           tolList.push(tol);
           if (_.has(tol, 'children')) {
