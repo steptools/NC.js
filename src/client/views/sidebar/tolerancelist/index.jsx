@@ -153,7 +153,7 @@ export default class ToleranceList extends React.Component {
     let curWSIndex = wsList.indexOf(this.props.ws);
     let upcoming = false;
 
-    for (let i = curWSIndex + 1; i < wsCache.length; i++) {
+    for (let i = curWSIndex + 1; i < wsList.length; i++) {
       if (wsCache[wsList[i]].tolerances && wsCache[wsList[i]].tolerances.length > 0) {
         upcoming = true;
         break;
@@ -177,7 +177,7 @@ export default class ToleranceList extends React.Component {
       id: -3,
     });
     let upcomingct=0; //only show max 5 upcoming
-    for (let i = curWSIndex + 1; i < wsCache.length; i++) {
+    for (let i = curWSIndex + 1; i < wsList.length; i++) {
       if(upcomingct>4) {
         break;
       }
