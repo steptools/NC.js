@@ -187,6 +187,9 @@ export default class ToleranceList extends React.Component {
       }
       upcomingct++;
       let tols = _.clone(ws);
+      if(tols.children===undefined) {
+        tols.children=[];
+      }
       _.each(tols.tolerances,(tol)=>{
         tol = _.clone(this.props.toleranceCache[tol]);
         tol.openPreview=true;
