@@ -136,7 +136,7 @@ export default class ToleranceList extends React.Component {
         }
       });
       if (datums.length > 0) {
-        Array.prototype.push.apply(tolList, datum);
+        Array.prototype.push.apply(tolList, datums);
       }
     } else {
       tolList.push({
