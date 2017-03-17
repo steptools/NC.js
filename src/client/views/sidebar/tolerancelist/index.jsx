@@ -191,7 +191,6 @@ export default class ToleranceList extends React.Component {
         tol = _.clone(toleranceCache[tol]);
         tol.openPreview=true;
         tols.children.push(tol);
-        tols[]
       })
       tols.leaf = false;
       tols.icon = <div className='icon custom letter'>{i + 1}</div>;
