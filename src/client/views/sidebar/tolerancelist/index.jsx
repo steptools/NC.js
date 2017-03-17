@@ -153,8 +153,8 @@ export default class ToleranceList extends React.Component {
     let curWSIndex = wsList.indexOf(this.props.ws);
     let upcoming = false;
 
-    for (let i = curWSIndex + 1; i < tolerancesByWS.length; i++) {
-      if (tolerancesByWS[i] && tolerancesByWS[i].length > 0) {
+    for (let i = curWSIndex + 1; i < wsCache.length; i++) {
+      if (wsCache[wsList[i]].tolerances && wsCache[wsList[i]].tolerances.length > 0) {
         upcoming = true;
         break;
       }
@@ -176,19 +176,23 @@ export default class ToleranceList extends React.Component {
       type: 'divider',
       id: -3,
     });
-
-    for (let i = curWSIndex + 1; i < tolerancesByWS.length; i++) {
-      if (tolerancesByWS[i] && tolerancesByWS[i].length === 0) {
-        continue;
+    let upcomingct=0; //only show max 5 upcoming
+    for (let i = curWSIndex + 1; i < wsCache.length; i++) {
+      if(upcomingct>4) {
+        break;
       }
       let ws = wsCache[wsList[i]];
-      ws.children = tolerancesByWS[i];
+      if (ws.tolerances===undefined || ws[i].tolerances.length === 0) {
+        continue;
+      }
+      upcomingct++;
       let tols = _.clone(ws);
-      _.each(tols.children, (child,key) => {
-        let tol = _.clone(child);
-        tol.openPreview = true;
-        tols[key]=tol;
-      });
+      _.each(tols.tolerances,(tol)=>{
+        tol = _.clone(toleranceCache[tol]);
+        tol.openPreview=true;
+        tols.children.push(tol);
+        tols[]
+      })
       tols.leaf = false;
       tols.icon = <div className='icon custom letter'>{i + 1}</div>;
       tolList.push(tols);
