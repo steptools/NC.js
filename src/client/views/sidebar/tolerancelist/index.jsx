@@ -182,7 +182,7 @@ export default class ToleranceList extends React.Component {
         break;
       }
       let ws = wsCache[wsList[i]];
-      if (ws.tolerances===undefined || ws[i].tolerances.length === 0) {
+      if (ws.tolerances===undefined || ws.tolerances.length === 0) {
         continue;
       }
       upcomingct++;
