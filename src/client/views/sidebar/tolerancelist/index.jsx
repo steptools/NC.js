@@ -120,7 +120,7 @@ export default class ToleranceList extends React.Component {
       _.each(ws.tolerances, (child) => {
         let tolsolve = (tol) => {
           tol.openPreview = false;
-          Array.prototype.push.apply(tolList, tol);
+          tolList.push(tol);
           if (_.has(tol, 'children')) {
             _.each(tol.children, (datum) => {
               datums.push(datum);
