@@ -117,20 +117,24 @@ export default class ToleranceList extends React.Component {
         id: -2,
       });
       let datums = [];
+      let tols = [];
       _.each(ws.tolerances, (child) => {
-        request.get('/v3/nc/tolerances/' + child).then((tol) => {
+        tols.push(request.get('/v3/nc/tolerances/' + child));
+      });
+      Promise.all(tols, (responses) => {
+        _.each(responses, (tol) => {
           tol.openPreview = false;
           Array.prototype.push.apply(tolList, tol);
           if (_.has(tol, 'children')) {
             _.each(tol.children, (datum) => {
               datums.push(datum);
             });
-            }
+          }
         });
+        if (datums.length > 0) {
+          Array.prototype.push.apply(tolList, datum);
+        }
       });
-      if (datums.length > 0) {
-        Array.prototype.push.apply(tolList, datum);
-      }
     } else {
       tolList.push({
         name: 'No Active Tolerances / Datums',
