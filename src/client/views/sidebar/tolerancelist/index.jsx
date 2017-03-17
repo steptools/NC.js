@@ -188,7 +188,7 @@ export default class ToleranceList extends React.Component {
       upcomingct++;
       let tols = _.clone(ws);
       _.each(tols.tolerances,(tol)=>{
-        tol = _.clone(toleranceCache[tol]);
+        tol = _.clone(this.props.toleranceCache[tol]);
         tol.openPreview=true;
         tols.children.push(tol);
       })
