@@ -1,5 +1,4 @@
 import {Treebeard} from 'react-treebeard';
-import Menu, {Item as MenuItem} from 'rc-menu';
 import ts from '../tree_style.jsx';
 
 let wsList = [];
@@ -280,11 +279,6 @@ export default class ToleranceList extends React.Component {
     }
 
     return (
-      <div>
-      <Menu>
-        <MenuItem>Workplan Tolerances</MenuItem>
-        <MenuItem>Workingstep Tolerances</MenuItem>
-      </Menu>
       <Treebeard
         data={tolList}
         onToggle={this.onToggle}
@@ -292,7 +286,6 @@ export default class ToleranceList extends React.Component {
         decorators={this.decorators}
         toggleHighlight={this.props.toggleHighlight}
       />
-      </div>
     );
   }
 }
