@@ -266,8 +266,8 @@ export default class ToleranceList extends React.Component {
     this.getTolerancesByWS();
     let tolList = [];
     this.addCurrent(tolList);
-    this.addUpcoming(tolList);
-    this.addPrevious(tolList);
+    //this.addUpcoming(tolList);
+    //this.addPrevious(tolList);
     //this.addWorkpieces(tolList, -(n + 1));
 
     if (tolList.length <= 0) {
@@ -279,6 +279,10 @@ export default class ToleranceList extends React.Component {
     }
 
     return (
+      <Menu>
+        <MenuItem>Workplan Tolerances</MenuItem>
+        <MenuItem>Workingstep Tolerances</MenuItem>
+      </Menu>
       <Treebeard
         data={tolList}
         onToggle={this.onToggle}
