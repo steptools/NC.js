@@ -279,6 +279,7 @@ export default class ToleranceList extends React.Component {
     }
 
     return (
+      <div>
       <Menu>
         <MenuItem>Workplan Tolerances</MenuItem>
         <MenuItem>Workingstep Tolerances</MenuItem>
@@ -290,6 +291,7 @@ export default class ToleranceList extends React.Component {
         decorators={this.decorators}
         toggleHighlight={this.props.toggleHighlight}
       />
+      </div>
     );
   }
 }
