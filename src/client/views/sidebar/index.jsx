@@ -110,7 +110,7 @@ export default class SidebarView extends React.Component {
       </Menu>
     );
 
-    const toltabs = (
+    let toltabs = (
         <Menu>
           <MenuItem>Workpiece Tolerances</MenuItem>
           <MenuItem>Workplan Tolerances</MenuItem>
