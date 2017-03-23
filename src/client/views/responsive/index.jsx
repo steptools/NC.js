@@ -274,6 +274,8 @@ export default class ResponsiveView extends React.Component {
     });
     // get data for workpiece/tolerance view
     request.get('/v3/nc/workpieces/').then(this.getWPT);
+    request.get('/v3/nc/project').then((res)=>{this.setState({'projectName':res.text});});
+
   }
 
   componentDidMount() {
@@ -559,6 +561,7 @@ export default class ResponsiveView extends React.Component {
             (newFeedRate) => this.setState({feedRate: newFeedRate})
           }
           probeMsg = {probeMsg}
+          fname = {this.state.projectName}
         />
       );
       SV = (
