@@ -143,7 +143,6 @@ function _getProject(req,res){
   res.status(200).send(find.GetProjectName());
 }
 
-
 module.exports = function(app, cb) {
   app.router.get('/v3/nc/workplan/:wsId', _getExeFromId);
   app.router.get('/v3/nc/workplan', _getMwp);
