@@ -1,14 +1,55 @@
 import {Treebeard} from 'react-treebeard';
+import Menu, {Item as MenuItem} from 'rc-menu';
 import ts from '../tree_style.jsx';
 
 let wsList = [];
 var tolerancesByWS = [];
 
+class ToleranceMode extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {current:props.current};
+    this.wpMode = this.wpMode.bind(this);
+    this.wsMode = this.wsMode.bind(this);
+  }
+  wpMode(){
+    if(this.state.current!=='wp') {
+      this.setState({current:'wp'});
+      if(this.props.changecb) this.props.changecb('wp');
+    }
+  };
+  wsMode(){
+    if(this.state.current!=='ws') {
+      this.setState({current:'ws'});
+      if(this.props.changecb) this.props.changecb('ws');
+    }
+  };
+  render(){
+      let wpclassname = '';
+      let wsclassname = '';
+      if(this.state.current ==='ws') { 
+        wsclassname ='active';
+      } else if(this.state.current ==='wp'){
+        wpclassname ='active';
+      }
+    return (
+      <div className="tolerance-mode">
+        <div className={wpclassname} onClick={this.wpMode}>Results</div>
+        <div className={wsclassname} onClick={this.wsMode}>Current</div>
+      </div>
+    );
+  }
+}
+ToleranceMode.PropTypes = {
+ current: React.PropTypes.string.isRequired,
+ changecb: React.PropTypes.func
+};
+
 export default class ToleranceList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {curr: false};
+    this.state = {curr: false,mode:'ws'};
 
     this.getTolerancesByWS = this.getTolerancesByWS.bind(this);
     this.onToggle = this.onToggle.bind(this);
@@ -16,7 +57,7 @@ export default class ToleranceList extends React.Component {
     this.addUpcoming = this.addUpcoming.bind(this);
     this.addPrevious = this.addPrevious.bind(this);
     this.addWorkpieces = this.addWorkpieces.bind(this);
-
+    this.addCurrentWorkpieceTolerances = this.addCurrentWorkpieceTolerances.bind(this);
     this.decorators = ts.decorators;
     this.decorators.propertyCb = this.props.propertyCb;
     this.decorators.toleranceCache = this.props.toleranceCache;
@@ -27,7 +68,6 @@ export default class ToleranceList extends React.Component {
   }
 
   componentDidMount() {
-    $('.sidebar ul.sidebar-menu-tabs + ul').addClass('treebeard flat');
   }
 
   componentWillReceiveProps(nextProps) {
@@ -261,24 +301,51 @@ export default class ToleranceList extends React.Component {
     }));
   }
 
+  addCurrentWorkpieceTolerances(tolList){
+    tolList.push({
+      name: 'Current Workpiece',
+      leaf: true,
+      type: 'divider',
+      id: -1,
+    });
+    if(this.props.curWS.toBe===undefined || this.props.curWS.toBe <=0){
+      return;
+    }
+    let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
+    if (wp) {
+      if (wp.children) {
+        _.each(wp.children, (child) => {
+          child.openPreview = false;
+        });
+        Array.prototype.push.apply(tolList, wp.children);
+      }
+      if (wp.datums) {
+        Array.prototype.push.apply(tolList, wp.datums);
+      }
+    } else {
+      tolList.push({
+        name: 'No Active Tolerances / Datums',
+        leaf: true,
+        type: 'divider',
+        id: -2,
+      });
+    }
+
+  }
   render() {
     // TODO: pass tolerances by WS (in order) through props for optimization
-    this.getTolerancesByWS();
     let tolList = [];
+    if(this.state.mode==='ws'){
+    this.getTolerancesByWS();
     this.addCurrent(tolList);
+  } else if(this.state.mode==='wp'){
+    this.addCurrentWorkpieceTolerances(tolList);
+  }
     //this.addUpcoming(tolList);
     //this.addPrevious(tolList);
     //this.addWorkpieces(tolList, -(n + 1));
 
-    if (tolList.length <= 0) {
-      return null;
-    }
-
-    if (this.props.isMobile) {
-      ts.style.tree.base.height = '100%';
-    }
-
-    return (
+    let tree = (
       <Treebeard
         data={tolList}
         onToggle={this.onToggle}
@@ -286,6 +353,20 @@ export default class ToleranceList extends React.Component {
         decorators={this.decorators}
         toggleHighlight={this.props.toggleHighlight}
       />
+    );
+    if (tolList.length <= 0) {
+      tree=null;
+    }
+
+    if (this.props.isMobile) {
+      ts.style.tree.base.height = '100%';
+    }
+
+    return (
+      <div className="treebeard flat">
+      <ToleranceMode current={this.state.mode} changecb={s=>this.setState({mode:s})}></ToleranceMode>
+      {tree}
+      </div>
     );
   }
 }

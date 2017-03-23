@@ -110,12 +110,6 @@ export default class SidebarView extends React.Component {
       </Menu>
     );
 
-    //let toltabs = (
-    //    <Menu>
-    //      <MenuItem>Workpiece Tolerances</MenuItem>
-    //      <MenuItem>Workplan Tolerances</MenuItem>
-    //    </Menu>
-    //);
     let currentView = null;
     if (this.props.mode === 'ws') {
       currentView = (
@@ -182,7 +176,6 @@ export default class SidebarView extends React.Component {
     } else {
       cName += ' notouch';
     }
-    //if(this.props.mode !== 'tolerance') toltabs = null;
     return (
       <div className={cName} style={SVWidth}>
         {properties}
