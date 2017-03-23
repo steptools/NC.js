@@ -218,7 +218,7 @@ function _loadQIF(req,res){
     });
 }
 
-module.exports = function(golbalApp, cb) {
+module.exports = function(globalApp, cb) {
   app=globalApp;
   app.router.get('/v3/nc/tolerances/:wsId', _getWsTols);
   app.router.get('/v3/nc/tolerances/', _getTols);
