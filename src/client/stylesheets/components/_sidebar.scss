@@ -452,6 +452,16 @@ $icons: '../icons/';
         padding: 5px;
     }
 
+    .status-red{
+        background-color:lightpink;
+    }
+    .status-yellow{
+        background-color:lightyellow;
+    }
+    .status-green{
+        background-color:lightgreen;
+    }
+
     .node {
         display: inline-flex;
         align-items: center;
