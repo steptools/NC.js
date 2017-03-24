@@ -4,6 +4,7 @@ let _ = require('lodash');
 let request = require('superagent');
 let file = require('./file');
 let parseQIF=(qif)=>{
+    if(qif.MTConnectError) return false;
     let document = qif.MTConnectAssets.Assets[0].QIFResult[0].QIFDocument[0];
     let mappedIDs={};
     //Map the UUIDs to the dumb CharacteristicNominalId thingy
@@ -25,15 +26,16 @@ let parseQIF=(qif)=>{
     return mappedIDs;
 };
 let getQIF = (assetName) => {
-    return new Promise(resolve=>{
+    return new Promise((resolve,reject)=>{
          request.get('swim:5000/assets/' + assetName).then((data)=> {
          xml2js.parseString(data.text, (err, res) => {
              if (err) {
                  console.log(err);
-                 resolve();
+                 reject();
              }
              if (res === undefined) resolve();
                 let rtn=parseQIF(res);
+                if(rtn ===false) reject();
                 resolve(rtn);
             });
         });
