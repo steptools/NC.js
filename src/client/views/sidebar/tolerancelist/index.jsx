@@ -350,7 +350,7 @@ export default class ToleranceList extends React.Component {
 
     return (
       <div className="treebeard flat">
-        <ToleranceMode />
+        {(this.state.mode==='wp')?(<ToleranceMode />):(null)}
         {tree}
       </div>
     );
