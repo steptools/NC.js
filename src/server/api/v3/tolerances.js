@@ -216,12 +216,17 @@ function _loadQIF(req,res){
       res.status(404).send();
     });
 }
-
+function _unloadQIF(req,res){
+  file.tol.ResetAllToleranceMeasuredValue();
+  app.ioServer.emit('nc:qifLoad');
+  res.status(200).send();
+}
 module.exports = function(globalApp, cb) {
   app=globalApp;
   app.router.get('/v3/nc/tolerances/:wsId', _getWsTols);
   app.router.get('/v3/nc/tolerances/', _getTols);
   app.router.get('/v3/nc/tolerances/qif/load',_loadQIF);
+  app.router.get('/v3/nc/tolerances/qif/unload',_unloadQIF);
   app.router.get('/v3/nc/workpieces/', _getWps);
 
   if (cb) {
