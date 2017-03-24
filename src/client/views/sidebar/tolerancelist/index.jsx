@@ -48,8 +48,9 @@ ToleranceMode.PropTypes = {
 export default class ToleranceList extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {curr: false,mode:'ws'};
+    let mode = 'wp';
+    if(props.isRunning) mode='ws';
+    this.state = {curr: false,'mode':mode};
 
     this.getTolerancesByWS = this.getTolerancesByWS.bind(this);
     this.onToggle = this.onToggle.bind(this);
@@ -72,6 +73,10 @@ export default class ToleranceList extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.decorators.highlightedTolerances = nextProps.highlightedTolerances;
+    let mode = 'wp';
+    if(nextProps.isRunning) mode = 'ws';
+    if(this.state.mode !== mode)
+      this.setState({'mode':mode});
   }
 
   componentWillUnmount() {
@@ -364,7 +369,7 @@ export default class ToleranceList extends React.Component {
 
     return (
       <div className="treebeard flat">
-      <ToleranceMode current={this.state.mode} changecb={s=>this.setState({mode:s})}></ToleranceMode>
+      {/*<ToleranceMode current={this.state.mode} changecb={s=>this.setState({mode:s})}></ToleranceMode>*/}
       {tree}
       </div>
     );
