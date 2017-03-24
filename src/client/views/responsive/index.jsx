@@ -250,6 +250,9 @@ export default class ResponsiveView extends React.Component {
     this.props.app.socket.on('nc:spindle', (spindle) => {
       this.setState({'spindleSpeed' : spindle});
     });
+    this.props.app.socket.on('nc:qifLoad', ()=>{
+      request.get('/v3/nc/workpieces/').then(this.getWPT);
+    });
   }
 
 
