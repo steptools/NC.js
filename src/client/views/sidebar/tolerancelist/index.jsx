@@ -8,42 +8,24 @@ var tolerancesByWS = [];
 class ToleranceMode extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {current:props.current};
-    this.wpMode = this.wpMode.bind(this);
-    this.wsMode = this.wsMode.bind(this);
+    this.loadQIF = this.loadQIF.bind(this);
+    this.unloadQIF = this.unloadQIF.bind(this);
   }
-  wpMode(){
-    if(this.state.current!=='wp') {
-      this.setState({current:'wp'});
-      if(this.props.changecb) this.props.changecb('wp');
-    }
+  loadQIF(){
+    request.get('/v3/nc/tolerances/qif/load').end();
   };
-  wsMode(){
-    if(this.state.current!=='ws') {
-      this.setState({current:'ws'});
-      if(this.props.changecb) this.props.changecb('ws');
-    }
+  unloadQIF(){
+    request.get('/v3/nc/tolerances/qif/unload').end();
   };
   render(){
-      let wpclassname = '';
-      let wsclassname = '';
-      if(this.state.current ==='ws') { 
-        wsclassname ='active';
-      } else if(this.state.current ==='wp'){
-        wpclassname ='active';
-      }
     return (
       <div className="tolerance-mode">
-        <div className={wpclassname} onClick={this.wpMode}>Results</div>
-        <div className={wsclassname} onClick={this.wsMode}>Current</div>
+        <div  onClick={this.loadQIF}>Load QIF</div>
+        <div  onClick={this.unloadQIF}>Unload QIF</div>
       </div>
     );
   }
 }
-ToleranceMode.PropTypes = {
- current: React.PropTypes.string.isRequired,
- changecb: React.PropTypes.func
-};
 
 export default class ToleranceList extends React.Component {
   constructor(props) {
@@ -340,15 +322,14 @@ export default class ToleranceList extends React.Component {
   render() {
     // TODO: pass tolerances by WS (in order) through props for optimization
     let tolList = [];
-    if(this.state.mode==='ws'){
-    this.getTolerancesByWS();
-    this.addCurrent(tolList);
-  } else if(this.state.mode==='wp'){
-    this.addCurrentWorkpieceTolerances(tolList);
-  }
+    if (this.state.mode === 'ws') {
+      this.getTolerancesByWS();
+      this.addCurrent(tolList);
     //this.addUpcoming(tolList);
     //this.addPrevious(tolList);
-    //this.addWorkpieces(tolList, -(n + 1));
+    } else if (this.state.mode === 'wp') {
+      this.addCurrentWorkpieceTolerances(tolList);
+    }
 
     let tree = (
       <Treebeard
@@ -360,7 +341,7 @@ export default class ToleranceList extends React.Component {
       />
     );
     if (tolList.length <= 0) {
-      tree=null;
+      tree = null;
     }
 
     if (this.props.isMobile) {
@@ -369,8 +350,8 @@ export default class ToleranceList extends React.Component {
 
     return (
       <div className="treebeard flat">
-      {/*<ToleranceMode current={this.state.mode} changecb={s=>this.setState({mode:s})}></ToleranceMode>*/}
-      {tree}
+        <ToleranceMode />
+        {tree}
       </div>
     );
   }
