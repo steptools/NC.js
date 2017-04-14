@@ -460,13 +460,21 @@ export class WorkingstepProperties extends React.Component{
   }
   render(){
     let entity = this.props.entity;
+	let toleranceMap = (tolids)=>{
+		let obj = {};
+		obj.children = [];
+		_.each(tolids,(tolid)=>{
+			obj.children.push(this.props.toleranceCache[tolid]);//probably the object the ID points to
+		});
+		return obj;
+	};
     return(
       <div>
         <RunmodeItem active={this.props.curws===entity.id} enabled={entity.enabled}/>
         <FeedrateItem entity={entity.feedRate} feedUnits={entity.feedUnits}/>
         <SpindleSpeedItem speed={entity.speed} speedUnits={entity.speedUnits}/>
         <ToleranceList 
-          entity={this.props.toleranceCache[entity.toBe.id]} 
+          entity={toleranceMap(entity.tolerances)} 
           highlightedTolerances={this.props.highlightedTolerances}
           clickCb={this.props.clickCb}
           toggleHighlight={this.props.toggleHighlight} 
