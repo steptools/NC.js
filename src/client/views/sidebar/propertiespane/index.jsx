@@ -98,7 +98,7 @@ function getFormattedTime(entity) {
   return time;
 }
 
-export default class WorkingstepItem extends React.Component{
+export class WorkingstepItem extends React.Component{
   constructor(props){
     super(props);
   }    
@@ -124,7 +124,7 @@ WorkingstepItem.propTypes = {
   workingstep: React.PropTypes.object.isRequired,
   clickCb: React.PropTypes.func.isRequired
 }
-export default class ToleranceItem extends React.Component{
+export class ToleranceItem extends React.Component{
   constructor(props){
     super(props);
   }
@@ -163,7 +163,7 @@ ToleranceItem.propTypes = {
 }
 
 //Datum is just a tolerance with no click behavior. TODO: refactor as child class?
-export default class DatumItem extends React.Component{
+export class DatumItem extends React.Component{
   constructor(props){
     super(props);
   }
@@ -199,7 +199,7 @@ DatumItem.propTypes = {
   toggleHighlight:React.PropTypes.func.isRequired,
   selectEntity: React.PropTypes.func.isRequired
 }
-export default class WorkingstepList extends React.Component{
+export class WorkingstepList extends React.Component{
 
   constructor(props){
     super(props);
@@ -247,7 +247,7 @@ WorkingstepList.propTypes = {
   clickCb: React.PropTypes.func.isRequired
 }
 
-export default class ToleranceList extends React.Component{
+export class ToleranceList extends React.Component{
   constructor(props){
     super(props);
   }
@@ -284,7 +284,7 @@ ToleranceList.propTypes = {
   selectEntity: React.PropTypes.func.isRequired
 }
 
-export default class DatumList extends React.Component{
+export class DatumList extends React.Component{
   constructor(props){
     super(props);
   }
@@ -321,7 +321,7 @@ DatumList.propTypes = {
   selectEntity: React.PropTypes.func.isRequired
 }
 
-export default class WorkpieceList extends React.Component{
+export class WorkpieceList extends React.Component{
   constructor(props){
     super(props);
   }
@@ -330,7 +330,7 @@ export default class WorkpieceList extends React.Component{
   }
 }
 
-export default class WorkpieceProperties extends React.Component{
+export class WorkpieceProperties extends React.Component{
   constructor(props){
     super(props);
     let entity = props.entity;
@@ -370,7 +370,7 @@ WorkpieceProperties.propTypes = {
   toggleHighlight: React.PropTypes.func.isRequired,
   selectEntity: React.PropTypes.func.isRequired
 }
-export default class FeedrateItem extends React.Component{
+export class FeedrateItem extends React.Component{
   constructor(props){
     super(props);
   }
@@ -394,7 +394,7 @@ FeedrateItem.propTypes = {
   feedUnits: React.PropTypes.string.isRequired
 }
 
-export default class RunmodeItem extends React.Component{
+export class RunmodeItem extends React.Component{
   constructor(props){
     super(props);
   }
@@ -423,7 +423,7 @@ RunmodeItem.propTypes = {
   enabled: React.PropTypes.bool.isRequired
 }
 
-export default class SpindleSpeedItem extends React.Component{
+export class SpindleSpeedItem extends React.Component{
   constructor(props){
     super(props);
   }
@@ -454,19 +454,27 @@ SpindleSpeedItem.propTypes = {
   speedUnits: React.PropTypes.string.isRequired
 }
 
-export default class WorkingstepProperties extends React.Component{
+export class WorkingstepProperties extends React.Component{
   constructor(props){
     super(props);
   }
   render(){
     let entity = this.props.entity;
+	let toleranceMap = (tolids)=>{
+		let obj = {};
+		obj.children = [];
+		_.each(tolids,(tolid)=>{
+			obj.children.push(this.props.toleranceCache[tolid]);//probably the object the ID points to
+		});
+		return obj;
+	};
     return(
       <div>
         <RunmodeItem active={this.props.curws===entity.id} enabled={entity.enabled}/>
         <FeedrateItem entity={entity.feedRate} feedUnits={entity.feedUnits}/>
         <SpindleSpeedItem speed={entity.speed} speedUnits={entity.speedUnits}/>
         <ToleranceList 
-          entity={this.props.toleranceCache[entity.toBe.id]} 
+          entity={toleranceMap(entity.tolerances)} 
           highlightedTolerances={this.props.highlightedTolerances}
           clickCb={this.props.clickCb}
           toggleHighlight={this.props.toggleHighlight} 
@@ -492,7 +500,7 @@ WorkingstepProperties.propTypes = {
   toggleHighlight: React.PropTypes.func.isRequired,
   selectEntity: React.PropTypes.func.isRequired
 }
-export default class ToolProperties extends React.Component{
+export class ToolProperties extends React.Component{
   constructor(props){
     super(props);
     let entity = props.entity;
@@ -504,7 +512,7 @@ export default class ToolProperties extends React.Component{
   }
 }
 
-export default class ToleranceProperties extends React.Component {
+export class ToleranceProperties extends React.Component {
   constructor(props){
     super(props);
     let entity = props.entity;
