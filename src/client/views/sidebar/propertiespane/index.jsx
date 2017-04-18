@@ -67,6 +67,8 @@ function getIcon(type, data) {
       }
     case 'highlight':
       return 'highlight-button glyphicons glyphicons-eye-' + data;
+    case 'preview':
+      return 'icon preview glyphicons glyphicons-new-window-alt';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
