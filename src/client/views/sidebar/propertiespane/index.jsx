@@ -786,14 +786,26 @@ export default class PropertiesPane extends React.Component {
       );
       break;
       case 'tool':
-      
+        entityElement = (
+          <ToolProperties
+          /*TODO: Fill me out!*/
+          />
+        ); 
       break;
       case 'tolerance':
+        entityElement = (
+          <ToleranceProperties
 
+          />
+        ); 
       break;
       case 'workplan-setup':
       case 'workplan':
-
+        entityElement = (
+          <WorkplanProperties
+          
+          />
+        ); 
       break;
       default:
       return null;
