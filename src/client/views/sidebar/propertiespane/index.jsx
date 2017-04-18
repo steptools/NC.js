@@ -322,7 +322,28 @@ DatumList.propTypes = {
   toggleHighlight: React.PropTypes.func.isRequired,
   selectEntity: React.PropTypes.func.isRequired
 }
-
+export class WorkpieceItem extends React.Component{
+  constructor(props){
+    super(props);
+  }
+  render(){
+    //Draw something
+    return(
+    <div>
+      <span id={this.props.workpiece.id} className='node'>
+        <span className={getIcon('workpiece')}/>
+          <span className='textbox'>
+  	    {this.props.workpiece.name}
+          </span>
+        <span className={getIcon('preview')}/>
+      </span>
+    </div>
+    );
+  }
+}
+WorkpieceItem.propTypes = {
+  workpiece: React.PropTypes.object.isRequired
+}
 export class WorkpieceList extends React.Component{
   constructor(props){
     super(props);
