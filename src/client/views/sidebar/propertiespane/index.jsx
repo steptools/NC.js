@@ -528,6 +528,87 @@ export class ToleranceProperties extends React.Component {
   }
 }
 
+export class PreviewButton extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render() {
+   return(
+      <li
+        key='preview'
+        className='button rc-menu-item button'
+      >
+        Preview
+        <span className={'icon glyphicons glyphicons-new-window-alt'} />
+      </li>
+    );
+  }
+}
+export class GoToWSButton extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render() {
+    let cName = 'rc-menu-item button';
+    if(this.props.enabled!==true){
+      cName+= ' rc-menu-item-disabled';
+    }
+    return (
+      <li
+        key='goto'
+        className={cName}
+      >
+        Go to Workingstep
+      </li>
+    );
+  }
+}
+GoToWSButton.propTypes = {
+  enabled:React.PropTypes.bool.isRequired
+}
+export class PropertiesFooter extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render(){
+    let gotows = null;
+    switch (this.props.type) {
+      case 'workingstep':
+        gotows = (
+          <GoToWSButton
+            enabled={!this.props.iscurws}
+          />
+        );
+        break;
+      case 'workplan':
+      case 'selective':
+      case 'workplan-setup':
+        //no footer for these tings
+        return null;
+        break;
+      default:
+        break;
+    }
+    return (
+      <div className='button-dock'>
+        <Menu
+          className='buttons'
+          mode='horizontal'
+          onClick={this.props.selectEntity}
+        >
+          <PreviewButton />
+          {gotows}
+        </Menu>
+      </div>
+    );
+  }
+}
+PropertiesFooter.propTypes = {
+  selectEntity: React.PropTypes.func.isRequired,
+  type: React.PropTypes.string.isRequired,
+  iscurws: React.PropTypes.bool.isRequired
+}
+
 export default class PropertiesPane extends React.Component {
   constructor(props) {
     super(props);
@@ -757,23 +838,24 @@ export default class PropertiesPane extends React.Component {
   render() {
     let entityData = this.getEntityData();
     let entityElement = null;
-    if(entityData.entity===null) return null; //Badness.
-    switch(entityData.entity.type){
-      case 'workpiece':
-      entityElement = (
-          <WorkpieceProperties
-            entity={entityData.entity}
-            curws={this.props.ws}
-            workingstepcache={this.props.workingsteps}
-            highlightedTolerances={this.props.highlightedTolerances}
-            clickCb={this.props.propertiesCb}
-            toggleHighlight={this.props.toggleHighlight}
-            selectEntity={this.props.selectEntity}
-          />
-      );
-      break;
-      case 'workingstep':
-        entityElement = (
+    let footer = null;
+    if (entityData.entity !== null) {
+      switch (entityData.entity.type) {
+        case 'workpiece':
+          entityElement = (
+            <WorkpieceProperties
+              entity={entityData.entity}
+              curws={this.props.ws}
+              workingstepcache={this.props.workingsteps}
+              highlightedTolerances={this.props.highlightedTolerances}
+              clickCb={this.props.propertiesCb}
+              toggleHighlight={this.props.toggleHighlight}
+              selectEntity={this.props.selectEntity}
+            />
+          );
+          break;
+        case 'workingstep':
+          entityElement = (
             <WorkingstepProperties
               entity={entityData.entity}
               curws={this.props.ws}
@@ -783,32 +865,42 @@ export default class PropertiesPane extends React.Component {
               toggleHighlight={this.props.toggleHighlight}
               selectEntity={this.props.selectEntity}
             />
-      );
-      break;
-      case 'tool':
-        entityElement = (
-          <ToolProperties
-          /*TODO: Fill me out!*/
-          />
-        ); 
-      break;
-      case 'tolerance':
-        entityElement = (
-          <ToleranceProperties
+          );
+          break;
+        case 'tool':
+          entityElement = (
+            <ToolProperties
+            /*TODO: Fill me out!*/
+            />
+          );
+          break;
+        case 'tolerance':
+          entityElement = (
+            <ToleranceProperties
 
+            />
+          );
+          break;
+        case 'workplan-setup':
+        case 'workplan':
+          entityElement = (
+            <WorkplanProperties
+
+            />
+          );
+          break;
+        default:
+          entityElement = (null);
+      }
+      footer =(
+          <PropertiesFooter 
+            selectEntity={(event) => {
+              this.props.selectEntity(event, entity);
+            }}
+            type = {entityData.entity.type}
+            iscurws = {entityData.entity.id === this.props.ws} 
           />
-        ); 
-      break;
-      case 'workplan-setup':
-      case 'workplan':
-        entityElement = (
-          <WorkplanProperties
-          
-          />
-        ); 
-      break;
-      default:
-      return null;
+      );
     }
     return (
       <div className={entityData.paneName+' properties-pane-container'}>
@@ -840,9 +932,7 @@ export default class PropertiesPane extends React.Component {
           <Menu className='properties' onClick={(event) => { this.props.selectEntity(event, entity); }}>
             {entityElement}
           </Menu>
-          <div className='button-dock'>
-            {this.renderButtons(entityData.entity)}
-          </div>
+          {footer}
       </div>
     );
   }
