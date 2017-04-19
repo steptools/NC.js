@@ -537,8 +537,8 @@ export class PreviewButton extends React.Component {
   render() {
    return(
       <li
-        key='preview'
         className='button rc-menu-item button'
+        onClick={(event)=>{this.props.onClick(event,'preview')}}
       >
         Preview
         <span className={'icon glyphicons glyphicons-new-window-alt'} />
@@ -546,6 +546,10 @@ export class PreviewButton extends React.Component {
     );
   }
 }
+PreviewButton.propTypes = {
+  onClick: React.PropTypes.func
+}
+
 export class GoToWSButton extends React.Component {
   constructor(props){
     super(props);
@@ -557,8 +561,8 @@ export class GoToWSButton extends React.Component {
     }
     return (
       <li
-        key='goto'
         className={cName}
+        onClick={(event)=>{this.props.onClick(event,'goto')}}
       >
         Go to Workingstep
       </li>
@@ -566,7 +570,8 @@ export class GoToWSButton extends React.Component {
   }
 }
 GoToWSButton.propTypes = {
-  enabled:React.PropTypes.bool.isRequired
+  enabled:React.PropTypes.bool.isRequired,
+  onClick:React.PropTypes.func
 }
 export class PropertiesFooter extends React.Component {
   constructor(props){
@@ -579,6 +584,7 @@ export class PropertiesFooter extends React.Component {
         gotows = (
           <GoToWSButton
             enabled={!this.props.iscurws}
+            onClick={this.props.selectEntity}
           />
         );
         break;
@@ -593,14 +599,12 @@ export class PropertiesFooter extends React.Component {
     }
     return (
       <div className='button-dock'>
-        <Menu
-          className='buttons'
-          mode='horizontal'
-          onClick={this.props.selectEntity}
+        <ul
+          className='rc-menu rc-menu-horizontal rc-menu-root buttons'
         >
-          <PreviewButton />
+          <PreviewButton onClick={this.props.selectEntity}/>
           {gotows}
-        </Menu>
+        </ul>
       </div>
     );
   }
@@ -834,8 +838,8 @@ export default class PropertiesPane extends React.Component {
       }
       footer =(
           <PropertiesFooter 
-            selectEntity={(event) => {
-              this.props.selectEntity(event, entity);
+            selectEntity={(event,key) => {
+              this.props.selectEntity(event, this.props.entity,key);
             }}
             type = {entityData.entity.type}
             iscurws = {entityData.entity.id === this.props.ws} 

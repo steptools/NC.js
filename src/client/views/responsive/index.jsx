@@ -361,7 +361,8 @@ export default class ResponsiveView extends React.Component {
     }
   }
 
-  selectEntity(event, entity) {
+  selectEntity(event, entity , key) {
+    if(key!==undefined) event.key=key;
     if (event.key === 'goto') {
       let url = '/v3/nc/state/ws/' + entity.id;
       request.get(url).end();
