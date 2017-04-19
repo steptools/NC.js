@@ -811,7 +811,7 @@ export default class PropertiesPane extends React.Component {
       return null;
     }
     return (
-      <div className={entityData.paneName+'properties-pane-container'}>
+      <div className={entityData.paneName+' properties-pane-container'}>
           {this.renderPreview(entityData.entity)}
           <div className='titlebar'>
             <span
