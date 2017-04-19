@@ -278,7 +278,7 @@ export class ToleranceList extends React.Component{
 }
 ToleranceList.propTypes = {
   entity: React.PropTypes.object.isRequired,
-  highlightedTolerances: React.PropTypes.object.isRequired,
+  highlightedTolerances: React.PropTypes.array.isRequired,
   clickCb: React.PropTypes.func.isRequired,
   toggleHighlight: React.PropTypes.func.isRequired,
   selectEntity: React.PropTypes.func.isRequired
@@ -315,8 +315,8 @@ export class DatumList extends React.Component{
   }
 }
 DatumList.propTypes = {
-  datums: React.PropTypes.object.isRequired,
-  highlightedTolerances: React.PropTypes.object.isRequired,
+  datums: React.PropTypes.array.isRequired,
+  highlightedTolerances: React.PropTypes.array.isRequired,
   toggleHighlight: React.PropTypes.func.isRequired,
   selectEntity: React.PropTypes.func.isRequired
 }
@@ -390,8 +390,8 @@ export class FeedrateItem extends React.Component{
   }
 }
 FeedrateItem.propTypes = {
-  feedRate: React.PropTypes.number.isRequired,
-  feedUnits: React.PropTypes.string.isRequired
+  feedRate: React.PropTypes.number,
+  feedUnits: React.PropTypes.string
 }
 
 export class RunmodeItem extends React.Component{
@@ -471,8 +471,8 @@ export class WorkingstepProperties extends React.Component{
     return(
       <div>
         <RunmodeItem active={this.props.curws===entity.id} enabled={entity.enabled}/>
-        <FeedrateItem entity={entity.feedRate} feedUnits={entity.feedUnits}/>
-        <SpindleSpeedItem speed={entity.speed} speedUnits={entity.speedUnits}/>
+        <FeedrateItem entity={Number(entity.feedRate)} feedUnits={entity.feedUnits}/>
+        <SpindleSpeedItem speed={Number(entity.speed)} speedUnits={entity.speedUnits}/>
         <ToleranceList 
           entity={toleranceMap(entity.tolerances)} 
           highlightedTolerances={this.props.highlightedTolerances}
@@ -495,7 +495,7 @@ WorkingstepProperties.propTypes = {
   entity: React.PropTypes.object.isRequired,
   curws: React.PropTypes.number.isRequired,
   toleranceCache: React.PropTypes.object.isRequired,
-  highlightedTolerances: React.PropTypes.object.isRequired,
+  highlightedTolerances: React.PropTypes.array.isRequired,
   clickCb: React.PropTypes.func.isRequired,
   toggleHighlight: React.PropTypes.func.isRequired,
   selectEntity: React.PropTypes.func.isRequired
