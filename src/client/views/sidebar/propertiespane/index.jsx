@@ -873,7 +873,7 @@ export default class PropertiesPane extends React.Component {
               }}
             />
           </div>
-          <Menu className='properties' onClick={(event) => { this.props.selectEntity(event, entity); }}>
+          <Menu className='properties' onClick={(event) => { this.props.selectEntity(event, this.props.entity); }}>
             {entityElement}
           </Menu>
           {footer}
