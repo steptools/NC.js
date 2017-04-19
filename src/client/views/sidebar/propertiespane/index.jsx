@@ -223,7 +223,7 @@ export class WorkingstepList extends React.Component{
             <WorkingstepItem 
               workingstep={val} 
               running={val.id===this.props.curws}
-              clickCb={this.props.clickCb}
+              clickCb={()=>{this.props.clickCb(val)}}
             />
           ))}
         </div>
@@ -261,7 +261,7 @@ export class ToleranceList extends React.Component{
         tolerance={child} 
         key={child.id}
         highlighted={_.indexOf(this.props.highlightedTolerances,child.id) > -1}
-        clickCb={this.props.clickCb}
+        clickCb={()=>{this.props.clickCb(child)}}
         toggleHighlight={this.props.toggleHighlight} 
         selectEntity={this.props.selectEntity}
         />
