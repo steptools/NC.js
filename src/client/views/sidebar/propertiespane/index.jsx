@@ -259,6 +259,7 @@ export class ToleranceList extends React.Component{
       elements= this.props.entity.children.map((child)=> 
       (<ToleranceItem 
         tolerance={child} 
+        key={child.id}
         highlighted={_.indexOf(this.props.highlightedTolerances,child.id) > -1}
         clickCb={this.props.clickCb}
         toggleHighlight={this.props.toggleHighlight} 
@@ -300,6 +301,7 @@ export class DatumList extends React.Component{
       datums = this.props.datums.map((datum) =>(
         <DatumItem 
           datum={datum}
+          key={datum.id}
           highlighted={_.indexOf(this.props.highlightedTolerances, datum.id) > -1}
           toggleHighlight={this.props.toggleHighlight}
           selectEntity={this.props.selectEntity}
