@@ -694,41 +694,6 @@ export default class PropertiesPane extends React.Component {
     });
   }
 
-
-
-
-  renderPreviewButton(entity) {
-    if (entity.type === 'workplan' || entity.type === 'selective' ||
-        entity.type === 'workplan-setup') {
-      return;
-    }
-
-    this.buttons.push(
-      <MenuItem
-        key='preview'
-        className='button'
-      >
-        Preview
-        <span className={'icon glyphicons glyphicons-new-window-alt'}/>
-      </MenuItem>
-    );
-  }
-
-  renderGoto(entity) {
-    if (entity.type !== 'workingstep') {
-      return;
-    }
-    this.buttons.push(
-      <MenuItem
-        key='goto'
-        disabled={!(entity.enabled === true && this.props.ws !== entity.id)}
-        className='button'
-      >
-        Go to Workingstep
-      </MenuItem>
-    );
-  }
-
   renderPreview(entity) {
     if (entity === null) {
       return null;
@@ -776,33 +741,6 @@ export default class PropertiesPane extends React.Component {
           {content}
         </div>
       </div>
-    );
-  }
-
-
-  renderButtons(entity) {
-    this.buttons = [];
-    if (entity === null) {
-      return null;
-    }
-
-    this.renderPreviewButton(entity);
-    this.renderGoto(entity);
-
-    if (this.buttons.length <= 0) {
-      return null;
-    }
-
-    return (
-      <Menu
-        className='buttons'
-        mode='horizontal'
-        onClick={(event) => {
-          this.props.selectEntity(event, entity);
-        }}
-      >
-        {this.buttons}
-      </Menu>
     );
   }
 
