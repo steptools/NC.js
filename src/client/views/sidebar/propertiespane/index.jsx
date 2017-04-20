@@ -565,17 +565,26 @@ export class ToolProperties extends React.Component{
 export class ToleranceProperties extends React.Component {
   constructor(props){
     super(props);
-    let entity = props.entity;
   }
   render(){
     return(
       <div>
-        <WorkingstepList entity={this.entity} workingsteps={this.props.workingsteps} />
+        <WorkingstepList 
+          entity={this.props.entity}
+          workingstepcache={this.props.workingsteps} 
+          curws={this.props.curws}
+          clickCb={()=>{}}
+        />
         <DatumList />
         <WorkpieceList />
       </div>
     );
   }
+}
+ToleranceProperties.propTypes = {
+  entity: React.PropTypes.object.isRequired,
+  curws:React.PropTypes.number.isRequired,
+  workingsteps: React.PropTypes.object.isRequired
 }
 
 export class PreviewButton extends React.Component {
@@ -869,7 +878,9 @@ export default class PropertiesPane extends React.Component {
         case 'tolerance':
           entityElement = (
             <ToleranceProperties
-
+              entity={entityData.entity}
+              workingsteps={this.props.workingsteps}
+              curws={this.props.ws}
             />
           );
           break;
