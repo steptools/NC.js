@@ -531,12 +531,6 @@ export class WorkingstepProperties extends React.Component{
           toggleHighlight={this.props.toggleHighlight} 
           selectEntity={this.props.selectEntity}
           />
-        <DatumList 
-          datums={this.props.toleranceCache[entity.toBe.id].datums}
-          highlightedTolerances={this.props.highlightedTolerances}
-          toggleHighlight={this.props.toggleHighlight} 
-          selectEntity={this.props.selectEntity}
-        />
         <WorkpieceList
 	  asis={this.props.toleranceCache[entity.asIs.id]}
 	  tobe={this.props.toleranceCache[entity.toBe.id]}
