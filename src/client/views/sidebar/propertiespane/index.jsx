@@ -629,6 +629,42 @@ GoToWSButton.propTypes = {
   enabled:React.PropTypes.bool.isRequired,
   onClick:React.PropTypes.func
 }
+
+export class PropertiesHeader extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render() {
+    return (
+      <div className='titlebar'>
+        <span
+          className={'title-back ' + getIcon('back')}
+          onClick={this.props.backCb}
+        />
+        <span className={this.props.icon} />
+        <span
+          className='title'
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+        >
+          <div className='type'>{this.props.type}</div>
+          <div className='name'>{this.props.name}</div>
+        </span>
+        <span
+          className={'title-exit ' + getIcon('exit')}
+          onClick={this.props.exitCb}
+        />
+      </div>
+    );
+  }
+}
+PropertiesHeader.propTypes = {
+  backCb: React.PropTypes.func.isRequired,
+  exitCb: React.PropTypes.func.isRequired,
+  icon: React.PropTypes.string.isRequired,
+  type: React.PropTypes.string.isRequired,
+  name: React.PropTypes.string.isRequired
+}
 export class PropertiesFooter extends React.Component {
   constructor(props){
     super(props);
@@ -839,6 +875,7 @@ export default class PropertiesPane extends React.Component {
     let entityData = this.getEntityData();
     let entityElement = null;
     let footer = null;
+    let header = null;
     if (entityData.entity !== null) {
       switch (entityData.entity.type) {
         case 'workpiece':
@@ -894,6 +931,15 @@ export default class PropertiesPane extends React.Component {
         default:
           entityElement = (null);
       }
+      header = (
+        <PropertiesHeader 
+          backCb={()=>{this.props.propertiesCb(entityData.previousEntity,true);}}
+          exitCb={()=>{this.props.propertiesCb(null);this.props.previewCb(false);}}
+          icon={entityData.titleIcon}
+          type={entityData.type}
+          name={entityData.name}
+        />
+      );
       footer =(
           <PropertiesFooter 
             selectEntity={(event,key) => {
@@ -907,30 +953,7 @@ export default class PropertiesPane extends React.Component {
     return (
       <div className={entityData.paneName+' properties-pane-container'}>
           {this.renderPreview(entityData.entity)}
-          <div className='titlebar'>
-            <span
-              className={'title-back ' + getIcon('back')}
-              onClick={() => {
-                this.props.propertiesCb(entityData.previousEntity, true);
-              }}
-            />
-            <span className={entityData.titleIcon} />
-            <span
-              className='title'
-              onMouseEnter={this.handleMouseEnter}
-              onMouseLeave={this.handleMouseLeave}
-            >
-              <div className='type'>{entityData.type}</div>
-              <div className='name'>{entityData.name}</div>
-            </span>
-            <span
-              className={'title-exit ' + getIcon('exit')}
-              onClick={() => {
-                this.props.propertiesCb(null);
-                this.props.previewCb(false);
-              }}
-            />
-          </div>
+          {header}
           <Menu className='properties' onClick={(event) => { this.props.selectEntity(event, this.props.entity); }}>
             {entityElement}
           </Menu>
