@@ -219,16 +219,13 @@ export class WorkingstepList extends React.Component{
     if (nodes.length > 0) {
       title = 'Used in Workingsteps:';
       let ikey=0;
-      steps = (
-        <div className='list'>
-          {nodes.map((val) => (
+      steps = nodes.map((val) => (
             <WorkingstepItem 
               workingstep={val} 
               running={val.id===this.props.curws}
               clickCb={()=>{this.props.clickCb(val)}}
             />
-          ))}
-        </div>
+          )
       );
     } else {
       title = 'Not used in any workingsteps.';
