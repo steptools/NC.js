@@ -593,7 +593,12 @@ export class ToleranceProperties extends React.Component {
           curws={this.props.curws}
           clickCb={()=>{}}
         />
-        <DatumList />
+        <DatumList 
+          datums = {this.props.entity.children}
+          highlightedTolerances = {this.props.highlightedTolerances}
+          toggleHighlight = {this.props.toggleHighlight}
+          selectEntity = {this.props.selectEntity}
+        />
         <WorkpieceList />
       </div>
     );
@@ -602,6 +607,9 @@ export class ToleranceProperties extends React.Component {
 ToleranceProperties.propTypes = {
   entity: React.PropTypes.object.isRequired,
   curws:React.PropTypes.number.isRequired,
+  highlightedTolerances: React.PropTypes.array.isRequired,
+  toggleHighlight: React.PropTypes.func.isRequired,
+  selectEntity: React.PropTypes.func.isRequired,
   workingsteps: React.PropTypes.object.isRequired
 }
 
@@ -934,7 +942,10 @@ export default class PropertiesPane extends React.Component {
           entityElement = (
             <ToleranceProperties
               entity={entityData.entity}
+              toggleHighlight={this.props.toggleHighlight}
+              selectEntity={this.props.selectEntity}
               workingsteps={this.props.workingsteps}
+              highlightedTolerances={this.props.highlightedTolerances}
               curws={this.props.ws}
             />
           );
