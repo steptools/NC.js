@@ -250,13 +250,13 @@ WorkingstepList.propTypes = {
 export class ToleranceList extends React.Component{
   constructor(props){
     super(props);
+    this.populateElements = this.populateElements.bind(this);
+    this.populateElements();
   }
-  render() {
-    let title='';
-    let elements = null;
+  populateElements(){
     if (this.props.entity.children && this.props.entity.children.length > 0) {
-      title = 'Tolerances:';
-      elements= this.props.entity.children.map((child)=> 
+      this.title = 'Tolerances:';
+      this.elements= this.props.entity.children.map((child)=> 
       (<ToleranceItem 
         tolerance={child} 
         key={child.id}
@@ -267,13 +267,15 @@ export class ToleranceList extends React.Component{
         />
       ));
     } else {
-      title = 'No tolerances defined.';
+      this.title = 'No tolerances defined.';
     }
+  }
+  render() {
     return (
-      <li className='rc-menu-item-disabled property children'>
-        <div className='title'>{title}</div>
-        {elements?(<div className='list'>{elements}</div>):null}
-      </li>
+      <GenericList
+        title={this.title}
+        elements={this.elements}
+      />
     );
   }
 }
