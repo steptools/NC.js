@@ -291,7 +291,7 @@ export class DatumList extends React.Component{
   }
   render(){
     let title ='No datums defined.';
-    let datums = {};
+    let datums = [];
     if(this.props.datums.length >0 ){
       if(this.props.datums.length>1) {
         title='Datums:';
@@ -309,10 +309,10 @@ export class DatumList extends React.Component{
       ));
     }
     return (
-      <li className='rc-menu-item-disabled property children'>
-        <div className='title'>{title}</div>
-        {(datums.length>0)?(<div className='list'>{datums}</div>):null}
-      </li>
+      <GenericList
+        title={title}
+        elements={datums}
+      />
     );
   }
 }
