@@ -381,6 +381,24 @@ WorkpieceList.propTypes = {
   clickCb: React.PropTypes.func.isRequired
 }
 
+export class GenericList extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render(){
+    return (
+      <li className='rc-menu-item-disabled property children'>
+        <div className='title'>{this.props.title}</div>
+        <div className='list'>{this.props.elements}</div>
+      </li>
+    );
+  }
+}
+GenericList.propTypes = {
+  title:React.PropTypes.string,
+  elements:React.PropTypes.array
+}
+
 export class WorkpieceProperties extends React.Component{
   constructor(props){
     super(props);
