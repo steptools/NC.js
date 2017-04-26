@@ -235,10 +235,11 @@ export class WorkingstepList extends React.Component{
     }
 
     return (
-      <div key='workingsteps' className='rc-menu-item-disabled property children'>
-        <div className='title'>{title}</div>
-        {steps}
-      </div>
+      <GenericList 
+        key='workingsteps' 
+        title={title}
+        elements={steps}
+        />
     );
   }
 }
