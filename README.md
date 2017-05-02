@@ -73,3 +73,11 @@
    ```
   > npm start -- -f "path_to_.stpnc_file"
   ```
+  ------------------------------------------------------------------------------
+  8. Open Client
+  
+  With the server running, point a web browser to
+  
+  ```
+  http://localhost:8080/
+  ```
