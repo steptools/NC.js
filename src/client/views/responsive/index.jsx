@@ -64,7 +64,6 @@ export default class ResponsiveView extends React.Component {
     let negIndex = -1;
     let nodeCheck = (node) => {
       if (node.type === 'workingstep' || node.type ==='Nc Function') {
-        node.number = index;
         node.leaf = true;
         stepNodes[node.id] = node;
         if (node.enabled) {
