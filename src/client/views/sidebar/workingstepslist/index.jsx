@@ -1,8 +1,71 @@
+export class WorkingstepIcon extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render(){
+      return <div className='icon custom letter'>{this.props.id}</div>;
+  }
+}
+WorkingstepIcon.propTypes = {
+  id:React.PropTypes.number.isRequired
+}
+
+export class WorkingstepItem extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render(){
+    let cName = 'node';
+    if (this.props.current === true) {
+      cName += ' running-node';
+    }
+    return (
+      <div className='m-node'>
+        <div
+          id={this.props.workingstep.id}
+          className={cName}
+          onClick={() => { this.props.clickCb(this.props.workingstep); }}
+          onMouseDown={function (e) {
+            e.stopPropagation();
+            return false;
+          }}
+          style={{ 'paddingLeft': '5px' }}
+        >
+          <WorkingstepIcon id={this.props.iconNumber} />
+          <span className="textbox">{this.props.workingstep.name}</span>
+        </div>
+      </div>
+    );
+  }
+}
+WorkingstepItem.propTypes = {
+  workingstep: React.PropTypes.object.isRequired,
+  iconNumber: React.PropTypes.number.isRequired,
+  current: React.PropTypes.bool.isRequired,
+  clickCb: React.PropTypes.func.isRequired
+}
+export class SetupItem extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render(){
+    return(
+      <div className='m-node'>
+        <div className='node setup'>
+          <span className="setup-textbox">{this.props.name}</span>
+        </div>
+      </div>
+    );
+  }
+}
+SetupItem.propTypes = {
+  name: React.PropTypes.string.isRequired
+}
+
 export default class WorkingstepList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.renderNode = this.renderNode.bind(this);
     this.setWS = this.setWS.bind(this);
   }
 
@@ -18,62 +81,33 @@ export default class WorkingstepList extends React.Component {
     request.get(url).end();
   }
 
-  getNodeIcon(node) {
-    if (!isNaN(node.number)) {
-      return <div className='icon custom letter'>{node.number}</div>;
-    }
-  }
-
-  renderNode(nodeId) {
-    let node = this.props.workingstepCache[nodeId];
-    node.icon = this.getNodeIcon(node);
-    let cName = 'node';
-    if (node.id === this.props.ws) {
-      cName += ' running-node';
-    }
-    if (node.id === undefined) {
-      cName += ' setup';
-    }
-
-    return (
-      <div
-        id={node.id}
-        className={cName}
-        onClick={() => {
-          if (!cName.includes('setup')) {
-            this.setWS(node);
-          }
-        }}
-        onMouseDown={function(e) {
-          e.stopPropagation();
-          return false;
-        }}
-        style={{'paddingLeft': '5px'}}
-        key={node.id}
-      >
-        {node.icon}
-        {node.id === undefined
-          ? <span className="setup-textbox">{node.name}</span>
-          : <span className="textbox">{node.name}</span>}
-      </div>
-    );
-  }
-
   render() {
     let treeHeight;
     if (this.props.isMobile) {
       treeHeight = {'height': '100%'};
     }
-
+    let wslist = _.filter(this.props.workingstepList,(ws)=>{return this.props.workingstepCache[ws].type==='workingstep'||ws<0});
+    let items = wslist.map((wsid,i)=>{
+      let ws = this.props.workingstepCache[wsid];
+      if (wsid < 0) {
+        return (
+          <SetupItem name={ws.name} />
+        );
+      } else if (ws.type === 'workingstep') {
+        return (
+          <WorkingstepItem
+            key={i}
+            iconNumber={i}
+            workingstep={ws}
+            current={this.props.ws === ws.id}
+            clickCb={this.setWS}
+          />
+        );
+      }
+    });
     return (
       <div className='m-tree' style={treeHeight}>
-        {this.props.workingstepList.map((workingstep, i) => {
-          return (
-            <div className='m-node' key={i}>
-              {this.renderNode(workingstep)}
-            </div>
-          );
-        })}
+        {items}
       </div>
     );
   }
