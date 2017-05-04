@@ -28,12 +28,13 @@ export default class Annotation extends THREE.EventDispatcher {
       let vertices = new Float32Array(polyline.points.length * 3);
       let colorArray = new Float32Array(polyline.points.length * 3);
       _.forEach(polyline.points, (point, index) => {
-        vertices[index]     = point[0];            // X
-        vertices[index + 1] = point[1];            // Y
-        vertices[index + 2] = point[2];            // Z
-        colorArray[index]     = polyline.color[0]; // R
-        colorArray[index + 1] = polyline.color[1]; // G
-        colorArray[index + 2] = polyline.color[2]; // B
+        let bufferIndex = index*3;
+        vertices[bufferIndex]     = point[0];            // X
+        vertices[bufferIndex + 1] = point[1];            // Y
+        vertices[bufferIndex + 2] = point[2];            // Z
+        colorArray[bufferIndex]     = polyline.color[0]; // R
+        colorArray[bufferIndex + 1] = polyline.color[1]; // G
+        colorArray[bufferIndex + 2] = polyline.color[2]; // B
       });
       let position = new THREE.BufferAttribute(vertices, 3);
       geometry.addAttribute('position', position);
