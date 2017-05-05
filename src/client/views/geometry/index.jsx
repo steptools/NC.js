@@ -369,11 +369,13 @@ export default class GeometryView extends React.Component {
         {'usage': 'asis', 'rendered': true}
       );
     }
-
+    let machine = _.find(_.values(object._objects),{'usage':'machine'});
+    let newUp;
     //let partPos = new THREE.Vector3()
     //  .setFromMatrixPosition(part.object3D.matrixWorld);
     let toolBox = tool.model.getBoundingBox().clone();
 
+    if(machine===undefined){
     let toolMax = toolBox.max.clone().applyMatrix4(tool.object3D.matrixWorld);
     let toolMin = toolBox.min.clone().applyMatrix4(tool.object3D.matrixWorld);
 
@@ -385,7 +387,9 @@ export default class GeometryView extends React.Component {
 
     // get the unit vector corresponding to this view
     newUp = GeometryView.getAxisVector(newUp);
-
+    } else {
+      newUp = new THREE.Vector3(0,1,0);
+    }
     // now calculate which side we want to view from
     // TODO: make sure fixtures work properly with machines and other changes
     let fixture = _.find(
