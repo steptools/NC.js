@@ -64,27 +64,27 @@ export default class NC extends THREE.EventDispatcher {
   }
   //gist.github.com/paulkaplan/6513707
 
-  writeFloat(dataview, offset, float, isLittleEndian){
+  static writeFloat(dataview, offset, float, isLittleEndian){
     dataview.setFloat32(offset, float, isLittleEndian);
     return offset + 4;
   }
-  writeVector(dataview, offset, vector, isLittleEndian){
+  static writeVector(dataview, offset, vector, isLittleEndian){
     offset = NC.writeFloat(dataview, offset, vector.x, isLittleEndian);
     offset = NC.writeFloat(dataview, offset, vector.y, isLittleEndian);
     return NC.writeFloat(dataview, offset, vector.z, isLittleEndian);
   }
-  writeTri(dataview, offset, tri,verts, isLittleEndian){
+  static writeTri(dataview, offset, tri,verts, isLittleEndian){
       offset = NC.writeVector(dataview, offset, tri.normal, isLittleEndian);
       offset = NC.writeVector(dataview, offset, verts[tri.a], isLittleEndian);
       offset = NC.writeVector(dataview, offset, verts[tri.b], isLittleEndian);
       offset = NC.writeVector(dataview, offset, verts[tri.c], isLittleEndian);
-      offset += 2; // unused 'attribute byte count' is a Uint16
+      return offset + 2; // unused 'attribute byte count' is a Uint16
   }
-  compareVertex(v1,v2){
+  static compareVertex(v1,v2){
     return ((v1.x === v2.x) && (v1.y === v2.y) && (v1.z === v2.z));
   }
   // Given a THREE.Geometry, create a STL binary
-  geometryToDataView(geometry){
+  static geometryToDataView(geometry){
     let tris = geometry.faces;
     let verts = geometry.vertices;
     let isLittleEndian = true; // STL files assume little endian
@@ -144,7 +144,7 @@ export default class NC extends THREE.EventDispatcher {
     for (let i=0;i<changes.length;i++) {
       let outgeom = new THREE.Geometry()
                               .fromBufferGeometry(changes[i].model._geometry);
-      let dv = this.geometryToDataView(outgeom);
+      let dv = NC.geometryToDataView(outgeom);
       let blob = new Blob([dv], {type: 'application/octet-binary'});
       FileSaver.saveAs(blob, arg+' model' + i + '.stl');
     }
