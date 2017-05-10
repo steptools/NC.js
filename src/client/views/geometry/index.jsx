@@ -366,7 +366,7 @@ export default class GeometryView extends React.Component {
 
     //let toolPos = tool.object3D.position.clone().sub(partPos);
 
-    let newUp = toolAxis.clone();
+    newUp = toolAxis.clone();
 
     // get the unit vector corresponding to this view
     newUp = GeometryView.getAxisVector(newUp);
