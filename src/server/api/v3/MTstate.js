@@ -87,7 +87,7 @@ var findWS = function(current) {
 };
 
 var BaseOptFeed = (lineNumber)=>{
-  if(WSGCode.feeds[lineNumber]){
+  if(WSGCode.feeds!==undefined && WSGCode.feeds[lineNumber]){
     return WSGCode.feeds[lineNumber];
   }else{
     return {base:-1,optimized:-1};
