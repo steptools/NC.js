@@ -17,7 +17,7 @@
 
   ```
   > cd ..
-  > git clone https://github.com/steptools/STEPNode.git
+  > git clone https://github.com/steptools/NC.js.git
   > ls
   STEPNode      NC.js
   ```
