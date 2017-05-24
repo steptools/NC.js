@@ -40,6 +40,8 @@
 
  ------------------------------------------------------------------------------
   5. Making a server
+  
+  Ensure you are in the root NC.js directory.
 
   Making a server will build and then start the server
 
