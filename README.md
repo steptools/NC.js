@@ -3,27 +3,15 @@
 
 ### Setting up a development environment
 
-  1. Download and build STEPNode
+  1. Download NC.js:
 
   ```
-  > git clone https://github.com/steptools/STEPNode.git
-  > cd STEPNode
-  > npm install
-  ```
-
-  ------------------------------------------------------------------------------
-  2. Clone NC.js into the same directory that contains the STEPNode
-      directory, E.G.:
-
-  ```
-  > cd ..
   > git clone https://github.com/steptools/NC.js.git
-  > ls
-  STEPNode      NC.js
+  > cd NC.js
   ```
 
   ------------------------------------------------------------------------------
-  3. Setting up which model to use
+  2. Setting up which model to use
 
   In config.js put the path of the .stpnc file you want to use in the file object
   under the dir key
@@ -32,7 +20,7 @@
   "file" : {"dir": "path_to_.stpnc_file"} 
   ```
  ------------------------------------------------------------------------------
-  4. Install Glyphicons
+  3. Install Glyphicons
 
   ```
   > cd src/client
@@ -40,13 +28,13 @@
   ```
 
   ------------------------------------------------------------------------------
-  5. Install nodejs packages
+  4. Install nodejs packages
 
   ```
   > npm install
   ```
  ------------------------------------------------------------------------------
-  6. Making a server
+  5. Making a server
 
   Making a server will build and then start the server
 
@@ -60,7 +48,7 @@
   > npm run make-release
   ```
   ------------------------------------------------------------------------------
-  7. Start a server
+  6. Start a server
 
   If a server doesn't need to be rebuilt, this will be faster than making everytime. 
 
@@ -74,7 +62,7 @@
   > npm start -- -f "path_to_.stpnc_file"
   ```
   ------------------------------------------------------------------------------
-  8. Open Client
+  7. Open Client
   
   With the server running, point a web browser to
   
