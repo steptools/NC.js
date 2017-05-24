@@ -12,8 +12,9 @@
 
   ------------------------------------------------------------------------------
   2. Setting up which model to use
-
-  In config.js put the path of the .stpnc file you want to use in the file object
+  
+  Sample AP238 files are available at http://www.ap238.org/
+  In config.js put the path of the STEP-NC file you want to use in the file object
   under the dir key
  
   ```
@@ -25,10 +26,13 @@
   ```
   > cd src/client
   > cp ~Downloads/fonts ./fonts
+  > ls ./fonts
+  glyphicons.scss         glyphicons-regular.svg  glyphicons-regular.woff
+  glyphicons-regular.eot  glyphicons-regular.ttf  glyphicons-regular.woff2
   ```
 
   ------------------------------------------------------------------------------
-  4. Install nodejs packages
+  4. Install node packages
 
   ```
   > npm install
