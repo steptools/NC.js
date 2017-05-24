@@ -13,7 +13,7 @@
   ------------------------------------------------------------------------------
   2. Setting up which model to use
   
-  Sample AP238 files are available at http://www.ap238.org/
+  Sample AP238 files are available at http://www.ap238.org/  
   In config.js put the path of the STEP-NC file you want to use in the file object
   under the dir key
  
