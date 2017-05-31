@@ -30,7 +30,7 @@
   ------------------------------------------------------------------------------
   4. Install Glyphicons (Semi-Optional)
   
-  If you choose to skip this step, then the application will be missing most icons/buttons.
+  If you choose to skip this step, then the application will be missing some icons/buttons.
 
   ```
   > cd src/client
