@@ -162,7 +162,7 @@ function getWsTols(wsId, wpId) {
 
 function _getWsTols(req, res) {
   if (req.params.wsId) {
-    let wsId = req.params.wsId;
+    let wsId = Number(req.params.wsId);
     if (find.IsWorkingstep(wsId)) { // this may be able to be factored out later
       let tolerances = JSON.stringify(tol.GetWorkingstepToleranceAll(wsId));
       res.status(200).send(tolerances);
