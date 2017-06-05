@@ -538,6 +538,7 @@ export default class NC extends THREE.EventDispatcher {
       return false;
     });
     let geoms = _.filter(newState.geom, (geom) =>{
+	    if(_.has(geom,'point')) return false;
       if (geom.usage === 'tobe' && _.has(geom, 'shell')) {
         return true;
       }
