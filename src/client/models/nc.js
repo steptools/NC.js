@@ -9,7 +9,7 @@ import Annotation          from './annotation';
 import DataLoader from './data_loader';
 import Shell from './shell';
 import {makeGeometry, processKeyframe, processDelta} from './nc_delta';
-
+import {saveSTL} from './save_STL';
 /*************************************************************************/
 //HACK: FIXME.
 let dynqueuegetting = false;
@@ -62,54 +62,6 @@ export default class NC extends THREE.EventDispatcher {
     this.applyDeltaState = this.applyDeltaState.bind(this);
     this.handleDynamicGeom = this.handleDynamicGeom.bind(this);
   }
-  //gist.github.com/paulkaplan/6513707
-
-  writeFloat(dataview, offset, float, isLittleEndian){
-    dataview.setFloat32(offset, float, isLittleEndian);
-    return offset + 4;
-  }
-  writeVector(dataview, offset, vector, isLittleEndian){
-    offset = NC.writeFloat(dataview, offset, vector.x, isLittleEndian);
-    offset = NC.writeFloat(dataview, offset, vector.y, isLittleEndian);
-    return NC.writeFloat(dataview, offset, vector.z, isLittleEndian);
-  }
-  writeTri(dataview, offset, tri,verts, isLittleEndian){
-      offset = NC.writeVector(dataview, offset, tri.normal, isLittleEndian);
-      offset = NC.writeVector(dataview, offset, verts[tri.a], isLittleEndian);
-      offset = NC.writeVector(dataview, offset, verts[tri.b], isLittleEndian);
-      offset = NC.writeVector(dataview, offset, verts[tri.c], isLittleEndian);
-      offset += 2; // unused 'attribute byte count' is a Uint16
-  }
-  compareVertex(v1,v2){
-    return ((v1.x === v2.x) && (v1.y === v2.y) && (v1.z === v2.z));
-  }
-  // Given a THREE.Geometry, create a STL binary
-  geometryToDataView(geometry){
-    let tris = geometry.faces;
-    let verts = geometry.vertices;
-    let isLittleEndian = true; // STL files assume little endian
-    tris = _.filter(tris,(t)=>{ //Remove degenerates.
-      return !(NC.compareVertex(verts[t.a],verts[t.b])
-        && NC.compareVertex(verts[t.b],verts[t.c]));
-    });
-
-    let bufferSize = 84 + (50 * tris.length);
-    let buffer = new ArrayBuffer(bufferSize);
-    let dv = new DataView(buffer);
-    let offset = 0;
-
-    offset += 80; // Header is empty
-
-    dv.setUint32(offset, tris.length, isLittleEndian);
-    offset += 4;
-
-    for (let n = 0; n < tris.length; n++) {
-      offset = NC.writeTri(dv, offset, tris[n],verts, isLittleEndian);
-    }
-
-    return dv;
-  }
-
   save(arg){
     let changes = {};
     switch (arg) {
@@ -141,13 +93,7 @@ export default class NC extends THREE.EventDispatcher {
       default:
       break;
     }
-    for (let i=0;i<changes.length;i++) {
-      let outgeom = new THREE.Geometry()
-                              .fromBufferGeometry(changes[i].model._geometry);
-      let dv = this.geometryToDataView(outgeom);
-      let blob = new Blob([dv], {type: 'application/octet-binary'});
-      FileSaver.saveAs(blob, arg+' model' + i + '.stl');
-    }
+    saveSTL(arg,changes);
   }
   vis (arg) {
     let changes = {};
