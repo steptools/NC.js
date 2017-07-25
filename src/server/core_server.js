@@ -45,6 +45,11 @@ function CoreServer() {
       '-m, --mt-connect',
       'Run the MT Connect server mode. Implies --no-cache.'
     )
+    .option(
+      '--dump [path]',
+      'Directory to dump failed isects into [""]',
+      ''
+    )
     .parse(process.argv);
   let configurator = require(path.join(process.cwd(),opts.config));
   this.config = configurator(opts.environment);
@@ -52,6 +57,7 @@ function CoreServer() {
   if(opts.mtConnect) opts.cache = false;
   this.config.noCache = !opts.cache;
   this.config.mtConnect = opts.mtConnect;
+  if(opts.dump) this.config.dump = opts.dump;
   // set up machine tool option
   if(opts.tool && opts.tool!==''){
     try{
@@ -85,7 +91,7 @@ function CoreServer() {
       this.project = opts.file;
   else
       this.project = this.config.file.dir;
-  file.init(this.project, this.machinetool);
+  file.init(this.project, this.machinetool,this.config.dump);
 
   // Establish core
   this.logger = new winston.Logger({
