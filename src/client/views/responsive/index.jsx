@@ -250,6 +250,9 @@ export default class ResponsiveView extends React.Component {
     this.props.app.socket.on('nc:spindle', (spindle) => {
       this.setState({'spindleSpeed' : spindle});
     });
+    this.props.app.socket.on('nc:qifLoad', ()=>{
+      request.get('/v3/nc/workpieces/').then(this.getWPT);
+    });
   }
 
 
@@ -406,13 +409,14 @@ export default class ResponsiveView extends React.Component {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
           let tols = [];
-          let cache = this.state.toleranceCache[workingstep.toBe.id];
-          if(cache) {
-            _.each(cache.datums, (t) => {
-              tols.push(t.id);
-            });
-            _.each(cache.children, (t) => {
-              tols.push(t.id);
+          if(workingstep.tolerances!==undefined && workingstep.tolerances.length>0){
+            _.each(workingstep.tolerances, (t) => {
+              let tol = this.state.toleranceCache[t];
+              tols.push(tol.id);
+              if(tol.children!==undefined && tol.children.length>0)
+                _.each(tol.children,(d)=>{
+                  tols.push(d.id);
+                });
             });
           }
           if (this.state.ws !== workingstep.id) {
