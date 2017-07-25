@@ -383,7 +383,9 @@ export default class HeaderView extends React.Component {
           val={this.props.speed}
           icons='true'
         />
-	<GeomMenu actionManager = {this.props.actionManager}/>
+  { this.props.cadManager.getRootModel("state/key") ?      
+	<GeomMenu actionManager = {this.props.actionManager} rootVis = {this.props.cadManager.getRootVis()}/>
+  : null }
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <ProbeMessage msg={probeMsg}/>
         <Button key='changelog'>
