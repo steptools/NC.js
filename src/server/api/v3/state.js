@@ -15,6 +15,7 @@ let path = find.GetProjectName();
 let changed=false;
 let setupFlag = false;
 
+let _timestep = new Number(.1);
 /****************************** Helper Functions ******************************/
 let keyCache = {};
 let deltaCache = {};
@@ -24,6 +25,13 @@ function update(val) {
 
 function updateSpeed(speed) {
   app.ioServer.emit('nc:speed', speed);
+  if(speed > 200) {
+    _timestep = (.1 * (speed/200));
+    speed = 200;
+  }
+  else if(_timestep!==.1){
+     _timestep=.1;
+  }
 }
 
 function getDelta(key) {
@@ -147,7 +155,7 @@ function loop(key) {
     }).then(()=>{
       app.ioServer.emit('nc:delta', key?keyCache:deltaCache);
       //change the working step
-      return ms.AdvanceState();
+      return ms.AdvanceStateByT(Number(_timestep));
     }).then((shouldSwitch)=>{
       if (shouldSwitch.hasOwnProperty('probe')) {
         app.ioServer.emit('nc:probe',shouldSwitch.probe);
