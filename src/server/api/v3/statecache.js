@@ -126,7 +126,7 @@ let _init = ()=> {
       return exists(dir + wsteps[ws] + '/' + step + '.dynamic.json');
     }).then((r)=>{
       if(r) //file exists, advance and don't worry.
-        return ms.AdvanceState();
+        return ms.AdvanceStateByT(.1);
       else //files don't exist, get the JSONs and save em
         return Promise.all([
             ms.GetKeyStateJSON(),
@@ -141,7 +141,7 @@ let _init = ()=> {
             _.forEach(jsons,(j)=>{
               writer(fnames[i++],j,wsteps[ws],step).then(()=>{j=null;});
             });
-            return ms.AdvanceState();
+            return ms.AdvanceStateByT(.1);
           });
     }).then((rtn)=>{
       if(rtn.value>0) {
@@ -182,7 +182,8 @@ let _feedRate = ()=>{
   return reader('feed',wsteps[ws],step);
 };
 
-let _advanceState = ()=>{
+let _advanceState = (t)=>{
+  if(t>1) while((t--)>1) step++;
   step++;
   return _keyState()
     .then(()=>{
@@ -249,6 +250,7 @@ module.exports.GetKeyStateJSON = _keyState;
 module.exports.GetCurrentSpindleSpeed = _spindleSpeed;
 module.exports.GetCurrentFeedrate = _feedRate;
 module.exports.AdvanceState = _advanceState;
+module.exports.AdvanceStateByT = _advanceState;
 module.exports.FirstWS = _firstWs;
 module.exports.LastWS = _lastWs;
 module.exports.NextWS = _nextWs;
@@ -257,3 +259,7 @@ module.exports.GoToWS = _goToWs;
 module.exports.GetWSID = _getID;
 module.exports.GetPrevWSID = _getlastID;
 module.exports.GetNextWSID = _getnextID;
+
+//Make sure event loop doesn't die.
+let a = ()=>{setTimeout(a,100);};
+a();
