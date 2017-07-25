@@ -506,7 +506,6 @@ export default class NC extends THREE.EventDispatcher {
           return true;
         }
       }
-      }
       return false;
     });
     let inproc = _.filter(newState.geom, ['usage','inprocess'])[0];
