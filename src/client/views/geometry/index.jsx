@@ -389,7 +389,11 @@ export default class GeometryView extends React.Component {
       {'usage': 'fixture', 'rendered': true}
     );
     let newPos = new THREE.Vector3();
-    this.alignFixture(fixture, newUp, newPos);
+    if (machine) {
+      newPos.crossVectors(newUp, new THREE.Vector3(1, 0, 0));
+    } else {
+      this.alignFixture(fixture, newUp, newPos);
+    }
 
     // TODO: See if we can actually use the tool in calculations
     // zoom to fit just the part
@@ -516,7 +520,6 @@ export default class GeometryView extends React.Component {
   }
 
   updateSceneBoundingBox(newBoundingBox) {
-    newBoundingBox.applyMatrix4(this._globalxform);
     this.sceneCenter.copy(newBoundingBox.center());
     this.sceneRadius = newBoundingBox.size().length() / 2;
   }
