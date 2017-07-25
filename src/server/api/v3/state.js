@@ -15,6 +15,7 @@ let path = find.GetProjectName();
 let changed=false;
 let setupFlag = false;
 
+let probepause = false;
 let _timestep = new Number(.1);
 /****************************** Helper Functions ******************************/
 let keyCache = {};
@@ -159,8 +160,10 @@ function loop(key) {
     }).then((shouldSwitch)=>{
       if (shouldSwitch.hasOwnProperty('probe')) {
         app.ioServer.emit('nc:probe',shouldSwitch.probe);
-        loopStates[path] = false;
-        update('pause');
+        if(probepause){
+          loopStates[path] = false;
+          update('pause');
+        }
         return getDelta(true)
           .then((key)=>{
             keyCache = JSON.parse(key);
