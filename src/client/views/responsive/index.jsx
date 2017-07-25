@@ -574,6 +574,7 @@ export default class ResponsiveView extends React.Component {
           actionManager={this.props.app.actionManager}
           socket={this.props.app.socket}
           mode={this.state.svmode}
+          isRunning={this.state.ppbutton!=='play'}
           ws={this.state.ws}
           tree={this.state.svtree}
           altmenu={this.state.svaltmenu}
