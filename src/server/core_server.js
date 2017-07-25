@@ -50,6 +50,10 @@ function CoreServer() {
       'Directory to dump failed isects into [""]',
       ''
     )
+    .option(
+      '--probe-adapter',
+      "Run with a MT-Connect Adapter for logging probe results"
+    )
     .parse(process.argv);
   let configurator = require(path.join(process.cwd(),opts.config));
   this.config = configurator(opts.environment);
@@ -58,6 +62,9 @@ function CoreServer() {
   this.config.noCache = !opts.cache;
   this.config.mtConnect = opts.mtConnect;
   if(opts.dump) this.config.dump = opts.dump;
+  if(opts.probeAdapter) {
+    this.config.probeAdapter = true;
+  }
   // set up machine tool option
   if(opts.tool && opts.tool!==''){
     try{

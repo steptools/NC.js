@@ -14,6 +14,8 @@ let feedRate;
 let path = find.GetProjectName();
 let changed=false;
 let setupFlag = false;
+let mtcadapter ={}; 
+let runProbeAdapter = false;
 
 let probepause = false;
 let _timestep = new Number(.1);
@@ -159,6 +161,13 @@ function loop(key) {
       return ms.AdvanceStateByT(Number(_timestep));
     }).then((shouldSwitch)=>{
       if (shouldSwitch.hasOwnProperty('probe')) {
+        if (runProbeAdapter === true) {
+          ms.GetWSID()
+            .then((id) => {
+              let probedata = file.tol.GetProbeResults(id, shouldSwitch.probe.contact[0], shouldSwitch.probe.contact[1], shouldSwitch.probe.contact[2]);
+              mtcadapter.write(probedata);
+            });
+        }
         app.ioServer.emit('nc:probe',shouldSwitch.probe);
         if(probepause){
           loopStates[path] = false;
@@ -383,6 +392,11 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/delta/save', _saveDeltaState);
   if (app.config.noCache===true) {
     ms = file.ms;
+    if(app.config.probeAdapter===true){
+      mtcadapter = require('./ProbeAdapter');
+      mtcadapter.ProgramID(find.GetProjectName());
+      runProbeAdapter = true;
+    }
   } else {
     ms = scache;
     ms.Initialize();
