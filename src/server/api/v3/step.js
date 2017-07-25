@@ -74,6 +74,10 @@ function exeFromId(id) {
     ws.feedUnits = find.GetProcessFeedUnit(id);
     ws.speed = find.GetProcessSpeed(id);
     ws.speedUnits = find.GetProcessSpeedUnit(id);
+    let tolerances = file.tol.GetWorkingstepToleranceAll(id);
+    if(tolerances.length > 0){
+      ws.tolerances = tolerances;
+    }
     return ws;
   } else if (find.IsSelective(id)) {
     ws.type = 'selective';
