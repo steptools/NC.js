@@ -380,6 +380,10 @@ export default class GeometryView extends React.Component {
 
     // now calculate which side we want to view from
     // TODO: make sure fixtures work properly with machines and other changes
+    let machine = _.find(
+      _.values(object._objects),
+      {'usage': 'machine', 'rendered': true}
+    );
     let fixture = _.find(
       _.values(object._objects),
       {'usage': 'fixture', 'rendered': true}
