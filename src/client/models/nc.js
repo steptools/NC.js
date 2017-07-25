@@ -499,11 +499,12 @@ export default class NC extends THREE.EventDispatcher {
         return true;
       }
       if (geom.usage === 'asis' ||
-      geom.usage === 'cutter' ||
-      geom.usage === 'machine' ||
-      geom.usage === 'fixture') {
+        geom.usage === 'cutter' ||
+        geom.usage === 'machine' ||
+        geom.usage === 'fixture') {
         if (_.has(geom, 'shell')) {
-        return true;
+          return true;
+        }
       }
       }
       return false;
@@ -567,7 +568,7 @@ export default class NC extends THREE.EventDispatcher {
             });
           } else {
             if (this.state.usagevis[geomData.usage]) {
-              this._loader._annotations[name].addToScene();
+             this._loader._annotations[name].addToScene();
             } else {
               this._loader._annotations[name].removeFromScene();
             }
