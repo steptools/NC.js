@@ -150,7 +150,7 @@ export default class NC extends THREE.EventDispatcher {
       obj.toggleVisibility();
     });
   }
-  getVis(usage){
+  getVis(){
     return this.state.usagevis;
   }
   addModel(model, usage, type, id, transform, bbox) {
