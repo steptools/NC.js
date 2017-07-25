@@ -197,6 +197,7 @@ function _getWps(req, res) {
       _.each(wp.subs, (child) => {
         wp.tolerances = wp.tolerances.concat(child.tolerances);
       });
+      wp.size = find.GetWorkpieceShape(id);
       wp.subs = undefined;
     }
 
