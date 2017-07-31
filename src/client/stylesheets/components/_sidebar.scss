@@ -543,6 +543,15 @@ $icons: '../icons/';
 
     .treebeard {
          flex-grow: 1;
+
+        .node .highlight-button {
+             flex-grow: 1;
+             min-height: inherit;
+             text-align: right;
+             line-height: inherit;
+             vertical-align: middle;
+             padding: 8px;
+         }
     }
 
     .button-dock {
