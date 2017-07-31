@@ -146,6 +146,7 @@ export default class SidebarView extends React.Component {
           toleranceList={this.props.toleranceList}
           highlightedTolerances={this.props.highlightedTolerances}
           toggleHighlight={this.props.toggleHighlight}
+          toleranceHighlightAll={this.props.toleranceHighlightAll}
           isMobile={this.props.isMobile}
           isRunning={this.props.isRunning}
           ws={this.props.ws}
