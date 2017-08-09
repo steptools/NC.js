@@ -534,6 +534,76 @@ $icons: '../icons/';
     }
 }
 
+.sidebar .tolerance-list-container {
+    height: $sidebarPaneHeight;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: inherit;
+
+    .treebeard {
+         flex-grow: 1;
+
+        .node .highlight-button {
+             flex-grow: 1;
+             min-height: inherit;
+             text-align: right;
+             line-height: inherit;
+             vertical-align: middle;
+             padding: 8px;
+         }
+    }
+
+    .button-dock {
+        background-color: inherit;
+        border-top: 2px solid #333333;
+
+        .buttons {
+            min-height: 0px;
+            height: 46px;
+            display: flex;
+            align-items: stretch;
+            margin: 2px;
+            background-color: inherit;
+            border: 0px;
+
+            .button {
+                flex-grow: 1;
+                flex-basis: 0;
+                height: 44px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #333333;
+                border-bottom: 2px solid #333333;
+                padding: 0px;
+                color: #F8F8F8;
+                cursor: pointer;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+
+                .icon {
+                    font-size: 20px;
+                    margin-left: 5px;
+                    vertical-align: middle;
+                }
+
+                &.rc-menu-item-disabled {
+                    opacity: 0.5;
+                }
+
+                &:first-child {
+                    margin-right: 2px;
+                }
+            }
+        }
+    }
+}
+
 .tolerance-mode {
     display:flex;
     border-top: 2px solid black;

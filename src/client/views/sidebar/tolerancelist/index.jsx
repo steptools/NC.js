@@ -5,6 +5,44 @@ import ts from '../tree_style.jsx';
 let wsList = [];
 var tolerancesByWS = [];
 
+class ToleranceHighlight extends React.Component {
+  constructor(props) {
+    super(props);
+    this.hideTolerances = this.hideTolerances.bind(this);
+    this.showTolerances = this.showTolerances.bind(this);
+    this.menuClick = this.menuClick.bind(this);
+  }
+  hideTolerances() {
+    this.props.toleranceHighlightAll(false);
+  };
+  showTolerances() {
+    this.props.toleranceHighlightAll(true);
+  };
+  menuClick(info) {
+    (info.key === "hide") ? this.hideTolerances() : this.showTolerances();
+  }
+  render(){
+    return (
+      <div className="button-dock">
+        <Menu className="buttons" onClick={this.menuClick} mode="horizontal">
+          <MenuItem
+            className="button"
+            key="hide"
+            onClick={this.hideTolerances}>
+            Hide All Tolerances
+          </MenuItem>
+          <MenuItem
+            className="button"
+            key="show"
+            onClick={this.showTolerances}>
+            Show All Tolerances
+          </MenuItem>
+        </Menu>
+      </div>
+    );
+  }
+}
+
 class ToleranceMode extends React.Component {
   constructor(props) {
     super(props);
@@ -349,9 +387,14 @@ export default class ToleranceList extends React.Component {
     }
 
     return (
-      <div className="treebeard flat">
-        {(this.state.mode==='wp')?(<ToleranceMode />):(null)}
-        {tree}
+      <div className="tolerance-list-container">
+        <div className="treebeard flat">
+          {(this.state.mode==='wp')?(<ToleranceMode />):(null)}
+          {tree}
+        </div>
+        <ToleranceHighlight
+          toleranceHighlightAll={this.props.toleranceHighlightAll}
+        />
       </div>
     );
   }

@@ -217,6 +217,7 @@ export default class ResponsiveView extends React.Component {
     this.selectEntity = this.selectEntity.bind(this);
 
     this.toggleHighlight = this.toggleHighlight.bind(this);
+    this.toleranceHighlightAll = this.toleranceHighlightAll.bind(this);
     this.addListeners = this.addListeners.bind(this);
   }
 
@@ -450,6 +451,18 @@ export default class ResponsiveView extends React.Component {
     this.setState({'highlightedTolerances': newTols});
   }
 
+  toleranceHighlightAll(show) {
+    let tolsObj = _.mapValues(this.state.toleranceCache, (tol) => {
+      return tol.id;
+    });
+    let newTols = _.values(tolsObj);
+    if (show) {
+      this.setState({'highlightedTolerances': newTols});
+    } else {
+      this.setState({'highlightedTolerances': []});
+    }
+  }
+
   playpause() {
     let url = '/v3/nc/state/loop/';
     if (this.state.ppbutton ==='play') {
@@ -602,6 +615,7 @@ export default class ResponsiveView extends React.Component {
           preview={this.state.preview}
           openPreview={this.openPreview}
           toggleHighlight={this.toggleHighlight}
+          toleranceHighlightAll={this.toleranceHighlightAll}
           highlightedTolerances={this.state.highlightedTolerances}
           selectEntity={this.selectEntity}
           previewEntity={this.state.previewEntity}
