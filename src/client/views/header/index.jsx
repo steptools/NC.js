@@ -318,6 +318,97 @@ class NumericIncr extends React.Component {
   }
 }
 
+class FixturePlacement extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      x: null,
+      y: null,
+      z: null,
+      id: null,
+      active: null
+    };
+
+    this.wsChange = this.wsChange.bind(this);
+    this.onAxisSelect = this.onAxisSelect.bind(this);
+    this.valueChange = this.valueChange.bind(this);
+    this.applyChange = this.applyChange.bind(this);
+  }
+
+  componentDidUpdate() {
+    this.wsChange();
+  }
+
+  wsChange() {
+    if (this.props.curr_ws.fixtureID != this.state.id) {
+      this.setState({
+        x: this.props.curr_ws.fixturePlacement[0],
+        y: this.props.curr_ws.fixturePlacement[1],
+        z: this.props.curr_ws.fixturePlacement[2],
+        id: this.props.curr_ws.fixtureID
+      });
+    }
+  }
+
+  onAxisSelect(axis) {
+    this.setState({active: axis});
+  }
+
+  valueChange(newValue) {
+    let newState = {};
+    newState[this.state.active] = newValue;
+    this.setState(newState);
+  }
+
+  applyChange() {
+    let placement = this.props.curr_ws.fixturePlacement;
+    placement[0] = this.state.x;
+    placement[1] = this.state.y;
+    placement[2] = this.state.z;
+    request.put('/v3/nc/workplan/' + this.state.id + '/workpiece')
+    .send({'id': this.state.id, 'placement': placement}).then(()=> {
+      request.get('/v3/nc/state/delta').then((res)=> {
+        this.props.cadManager.onDelta(res.body);
+        request.get('/v3/nc/state/ws/' + this.props.curr_ws.id).end();
+      })
+    })
+    this.props.actionManager.emit('removeTransparent');
+  }
+
+  render() {
+    let cNames = {
+      x: 'axis-select',
+      y: 'axis-select',
+      z: 'axis-select'
+    };
+    if (this.state.active) {
+      cNames[this.state.active] = 'axis-select active';
+    }
+
+    return(
+      <MenuItem {...this.props}>
+        <div className='fixture-placement-container'>
+          <div className='titlebar'>
+            <div className={'title-icon ' + getIcon('setup')} onClick={this.applyChange}/>
+            <div className='title'>Fixture Placement</div>
+          </div>
+          <NumericIncr 
+            actionManager={this.props.actionManager} 
+            value={this.state[this.state.active]}
+            valueChange={this.valueChange}
+            active={this.state.active}
+          />
+          <div className='axes-bar'>
+            <div className={cNames.x} onClick={()=> {this.onAxisSelect('x')}}>X</div>
+            <div className={cNames.y} onClick={()=> {this.onAxisSelect('y')}}>Y</div>
+            <div className={cNames.z} onClick={()=> {this.onAxisSelect('z')}}>Z</div>
+          </div>
+        </div>
+      </MenuItem>
+    );
+  }
+}
+
 let resetProcessVolume = function(){
   request.get('/v3/nc/geometry/delta/reset').end();
 }
