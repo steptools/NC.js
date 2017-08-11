@@ -264,6 +264,60 @@ class GeomMenu extends React.Component {
   )}
 }
 
+class NumericIncr extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      delta: 1
+    };
+
+    this.increment = this.increment.bind(this);
+    this.decrement = this.decrement.bind(this);
+    this.incPrecision = this.incPrecision.bind(this);
+    this.decPrecision = this.decPrecision.bind(this);
+  }
+
+  increment() {
+    this.props.valueChange(this.props.value + this.state.delta);
+    let event = {delta: this.state.delta, active: this.props.active};
+    this.props.actionManager.emit('moveFixture', event);
+  }
+
+  decrement() {
+    this.props.valueChange(this.props.value - this.state.delta);
+    let event = {delta: 0 - this.state.delta, active: this.props.active};
+    this.props.actionManager.emit('moveFixture', event);
+  }
+
+  incPrecision() {
+    this.setState({delta: this.state.delta * 10});
+  }
+
+  decPrecision() {
+    this.setState({delta: this.state.delta * 0.1});
+  }
+
+  render() {
+    let valueText = (typeof this.props.value == 'number') ? this.props.value.toFixed(10) : '   N/A   ';
+    return(
+      <div className='numeric-control'>
+        <div className='value-bar'>
+          <div className='value-text'>Value</div>
+          <div className={'minus-icon ' + getIcon('minus')} onClick={this.decrement}/>
+          <div className='value'>{valueText}</div>
+          <div className={'plus-icon ' + getIcon('plus')} onClick={this.increment}/>
+        </div>
+        <div className='precision-bar'>
+          <div className='precision-text'>Delta</div>
+          <div className={'left-icon ' + getIcon('left')} onClick={this.decPrecision}/>
+          <div className='precision'>{this.state.delta.toExponential(0)}</div>
+          <div className={'right-icon ' + getIcon('right')} onClick={this.incPrecision}/>
+        </div>
+      </div>
+    );
+  }
+}
+
 let resetProcessVolume = function(){
   request.get('/v3/nc/geometry/delta/reset').end();
 }
