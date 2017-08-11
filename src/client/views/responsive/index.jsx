@@ -405,7 +405,7 @@ export default class ResponsiveView extends React.Component {
 
   updateWorkingstep(ws) {
     let url = '/v3/nc/workplan/' + ws;
-
+    
     let requestCB = (error, response) => {
       if (!error && response.ok) {
         if (response.text) {
@@ -689,6 +689,7 @@ export default class ResponsiveView extends React.Component {
         <div id='cadview-container' style={cadviewStyle}>
           <CADView
             manager={this.props.app.cadManager}
+            actionManager={this.props.app.actionManager}
             openProperties={this.openProperties}
             viewContainerId='primary-view'
             root3DObject={this.props.app._root3DObject}
