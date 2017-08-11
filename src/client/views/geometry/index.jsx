@@ -578,6 +578,47 @@ export default class GeometryView extends React.Component {
       newColor,
     );
   }
+
+  outlinePickedFace(obj, face) {
+    let rootModel = this.props.manager.getRootModel('state/key');
+    if (this.state.prevOutlinedFace) {
+      rootModel._overlay3D.remove(this.state.prevOutlinedFace);
+    }
+    if (!obj || !face) {
+      this.setState({prevOutlinedFace: false});
+      return;
+    }
+    let model = obj.object.userData.model;
+    let obj3D = obj.object.userData.object3D;
+    let modelPositions = model._geometry.getAttribute('position');
+    let faceOutlineGeom = new THREE.BufferGeometry();
+    let size = face.end - face.start;
+    let faceOutlineGeomPositions = new THREE.BufferAttribute(new Float32Array(size), 3 );
+
+    let j = 0;
+    for (let i = face.start; i < face.end; i++) {
+      faceOutlineGeomPositions.array[j] = modelPositions.array[i];
+      j++
+    }
+    faceOutlineGeom.addAttribute('position', faceOutlineGeomPositions);
+    faceOutlineGeom.scale(obj3D.scale.x, obj3D.scale.y, obj3D.scale.z);
+    faceOutlineGeom.computeBoundingBox();
+
+    let edges = new THREE.EdgesGeometry(faceOutlineGeom);
+    let outlineObject = new THREE.LineSegments(edges,
+       new THREE.LineBasicMaterial({color: 0xffff00}));
+
+    outlineObject.translateX(obj3D.position.x);
+    outlineObject.translateY(obj3D.position.y);
+    outlineObject.translateZ(obj3D.position.z);
+
+    outlineObject.rotateX(obj3D.rotation.x);
+    outlineObject.rotateY(obj3D.rotation.y);
+    outlineObject.rotateZ(obj3D.rotation.z);
+    
+    model.getNamedParent()._overlay3D.add(outlineObject);
+    this.setState({'prevOutlinedFace': outlineObject});
+  }
   animate(forceRendering) {
     window.requestAnimationFrame(() => {
       this.animate(false);
