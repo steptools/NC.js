@@ -474,15 +474,15 @@ export default class GeometryView extends React.Component {
     return newTargetPosition;
   }
 
-  highlightFaces(faces, object, unhighlight, newColor,status) {
+  highlightFaces(faces, object, unhighlight, newColor, status) {
     if (!object) {
       return;
     }
-
-    let shells = _.filter(
-      _.values(object._objects),
-      _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
-
+    let shells;
+    shells = _.filter(_.values(object._objects), function (shell) {
+      return shell.usage !== "inprocess"
+    });
+      
     _.each(shells, (shell) => {
       if (shell && shell.model._geometry) {
         let modelFaces = shell.model._geometry.getAttribute('faces');
@@ -549,6 +549,34 @@ export default class GeometryView extends React.Component {
     });
 
     return selectedFace;
+  }
+
+  highlightPickedFace(obj, face) {
+    let rootModel = this.props.manager.getRootModel('state/key');
+    if (this.state.prevPickedFace) {
+      this.highlightFaces(
+        this.state.prevPickedFace,
+        rootModel, 
+        true,
+      );
+    }
+    if (!obj || !face) {
+      this.setState({prevPickedFace: false});
+      return;
+    }
+
+    this.setState({'prevPickedFace': [face.id]});
+    let newColor = {
+      r: 1.0,
+      g: 0,
+      b: 0,
+    };
+    this.highlightFaces(
+      [face.id],
+      rootModel,
+      false,
+      newColor,
+    );
   }
   animate(forceRendering) {
     window.requestAnimationFrame(() => {
