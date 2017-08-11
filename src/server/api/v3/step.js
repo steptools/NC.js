@@ -2,6 +2,8 @@
 'use strict';
 var file = require('./file');
 var find = file.find;
+var tol = file.tol;
+var apt = file.apt;
 var _ = require('lodash');
 
 /****************************** Helper Functions ******************************/
@@ -15,6 +17,8 @@ function exeFromId(id) {
     'distance': find.GetExecutableDistance(id),
     'distanceUnits': find.GetExecutableDistanceUnit(id),
     'setupID': getSetupFromId(id),
+    'fixtureID': apt.GetExecutableWorkpieceFixture(id),
+    'fixturePlacement': apt.GetWorkpiecePlacement(apt.GetExecutableWorkpieceFixture(id)),
     'asIs': {
       id: find.GetExecutableWorkpieceAsIsLocal(id),
       inherited: false,
