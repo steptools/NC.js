@@ -658,6 +658,34 @@ export default class GeometryView extends React.Component {
     });
     return movingFixture;
   }
+
+  coordinateAxes(show) {
+    let rootModel = this.props.manager.getRootModel('state/key');
+    if (!show) {
+      rootModel._overlay3D.remove(this.state.visibleAxes);
+      this.setState({'visibleAxes': false});
+      return;
+    }
+    if (this.state.visibleAxes) {
+      return;
+    }
+    let fixture = _.find(rootModel._objects, (obj)=> {
+      return obj.usage == 'tobe';
+    });
+    let obj3D = fixture.object3D;
+    let axisHelper = new THREE.AxisHelper(1000);
+
+    axisHelper.translateX(obj3D.position.x);
+    axisHelper.translateY(obj3D.position.y);
+    axisHelper.translateZ(obj3D.position.z);
+
+    axisHelper.rotateX(obj3D.rotation.x);
+    axisHelper.rotateY(obj3D.rotation.y);
+    axisHelper.rotateZ(obj3D.rotation.z);
+    rootModel._overlay3D.add(axisHelper);
+    this.setState({'visibleAxes': axisHelper});
+  }
+
   animate(forceRendering) {
     window.requestAnimationFrame(() => {
       this.animate(false);
