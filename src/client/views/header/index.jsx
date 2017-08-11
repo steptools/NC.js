@@ -641,6 +641,16 @@ export default class HeaderView extends React.Component {
   : null }
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <ProbeMessage msg={probeMsg}/>
+        <SetupMenu
+          cadManager={this.props.cadManager}
+          actionManager={this.props.actionManager}
+          curr_ws={curr_ws}
+        />
+        <FixturePlacement
+          cadManager={this.props.cadManager}
+          actionManager={this.props.actionManager}
+          curr_ws={curr_ws}
+        />
         <MenuItem className="info"> File: {this.props.fname}</MenuItem>
       </Menu>
     );
