@@ -92,8 +92,21 @@ export default class CADView extends React.Component {
     //  flip = true;
     //}
     // Did we find an object
-    if (obj) {
-      obj = obj.model.getNamedParent();
+    if (!obj) {
+      return;
+    }
+    else if (this.state.pickingMode) {
+      let face = this.refs.alignGeomView.facePick(obj);
+      if (!face) {
+        return;
+      }
+      this.refs.alignGeomView.highlightPickedFace(obj, face);
+      this.refs.alignGeomView.outlinePickedFace(obj, face);
+      this.props.actionManager.emit('faceSelected', face);
+      change = true;
+    } 
+    else if (obj.object.userData) {
+      obj = obj.object.userData.model.getNamedParent();
       // Toggle the bounding box
       obj.toggleSelection();
       change = true;

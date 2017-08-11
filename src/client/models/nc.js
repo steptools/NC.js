@@ -350,7 +350,7 @@ export default class NC extends THREE.EventDispatcher {
         hit = intersections[i];
       }
     }
-    return hit.object.userData;
+    return hit;
   }
 
   dynqueue(cb) {
