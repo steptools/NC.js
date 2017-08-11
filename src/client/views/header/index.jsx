@@ -46,6 +46,18 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-eye-open';
     case 'noview':
       return 'icon glyphicons glyphicons-eye-close';
+    case 'setup':
+      return 'icon glyphicons glyphicons-move';
+    case 'exit':
+      return 'icon glyphicons glyphicons-remove-sign';
+    case 'plus':
+      return 'icon glyphicons glyphicons-plus';
+    case 'minus':
+      return 'icon glyphicons glyphicons-minus';
+    case 'left':
+      return 'icon glyphicons glyphicons-arrow-left';
+    case 'right':
+      return 'icon glyphicons glyphicons-arrow-right';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
