@@ -7,13 +7,23 @@ export default class GeometryView extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {oldColors: {}};
+    this.state = {
+      oldColors: {},
+      prevPickedFace: [],
+      prevOutlinedFace: {},
+      visibleAxes: false
+    };
 
     this.invalidate = this.invalidate.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
     this.alignCamera = this.alignCamera.bind(this);
     this.alignFixture = this.alignFixture.bind(this);
     this.highlightFaces = this.highlightFaces.bind(this);
+    this.facePick = this.facePick.bind(this);
+    this.highlightPickedFace = this.highlightPickedFace.bind(this);
+    this.outlinePickedFace = this.outlinePickedFace.bind(this);
+    this.workpieceMovement = this.workpieceMovement.bind(this);
+    this.coordinateAxes = this.coordinateAxes.bind(this);
     this.onShellLoad = this.onShellLoad.bind(this);
     this.onModelAdd = this.onModelAdd.bind(this);
     this.onModelRemove = this.onModelRemove.bind(this);
@@ -517,6 +527,29 @@ export default class GeometryView extends React.Component {
     });
   }
 
+    facePick(obj) {
+    if (!obj) {
+      return;
+    }
+
+    let model = obj.object.userData.model;
+    let modelFaces = model._geometry.getAttribute('faces');
+    if (!modelFaces) {
+      return;
+    }
+
+    let selectedFace = {};
+    let index = obj.faceIndex * 3;
+    _.forIn(modelFaces.array, function (value, key) {
+      if (index >= value.start && index < value.end) {
+        selectedFace.id = key;
+        selectedFace.start = value.start;
+        selectedFace.end = value.end;
+      }
+    });
+
+    return selectedFace;
+  }
   animate(forceRendering) {
     window.requestAnimationFrame(() => {
       this.animate(false);
