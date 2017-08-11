@@ -409,6 +409,101 @@ class FixturePlacement extends React.Component {
   }
 }
 
+class SetupMenu extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      setupMode: false,
+      facesArray: []
+    };
+
+    this.enterSetupMode = this.enterSetupMode.bind(this);
+    this.exitSetupMode = this.exitSetupMode.bind(this);
+    this.resetFaces = this.resetFaces.bind(this);
+    this.applyChange = this.applyChange.bind(this);
+
+    this.props.actionManager.on('faceSelected', (face)=> {
+      let newFacesArray = this.state.facesArray;
+      if (newFacesArray.length < 3) {
+        request.get('/v3/nc/workpieces/' + face.id + '/type').then((res)=> {
+          let addFace = {id: face.id, type: res.text};
+          newFacesArray.push(addFace);
+          this.setState({facesArray: newFacesArray});
+        });
+      }
+    });
+  }
+
+  enterSetupMode() {
+    this.setState({setupMode: true});
+    this.props.actionManager.emit('changeSetup', true);
+  }
+
+  exitSetupMode() {
+    this.setState({setupMode: false});
+    this.resetFaces();
+    this.props.actionManager.emit('changeSetup', false);
+  }
+
+  resetFaces() {
+    this.setState({facesArray: []});
+  }
+
+  applyChange() {
+    let ex_id = this.props.curr_ws.setupID;
+    let fix_id = this.props.curr_ws.fixtureID;
+    let face_ids = _.map(this.state.facesArray, (obj)=> {return obj.id;});
+    request.put('/v3/nc/workplan/' + ex_id + '/setup')
+    .send({'id': ex_id, 'face_ids': face_ids, 'fix_id': fix_id}).then(()=> {
+      request.get('/v3/nc/state/delta').then((res)=> {
+        this.props.cadManager.onDelta(res.body);
+        request.get('/v3/nc/state/ws/' + this.props.curr_ws.id).end();
+        this.exitSetupMode();
+      })
+    })
+  }
+
+  render() {
+    let disp = this.state.facesArray;
+    let faceZ = disp[0] ? '#' + disp[0].id + ' (' + disp[0].type + ')' : "Select a face";
+    let faceY = disp[1] ? '#' + disp[1].id + ' (' + disp[1].type + ')' : "Select a face";
+    let faceX = disp[2] ? '#' + disp[2].id + ' (' + disp[2].type + ')' : "Select a face";
+    if (!this.state.setupMode) {
+      return(
+        <Button {...this.props} icon='setup' key='setup-changer-button' onClick={this.enterSetupMode}>
+          Change Setup
+        </Button>
+      );
+    }
+    else {
+      return(
+        <MenuItem {...this.props} key='setup-changer-menu-item' className='setup'>
+          <div className='titlebar'>
+            <div className={'title-icon ' + getIcon('setup')} onClick={this.applyChange}/>
+            <div className='title'>Select Three Intersecting Faces</div>
+            <div className={'title-exit ' + getIcon('exit')} onClick={this.exitSetupMode}/>
+          </div>
+          <div className='facearea'>
+            <div className={'face-info'}>
+              <span className={'face-title'}>Face Z:</span>
+              <span className={'face-id'}>{faceZ}</span> 
+            </div>
+            <div className={'face-info'}>
+              <span className={'face-title'}>Face Y:</span>
+              <span className={'face-id'}>{faceY}</span>
+            </div>
+            <div className={'face-info'}>
+              <span className={'face-title'}>Face X:</span>
+              <span className={'face-id-x'}>{faceX}</span>
+              <div className={'face-info-icon ' + getIcon('reset')} onClick={this.resetFaces}/>
+            </div>
+          </div>
+        </MenuItem>
+      );
+    }
+  }
+}
+
 let resetProcessVolume = function(){
   request.get('/v3/nc/geometry/delta/reset').end();
 }
