@@ -619,6 +619,45 @@ export default class GeometryView extends React.Component {
     model.getNamedParent()._overlay3D.add(outlineObject);
     this.setState({'prevOutlinedFace': outlineObject});
   }
+
+  workpieceMovement() {
+    let rootModel = this.props.manager.getRootModel('state/key');
+    let fixtureShells = _.filter(rootModel._objects, (obj)=>{
+      return obj.usage==='fixture' && obj.model.live;
+    });
+
+    let movingFixture = new THREE.Object3D();
+    _.forEach(fixtureShells, (shell)=> {
+      let obj3D = shell.object3D;
+      let shellMesh = obj3D.children[0];
+      let position = shellMesh.geometry.attributes.position.clone();
+      let normal = shellMesh.geometry.attributes.normal.clone();
+      let color = shellMesh.geometry.attributes.color.clone();
+      let faces = shellMesh.geometry.attributes.faces.clone();
+      let cloneGeometry = new THREE.BufferGeometry();
+      cloneGeometry.addAttribute('position', position);
+      cloneGeometry.addAttribute('normal', normal);
+      cloneGeometry.addAttribute('color', color);
+      cloneGeometry.addAttribute('faces', faces);
+
+      let shader = new THREE.VelvetyShader();
+      shader.uniforms['opacity'].value = 0.5;
+      shader.transparent = shader.uniforms['opacity'].value < 1.0;
+      let material = new THREE.ShaderMaterial(shader);
+      let mesh = new THREE.Mesh(cloneGeometry, material);
+
+      mesh.geometry.scale(obj3D.scale.x, obj3D.scale.y, obj3D.scale.z);
+      mesh.translateX(obj3D.position.x);
+      mesh.translateY(obj3D.position.y);
+      mesh.translateZ(obj3D.position.z);
+
+      mesh.rotateX(obj3D.rotation.x);
+      mesh.rotateY(obj3D.rotation.y);
+      mesh.rotateZ(obj3D.rotation.z);
+      movingFixture.add(mesh);
+    });
+    return movingFixture;
+  }
   animate(forceRendering) {
     window.requestAnimationFrame(() => {
       this.animate(false);
