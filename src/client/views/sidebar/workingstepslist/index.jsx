@@ -15,7 +15,7 @@ export default class WorkingstepList extends React.Component {
 
   setWS(node) {
     let url = '/v3/nc/state/ws/' + node['id'];
-    request.get(url).end();
+    request.get(url).then(()=>{request.get('/v3/nc/geometry/delta/reset').end();});
   }
 
   getNodeIcon(node) {

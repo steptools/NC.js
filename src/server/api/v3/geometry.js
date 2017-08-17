@@ -29,7 +29,12 @@ function _getDelta(req,res){
 }
 
 function _resetDelta(res){
-  ms.ResetDynamicGeometry().then(res.status(200).send());
+  ms.ResetDynamicGeometry().then(()=>{
+    _curdeltv = -1;
+    return _updateDelta();
+  }).then(() =>{
+    res.status(200).send();
+  });
 }
 
 let geomcache = {};
