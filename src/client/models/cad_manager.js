@@ -221,6 +221,7 @@ export default class CADManager extends THREE.EventDispatcher {
       });
   }
   loadDynamic(){
-    this._models[0].handleDynamicGeom({},true);
+    let dynGeom = _.find(this._models["state/key"]._objects,{usage:'inprocess'});
+    this._models["state/key"].handleDynamicGeom(dynGeom,true);
   }
 }
