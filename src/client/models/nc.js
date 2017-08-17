@@ -449,12 +449,12 @@ export default class NC extends THREE.EventDispatcher {
       obj.version = geom.version;
     }
 
-  handleDynamicGeom(geom,cb,cbdata){
+  handleDynamicGeom(geom,forceFull,cb,cbdata){
     if (!geom) {
       return cb(cbdata);
     }
     let existingobj = this._objects[geom.id];
-    if (existingobj === undefined) { //Need a full dynamic shell.
+    if (existingobj === undefined ) { //Need a full dynamic shell.
       //Setup the memory
       let color = DataLoader.parseColor('BE17FF');
       let boundingBox = DataLoader.parseBoundingBox(geom.bbox);
@@ -467,6 +467,12 @@ export default class NC extends THREE.EventDispatcher {
         this.parseDynamicFull(fulldynamic,existingobj);
         cb(cbdata);
       });
+    } else if(forceFull){
+      this.dynqueue((fulldynamic)=>{
+        this.parseDynamicFull(fulldynamic,existingobj);
+        cb(cbdata);
+      });
+
     } else { //Need an updated dynamic shell.
       if (existingobj.version !== geom.version) {
         this.dynqueue((updateddynamic)=> {
@@ -481,7 +487,7 @@ export default class NC extends THREE.EventDispatcher {
     // Don't know what kind of update this is
   }
 
-  applyKeyState(newState){
+  applyKeyState(newState,forceDynamic){
   //For keystates, we need to hide the currently drawn but unused geometry,
   //Unhide anything we have that is needed but hidden,
   //And load and display any new things we don't have.
@@ -538,7 +544,7 @@ export default class NC extends THREE.EventDispatcher {
 
     //Load new Stuff.
     return new Promise((resolve)=>{
-      this.handleDynamicGeom(inproc,()=>{
+      this.handleDynamicGeom(inproc,forceDynamic,()=>{
         _.each(toolpaths, (geomData) => {
           let name = geomData.polyline.split('.')[0];
           if (!this._loader._annotations[name]){
@@ -647,7 +653,7 @@ export default class NC extends THREE.EventDispatcher {
     // This is usually just a tool movement (and volume removal update).
     let dyn = _.filter(deltaState.geom,['usage','inprocess'])[0];
     return new Promise((resolve)=>{
-      this.handleDynamicGeom(dyn,()=> {
+      this.handleDynamicGeom(dyn,false,()=> {
         let rtn = false;
         _.each(deltaState.geom, (geom) => {
           let obj = this._objects[geom.id];
@@ -674,15 +680,15 @@ export default class NC extends THREE.EventDispatcher {
       });
     });
   }
-  applyDelta(delta,force) {
+  applyDelta(delta,forceKey,forceDynamic) {
       //There are two types of 'State' that we get- KeyState or DeltaState.
 
       //If we get a KeyState, we need to re-render the scene.
       //If we get a DeltaState, we need to update the scene.
       //First we handle KeyState.
-      if (force || !delta.hasOwnProperty('prev')){
+      if (forceKey || !delta.hasOwnProperty('prev')){
         //  let lineGeometries = event.annotation.getGeometry();
-        return this.applyKeyState(delta);
+        return this.applyKeyState(delta,forceDynamic);
       } else {
         return this.applyDeltaState(delta);
       }

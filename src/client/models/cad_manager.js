@@ -61,10 +61,14 @@ export default class CADManager extends THREE.EventDispatcher {
     this.bindLoaderEvents = this.bindLoaderEvents.bind(this);
     this.bindModelEvents = this.bindModelEvents.bind(this);
     this.onVis = this.onVis.bind(this);
+    this.loadKey = this.loadKey.bind(this);
+    this.loadDynamic = this.loadDynamic.bind(this);
   }
 
   bindEvents() {
     this.addEventListener('setModel', this.load);
+    this.addEventListener('loadKey', this.loadKey);
+    this.addEventListener('loadDynamic', this.loadDynamic);
     // Rebroadcast data loader events
     this.bindLoaderEvents();
     // Listen for someone asking for stuff
@@ -180,10 +184,10 @@ export default class CADManager extends THREE.EventDispatcher {
     );
   }
 
-  onDelta(delta) {
+  onDelta(delta,forceDynamicReload) {
     _.each(this._models, (model) => {
       if (model.project === delta.project) {
-        model.applyDelta(delta).then((alter)=>{
+        model.applyDelta(delta,false,forceDynamicReload).then((alter)=>{
           if (alter) {
             model.calcBoundingBox();
             // Only redraw if there were changes
@@ -208,5 +212,15 @@ export default class CADManager extends THREE.EventDispatcher {
         'model': model
       });
     });
+  }
+
+  loadKey(){
+    request.get('/v3/nc/state/key')
+      .then((d) =>{
+        this.onDelta(JSON.parse(d.text),true);
+      });
+  }
+  loadDynamic(){
+    this._models[0].handleDynamicGeom({},true);
   }
 }
