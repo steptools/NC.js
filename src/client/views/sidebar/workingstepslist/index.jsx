@@ -15,7 +15,16 @@ export default class WorkingstepList extends React.Component {
 
   setWS(node) {
     let url = '/v3/nc/state/ws/' + node['id'];
-    request.get(url).then(()=>{request.get('/v3/nc/geometry/delta/reset').end();});
+    request.get('/v3/nc/state/loop/stop')
+      .then((res, err) => {
+        if (err);
+        return request.get(url);
+      }).then((res, err) => {
+        if (err);
+        return request.get('/v3/nc/geometry/delta/reset');
+      }).then((res, err) => { 
+        this.props.app.cadManager.dispatchEvent({type:'loadDynamic'});
+      });
   }
 
   getNodeIcon(node) {
@@ -84,4 +93,5 @@ WorkingstepList.propTypes = {
   cbMode: rp.func.isRequired,
   cbTree: rp.func.isRequired,
   ws: rp.oneOfType([rp.string, rp.number]).isRequired,
+  app: rp.object.isRequired
 };
