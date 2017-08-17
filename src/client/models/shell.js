@@ -59,8 +59,8 @@ export default class Shell extends THREE.EventDispatcher {
         this._geometry.attributes.position.array = position;
         this._geometry.attributes.normal.array = normals;
 
-        if(colors[0] === -1){ //This checks if a color was set by the data or default should be used
-            for(let i = 0; i <colors.length; i = i + 3){
+        for (let i = 0; i < colors.length; i = i + 3) {//This checks if a color was set by the data or default should be used
+            if (colors[i] === -1) {
                 colors[i] = this._color.r;
                 colors[i+1] = this._color.g;
                 colors[i+2] = this._color.b;
