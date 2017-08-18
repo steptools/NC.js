@@ -222,6 +222,14 @@ function _unloadQIF(req,res){
   app.ioServer.emit('nc:qifLoad');
   res.status(200).send();
 }
+
+function _getFaceType(req, res) {
+  if (req.params.faceId !== undefined) {
+    let type = tol.GetFaceMeasureGeometryType(parseInt(req.params.faceId));
+    res.status(200).send(type);
+  }
+}
+
 module.exports = function(globalApp, cb) {
   app=globalApp;
   app.router.get('/v3/nc/tolerances/:wsId', _getWsTols);
@@ -229,6 +237,7 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/tolerances/qif/load',_loadQIF);
   app.router.get('/v3/nc/tolerances/qif/unload',_unloadQIF);
   app.router.get('/v3/nc/workpieces/', _getWps);
+  app.router.get('/v3/nc/workpieces/:faceId/type', _getFaceType);
 
   if (cb) {
     cb();

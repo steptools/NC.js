@@ -7,13 +7,23 @@ export default class GeometryView extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {oldColors: {}};
+    this.state = {
+      oldColors: {},
+      prevPickedFace: [],
+      prevOutlinedFace: {},
+      visibleAxes: false
+    };
 
     this.invalidate = this.invalidate.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
     this.alignCamera = this.alignCamera.bind(this);
     this.alignFixture = this.alignFixture.bind(this);
     this.highlightFaces = this.highlightFaces.bind(this);
+    this.facePick = this.facePick.bind(this);
+    this.highlightPickedFace = this.highlightPickedFace.bind(this);
+    this.outlinePickedFace = this.outlinePickedFace.bind(this);
+    this.workpieceMovement = this.workpieceMovement.bind(this);
+    this.coordinateAxes = this.coordinateAxes.bind(this);
     this.onShellLoad = this.onShellLoad.bind(this);
     this.onModelAdd = this.onModelAdd.bind(this);
     this.onModelRemove = this.onModelRemove.bind(this);
@@ -464,15 +474,15 @@ export default class GeometryView extends React.Component {
     return newTargetPosition;
   }
 
-  highlightFaces(faces, object, unhighlight, newColor,status) {
+  highlightFaces(faces, object, unhighlight, newColor, status) {
     if (!object) {
       return;
     }
-
-    let shells = _.filter(
-      _.values(object._objects),
-      _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
-
+    let shells;
+    shells = _.filter(_.values(object._objects), function (shell) {
+      return shell.usage !== "inprocess"
+    });
+      
     _.each(shells, (shell) => {
       if (shell && shell.model._geometry) {
         let modelFaces = shell.model._geometry.getAttribute('faces');
@@ -515,6 +525,165 @@ export default class GeometryView extends React.Component {
         this.invalidate();
       }
     });
+  }
+
+    facePick(obj) {
+    if (!obj) {
+      return;
+    }
+
+    let model = obj.object.userData.model;
+    let modelFaces = model._geometry.getAttribute('faces');
+    if (!modelFaces) {
+      return;
+    }
+
+    let selectedFace = {};
+    let index = obj.faceIndex * 3;
+    _.forIn(modelFaces.array, function (value, key) {
+      if (index >= value.start && index < value.end) {
+        selectedFace.id = key;
+        selectedFace.start = value.start;
+        selectedFace.end = value.end;
+      }
+    });
+
+    return selectedFace;
+  }
+
+  highlightPickedFace(obj, face) {
+    let rootModel = this.props.manager.getRootModel('state/key');
+    if (this.state.prevPickedFace) {
+      this.highlightFaces(
+        this.state.prevPickedFace,
+        rootModel, 
+        true,
+      );
+    }
+    if (!obj || !face) {
+      this.setState({prevPickedFace: false});
+      return;
+    }
+
+    this.setState({'prevPickedFace': [face.id]});
+    let newColor = {
+      r: 1.0,
+      g: 0,
+      b: 0,
+    };
+    this.highlightFaces(
+      [face.id],
+      rootModel,
+      false,
+      newColor,
+    );
+  }
+
+  outlinePickedFace(obj, face) {
+    let rootModel = this.props.manager.getRootModel('state/key');
+    if (this.state.prevOutlinedFace) {
+      rootModel._overlay3D.remove(this.state.prevOutlinedFace);
+    }
+    if (!obj || !face) {
+      this.setState({prevOutlinedFace: false});
+      return;
+    }
+    let model = obj.object.userData.model;
+    let obj3D = obj.object.userData.object3D;
+    let modelPositions = model._geometry.getAttribute('position');
+    let faceOutlineGeom = new THREE.BufferGeometry();
+    let size = face.end - face.start;
+    let faceOutlineGeomPositions = new THREE.BufferAttribute(new Float32Array(size), 3 );
+
+    let j = 0;
+    for (let i = face.start; i < face.end; i++) {
+      faceOutlineGeomPositions.array[j] = modelPositions.array[i];
+      j++
+    }
+    faceOutlineGeom.addAttribute('position', faceOutlineGeomPositions);
+    faceOutlineGeom.scale(obj3D.scale.x, obj3D.scale.y, obj3D.scale.z);
+    faceOutlineGeom.computeBoundingBox();
+
+    let edges = new THREE.EdgesGeometry(faceOutlineGeom);
+    let outlineObject = new THREE.LineSegments(edges,
+       new THREE.LineBasicMaterial({color: 0xffff00}));
+
+    outlineObject.translateX(obj3D.position.x);
+    outlineObject.translateY(obj3D.position.y);
+    outlineObject.translateZ(obj3D.position.z);
+
+    outlineObject.rotateX(obj3D.rotation.x);
+    outlineObject.rotateY(obj3D.rotation.y);
+    outlineObject.rotateZ(obj3D.rotation.z);
+    
+    model.getNamedParent()._overlay3D.add(outlineObject);
+    this.setState({'prevOutlinedFace': outlineObject});
+  }
+
+  workpieceMovement() {
+    let rootModel = this.props.manager.getRootModel('state/key');
+    let fixtureShells = _.filter(rootModel._objects, (obj)=>{
+      return obj.usage==='fixture' && obj.model.live;
+    });
+
+    let movingFixture = new THREE.Object3D();
+    _.forEach(fixtureShells, (shell)=> {
+      let obj3D = shell.object3D;
+      let shellMesh = obj3D.children[0];
+      let position = shellMesh.geometry.attributes.position.clone();
+      let normal = shellMesh.geometry.attributes.normal.clone();
+      let color = shellMesh.geometry.attributes.color.clone();
+      let faces = shellMesh.geometry.attributes.faces.clone();
+      let cloneGeometry = new THREE.BufferGeometry();
+      cloneGeometry.addAttribute('position', position);
+      cloneGeometry.addAttribute('normal', normal);
+      cloneGeometry.addAttribute('color', color);
+      cloneGeometry.addAttribute('faces', faces);
+
+      let shader = new THREE.VelvetyShader();
+      shader.uniforms['opacity'].value = 0.5;
+      shader.transparent = shader.uniforms['opacity'].value < 1.0;
+      let material = new THREE.ShaderMaterial(shader);
+      let mesh = new THREE.Mesh(cloneGeometry, material);
+
+      mesh.geometry.scale(obj3D.scale.x, obj3D.scale.y, obj3D.scale.z);
+      mesh.translateX(obj3D.position.x);
+      mesh.translateY(obj3D.position.y);
+      mesh.translateZ(obj3D.position.z);
+
+      mesh.rotateX(obj3D.rotation.x);
+      mesh.rotateY(obj3D.rotation.y);
+      mesh.rotateZ(obj3D.rotation.z);
+      movingFixture.add(mesh);
+    });
+    return movingFixture;
+  }
+
+  coordinateAxes(show) {
+    let rootModel = this.props.manager.getRootModel('state/key');
+    if (!show) {
+      rootModel._overlay3D.remove(this.state.visibleAxes);
+      this.setState({'visibleAxes': false});
+      return;
+    }
+    if (this.state.visibleAxes) {
+      return;
+    }
+    let fixture = _.find(rootModel._objects, (obj)=> {
+      return obj.usage == 'tobe';
+    });
+    let obj3D = fixture.object3D;
+    let axisHelper = new THREE.AxisHelper(1000);
+
+    axisHelper.translateX(obj3D.position.x);
+    axisHelper.translateY(obj3D.position.y);
+    axisHelper.translateZ(obj3D.position.z);
+
+    axisHelper.rotateX(obj3D.rotation.x);
+    axisHelper.rotateY(obj3D.rotation.y);
+    axisHelper.rotateZ(obj3D.rotation.z);
+    rootModel._overlay3D.add(axisHelper);
+    this.setState({'visibleAxes': axisHelper});
   }
 
   animate(forceRendering) {

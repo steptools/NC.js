@@ -46,6 +46,18 @@ function getIcon(type, data) {
       return 'icon glyphicons glyphicons-eye-open';
     case 'noview':
       return 'icon glyphicons glyphicons-eye-close';
+    case 'setup':
+      return 'icon glyphicons glyphicons-move';
+    case 'exit':
+      return 'icon glyphicons glyphicons-remove-sign';
+    case 'plus':
+      return 'icon glyphicons glyphicons-plus';
+    case 'minus':
+      return 'icon glyphicons glyphicons-minus';
+    case 'left':
+      return 'icon glyphicons glyphicons-arrow-left';
+    case 'right':
+      return 'icon glyphicons glyphicons-arrow-right';
     default:
       return 'icon glyphicons glyphicons-question-sign';
   }
@@ -252,6 +264,246 @@ class GeomMenu extends React.Component {
   )}
 }
 
+class NumericIncr extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      delta: 1
+    };
+
+    this.increment = this.increment.bind(this);
+    this.decrement = this.decrement.bind(this);
+    this.incPrecision = this.incPrecision.bind(this);
+    this.decPrecision = this.decPrecision.bind(this);
+  }
+
+  increment() {
+    this.props.valueChange(this.props.value + this.state.delta);
+    let event = {delta: this.state.delta, active: this.props.active};
+    this.props.actionManager.emit('moveFixture', event);
+  }
+
+  decrement() {
+    this.props.valueChange(this.props.value - this.state.delta);
+    let event = {delta: 0 - this.state.delta, active: this.props.active};
+    this.props.actionManager.emit('moveFixture', event);
+  }
+
+  incPrecision() {
+    this.setState({delta: this.state.delta * 10});
+  }
+
+  decPrecision() {
+    this.setState({delta: this.state.delta * 0.1});
+  }
+
+  render() {
+    let valueText = (typeof this.props.value == 'number') ? this.props.value.toFixed(10) : '   N/A   ';
+    return(
+      <div className='numeric-control'>
+        <div className='value-bar'>
+          <div className='value-text'>Value</div>
+          <div className={'minus-icon ' + getIcon('minus')} onClick={this.decrement}/>
+          <div className='value'>{valueText}</div>
+          <div className={'plus-icon ' + getIcon('plus')} onClick={this.increment}/>
+        </div>
+        <div className='precision-bar'>
+          <div className='precision-text'>Delta</div>
+          <div className={'left-icon ' + getIcon('left')} onClick={this.decPrecision}/>
+          <div className='precision'>{this.state.delta.toExponential(0)}</div>
+          <div className={'right-icon ' + getIcon('right')} onClick={this.incPrecision}/>
+        </div>
+      </div>
+    );
+  }
+}
+
+class FixturePlacement extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      x: null,
+      y: null,
+      z: null,
+      id: null,
+      active: null
+    };
+
+    this.wsChange = this.wsChange.bind(this);
+    this.onAxisSelect = this.onAxisSelect.bind(this);
+    this.valueChange = this.valueChange.bind(this);
+    this.applyChange = this.applyChange.bind(this);
+  }
+
+  componentDidUpdate() {
+    this.wsChange();
+  }
+
+  wsChange() {
+    if (this.props.curr_ws.fixtureID != this.state.id) {
+      this.setState({
+        x: this.props.curr_ws.fixturePlacement[0],
+        y: this.props.curr_ws.fixturePlacement[1],
+        z: this.props.curr_ws.fixturePlacement[2],
+        id: this.props.curr_ws.fixtureID
+      });
+    }
+  }
+
+  onAxisSelect(axis) {
+    this.setState({active: axis});
+  }
+
+  valueChange(newValue) {
+    let newState = {};
+    newState[this.state.active] = newValue;
+    this.setState(newState);
+  }
+
+  applyChange() {
+    let placement = this.props.curr_ws.fixturePlacement;
+    placement[0] = this.state.x;
+    placement[1] = this.state.y;
+    placement[2] = this.state.z;
+    request.put('/v3/nc/workplan/' + this.state.id + '/workpiece')
+    .send({'id': this.state.id, 'placement': placement}).then(()=> {
+      request.get('/v3/nc/state/delta').then((res)=> {
+        this.props.cadManager.onDelta(res.body);
+        request.get('/v3/nc/state/ws/' + this.props.curr_ws.id).end();
+      })
+    })
+    this.props.actionManager.emit('removeTransparent');
+  }
+
+  render() {
+    let cNames = {
+      x: 'axis-select',
+      y: 'axis-select',
+      z: 'axis-select'
+    };
+    if (this.state.active) {
+      cNames[this.state.active] = 'axis-select active';
+    }
+
+    return(
+      <MenuItem {...this.props}>
+        <div className='fixture-placement-container'>
+          <div className='titlebar'>
+            <div className={'title-icon ' + getIcon('setup')} onClick={this.applyChange}/>
+            <div className='title'>Fixture Placement</div>
+          </div>
+          <NumericIncr 
+            actionManager={this.props.actionManager} 
+            value={this.state[this.state.active]}
+            valueChange={this.valueChange}
+            active={this.state.active}
+          />
+          <div className='axes-bar'>
+            <div className={cNames.x} onClick={()=> {this.onAxisSelect('x')}}>X</div>
+            <div className={cNames.y} onClick={()=> {this.onAxisSelect('y')}}>Y</div>
+            <div className={cNames.z} onClick={()=> {this.onAxisSelect('z')}}>Z</div>
+          </div>
+        </div>
+      </MenuItem>
+    );
+  }
+}
+
+class SetupMenu extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      setupMode: false,
+      facesArray: []
+    };
+
+    this.enterSetupMode = this.enterSetupMode.bind(this);
+    this.exitSetupMode = this.exitSetupMode.bind(this);
+    this.resetFaces = this.resetFaces.bind(this);
+    this.applyChange = this.applyChange.bind(this);
+
+    this.props.actionManager.on('faceSelected', (face)=> {
+      let newFacesArray = this.state.facesArray;
+      if (newFacesArray.length < 3) {
+        request.get('/v3/nc/workpieces/' + face.id + '/type').then((res)=> {
+          let addFace = {id: face.id, type: res.text};
+          newFacesArray.push(addFace);
+          this.setState({facesArray: newFacesArray});
+        });
+      }
+    });
+  }
+
+  enterSetupMode() {
+    this.setState({setupMode: true});
+    this.props.actionManager.emit('changeSetup', true);
+  }
+
+  exitSetupMode() {
+    this.setState({setupMode: false});
+    this.resetFaces();
+    this.props.actionManager.emit('changeSetup', false);
+  }
+
+  resetFaces() {
+    this.setState({facesArray: []});
+  }
+
+  applyChange() {
+    let ex_id = this.props.curr_ws.setupID;
+    let fix_id = this.props.curr_ws.fixtureID;
+    let face_ids = _.map(this.state.facesArray, (obj)=> {return obj.id;});
+    request.put('/v3/nc/workplan/' + ex_id + '/setup')
+    .send({'id': ex_id, 'face_ids': face_ids, 'fix_id': fix_id}).then(()=> {
+      request.get('/v3/nc/state/delta').then((res)=> {
+        this.props.cadManager.onDelta(res.body);
+        request.get('/v3/nc/state/ws/' + this.props.curr_ws.id).end();
+        this.exitSetupMode();
+      })
+    })
+  }
+
+  render() {
+    let disp = this.state.facesArray;
+    let faceZ = disp[0] ? '#' + disp[0].id + ' (' + disp[0].type + ')' : "Select a face";
+    let faceY = disp[1] ? '#' + disp[1].id + ' (' + disp[1].type + ')' : "Select a face";
+    let faceX = disp[2] ? '#' + disp[2].id + ' (' + disp[2].type + ')' : "Select a face";
+    if (!this.state.setupMode) {
+      return(
+        <Button {...this.props} icon='setup' key='setup-changer-button' onClick={this.enterSetupMode}>
+          Change Setup
+        </Button>
+      );
+    }
+    else {
+      return(
+        <MenuItem {...this.props} key='setup-changer-menu-item' className='setup'>
+          <div className='titlebar'>
+            <div className={'title-icon ' + getIcon('setup')} onClick={this.applyChange}/>
+            <div className='title'>Select Three Intersecting Faces</div>
+            <div className={'title-exit ' + getIcon('exit')} onClick={this.exitSetupMode}/>
+          </div>
+          <div className='facearea'>
+            <div className={'face-info'}>
+              <span className={'face-title'}>Face Z:</span>
+              <span className={'face-id'}>{faceZ}</span> 
+            </div>
+            <div className={'face-info'}>
+              <span className={'face-title'}>Face Y:</span>
+              <span className={'face-id'}>{faceY}</span>
+            </div>
+            <div className={'face-info'}>
+              <span className={'face-title'}>Face X:</span>
+              <span className={'face-id-x'}>{faceX}</span>
+              <div className={'face-info-icon ' + getIcon('reset')} onClick={this.resetFaces}/>
+            </div>
+          </div>
+        </MenuItem>
+      );
+    }
+  }
+}
+
 let resetProcessVolume = function(){
   request.get('/v3/nc/geometry/delta/reset').end();
 }
@@ -389,6 +641,16 @@ export default class HeaderView extends React.Component {
   : null }
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <ProbeMessage msg={probeMsg}/>
+        <SetupMenu
+          cadManager={this.props.cadManager}
+          actionManager={this.props.actionManager}
+          curr_ws={curr_ws}
+        />
+        <FixturePlacement
+          cadManager={this.props.cadManager}
+          actionManager={this.props.actionManager}
+          curr_ws={curr_ws}
+        />
         <MenuItem className="info"> File: {this.props.fname}</MenuItem>
       </Menu>
     );

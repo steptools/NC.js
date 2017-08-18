@@ -2,6 +2,8 @@
 'use strict';
 var file = require('./file');
 var find = file.find;
+var tol = file.tol;
+var apt = file.apt;
 var _ = require('lodash');
 
 /****************************** Helper Functions ******************************/
@@ -15,6 +17,8 @@ function exeFromId(id) {
     'distance': find.GetExecutableDistance(id),
     'distanceUnits': find.GetExecutableDistanceUnit(id),
     'setupID': getSetupFromId(id),
+    'fixtureID': apt.GetExecutableWorkpieceFixture(id),
+    'fixturePlacement': apt.GetWorkpiecePlacement(apt.GetExecutableWorkpieceFixture(id)),
     'asIs': {
       id: find.GetExecutableWorkpieceAsIsLocal(id),
       inherited: false,
@@ -143,11 +147,49 @@ function _getProject(req,res){
   res.status(200).send(find.GetProjectName());
 }
 
+function _putWorkpiece(req, res) {
+  if (req.body !== undefined) {
+    apt.PutWorkpiecePlacement(
+      req.body.id,
+      req.body.placement[0],
+      req.body.placement[1],
+      req.body.placement[2],
+      req.body.placement[3],
+      req.body.placement[4],
+      req.body.placement[5],
+      req.body.placement[6],
+      req.body.placement[7],
+      req.body.placement[8]
+    );
+    res.status(200).send(apt.GetWorkpiecePlacement(req.body.id));
+  }
+}
+
+function _putSetupFromFaces(req, res) {
+  if (req.body !== undefined) {
+    // console.log('Initial Setup: ' + req.body.id);
+    // console.log(apt.GetWorkplanSetup(req.body.id));
+
+    tol.WorkplanSetupPlacementUsingFaces(
+      parseInt(req.body.id),
+      parseInt(req.body.face_ids[0]),
+      parseInt(req.body.face_ids[1]),
+      parseInt(req.body.face_ids[2])
+    );
+
+    // console.log('New Setup: ' + req.body.id);
+    // console.log(apt.GetWorkplanSetup(req.body.id));
+    res.status(200).send(apt.GetWorkplanSetup(req.body.id));
+  }
+}
+
 module.exports = function(app, cb) {
   app.router.get('/v3/nc/workplan/:wsId', _getExeFromId);
   app.router.get('/v3/nc/workplan', _getMwp);
   app.router.get('/v3/nc/setup/:wsId', _getSetup);
   app.router.get('/v3/nc/project',_getProject);
+  app.router.put('/v3/nc/workplan/:wplanId/setup', _putSetupFromFaces);
+  app.router.put('/v3/nc/workplan/:wpId/workpiece', _putWorkpiece);
   if (cb) {
     cb();
   }

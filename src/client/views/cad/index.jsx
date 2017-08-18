@@ -47,11 +47,39 @@ export default class CADView extends React.Component {
     super(props);
     this.state = {
       lockedView: true,
+      pickingMode: false,
       oldColors: {},
     };
 
     this.onMouseUp = this.onMouseUp.bind(this);
     this.lockedCb = this.lockedCb.bind(this);
+
+    this.props.actionManager.on('changeSetup', (arg)=>{
+      this.setState({pickingMode: arg});
+      this.refs.alignGeomView.coordinateAxes(true);
+      if (!arg) {
+        this.refs.alignGeomView.highlightPickedFace(null, null);
+        this.refs.alignGeomView.outlinePickedFace(null, null);
+        this.refs.alignGeomView.coordinateAxes(false);
+      }
+    });
+
+    this.props.actionManager.on('moveFixture', (arg)=>{
+      if (this.movementFixture == undefined) {
+        this.movementFixture = this.refs.alignGeomView.workpieceMovement();
+        this.props.manager.getRootModel('state/key')._overlay3D.add(this.movementFixture);
+      }
+      // We have to take into account the THREE.js transform to correctly map workpiece movements
+      if (arg.active == 'x') this.movementFixture.translateY(0 - arg.delta);
+      else if (arg.active == 'y') this.movementFixture.translateX(arg.delta);
+      else if (arg.active == 'z') this.movementFixture.translateZ(arg.delta);
+      this.refs.alignGeomView.invalidate();
+    });
+
+    this.props.actionManager.on('removeTransparent', ()=>{
+      this.props.manager.getRootModel('state/key')._overlay3D.remove(this.movementFixture);
+      this.movementFixture = undefined;
+    });
   }
 
   // Handle all object selection needs
@@ -64,8 +92,21 @@ export default class CADView extends React.Component {
     //  flip = true;
     //}
     // Did we find an object
-    if (obj) {
-      obj = obj.model.getNamedParent();
+    if (!obj) {
+      return;
+    }
+    else if (this.state.pickingMode) {
+      let face = this.refs.alignGeomView.facePick(obj);
+      if (!face) {
+        return;
+      }
+      this.refs.alignGeomView.highlightPickedFace(obj, face);
+      this.refs.alignGeomView.outlinePickedFace(obj, face);
+      this.props.actionManager.emit('faceSelected', face);
+      change = true;
+    } 
+    else if (obj.object.userData) {
+      obj = obj.object.userData.model.getNamedParent();
       // Toggle the bounding box
       obj.toggleSelection();
       change = true;
