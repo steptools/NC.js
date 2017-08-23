@@ -23,7 +23,7 @@ export default class WorkingstepList extends React.Component {
         if (err);
         return request.get('/v3/nc/geometry/delta/reset');
       }).then((res, err) => { 
-        this.props.app.cadManager.dispatchEvent({type:'loadDynamic'});
+//        this.props.app.cadManager.dispatchEvent({type:'loadDynamic'});
       });
   }
 

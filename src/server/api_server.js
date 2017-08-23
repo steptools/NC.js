@@ -13,6 +13,7 @@ var cookieParser = require('cookie-parser');
 var jade = require('jade');
 var CoreServer = require('./core_server');
 var util = require('util');
+var EventEmitter = require('events');
 
 /************************* Support Site *********************************/
 
@@ -22,6 +23,7 @@ var app;
 function APIServer() {
   CoreServer.call(this);
   // Setup the session
+  this.events=new EventEmitter();
   this.session = expSession({
     cookie: {httpOnly: false},
     secret: COOKIE_SECRET,

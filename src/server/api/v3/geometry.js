@@ -3,6 +3,7 @@ var file = require('./file');
 var fs = require('fs');
 let scache = require('./statecache');
 let ms ={};//statecache or file.ms depending on config.UseCache
+let app;
 /***************************** Endpoint Functions *****************************/
 
 let __curdelt = {};
@@ -34,6 +35,7 @@ function _resetDelta(res){
     return _updateDelta();
   }).then(() =>{
     res.status(200).send();
+    app.events.emit('deltaReset');
   });
 }
 
@@ -112,7 +114,8 @@ function _getEIDfromUUID(req, res){
   }
 }
 
-module.exports = function(app, cb){
+module.exports = function(globalApp, cb){
+  app = globalApp;
   app.updateDynamic = _updateDelta;
   app.router.get('/v3/nc/geometry', _getGeometry);
   app.router.get('/v3/nc/geometry/:id/:type', _getGeometry);

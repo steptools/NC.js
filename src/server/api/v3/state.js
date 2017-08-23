@@ -404,4 +404,8 @@ module.exports = function(globalApp, cb) {
   if (cb) {
     cb();
   }
+
+  app.events.on('deltaReset',()=>{
+    movequeue.push(()=>{return Promise.resolve();});
+  });
 };
