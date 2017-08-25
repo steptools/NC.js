@@ -415,6 +415,7 @@ export default class NC extends THREE.EventDispatcher {
     obj.version = geom.version;
     obj.baseVersion= geom.base_version;
     obj.precision = geom.precision;
+    obj.id = geom.id;
     this.state.usagevis[obj.usage] ? obj.setVisible() : obj.setInvisible();
     return true;
   }
@@ -455,6 +456,16 @@ export default class NC extends THREE.EventDispatcher {
     }
     let existingobj = this._objects[geom.id];
     if (existingobj === undefined ) { //Need a full dynamic shell.
+      //Wipe out any old in process geoms.
+      _.each(this._objects,(o)=>{
+        if(o.usage!=='inprocess') return;
+        o.object3D.traverse((child)=>{
+          if(child.type==='Mesh'){
+            o.object3D.remove(child);
+          }
+        });
+        o = {};
+      });
       //Setup the memory
       let color = DataLoader.parseColor('BE17FF');
       let boundingBox = DataLoader.parseBoundingBox(geom.bbox);
