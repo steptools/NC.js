@@ -212,12 +212,12 @@ function handleWSInit(command, res) {
   switch (command) {
     case 'next':
       movequeue.push(()=>{
-        return getNext();
+        return getNext().then(()=>{res.status(200).send();});
       });
       break;
     case 'prev':
       movequeue.push(()=>{
-        return getPrev();
+        return getPrev().then(()=>{res.status(200).send();});
       });
       break;
     default:
@@ -227,10 +227,9 @@ function handleWSInit(command, res) {
       }
       let ws = Number(command);
       movequeue.push(()=>{
-        return getToWS(ws);
+        return getToWS(ws).then(()=>{res.status(200).send();});
       });
   }
-  res.sendStatus(200);
 }
 
 /***************************** Endpoint Functions *****************************/
