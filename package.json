@@ -1,13 +1,14 @@
 {
   "name": "nodejs",
   "version": "2.0.0",
+  "engines": {"node": ">=8.0.0"},
   "description": "CAD visualization for the web",
   "main": "src/server/api_server.js",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/server/api_server.js -n",
-    "start-debug": "node-debug -p 8085 src/server/api_server.js -n",
+    "start-debug": "node --inspect src/server/api_server.js -n",
     "start-dev": "node src/server/api_server.js -e development",
     "start-MT": "node src/server/api_server.js --mt-connect",
     "pack": "./node_modules/.bin/webpack --progress --bail",
