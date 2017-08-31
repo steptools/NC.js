@@ -455,17 +455,25 @@ export default class NC extends THREE.EventDispatcher {
       return cb(cbdata);
     }
     let existingobj = this._objects[geom.id];
-    if (existingobj === undefined ) { //Need a full dynamic shell.
       //Wipe out any old in process geoms.
-      _.each(this._objects,(o)=>{
-        if(o.usage!=='inprocess') return;
-        o.object3D.traverse((child)=>{
-          if(child.type==='Mesh'){
-            o.object3D.remove(child);
-          }
-        });
-        o = {};
+    let removelist = [];
+    _.each(this._objects, (o,key) => {
+      if (o.usage !== 'inprocess' || key === geom.id) return;
+      o.object3D.traverse((child) => {
+        if (child.type === 'Mesh') {
+          o.object3D.remove(child);
+        }
+        o.rendered = false;
+        o.model.live = false;
+        o.visible = false;
+        o.object3D.visible = false;
       });
+      removelist.push(o.key);
+    });
+    _.each(removelist, (o)=>{
+      delete this._objects[o];
+    });
+    if (existingobj === undefined ) { //Need a full dynamic shell.
       //Setup the memory
       let color = DataLoader.parseColor('BE17FF');
       let boundingBox = DataLoader.parseBoundingBox(geom.bbox);
