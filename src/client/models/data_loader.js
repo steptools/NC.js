@@ -193,10 +193,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         let data;
         switch (event.data.type) {
             case "rootLoad":
-                if (req.type === 'assembly' || req.type == "cloudassembly") {
-                    // Handle the assembly
-                    this.buildAssemblyJSON(event.data.data, req);
-                } else if (req.type === 'nc') {
+                if (req.type === 'nc') {
                     // Handle the nc file
                     this.buildNCStateJSON(event.data.data, req);
                 }
@@ -347,29 +344,6 @@ export default class DataLoader extends THREE.EventDispatcher {
         req.callback(undefined, nc);
     }
 
-    buildAssemblyJSON(jsonText, req) {
-        let doc = JSON.parse(jsonText);
-        let rootID = doc.root;
-        let defaultColor = DataLoader.parseColor("7d7d7d");
-        let assembly = new Assembly(rootID, defaultColor, this);
-        // Process the rest of the index JSON - get the product with the root ID
-        let rootProduct = this.buildProductJSON(req, doc, assembly, rootID, true);
-        assembly.setRootProduct(rootProduct);
-        // Handle batches
-        let batchExtension = doc.useTyson ? 'tyson' : 'json';
-        // Do we have batches???
-        if (doc.batches && doc.batches > 0) {
-            for (let i = 0; i < doc.batches; i++) {
-                this.addRequest({
-                    path: i,
-                    baseURL: req.base,
-                    type: "batch",
-                    dataType: batchExtension
-                });
-            }
-        }
-        req.callback(undefined, assembly);
-    }
     //This is the initial load that then loads all shells below it
     buildNCStateJSON(jsonText, req) {
         let doc = JSON.parse(jsonText);
@@ -384,57 +358,6 @@ export default class DataLoader extends THREE.EventDispatcher {
             }
             req.callback(undefined, nc);
         });
-    }
-
-    buildProductJSON(req, doc, assembly, id, isRoot) {
-        // Create the product
-        let productJSON = _.find(doc.products, { id: id });
-        // Have we already seen this product
-        if (!assembly.isChild(id)) {
-            let product = new Product(id, assembly, productJSON.name, productJSON.step, isRoot);
-            // Load child shapes first - MUST BE BEFORE CHILD PRODUCTS
-            let identityTransform = (new THREE.Matrix4()).identity();
-            _.each(productJSON.shapes, (shapeID) => {
-                let shape = this.buildShapeJSON(req, doc, assembly, shapeID, undefined, identityTransform, isRoot);
-                product.addShape(shape);
-            });
-            // Load child products
-            _.each(productJSON.children, (childID) => {
-                let child = this.buildProductJSON(req, doc, assembly, childID, false);
-                product.addChild(child);
-            });
-            return product;
-        }
-        // Otherwise, just return the existing product
-        return assembly.getChild(id);
-    }
-
-    buildShapeJSON(req, doc, assembly, id, parent, transform, isRoot) {
-        // We are really only looking up stuff when non-root
-        if (!isRoot) return assembly.getChild(id);
-        // Ok, now let's really build some stuff
-        let shapeJSON = _.find(doc.shapes, {id: id});
-        let unit = shapeJSON.unit ? shapeJSON.unit : "unit 0.01";
-        let shape = new Shape(id, assembly, parent, transform, unit, isRoot);
-        // Load child shells
-        _.each(shapeJSON.shells, (shellID) => {
-            let shell = this.buildShellJSON(req, doc, shellID, assembly, shape);
-            shape.addShell(shell);
-        });
-        // Load Child annotations
-        _.each(shapeJSON.annotations, (annotationID) => {
-            let annotation = this.buildAnnotationJSON(req, doc, annotationID, assembly, shape);
-            shape.addAnnotation(annotation);
-        });
-        // Load child shapes
-        _.each(shapeJSON.children, (childJSON) => {
-            // Setup the child's transform
-            let localTransform = DataLoader.parseXform(childJSON.xform, true);
-            // Build the child
-            let child = this.buildShapeJSON(req, doc, assembly, childJSON.ref, shape, localTransform, isRoot);
-            shape.addChild(child);
-        });
-        return shape;
     }
 
     buildAnnotationJSON(req, doc, id, assembly, parent) {
