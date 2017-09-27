@@ -5,20 +5,19 @@
 /********************************* Annotation Class ********************************/
 
 export default class Annotation extends THREE.EventDispatcher {
-  constructor(id, model, isLive) {
+  constructor(annoJSON){
     super();
-    this._id = id;
-    this._model = model;
-    this._geometry = undefined;
-    this._lines = [];
-    this.live = isLive;
-    this.visible = true;
-    return this;
-    this.toggleScene = this.toggleScene.bind(this);
+    addGeometry(annoJSON);
   }
 
   getID() {
     return this._id;
+  }
+  show(){
+    this._geometry.setDrawRange(0,Infinity);
+  }
+  hide(){
+    this._geometry.setDrawRange(0,0);
   }
 
   addGeometry(data) {
@@ -40,7 +39,7 @@ export default class Annotation extends THREE.EventDispatcher {
       geometry.addAttribute('position', position);
       let color = new THREE.BufferAttribute(colorArray, 3);
       geometry.addAttribute('color', color);
-      this._lines.push(geometry);
+      this._lines.add(geometry);
     }
     // All done - signal completion
     this.dispatchEvent({ type: "annotationEndLoad", annotation: this });

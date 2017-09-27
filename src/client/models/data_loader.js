@@ -227,6 +227,14 @@ export default class DataLoader extends THREE.EventDispatcher {
                     this.dispatchEvent({ type: "shellLoad", file: event.data.file });
                 }
                 break;
+            case "shapeLoad":
+            //WW loads the shape.
+                let sh = new Shape(event.data.data,this._app.cadManager);
+                this.dispatchEvent({type:"shapeLoad", shape:sh});
+                if(req.callback) {
+                    req.callback(sh);
+                }
+                break;
             case "workerFinish":
                 this.dispatchEvent({ type: "workerFinish", file: event.data.file });
                 break;
@@ -260,20 +268,7 @@ export default class DataLoader extends THREE.EventDispatcher {
             dataType: req.dataType ? req.dataType : 'json'
         };
         
-        if (data.type === "shell") {
-            data.shellSize = req.shellSize;
-            let newpath = (req.baseURL).split('state')[0];
-            if(newpath[newpath.length - 1] === '/')
-                newpath = newpath.substring(0 , newpath.length - 1);
-
-            // TODO: actually figure out whether we need /shell or not
-            if (req.path.indexOf('mesh') >= 0) {
-                data.url = newpath + '/geometry/' + req.path + '/' + req.type;
-            } else {
-                data.url = newpath + '/geometry/' + req.path;
-            }
-
-        } else if (data.type === 'previewShell') {
+        if (data.type === 'previewShell') {
             data.shellSize = req.shellSize;
             let newpath = req.baseURL;
             if(newpath[newpath.length - 1] === '/')
@@ -281,11 +276,8 @@ export default class DataLoader extends THREE.EventDispatcher {
 
             data.url = newpath + '/geometry/' + req.path;
         }
-        else if (data.type === "annotation") {
+        else if (data.type === "shape") {
             let newpath = (req.baseURL).split('state')[0];
-            if(newpath[newpath.length - 1] === '/')
-                newpath = newpath.substring(0 , newpath.length - 1);
-            data.url = newpath + '/geometry/' + req.path + '/' + req.type;
         }
         worker.postMessage(data);
     }

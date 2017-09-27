@@ -15,6 +15,8 @@ export default class GeometryView extends React.Component {
     this.alignFixture = this.alignFixture.bind(this);
     this.highlightFaces = this.highlightFaces.bind(this);
     this.onShellLoad = this.onShellLoad.bind(this);
+    this.onRootModelAdd = this.onRootModelAdd.bind(this);
+    this.onRootModelRemove = this.onRootModelRemove.bind(this);
     this.onModelAdd = this.onModelAdd.bind(this);
     this.onModelRemove = this.onModelRemove.bind(this);
     this.zoomToFit = this.zoomToFit.bind(this);
@@ -252,18 +254,24 @@ export default class GeometryView extends React.Component {
   componentWillMount() {
     this.sceneCenter = new THREE.Vector3(0,0,0);
     this.sceneRadius = 10000;
+    this.props.manager.addEventListener('rootModel:add', this.onRootModelAdd);
+    this.props.manager.addEventListener('rootModel:remove', this.onRootModelRemove);
     this.props.manager.addEventListener('model:add', this.onModelAdd);
     this.props.manager.addEventListener('model:remove', this.onModelRemove);
     this.props.manager.addEventListener('shellLoad', this.onShellLoad);
+    this.props.manager.addEventListener('shapeLoad', this.onShellLoad);
     this.props.manager.addEventListener('annotationLoad', this.invalidate);
     this.props.manager.addEventListener('invalidate', this.invalidate);
     this.props.manager.app.actionManager.on('invalidate',this.invalidate);
   }
 
   componentWillUnmount() {
+    this.props.manager.removeEventListener('rootModel:add', this.onRootModelAdd);
+    this.props.manager.removeEventListener('rootModel:remove', this.onRootModelRemove);
     this.props.manager.removeEventListener('model:add', this.onModelAdd);
     this.props.manager.removeEventListener('model:remove', this.onModelRemove);
     this.props.manager.removeEventListener('shellLoad', this.onShellLoad);
+    this.props.manager.removeEventListener('shapeLoad', this.onShellLoad);
     this.props.manager.removeEventListener('annotationLoad', this.invalidate);
     this.props.manager.removeEventListener('invalidate', this.invalidate);
     this.props.manager.app.actionManager.removeListener('invalidate',this.invalidate);
@@ -286,7 +294,21 @@ export default class GeometryView extends React.Component {
     this.invalidate(event);
   }
 
-  onModelAdd(event) {
+  onModelAdd(event){
+    if(this.props.viewType !== event.viewType){
+      return;
+    }
+    this.geometryScene.add(event.model.getGeometry());
+    this.forceUpdate();
+  }
+  onModelRemove(event){
+    if(this.props.viewType !== event.viewType){
+      return;
+    }
+    this.geometryScene.remove(event.data.model.getGeometry());
+    this.forceUpdate();
+  }
+  onRootModelAdd(event) {
     if (this.props.viewType !== event.viewType) {
       return;
     }
@@ -303,8 +325,8 @@ export default class GeometryView extends React.Component {
     this.zoomToFit(model);
   }
 
-  onModelRemove(event) {
-    console.log('ModelRemove: ' + event.path);
+  onRootModelRemove(event) {
+    console.log('RootModelRemove: ' + event.path);
   }
 
   handleResize() {

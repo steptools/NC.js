@@ -54,6 +54,20 @@ export default class CADManager extends THREE.EventDispatcher {
     this._loader.runLoadQueue();
   }
 
+  addShape(shape){
+    this.dispatchEvent({
+      type: 'model:add',
+      model: shape,
+      viewType: 'cadjs'
+    });
+  }
+  removeShape(shape){
+    this.dispatchEvent({
+      type:'model:remove',
+      model:shape,
+      viewType: 'cadjs'
+    })
+  }
   centerModels() { }
 
   bindFunctions() {

@@ -3,7 +3,6 @@
  *
  * Extended by Gabor Pap to include TySON decoding
  */
-
 "use strict";
 function processPreviewJSON(url, workerID, data) {
     // pass back to main thread
@@ -83,8 +82,7 @@ function faceLoad(data, buffers) {
     }
 }
 
-//This is the data that is getting passed to the data_loader.js line 201
-function processShellJSON(url, workerID, dataJSON, signalFinish) {
+function makeShellFromJSON(json){
     // Just copy the data into arrays
     let buffers = {
         position: new Float32Array(dataJSON.points.length),
@@ -96,10 +94,15 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
     unindexValues(dataJSON,buffers);
     if (dataJSON.faces)
         faceLoad(dataJSON, buffers);
+}
+//This is the data that is getting passed to the data_loader.js line 201
+function processShellJSON(url, workerID, dataJSON, signalFinish) {
+    // Just copy the data into arrays
+    let rtn = new Shell(dataJSON);
     let parts = url.split("/");
     self.postMessage({
         type: "shellLoad",
-        data: buffers,
+        data: rtn,
         id: dataJSON.id,
         workerID: workerID
     });
@@ -115,20 +118,13 @@ function processShellJSON(url, workerID, dataJSON, signalFinish) {
     }
 }
 
-function processBatchJSON(url, workerID, data) {
-    let dataJSON = JSON.parse(data);
-    let parts = url.split("/");
+//Majority of requests go through this.
+function processShapeJSON(url, workerID, data) {
     self.postMessage({
-        type: "parseComplete",
-        file: parts[parts.length - 1]
-    });
-    for (let i = 0; i < dataJSON.shells.length; i++) {
-        processShellJSON(url, workerID, dataJSON.shells[i], false);
-    }
-    self.postMessage({
-        type: "workerFinish",
-        workerID: workerID,
-        file: parts[parts.length - 1]
+        'type': "shapeLoad",
+        'data': data,
+        'id': data.id,
+        'workerID': workerID
     });
 }
 /*********************************************************************/
@@ -193,13 +189,17 @@ let messageHandler = function(e) {
             case "nc":
                 processNCState(url, workerID, res.text);
                 break;
+            case "shape":
+            case "geometry":
+                let rtn = res.body;
+                rtn.id = parts[4];
+                processShapeJSON(url,workerID, rtn);
                 break;
             default:
                 throw Error("DataLoader.webworker - Invalid request type: " + e.data.type);
                 break;
         }
-
-        self.postMessage({type : "loadComplete", file: file });
+        self.postMessage({type : "loadComplete", file: parts[4], 'workerID':workerID});
     }
     
     // define a callback for the "progress" event

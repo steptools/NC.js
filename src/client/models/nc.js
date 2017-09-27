@@ -506,199 +506,45 @@ export default class NC extends THREE.EventDispatcher {
     // Don't know what kind of update this is
   }
 
-  applyKeyState(newState,forceDynamic){
-  //For keystates, we need to hide the currently drawn but unused geometry,
-  //Unhide anything we have that is needed but hidden,
-  //And load and display any new things we don't have.
-    let toolpaths = _.filter(newState.geom, (geom) =>{
-      if (geom.usage === 'toolpath') {
-        return true;
-      }
-      if (_.has(geom, 'polyline') && geom.usage === 'tobe') {
-        return true;
-      }
-      return false;
+  applyKeyState(state,forceDynamic){
+    let dyn = _.find(state.geom,['usage','inprocess']);
+    _.each(this._objects,(obj)=>{
+      obj.removeFromScene();
     });
-    let geoms = _.filter(newState.geom, (geom) =>{
-      if (geom.usage === 'tobe' && _.has(geom, 'shell')) {
-        return true;
-      }
-      if (geom.usage === 'asis' ||
-        geom.usage === 'cutter' ||
-        geom.usage === 'machine' ||
-        geom.usage === 'fixture') {
-        if (_.has(geom, 'shell')) {
-          return true;
-        }
-      }
-      return false;
-    });
-    let inproc = _.filter(newState.geom, ['usage','inprocess'])[0];
-    let oldgeom = _.filter(_.values(this._objects), (p)=>{
-      return (p.type ==='shell'&& p.usage!=='inprocess');
-    });
-
-    // Hide old Stuff. Keep it around in case we need to use it later.
-    //Don't hide things in the new geom list though.
-    _.each(oldgeom,(geom)=> {
-      //this._object3D.remove(geom.object3D);
-      //this._overlay3D.remove(geom.object3D);
-      let isReused = _.find(geoms,(g)=>{
-        return g.id===geom.id;
-      });
-      if (isReused) {
-        return;
-      }
-      geom.rendered = false;
-      geom.model.live = false;
-      geom.visible = false;
-      geom.object3D.visible = false;
-    });
-
-    let oldannotations =_.values(this._loader._annotations);
-    _.each(oldannotations, (oldannotation) => {
-      oldannotation.removeFromScene();
-      oldannotation.live = false;
-    });
-
-    //Load new Stuff.
     return new Promise((resolve)=>{
-      this.handleDynamicGeom(inproc,forceDynamic,()=>{
-        _.each(toolpaths, (geomData) => {
-          let name = geomData.polyline.split('.')[0];
-          if (!this._loader._annotations[name]){
-            let annotation = new Annotation(geomData.id, this, true);
-            let transform = DataLoader.parseXform(geomData.xform, true);
-            let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
-            this.addModel(annotation,
-              geomData.usage,
-              'polyline',
-              geomData.id,
-              transform,
-              boundingBox
-            );
-            // Push the annotation for later completion
-            this._loader._annotations[name] = annotation;
-            if (this.state.usagevis[geomData.usage]) {
-              this._loader._annotations[name].addToScene();
-            } else {
-              this._loader._annotations[name].removeFromScene();
-            }
-            var url = '/v3/nc/';
-            this._loader.addRequest({
-              path: name,
-              baseURL: url,
-              type: 'annotation'
-            });
-          } else {
-            if (this.state.usagevis[geomData.usage]) {
-             this._loader._annotations[name].addToScene();
-            } else {
-              this._loader._annotations[name].removeFromScene();
-            }
-            this._loader._annotations[name].live = true;
-          }
-        });
-
-        _.each(geoms, (geomData)=>{
-          let name = geomData.id;
-
-          if (this._objects[name]) {
-            let obj = this._objects[name];
-            if (!obj.visible) {
-              obj.rendered = true;
-              if (this.state.usagevis[geomData.usage]) {
-                obj.visible = true;
-                obj.setVisible();
-              }
-              obj.usage = geomData.usage;
-              this._objects[name] = obj;
-            }
-            obj.model.live = true;
-            let transform = new THREE.Matrix4();
-            if (!geomData.xform) {
-              return;
-            }
-            transform.fromArray(geomData.xform);
-            let position = new THREE.Vector3();
-            let quaternion = new THREE.Quaternion();
-            let scale = new THREE.Vector3();
-            transform.decompose(position, quaternion, scale);
-            // we need to update all 3D properties so that
-            // annotations, overlays and objects are all updated
-            this.updateObjectAllPositionQuaternion(obj,position,quaternion);
-          } else {
-            let color = DataLoader.parseColor('7d7d7d');
-            if (geomData.usage ==='cutter'){
-              color = DataLoader.parseColor('FF530D');
-            }
-            let transform = DataLoader.parseXform(geomData.xform,true);
-            let boundingBox = DataLoader.parseBoundingBox(geomData.bbox);
-            let shell = new Shell(
-              geomData.id,
-              this,
-              this,
-              geomData.size,
-              color,
-              boundingBox,
-              true
-            );
-            this.addModel(
-              shell,
-              geomData.usage,
-              'shell',
-              geomData.id,
-              transform,
-              boundingBox
-            );
-            this._loader._shells[geomData.shell]=shell;
-            var url = '/v3/nc/';
-            this._loader.addRequest({
-              path: name,
-              baseURL: url,
-              type: 'shell'
-            });
-          }
-        });
-
-        this._loader.runLoadQueue();
-        this.app.actionManager.emit('change-workingstep', newState.workingstep);
-        resolve(true);
-      });
-    });
-  }
-  applyDeltaState(deltaState){
-    // Handle each geom update in the delta
-    // This is usually just a tool movement (and volume removal update).
-    let dyn = _.filter(deltaState.geom,['usage','inprocess'])[0];
-    return new Promise((resolve)=>{
-      this.handleDynamicGeom(dyn,false,()=> {
+      this.handleDynamicGeom(dyn, forceDynamic, () => {
         let rtn = false;
-        _.each(deltaState.geom, (geom) => {
-          let obj = this._objects[geom.id];
-          if (obj !== undefined) {
-            obj.model.live = true;
-            if (obj.rendered !== false) {
-              let transform = new THREE.Matrix4();
-              if (!geom.xform) {
-                return;
-              }
-              transform.fromArray(geom.xform);
-              let position = new THREE.Vector3();
-              let quaternion = new THREE.Quaternion();
-              let scale = new THREE.Vector3();
-              transform.decompose(position, quaternion, scale);
-              // we need to update all 3D properties so that
-              // annotations, overlays and objects are all updated
-              this.updateObjectAllPositionQuaternion(obj,position,quaternion);
-              rtn = true;
+        _.each(state.geom, (geomref) => {
+          if(geomref.usage === 'inprocess' || geomref.usage === 'removal') return;
+          if(this._objects[geomref.id] !==undefined){
+            this._objects[geomref.id].addToScene(geomref.bbox,geomref.xform);
+            if(this.state.usagevis[geomref.usage]===true) {
+              this._objects[geomref.id].show();
+            } else {
+              this._objects[geomref.id].hide();
             }
+            return;
+          } else {
+            this._loader.addRequest({
+              path:geomref.id,
+              baseURL:'/v3/nc',
+              type: 'geometry'
+            },(ev)=>{
+              this._objects[geomref.id] = ev;
+              this._objects[geomref.id].addToScene(geomref.bbox, geomref.xform);
+            });
           }
-        });
-        resolve(rtn);
+        })
+        this._loader.runLoadQueue();
       });
-    });
+  });
   }
+  applyDeltaState(state){
+    //Theoretically a delta state shouldn't wipe the existing display, 
+    //However as of STEPNode@4 a delta state will always contain a full list of objects.
+    //TODO: CHANGEME when optimization code is added.
+    applyKeyState(state);
+  };
   applyDelta(delta,forceKey,forceDynamic) {
       //There are two types of 'State' that we get- KeyState or DeltaState.
 
