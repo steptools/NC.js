@@ -181,18 +181,18 @@ export default class DataLoader extends THREE.EventDispatcher {
         let req, shell, anno;
         // console.log("Worker Data: " + event.data.file);
         // Find the request this message corresponds to
-        if (_.indexOf(["rootLoad", "shellLoad", "annotationLoad", "loadError", "previewLoad", "previewEndLoad"], event.data.type) != -1) {
+        if (_.indexOf(["stateLoad", "shapeLoad", "shellLoad", "annotationLoad", "loadError", "previewLoad", "previewEndLoad"], event.data.type) != -1) {
             req = this._loading[event.data.workerID];
         }
         // Put worker back into the queue - if it is the time
-        if (_.indexOf(["rootLoad", "workerFinish", "loadError", "previewLoad"], event.data.type) != -1) {
+        if (_.indexOf(["loadComplete","loadError", "previewLoad"], event.data.type) != -1) {
             this._loading[event.data.workerID] = undefined;
             this._freeWorkers.push(event.data.workerID);
             this.runLoadQueue();
         }
         let data;
         switch (event.data.type) {
-            case "rootLoad":
+            case "stateLoad":
                 if (req.type === 'nc') {
                     // Handle the nc file
                     this.buildNCStateJSON(event.data.data, req);

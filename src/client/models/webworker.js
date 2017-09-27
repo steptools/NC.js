@@ -18,7 +18,7 @@ function processPreviewJSON(url, workerID, data) {
 function processNCState(url, workerID, data) {
     // All we really need to do is pass this back to the main thread
     self.postMessage({
-        type: "rootLoad",
+        type: "stateLoad",
         url: url,
         data: data,
         workerID: workerID
