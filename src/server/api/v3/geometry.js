@@ -29,7 +29,7 @@ function _getDelta(req,res){
   res.status(200).send(__curdelt);
 }
 
-function _resetDelta(res){
+function _resetDelta(req,res){
   ms.ResetDynamicGeometry().then(()=>{
     _curdeltv = -1;
     return _updateDelta();
@@ -39,68 +39,23 @@ function _resetDelta(res){
   });
 }
 
-let geomcache = {};
-function _getMesh(id,res){
-  if(geomcache[id]) {
-      res.status(200).send(geomcache[id]);
-      return;
-  }
-  ms.GetGeometryJSON(id , 'MESH')
-      .then((out)=>{
-        geomcache[id]=out;
-        res.status(200).send(out);
-        out=null;
-      });
-}
-let polycache = {};
-function _getPoly(id,res){
-    if(polycache[id]) {
-        res.status(200).send(polycache[id]);
-        return;
-    }
-    ms.GetGeometryJSON(id , 'POLYLINE')
-      .then((out)=>{
-        polycache[id] = out;
-        res.status(200).send(out);
-        out=null;
-      });
-}
-
-function _getGeometry(req, res) {
-  let find = file.find;
+function _getUUIDGeometry(req, res) {
   //Route the /geometry/delta/:current endpoint first.
-  if(req.params.id === 'delta') {
-    if(req.params.type ==='reset'){
-      _resetDelta(res);
-    } else {
-      req.params.current = req.params.type;
-      _getDelta(req, res);
-    }
-    return;
-  }
-  if (req.params.type === 'shell') {
-      _getMesh(req.params.id,res);
-    return;
-  } else if (req.params.type === 'annotation') {
-    _getPoly(req.params.id,res);
-    return;
-  } else if (req.params.type === 'tool') {
-    let toolId = find.GetToolWorkpiece(Number(req.params.id));
-    res.status(200).send(find.GetJSONProduct(toolId)); // toolId));
-    return;
-  } else if (!req.params.type && req.params.eid) {
-    if (!isNaN(Number(req.params.eid)) && isFinite(Number(req.params.eid))) {
-      res.status(200).send(find.GetJSONProduct(Number(req.params.eid)));
-    } else {
-      res.status(200).send(find.GetJSONGeometry(req.params.eid, 'MESH'));
-    }
-    return;
-  }
-  ms.GetGeometryJSON()
-    .then((out)=>{
-      res.status(200).send(out);
-      out=null;
-    });
+  ms.GetGeometryJSON(req.params.uuid)
+  .then((out)=>{
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(out);
+  }).catch(()=>{
+    res.status(404).send();
+  })
+} 
+function _getToolGeometry(req, res) {
+  let toolId = file.find.GetToolWorkpiece(Number(req.params.id));
+  res.status(200).send(file.find.GetJSONProduct(toolId)); // toolId));
+  return;
+}
+function _getProductGeometry(req, res){
+    res.status(200).send(file.find.GetJSONGeometry(req.params.uuid));
   return;
 }
 
@@ -117,9 +72,11 @@ function _getEIDfromUUID(req, res){
 module.exports = function(globalApp, cb){
   app = globalApp;
   app.updateDynamic = _updateDelta;
-  app.router.get('/v3/nc/geometry', _getGeometry);
-  app.router.get('/v3/nc/geometry/:id/:type', _getGeometry);
-  app.router.get('/v3/nc/geometry/:eid', _getGeometry);
+  app.router.get('/v3/nc/geometry/tool/:id', _getToolGeometry);
+  app.router.get('/v3/nc/geometry/product/:uuid', _getProductGeometry);
+  app.router.get('/v3/nc/geometry/:uuid', _getUUIDGeometry);
+  app.router.get('/v3/nc/geometry/delta/reset', _resetDelta);
+  app.router.get('/v3/nc/geometry/delta/:version', _getDelta);
   app.router.get('/v3/nc/id/:uuid', _getEIDfromUUID);
   if(app.config.noCache ===true){
     ms = file.ms;

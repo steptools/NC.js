@@ -337,6 +337,12 @@ var _wsInit = function(req, res) {
 //    });
 };
 
+function _getProductState(req, res) {
+  if (!isNaN(Number(req.params.eid)) && isFinite(Number(req.params.eid))) {
+    res.status(200).send(find.GetJSONProduct(Number(req.params.eid)));
+  }
+  return;
+}
 function _getKeyState(req, res) {
   if (ms === undefined) {
     res.status(404).send('Machine state could not be found');
@@ -383,6 +389,7 @@ function _saveDeltaState(req,res){
 }
 module.exports = function(globalApp, cb) {
   app = globalApp;
+  app.router.get('/v3/nc/state/product/:eid(\\d+)', _getProductState);
   app.router.get('/v3/nc/state/key', _getKeyState);
   app.router.get('/v3/nc/state/delta', _getDeltaState);
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
