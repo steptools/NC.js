@@ -9,9 +9,10 @@ import Annotation from './annotation';
 
 /********************************* Shape Class ********************************/
 export default class Shape extends THREE.EventDispatcher {
-    constructor(shapeJSON,manager) {
+    constructor(shapeJSON,manager,id) {
         super();
         this._manager=manager;
+        this.id = id;
         this._shells = [];
         this._annotations = [];
         this._geoms = new THREE.Group();
