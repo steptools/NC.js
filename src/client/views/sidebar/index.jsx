@@ -88,72 +88,7 @@ export default class SidebarView extends React.Component {
       previewEntity={this.props.previewEntity}
       previewEntityCb={this.props.previewEntityCb}
     />;
-
-    const tabs = (
-      <Menu
-        onSelect={this.selectMenuItem}
-        defaultSelectedKeys={[this.props.mode]}
-        mode='horizontal'
-        className='sidebar-menu-tabs'
-      >
-        <MenuItem
-          key='ws'
-          id='sidebar-menu-ws'
-          className='ws'
-        >
-          Workingsteps
-        </MenuItem>
-        <MenuItem
-          key='wp'
-          id='sidebar-menu-wp'
-          className='wp'
-        >
-          Workplan
-        </MenuItem>
-        <MenuItem
-          key='tools'
-          id='sidebar-menu-tools'
-          className='tool'
-        >
-          Tools
-        </MenuItem>
-        <MenuItem
-          key='tolerance'
-          id='sidebar-menu-tolerance'
-          className='tolerance'
-        >
-          Tolerances
-        </MenuItem>
-      </Menu>
-    );
-
-    let currentView = null;
-    if (this.props.mode === 'ws') {
-      currentView = (
-        <WorkingstepList
-          cbMode={this.props.cbMode}
-          cbTree={this.props.cbTree}
-          propertyCb={this.props.openProperties}
-          ws={this.props.ws}
-          app={this.props.app}
-          workingstepCache={this.props.workingstepCache}
-          workingstepList={this.props.workingstepList}
-          isMobile={this.props.isMobile}
-        />
-      );
-    } else if (this.props.mode === 'wp') {
-      currentView = (
-        <WorkplanList
-          cbMode={this.props.cbMode}
-          cbTree={this.props.cbTree}
-          ws={this.props.ws}
-          workplanCache={this.props.workplanCache}
-          propertyCb={this.props.openProperties}
-          isMobile={this.props.isMobile}
-        />
-      );
-    } else if (this.props.mode === 'tolerance') {
-      currentView = (
+    let currentView = (
         <ToleranceList
           app={this.props.app}
           curWS={this.props.workingstepCache[this.props.ws]}
@@ -174,22 +109,6 @@ export default class SidebarView extends React.Component {
           openPreview={this.props.openPreview}
         />
       );
-    } else if (this.props.mode === 'tools') {
-      currentView = (
-        <ToolList
-          cbMode={this.props.cbMode}
-          cbTree={this.props.cbTree}
-          ws={this.props.ws}
-          propertyCb={this.props.openProperties}
-          toolCb= {(toolList) => {
-            this.setState({tools: toolList});
-          }}
-          tools={this.props.toolCache}
-          curtool={this.props.curtool}
-          isMobile={this.props.isMobile}
-        />
-      );
-    }
 
     let SVWidth;
     let cName = 'sidebar';
@@ -201,7 +120,6 @@ export default class SidebarView extends React.Component {
     return (
       <div className={cName} style={SVWidth}>
         {properties}
-        {tabs}
         {currentView}
       </div>
     );}

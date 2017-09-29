@@ -37,21 +37,23 @@ function openMachineState(path,tool){
   return;
 }
 
-function init(path, machinetool,dump) {
+function init(path, machinetool,dump,is242) {
   fs.accessSync(path, fs.R_OK , () => process.exit());
 
   this.project = Path.basename(path,Path.extname(path));
-  try {
-    fs.accessSync(machinetool,fs.R_OK);
-  } catch (e){
-    machinetool='';
-  }
   openSimpleNcs = openSimpleNcs.bind(this);
   openSimpleNcs(path);
-  openMachineState = openMachineState.bind(this);
-  openMachineState(path,machinetool);
-  if(dump!==''){
-    this.ms.SetDumpDir(dump);
+  if (!is242) {
+    try {
+      fs.accessSync(machinetool, fs.R_OK);
+    } catch (e) {
+      machinetool = '';
+    }
+    openMachineState = openMachineState.bind(this);
+    openMachineState(path, machinetool);
+    if (dump !== '') {
+      this.ms.SetDumpDir(dump);
+    }
   }
 	return;
 }

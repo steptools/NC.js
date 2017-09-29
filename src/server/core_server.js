@@ -116,7 +116,7 @@ module.exports = class CoreServer{
       this.project = opts.file;
   else
       this.project = this.config.file.dir;
-  file.init(this.project, this.machinetool,this.config.dump);
+  file.init(this.project, this.machinetool,this.config.dump,true);
 
   // Establish core
   this.logger = new winston.Logger({

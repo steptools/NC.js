@@ -360,9 +360,31 @@ function _getProductState(req, res) {
   }
   return;
 }
+
+function _get242State(req, res) {
+  if (file.apt === undefined) {
+    res.status(404).send('No file loaded');
+    return;
+  }
+  if (!_.isEmpty(keyCache)) {
+    //Have a cached state, don't regen
+    res.status(200).send(keyCache);
+    return;
+  }
+  //Make a Keystate from the product structure
+  let keystate = {};
+  let wps = file.find.GetWorkpieceAll();
+  keystate = file.find.GetJSONProduct(wps[0]);
+  keyCache = JSON.parse(keystate);
+  _.each(keyCache.geom, (geom) => {
+    geom.usage = "tobe";
+  });
+  res.status(200).send(keyCache);
+}
+
 function _getKeyState(req, res) {
   if (ms === undefined) {
-    res.status(404).send('Machine state could not be found');
+    _get242State(req,res);
     return;
   }
   if (_.isEmpty(keyCache)) {

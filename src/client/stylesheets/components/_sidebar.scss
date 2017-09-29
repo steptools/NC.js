@@ -162,7 +162,7 @@ $icons: '../icons/';
     transition: transform ease 250ms;
     
     &.desktop {
-        height: calc(100% - #{$headerHeight});
+        height: 100%;
         border-bottom: 2px solid #333333;
     }
 

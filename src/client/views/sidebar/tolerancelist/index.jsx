@@ -405,7 +405,28 @@ export default class ToleranceList extends React.Component {
       type: 'divider',
       id: -1,
     });
-    if(this.props.curWS.toBe===undefined || this.props.curWS.toBe <=0){
+    if(this.props.curWS === undefined){
+      tolList.pop();
+      tolList.push({
+        name: 'Tolerances:',
+        leaf:true,
+        type: 'divider',
+        id:-1
+      });
+      let tols = _.filter(this.props.toleranceCache, { 'type': 'tolerance' });
+      Array.prototype.push.apply(tolList, tols);
+
+      tolList.push({
+        name: 'Datums:',
+        leaf: true,
+        type: 'divider',
+        id: -2,
+      });
+      let datums = _.filter(this.props.toleranceCache, { 'type': 'datum' });
+      datums.sort((a, b) => { if (a.name < b.name) return -1; else if (b.name < a.name) return 1; else return 0; });
+      Array.prototype.push.apply(tolList, datums);
+      return;
+    } else if(this.props.curWS.toBe===undefined || this.props.curWS.toBe <=0){
       return;
     }
     let wp = this.props.toleranceCache[this.props.curWS.toBe.id];
@@ -461,7 +482,6 @@ export default class ToleranceList extends React.Component {
     return (
       <div className="tolerance-list-container">
         <div className="treebeard flat">
-          {(this.state.mode==='wp')?(<ToleranceMode />):(null)}
           {tree}
         </div>
         <ToleranceHighlight

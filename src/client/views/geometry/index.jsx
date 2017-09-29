@@ -416,6 +416,14 @@ export default class GeometryView extends React.Component {
 
   alignToolView(nc) {
     if (nc === undefined) {
+      this.controls.setRotationFromEuler(
+        new THREE.Euler(
+          1.570795, //90 * (pi/180)
+          0,
+          0
+        ),
+        new THREE.Vector3(100000,0,1)
+      )
       return;
     }
 
@@ -425,6 +433,7 @@ export default class GeometryView extends React.Component {
       _.values(curobjs),
       {'usage': 'cutter'}
     );
+    if(tool===undefined) return;
     let part = _.find(
       _.values(curobjs),
       {'usage': 'tobe'}

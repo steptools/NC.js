@@ -336,24 +336,6 @@ export default class ResponsiveView extends React.Component {
   }
 
   componentWillMount(){
-    // get the workplan
-    request.get('/v3/nc/workplan/')
-      .then(this.getWorkPlan)
-      .then(()=>{
-        // get the cache of tools, need workplan first
-        return request.get('/v3/nc/tools/');
-      }).then(this.getToolCache);
-
-    // get the project loopstate
-    request.get('/v3/nc/state/loop/').then(this.getLoopState);
-
-    // get the current tool
-    request.get('/v3/nc/tools/' + this.state.ws).then((res) => {
-      this.setState({
-        'curtool':res.text,
-        'curtoolLoad':true
-      });
-    });
     // get data for workpiece/tolerance view
     request.get('/v3/nc/workpieces/').then(this.getWPT);
     request.get('/v3/nc/project').then((res)=>{this.setState({'projectName':res.text});});
@@ -639,7 +621,7 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
-    if(!(this.state.workplanLoad && this.state.toolCacheLoad && this.state.loopStateLoad && this.state.curtoolLoad && this.state.WPTLoad)){
+    if(!(this.state.WPTLoad)){
       return (<div></div>);
     }
     let probeMsg;
@@ -729,9 +711,9 @@ export default class ResponsiveView extends React.Component {
       );
       cadviewStyle = {
         'left': '390px',
-        'top': '90px',
         'bottom': '0px',
         'right': '0px',
+        'height':'100%%'
       };
     } else {
       FV = (
@@ -807,7 +789,6 @@ export default class ResponsiveView extends React.Component {
 
     return (
       <div className='RespView' style={{height:'100%'}}>
-        {HV}
         {SV}
         <div id='cadview-container' style={cadviewStyle}>
           <CADView

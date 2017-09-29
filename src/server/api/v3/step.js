@@ -24,6 +24,7 @@ var _ = require('lodash');
 /****************************** Helper Functions ******************************/
 
 function exeFromId(id) {
+  if(id===undefined || isNaN(id)) return;
   let ws = {
     'id': id,
     'name': find.GetExecutableName(id),
