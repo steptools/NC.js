@@ -371,33 +371,34 @@ export default class GeometryView extends React.Component {
     return rtn;
   }
 
-  alignToolView(object) {
-    if (object === undefined) {
+  alignToolView(nc) {
+    if (nc === undefined) {
       return;
     }
 
     // find the orientation of the referenced object
+    let curobjs = nc.getCurrentObjects();
     let tool = _.find(
-      _.values(object._objects),
-      {'usage': 'cutter', 'rendered': true}
+      _.values(curobjs),
+      {'usage': 'cutter'}
     );
     let part = _.find(
-      _.values(object._objects),
-      {'usage': 'tobe', 'rendered': true}
+      _.values(curobjs),
+      {'usage': 'tobe'}
     );
     if (part === undefined) {
       part = _.find(
-        _.values(object._objects),
-        {'usage': 'asis', 'rendered': true}
+        _.values(curobjs),
+        {'usage': 'asis'}
       );
     }
 
     //let partPos = new THREE.Vector3()
     //  .setFromMatrixPosition(part.object3D.matrixWorld);
-    let toolBox = tool.model.getBoundingBox().clone();
+    let toolBox = tool.getBoundingBox().clone();
 
-    let toolMax = toolBox.max.clone().applyMatrix4(tool.object3D.matrixWorld);
-    let toolMin = toolBox.min.clone().applyMatrix4(tool.object3D.matrixWorld);
+    let toolMax = toolBox.max.clone().applyMatrix4(tool.getGeometry().matrixWorld);
+    let toolMin = toolBox.min.clone().applyMatrix4(tool.getGeometry().matrixWorld);
 
     let toolAxis = GeometryView.getAxisVector(toolMax.clone().sub(toolMin));
 
@@ -411,12 +412,12 @@ export default class GeometryView extends React.Component {
     // now calculate which side we want to view from
     // TODO: make sure fixtures work properly with machines and other changes
     let machine = _.find(
-      _.values(object._objects),
-      {'usage': 'machine', 'rendered': true}
+      _.values(curobjs),
+      {'usage': 'machine'}
     );
     let fixture = _.find(
-      _.values(object._objects),
-      {'usage': 'fixture', 'rendered': true}
+      _.values(curobjs),
+      {'usage': 'fixture'}
     );
     let newPos = new THREE.Vector3();
     if (machine) {
@@ -468,8 +469,8 @@ export default class GeometryView extends React.Component {
 
   alignCamera(part, tool, toolBox) {
     let boundingBox = new THREE.Box3()
-      .union(part.bbox)
-      .union(toolBox.applyMatrix4(tool.object3D.matrixWorld));
+      .union(part.getBoundingBox())
+      .union(toolBox.applyMatrix4(tool.getGeometry().matrixWorld));
     let radius = boundingBox.size().length() * 0.5;
     let fovRad = THREE.Math.degToRad(this.camera.fov * 0.5);
     let horizontalFOV = 2 * Math.atan(fovRad * this.camera.aspect);

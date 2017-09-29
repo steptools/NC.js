@@ -26,7 +26,8 @@ export default class NC extends THREE.EventDispatcher {
     this._workingstep = workingstep;
     this._timeIn = timeIn;
     this._loader = loader;
-    this._objects = {};
+    this._objectCache = {};
+    this._curObjects = {};
     this.type = 'nc';
     this.raycaster = new THREE.Raycaster();
     this._object3D = new THREE.Object3D();
@@ -57,6 +58,7 @@ export default class NC extends THREE.EventDispatcher {
     this.vis = this.vis.bind(this);
     this.getVis = this.getVis.bind(this);
     this.save = this.save.bind(this);
+    this.getCurrentObjects = this.getCurrentObjects.bind(this);
     this.applyDelta = this.applyDelta.bind(this);
     this.applyKeyState = this.applyKeyState.bind(this);
     this.applyDeltaState = this.applyDeltaState.bind(this);
@@ -66,28 +68,28 @@ export default class NC extends THREE.EventDispatcher {
     let changes = {};
     switch (arg) {
       case 'asis':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='asis' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='asis';
       });
       break;
       case 'tobe':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='tobe' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='tobe';
       });
       break;
       case 'machine':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='machine' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='machine';
       });
       break;
       case 'cutter':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='cutter' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='cutter';
       });
       break;
       case 'inprocess':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='inprocess' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='inprocess';
       });
       break;
       default:
@@ -99,50 +101,46 @@ export default class NC extends THREE.EventDispatcher {
     let changes = {};
     switch (arg) {
       case 'asis':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='asis' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='asis';
       });
       this.state.usagevis.asis= !this.state.usagevis.asis;
       break;
       case 'tobe':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='tobe' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='tobe';
       });
       this.state.usagevis.tobe= !this.state.usagevis.tobe;
       break;
       case 'machine':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='machine' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='machine';
       });
       this.state.usagevis.machine = !this.state.usagevis.machine;
       break;
       case 'cutter':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='cutter' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='cutter';
       });
       this.state.usagevis.cutter=!this.state.usagevis.cutter;
       break;
       case 'fixture':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='fixture' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='fixture';
       });
       this.state.usagevis.fixture=!this.state.usagevis.fixture;
       break;
       case 'inprocess':
-      changes = _.filter(this._objects,(obj)=>{
-        return obj.usage==='inprocess' && obj.model.live;
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='inprocess';
       });
       this.state.usagevis.inprocess = !this.state.usagevis.inprocess;
       break;
       case 'toolpath':
-      changes = _.filter(this._loader._annotations,(anno)=>{
-        return anno.live;
-      });
-      _.each(changes,(anno)=>{
-        anno.toggleScene();
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='toolpath';
       });
       this.state.usagevis.toolpath=!this.state.usagevis.toolpath;
-      return;
       default:
       break;
     }
@@ -265,6 +263,9 @@ export default class NC extends THREE.EventDispatcher {
     return this._objects;
   }
 
+  getCurrentObjects(){
+    return this._curObjects;
+  }
   getOverlay3D(){
     return this._overlay3D;
   }
@@ -273,17 +274,11 @@ export default class NC extends THREE.EventDispatcher {
     return this._annotation3D;
   }
 
-  getBoundingBox(){
-    if (!this.boundingBox) {
-      this.boundingBox = new THREE.Box3();
-      let keys = _.keys(this._objects);
-      _.each(keys, (key) => {
-        let object = this._objects[key];
-        if (object.type !== 'polyline') {
-          this.boundingBox.union(object.bbox);
-        }
-      });
-    }
+  getBoundingBox() {
+    this.boundingBox = new THREE.Box3();
+    _.each(this._curObjects, (obj) => {
+      this.boundingBox.union(obj.getBoundingBox());
+    })
     return this.boundingBox.clone();
   }
 
@@ -296,19 +291,7 @@ export default class NC extends THREE.EventDispatcher {
     0, 0, 0, 1
     );
     this._overlay3D.remove(this.bbox);
-    this.boundingBox = new THREE.Box3();
-    let keys = _.keys(this._objects);
-    _.each(keys, (key) => {
-      let object = this._objects[key];
-      if (object.rendered !== false && object.type !== 'polyline') {
-        let newBox = new THREE.Box3().setFromObject(object.object3D);
-        if (!newBox.isEmpty()) {
-          //object.bbox = newBox;
-        }
-        this.boundingBox.union(object.bbox);
-      }
-    });
-    let bounds = this.boundingBox;
+    let bounds = this.getBoundingBox();
 
     this.bbox = Assembly.buildBoundingBox(bounds);
     this.bbox.applyMatrix(bbxform);
@@ -513,25 +496,36 @@ export default class NC extends THREE.EventDispatcher {
     });
     return new Promise((resolve)=>{
       this.handleDynamicGeom(dyn, forceDynamic, () => {
-        let rtn = false;
+        let rtn = true;
+        let loadingct = 0;
+        this._curObjects = {};
         _.each(state.geom, (geomref) => {
           if(geomref.usage === 'inprocess' || geomref.usage === 'removal') return;
-          if(this._objects[geomref.id] !==undefined){
-            this._objects[geomref.id].addToScene(geomref.bbox,geomref.xform);
+          if(this._objectCache[geomref.id] !==undefined){
+            this._objectCache[geomref.id].addToScene(geomref.bbox,geomref.xform);
+            this._curObjects[geomref.id] = this._objectCache[geomref.id];
+            this._curObjects[geomref.id].usage = geomref.usage;
             if(this.state.usagevis[geomref.usage]===true) {
-              this._objects[geomref.id].show();
+              this._objectCache[geomref.id].show();
             } else {
-              this._objects[geomref.id].hide();
+              this._objectCache[geomref.id].hide();
             }
             return;
           } else {
+            loadingct++;
             this._loader.addRequest({
               path:geomref.id,
               baseURL:'/v3/nc',
               type: 'geometry'
             },(ev)=>{
-              this._objects[geomref.id] = ev;
-              this._objects[geomref.id].addToScene(geomref.bbox, geomref.xform);
+              this._objectCache[geomref.id] = ev;
+              this._objectCache[geomref.id].addToScene(geomref.bbox, geomref.xform);
+              this._curObjects[geomref.id] = ev;
+              this._curObjects[geomref.id].usage = geomref.usage;
+              loadingct--;
+              if(loadingct === 0){
+                resolve(rtn);
+              } else console.log('loadingct '+loadingct);
             });
           }
         })
@@ -543,7 +537,7 @@ export default class NC extends THREE.EventDispatcher {
     //Theoretically a delta state shouldn't wipe the existing display, 
     //However as of STEPNode@4 a delta state will always contain a full list of objects.
     //TODO: CHANGEME when optimization code is added.
-    applyKeyState(state);
+    return this.applyKeyState(state);
   };
   applyDelta(delta,forceKey,forceDynamic) {
       //There are two types of 'State' that we get- KeyState or DeltaState.

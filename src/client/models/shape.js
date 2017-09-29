@@ -40,11 +40,14 @@ export default class Shape extends THREE.EventDispatcher {
         })
         return this;
     }
+    toggleVisibility(){
+        this._geoms.visible = !this._geoms.visible;
+    }
     isVisible(){
-        return this._isVisible;
+        return this._geoms.visible;
     }
     getBoundingBox(){
-        return this._bbox;
+        return new THREE.Box3().setFromObject(this._geoms);
     }
     getGeometry(){
         return this._geoms;
@@ -54,21 +57,11 @@ export default class Shape extends THREE.EventDispatcher {
         this._manager = manager;
     }
     show(){
-        _.each(_shells,(shell)=>{
-            shell.show();
-        });
-        _.each(_annotations,(anno)=>{
-            anno.show();
-        });
+        this._geoms.visible = true;
     }
 
     hide(){
-        _.each(_shells,(shell)=>{
-            shell.hide();
-        })
-        _.each(_annotations,(anno)=>{
-            anno.hide();
-        })
+        this._geoms.visible = false;
     }
 
     addToScene(bbox,xform){
