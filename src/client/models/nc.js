@@ -54,10 +54,10 @@ export default class NC extends THREE.EventDispatcher {
     this._annotation3D = new THREE.Object3D();
     let defaultusagevis = {
         asis:       false,
-        tobe:       false,
+        tobe:       true,
         machine:    true,
         cutter:     true,
-        inprocess:  true,
+        inprocess:  false,
         toolpath:   true,
         tolerance:  false,
         fixture:    true
@@ -362,7 +362,8 @@ export default class NC extends THREE.EventDispatcher {
       obj.version = geom.version;
     }
 
-  handleDynamicGeom(geom,forceFull,sequence,cb,cbdata){
+  handleDynamicGeom(geom,forceFull,cb,cbdata){
+    geom = undefined;
     if (!geom) {
       return cb(cbdata);
     }
