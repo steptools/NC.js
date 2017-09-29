@@ -228,8 +228,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 }
                 break;
             case "shapeLoad":
-            //WW loads the shape.
-                let sh = new Shape(event.data.data,this._app.cadManager);
+                let sh = new Shape(event.data.data,this._app.cadManager,event.data.id);
                 this.dispatchEvent({type:"shapeLoad", shape:sh});
                 if(req.callback) {
                     req.callback(sh);

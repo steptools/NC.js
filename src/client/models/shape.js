@@ -16,6 +16,7 @@ export default class Shape extends THREE.EventDispatcher {
         this._shells = [];
         this._annotations = [];
         this._geoms = new THREE.Group();
+        this._geoms.userData.id = id;
         this._bbox = [0,0,0,0,0,0];
         this._transform = new THREE.Matrix4();
         this._inScene = false;
