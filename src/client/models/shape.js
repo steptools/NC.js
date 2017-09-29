@@ -33,7 +33,7 @@ export default class Shape extends THREE.EventDispatcher {
                    this._geoms.add(ann.getGeometry());
                    this._annotations.push();
                    break;
-               case 'default':
+               default:
                    console.log('unexpected item in bagging area');
                    break;
            } 
