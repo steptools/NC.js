@@ -12,6 +12,8 @@ export default class Shell extends THREE.EventDispatcher {
     constructor(shellJSON) {
         super();
         this.addGeometry(shellJSON);
+        this.getGeometry = this.getGeometry.bind(this);
+        this.getMesh = this.getMesh.bind(this);
     }
 
 
@@ -27,19 +29,23 @@ export default class Shell extends THREE.EventDispatcher {
         return this._boundingBox;
     }
 
+    getMesh() {
+        return this._mesh;
+    }
+
     getGeometry() {
-        return this._geometry;
+        return this._mesh.geometry;
     }
 
     setGeometry(geom) {
-        this._geometry = geom;
+        this._mesh = geom;
     }
     
     show(){
-        this._geometry.setDrawRange(0,Infinity);
+        this._mesh.setDrawRange(0,Infinity);
     }
     hide(){
-        this._geometry.setDrawRange(0,0);
+        this._mesh.setDrawRange(0,0);
     }
     _faceload(facesJSON){
         let rtn = {
@@ -79,9 +85,9 @@ export default class Shell extends THREE.EventDispatcher {
         // Compute bbox
         geom.computeBoundingBox();
         this._boundingBox = geom.boundingBox.clone();
-        this._geometry = new THREE.Mesh(geom,MESHMATERIAL,false);
-        this._geometry.castShadow = true;
-        this._geometry.receiveShadow = true;
+        this._mesh = new THREE.Mesh(geom,MESHMATERIAL,false);
+        this._mesh.castShadow = true;
+        this._mesh.receiveShadow = true;
         // All done - signal completion
         this._isLoaded = true;
         this.dispatchEvent({type: "shellEndLoad", shell: this});

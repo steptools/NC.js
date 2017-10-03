@@ -25,7 +25,7 @@ export default class Shape extends THREE.EventDispatcher {
            switch(geom.type){
                case 'mesh':
                    let shell = new Shell(geom.geom);
-                   this._geoms.add(shell.getGeometry());
+                   this._geoms.add(shell.getMesh());
                    this._shells.push(shell);
                    break;
                case 'polyline':
@@ -38,7 +38,22 @@ export default class Shape extends THREE.EventDispatcher {
                    break;
            } 
         })
+        this.binders = this.binders.bind(this);
+        this.binders();
+        
         return this;
+    }
+    binders(){
+        this.toggleVisibility = this.toggleVisibility.bind(this);
+        this.isVisible = this.isVisible.bind(this);
+        this.getBoundingBox = this.getBoundingBox.bind(this);
+        this.getGeometry = this.getGeometry.bind(this);
+        this.getShells = this.getShells.bind(this);
+        this.setManager = this.setManager.bind(this);
+        this.show = this.show.bind(this);
+        this.hide = this.hide.bind(this);
+        this.addToScene = this.addToScene.bind(this);
+        this.removeFromScene = this.removeFromScene.bind(this)
     }
     toggleVisibility(){
         this._geoms.visible = !this._geoms.visible;
@@ -52,7 +67,9 @@ export default class Shape extends THREE.EventDispatcher {
     getGeometry(){
         return this._geoms;
     }
-
+    getShells(){
+        return this._shells;
+    }
     setManager(manager){
         this._manager = manager;
     }
