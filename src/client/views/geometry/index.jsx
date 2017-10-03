@@ -487,26 +487,26 @@ export default class GeometryView extends React.Component {
     return newTargetPosition;
   }
 
-  highlightFaces(faces, object, unhighlight, newColor,status) {
-    if (!object) {
+  highlightFaces(faces, nc, unhighlight, newColor,status) {
+    if (!nc) {
       return;
     }
 
-    let shells = _.filter(
-      _.values(object._objects),
+    let shapes = _.filter(
+      _.values(nc.getCurrentObjects()),
       _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
 
-    _.each(shells, (shell) => {
-      if (shell && shell.model._geometry) {
-        let modelFaces = shell.model._geometry.getAttribute('faces');
-        let colors = shell.model._geometry.getAttribute('color');
+    _.each(shapes, (shape) => {
+      _.each(shape.getShells(), (shell) => {
+        let modelFaces = shell.getGeometry().getAttribute('faces');
+        let colors = shell.getGeometry().getAttribute('color');
 
         let indices = _.map(faces, (id) => modelFaces.array[id]);
 
         if (!unhighlight && !this.state.oldColors[shell.id]) {
           let oldColors = this.state.oldColors;
           oldColors[shell.id] = colors.clone();
-          this.setState({'oldColors': oldColors});
+          this.setState({ 'oldColors': oldColors });
         }
 
         _.each(indices, (index) => {
@@ -519,7 +519,7 @@ export default class GeometryView extends React.Component {
               colors.array[i + 1] = this.state.oldColors[shell.id].array[i + 1];
               colors.array[i + 2] = this.state.oldColors[shell.id].array[i + 2];
             } else if (!unhighlight) {
-              if( (status==='green'||status==='red') && (colors.array[i]===1.0 && colors.array[i+1]===1.0 && colors.array[i+2]===0.0) ) {//Face has yellow status- show it yellow.
+              if ((status === 'green' || status === 'red') && (colors.array[i] === 1.0 && colors.array[i + 1] === 1.0 && colors.array[i + 2] === 0.0)) {//Face has yellow status- show it yellow.
                 //nop
               } else if (status === 'green' && colors.array[i] === 1.0 && colors.array[i + 1] === 0.0 && colors.array[i + 2] == 0.0) { //Face has red status, adding green status- show it yellow.
                 colors.array[i + 1] = 1.0;
