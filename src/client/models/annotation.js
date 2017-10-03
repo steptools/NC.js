@@ -7,9 +7,13 @@
 export default class Annotation extends THREE.EventDispatcher {
   constructor(annoJSON){
     super();
-    addGeometry(annoJSON);
+    this._geometry = new THREE.Group();
+    this.addGeometry(annoJSON);
   }
 
+  getGeometry(){
+    return this._geometry;
+  }
   getID() {
     return this._id;
   }
@@ -21,6 +25,10 @@ export default class Annotation extends THREE.EventDispatcher {
   }
 
   addGeometry(data) {
+    let material = new THREE.LineBasicMaterial({
+      vertexColors: THREE.VertexColors,
+      linewidth:1
+    });
     for (const polyline of data) {
       let geometry = new THREE.BufferGeometry();
       //load points & colors
@@ -39,7 +47,7 @@ export default class Annotation extends THREE.EventDispatcher {
       geometry.addAttribute('position', position);
       let color = new THREE.BufferAttribute(colorArray, 3);
       geometry.addAttribute('color', color);
-      this._lines.add(geometry);
+      this._geometry.add(new THREE.Line(geometry,material));
     }
     // All done - signal completion
     this.dispatchEvent({ type: "annotationEndLoad", annotation: this });
@@ -57,9 +65,5 @@ export default class Annotation extends THREE.EventDispatcher {
   removeFromScene() {
     this.dispatchEvent({ type: "annotationMakeNonVisible", annotation: this });
     this.visible = false;
-  }
-
-  getGeometry() {
-    return this._lines;
   }
 };

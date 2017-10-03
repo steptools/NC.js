@@ -28,9 +28,9 @@ export default class Shape extends THREE.EventDispatcher {
                    this._geoms.add(shell.getGeometry());
                    this._shells.push(shell);
                    break;
-               case 'annotation':
+               case 'polyline':
                    let anno = new Annotation(geom.geom);
-                   this._geoms.add(ann.getGeometry());
+                   this._geoms.add(anno.getGeometry());
                    this._annotations.push();
                    break;
                default:
