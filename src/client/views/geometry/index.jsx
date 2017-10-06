@@ -536,7 +536,7 @@ export default class GeometryView extends React.Component {
 
         colors.needsUpdate = true;
         this.invalidate();
-      }
+      });
     });
   }
 
