@@ -413,9 +413,13 @@ export default class GeometryView extends React.Component {
 
     return rtn;
   }
-
-  alignToolView(nc) {
-    if (nc === undefined) {
+  alignDefaultView(fit){
+    if (fit) {
+      this.zoomToFit({
+        getObject3D: () => { return this.geometryScene },
+        getBoundingBox: () => { return new THREE.Box3().setFromObject(this.geometryScene) }
+      });
+    }
       this.controls.setRotationFromEuler(
         new THREE.Euler(
           1.570795, //90 * (pi/180)
@@ -423,7 +427,11 @@ export default class GeometryView extends React.Component {
           0
         ),
         new THREE.Vector3(100000,0,1)
-      )
+      );
+  }
+  alignToolView(nc) {
+    if (nc === undefined) {
+      this.alignDefaultView();
       return;
     }
 
@@ -433,7 +441,10 @@ export default class GeometryView extends React.Component {
       _.values(curobjs),
       {'usage': 'cutter'}
     );
-    if(tool===undefined) return;
+    if(tool===undefined) {
+      this.alignDefaultView(true);
+      return;
+    }
     let part = _.find(
       _.values(curobjs),
       {'usage': 'tobe'}
