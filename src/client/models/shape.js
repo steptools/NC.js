@@ -17,6 +17,7 @@ export default class Shape extends THREE.EventDispatcher {
         this._annotations = [];
         this._geoms = new THREE.Group();
         this._geoms.userData.id = id;
+        this._geoms.matrixAutoUpdate = false;
         this._bbox = [0,0,0,0,0,0];
         this._transform = new THREE.Matrix4();
         this._inScene = false;
@@ -89,8 +90,7 @@ export default class Shape extends THREE.EventDispatcher {
             xform[2],xform[6],xform[10],xform[14],
             xform[3],xform[7],xform[11],xform[15],
         )
-        this._geoms.applyMatrix(transform);
-        this._geoms.updateMatrixWorld();
+        this._geoms.matrix.copy(transform);
         this._bbox = bbox;
         this._transform = transform;
         if(this._inScene) return;

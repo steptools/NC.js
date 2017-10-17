@@ -522,14 +522,24 @@ export default class NC extends THREE.EventDispatcher {
               this._objectCache[geomref.id].addToScene(geomref.bbox, geomref.xform);
               this._curObjects[geomref.id] = ev;
               this._curObjects[geomref.id].usage = geomref.usage;
+              if(this.state.usagevis[geomref.usage]===true){
+                this._objectCache[geomref.id].show();
+              } else {
+                this._objectCache[geomref.id].hide();
+              }
               loadingct--;
               if(loadingct === 0){
                 resolve(rtn);
-              } else console.log('loadingct '+loadingct);
+              };
             });
           }
         })
-        this._loader.runLoadQueue();
+        this.app.actionManager.emit('change-workingstep', state.workingstep);
+        if(loadingct > 0){
+          this._loader.runLoadQueue();
+        } else {
+          resolve(rtn);
+        }
       });
   });
   }
