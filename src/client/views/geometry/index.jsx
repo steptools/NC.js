@@ -397,8 +397,8 @@ export default class GeometryView extends React.Component {
     //  .setFromMatrixPosition(part.object3D.matrixWorld);
     let toolBox = tool.getBoundingBox().clone();
 
-    let toolMax = toolBox.max.clone().applyMatrix4(tool.getGeometry().matrixWorld);
-    let toolMin = toolBox.min.clone().applyMatrix4(tool.getGeometry().matrixWorld);
+    let toolMax = toolBox.max.clone();//.applyMatrix4(tool.getGeometry().matrixWorld);
+    let toolMin = toolBox.min.clone();//.applyMatrix4(tool.getGeometry().matrixWorld);
 
     let toolAxis = GeometryView.getAxisVector(toolMax.clone().sub(toolMin));
 
