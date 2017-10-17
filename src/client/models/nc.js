@@ -8,7 +8,7 @@ import Assembly from './assembly';
 import Annotation          from './annotation';
 import DataLoader from './data_loader';
 import Shell from './shell';
-import {makeGeometry, processKeyframe, processDelta} from './nc_delta';
+import DynamicShell from './dynamicshell';
 import {saveSTL} from './save_STL';
 /*************************************************************************/
 //HACK: FIXME.
@@ -369,36 +369,21 @@ export default class NC extends THREE.EventDispatcher {
     });
   }
 
-  parseDynamicFull(geom,obj) {
-    let geometry = makeGeometry(processKeyframe(geom));
-    // Remove all old geometry -- mesh's only
-    obj.object3D.traverse(function(child) {
-      if (child.type === 'Mesh') {
-        obj.object3D.remove(child);
-      }
-    });
-    // Add in new geometry
-    let mesh = new THREE.Mesh(geometry, this.MESHMATERIAL);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    mesh.userData = obj;
-    obj.object3D.add(mesh);
-    //Uncomment to add edge outlining
-    //let geo = new THREE.EdgesGeometry( mesh.geometry);
-    //let mat = new THREE.LineBasicMaterial({color: 0xffffff, linewidth: 2});
-    //let wireframe = new THREE.LineSegments(geo,mat);
-    //mesh.add(wireframe);
-    // Make sure to update the model geometry
-    if (obj.model.getGeometry()) {
-      obj.model.getGeometry().dispose();
+  parseDynamicFull(geom,obj,olddynshell) {
+    let geometry = {};
+    if(olddynshell){
+      geometry = olddynshell;
+      geometry.replaceGeometry(geom);
+    } else{
+      geometry = new DynamicShell(geom, this.app.cadManager, obj.id);
     }
-    obj.model.setGeometry(geometry);
-    obj.model.live = true;
-    obj.version = geom.version;
-    obj.baseVersion= geom.base_version;
-    obj.precision = geom.precision;
-    obj.id = geom.id;
-    this.state.usagevis[obj.usage] ? obj.setVisible() : obj.setInvisible();
+    geometry.getGeometry().name = 'inprocess '+geom.version;
+    geometry.addToScene(obj.bbox,obj.xform);
+    geometry.usage="inprocess";
+    geometry.version = geom.version;
+    this._objectCache[obj.id] = geometry;
+    this._curObjects[obj.id] = geometry;
+    this.state.usagevis[obj.usage] ? geometry.show() : geometry.hide();
     return true;
   }
 
@@ -436,48 +421,31 @@ export default class NC extends THREE.EventDispatcher {
     if (!geom) {
       return cb(cbdata);
     }
-    let existingobj = this._objects[geom.id];
-      //Wipe out any old in process geoms.
-    let removelist = [];
-    _.each(this._objects, (o,key) => {
-      if (o.usage !== 'inprocess' || key === geom.id) return;
-      o.object3D.traverse((child) => {
-        if (child.type === 'Mesh') {
-          o.object3D.remove(child);
-        }
-        o.rendered = false;
-        o.model.live = false;
-        o.visible = false;
-        o.object3D.visible = false;
-      });
-      removelist.push(o.key);
-    });
-    _.each(removelist, (o)=>{
-      delete this._objects[o];
-    });
+    let existingobj = this._objectCache[geom.id];
     if (existingobj === undefined ) { //Need a full dynamic shell.
       //Setup the memory
-      let color = DataLoader.parseColor('BE17FF');
-      let boundingBox = DataLoader.parseBoundingBox(geom.bbox);
-      let transform =DataLoader.parseXform(geom.xform,true);
-      let shell = new Shell(geom.id,this,this,geom.size,color,boundingBox);
-      this.addModel(shell,geom.usage,'shell',geom.id,transform,boundingBox);
-      existingobj = this._objects[geom.id];
+      //let color = DataLoader.parseColor('BE17FF');
+      //let boundingBox = DataLoader.parseBoundingBox(geom.bbox);
+      //let transform =DataLoader.parseXform(geom.xform,true);
+      //let shape = new Shape(geom.id,this,this,geom.size,color,boundingBox);
+      //this.addModel(shell,geom.usage,'shell',geom.id,transform,boundingBox);
+      //existingobj = this._objects[geom.id];
 
       this.dynqueue((fulldynamic)=>{
-        this.parseDynamicFull(fulldynamic,existingobj);
+        this.parseDynamicFull(fulldynamic,geom);//existingobj);
         cb(cbdata);
       });
     } else if(forceFull){
       this.dynqueue((fulldynamic)=>{
-        this.parseDynamicFull(fulldynamic,existingobj);
+        this.parseDynamicFull(fulldynamic,geom,existingobj);
         cb(cbdata);
       });
 
     } else { //Need an updated dynamic shell.
       if (existingobj.version !== geom.version) {
+        //existingobj.removeFromScene();
         this.dynqueue((updateddynamic)=> {
-          this.parseDynamicUpdate(updateddynamic, existingobj);
+          this.parseDynamicFull(updateddynamic, geom,existingobj);
           cb(cbdata);
         });
       } else {
@@ -490,20 +458,26 @@ export default class NC extends THREE.EventDispatcher {
 
   applyKeyState(state,forceDynamic){
     let dyn = _.find(state.geom,['usage','inprocess']);
-    _.each(this._objects,(obj)=>{
-      obj.removeFromScene();
+    let ids = _.map(state.geom,(g)=>{return g.id;});
+    //console.log("IDs: %j",ids);
+    _.each(this._objectCache, (obj) => {
+      if (!_.find(state.geom, (g) => { return (g.id === obj.id); })) {
+        obj.removeFromScene();
+        //console.log("Removed "+obj.id);
+      }
     });
+    this._curObjects = {};
     return new Promise((resolve)=>{
       this.handleDynamicGeom(dyn, forceDynamic, () => {
         let rtn = true;
         let loadingct = 0;
-        this._curObjects = {};
         _.each(state.geom, (geomref) => {
           if(geomref.usage === 'inprocess' || geomref.usage === 'removal') return;
           if(this._objectCache[geomref.id] !==undefined){
             this._objectCache[geomref.id].addToScene(geomref.bbox,geomref.xform);
             this._curObjects[geomref.id] = this._objectCache[geomref.id];
             this._curObjects[geomref.id].usage = geomref.usage;
+            this._curObjects[geomref.id].getGeometry().name = geomref.usage;
             if(this.state.usagevis[geomref.usage]===true) {
               this._objectCache[geomref.id].show();
             } else {
@@ -520,6 +494,7 @@ export default class NC extends THREE.EventDispatcher {
               this._objectCache[geomref.id] = ev;
               this._objectCache[geomref.id].addToScene(geomref.bbox, geomref.xform);
               this._curObjects[geomref.id] = ev;
+              this._curObjects[geomref.id].getGeometry().name = geomref.usage;
               this._curObjects[geomref.id].usage = geomref.usage;
               if(this.state.usagevis[geomref.usage]===true){
                 this._objectCache[geomref.id].show();
