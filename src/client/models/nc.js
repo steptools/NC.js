@@ -151,109 +151,6 @@ export default class NC extends THREE.EventDispatcher {
   getVis(){
     return this.state.usagevis;
   }
-  addModel(model, usage, type, id, transform, bbox) {
-    // console.log('Add Model(' + usage + '): ' + id);
-    // Setup 3D object holder
-    let obj = {
-      model: model,
-      usage: usage,
-      type: type,
-      id: id,
-      rendered: true,
-      object3D: new THREE.Object3D(),
-      transform: (new THREE.Matrix4()).copy(transform),
-      bbox: bbox,
-      getID: ()=>obj.id,
-      getNamedParent: ()=>obj,
-      getBoundingBox: ()=>obj,
-      toggleHighlight: ()=>{},
-      toggleVisibility: ()=>{
-        obj.object3D.visible = !obj.object3D.visible;
-      },
-      setInvisible: ()=>obj.object3D.visible = false,
-      setVisible: ()=>obj.object3D.visible = true,
-      toggleOpacity: ()=>{},
-      toggleSelection: ()=>{},
-      toggleCollapsed: ()=>{},
-      explode: ()=>{}
-    };
-    obj.object3D.applyMatrix(obj.transform);
-    obj.object3D.updateMatrixWorld();
-    obj.overlay3D = obj.object3D.clone();
-    obj.annotation3D = obj.object3D.clone();
-    // Save the object
-    this._objects[id] = obj;
-    this._object3D.add(obj.object3D);
-    this._overlay3D.add(obj.overlay3D);
-    this._annotation3D.add(obj.annotation3D);
-    if (type === 'shell') {
-      model.addEventListener('shellEndLoad', (event) => {
-        //This is where the shell gets sent when its loaded,
-        //so that the full mesh can be added to the 3D objects
-        let mesh = new THREE.Mesh(
-          event.shell.getGeometry(),
-          this.MESHMATERIAL,
-          false
-        );
-
-        if (obj.bbox.isEmpty()) {
-          obj.bbox = event.shell.getBoundingBox();
-        }
-
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.userData = obj;
-        obj.object3D.add(mesh);
-        obj.version = 0;
-        this.state.usagevis[obj.usage] ? obj.setVisible() : obj.setInvisible();
-      });
-    } else if (type === 'polyline') {
-      model.addEventListener('annotationEndLoad', (event) => {
-        let lineGeometries = event.annotation.getGeometry();
-        let material = new THREE.LineBasicMaterial({
-          vertexColors: THREE.VertexColors,
-          //color: 0xffffff,
-          linewidth: 1
-        });
-        model._addedGeometry = [];
-        for (let i = 0; i < lineGeometries.length; i++) {
-          let lines = new THREE.Line(lineGeometries[i], material);
-          lines.visible = true;
-          obj.annotation3D.add(lines);
-          model._addedGeometry.push(lines);
-        }
-      });
-      model.addEventListener('annotationMakeVisible', ()=>{
-        _.each(model._addedGeometry, (line)=>{
-          obj.annotation3D.add(line);
-        });
-      });
-
-      let removeAnno = () => {
-        model.removeEventListener('annotationEndLoad', removeAnno);
-        _.each(model._addedGeometry, (line)=>{
-          obj.annotation3D.remove(line);
-        });
-      };
-
-      model.addEventListener('annotationMakeNonVisible', ()=>{
-        if (!model._addedGeometry || model._addedGeometry.length === 0) {
-          model.addEventListener('annotationEndLoad', removeAnno);
-        } else {
-          removeAnno();
-        }
-      });
-    }
-  }
-
-  updateObjectAllPositionQuaternion(obj,position,quaternion){
-    obj.object3D.position.copy(position);
-    obj.object3D.quaternion.copy(quaternion);
-    obj.annotation3D.position.copy(position);
-    obj.annotation3D.quaternion.copy(quaternion);
-    obj.overlay3D.position.copy(position);
-    obj.overlay3D.quaternion.copy(quaternion);
-  }
 
   getObject3D(){
     return this._object3D;
@@ -547,9 +444,6 @@ export default class NC extends THREE.EventDispatcher {
   getID() {
     return this.id;
   }
-  toggleHighlight() { }
-  toggleVisibility() { }
-  toggleOpacity() { }
 
   toggleSelection() {
     // On deselection
@@ -569,7 +463,4 @@ export default class NC extends THREE.EventDispatcher {
     }
     this.state.selected = !this.state.selected;
   }
-
-  toggleCollapsed() { }
-  explode() { }
 }
