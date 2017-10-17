@@ -264,6 +264,7 @@ export default class HeaderView extends React.Component {
     this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
     this.updateSpindleSpeed = this.updateSpindleSpeed.bind(this);
     this.updateFeedrate = this.updateFeedrate.bind(this);
+    this.props.cadManager.addEventListener('rootmodel:add',()=>{this.forceUpdate();});
   }
 
   componentDidMount() {
