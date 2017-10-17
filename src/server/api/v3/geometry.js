@@ -26,6 +26,7 @@ function _updateDelta(){
     });
 };
 function _getDelta(req,res){
+  res.setHeader('Content-Type', 'application/json');
   res.status(200).send(__curdelt);
 }
 
