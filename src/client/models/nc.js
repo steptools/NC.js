@@ -405,7 +405,10 @@ export default class NC extends THREE.EventDispatcher {
             });
           }
         })
-        this.app.actionManager.emit('change-workingstep', state.workingstep);
+        if(this._workingstep!==state.workingstep){
+          this.app.actionManager.emit('change-workingstep', state.workingstep);
+          this._workingstep = state.workingstep;
+        }
         if(loadingct > 0){
           this._loader.runLoadQueue();
         } else {
