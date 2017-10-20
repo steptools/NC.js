@@ -5,23 +5,17 @@
 
 
 /********************************* Helper Functions ********************************/
-
+require('../views/cad/shaders/VelvetyShader');
+let MESHMATERIAL = new THREE.ShaderMaterial(new THREE.VelvetyShader());
+let defaultColor = [0.7,0.5,0.5];
 export default class Shell extends THREE.EventDispatcher {
-    constructor(id, assembly, parent, size, defaultColor, boundingBox,isLive) {
+    constructor(shellJSON) {
         super();
-        this._id = id;
-        this._assembly = assembly;
-        this._parent = parent;
-        this._size = size;
-        this._color = defaultColor;
-        this._boundingBox = boundingBox;
-        this.live = isLive;
-        if (this._boundingBox.isEmpty()) {
-            console.log("Found empty bounding box: " + this._id);
-        }
-        this.getNamedParent = this.getNamedParent.bind(this);
-        return this;
+        this.addGeometry(shellJSON);
+        this.getGeometry = this.getGeometry.bind(this);
+        this.getMesh = this.getMesh.bind(this);
     }
+
 
     getID() {
         return this._id;
@@ -35,43 +29,65 @@ export default class Shell extends THREE.EventDispatcher {
         return this._boundingBox;
     }
 
+    getMesh() {
+        return this._mesh;
+    }
+
     getGeometry() {
-        return this._geometry;
+        return this._mesh.geometry;
     }
 
     setGeometry(geom) {
-        this._geometry = geom;
+        this._mesh = geom;
     }
-
-    addGeometry(position, normals, colors, values, faces) {
-        this.dispatchEvent({type: "shellStartLoad", shell: this});
-        // Create the geometry to hold the data
-        // Can also create a new buffergeometry per face and then geometry will be an array of buffergeom
-        this._geometry = new THREE.BufferGeometry();
-
-        this._geometry.addAttribute('position', new THREE.BufferAttribute(this._size * 3, 3));
-        this._geometry.addAttribute('normal',   new THREE.BufferAttribute(this._size * 3, 3));
-        this._geometry.addAttribute('color',    new THREE.BufferAttribute(this._size * 3, 3));
-        this._geometry.addAttribute('values',   new THREE.BufferAttribute(values, 1));
-        this._geometry.addAttribute('faces',    new THREE.BufferAttribute(this._size * 3, 3));
-
-        // Now load the rest of the data
-        this._geometry.attributes.position.array = position;
-        this._geometry.attributes.normal.array = normals;
-
-        for (let i = 0; i < colors.length; i = i + 3) {//This checks if a color was set by the data or default should be used
-            if (colors[i] === -1) {
-                colors[i] = this._color.r;
-                colors[i+1] = this._color.g;
-                colors[i+2] = this._color.b;
+    
+    show(){
+        this._mesh.setDrawRange(0,Infinity);
+    }
+    hide(){
+        this._mesh.setDrawRange(0,0);
+    }
+    _faceload(facesJSON){
+        let rtn = {
+            faces:[],
+            colors:[]
+        };
+        let arr = [];
+        for(let i=0;i<facesJSON.length;i++){
+            arr = new Array(facesJSON[i].count);
+            arr.fill(facesJSON[i].id);
+            rtn.faces = rtn.faces.concat(arr);
+            if(facesJSON[i].color!=null){
+                arr.fill(facesJSON[i].color); //[[0.5,0.5,0.5],[0.5,0.5,0.5]...[0.5,0.5,0.5]]
+            } else {
+                arr.fill(defaultColor);
             }
+            rtn.colors = rtn.colors.concat(_.flatten(arr)); //flatten makes above [0.5,0.5,0.5,0.5,0.5,0.5...0.5,0.5,0.5]
         }
-        this._geometry.attributes.color.array = colors;
-        this._geometry.attributes.faces.array = faces;
+        return rtn;
+    }
+    addGeometry(shellJSON) {
+        this.dispatchEvent({type: "shellStartLoad", shell: this});
+        let geom = new THREE.BufferGeometry();
+        let _size = shellJSON.normals.length;
+        let factor = Math.pow(10,(-1*shellJSON.precision));
+        let positions = Float32Array.from(_.map(shellJSON.points, (p) => { return (p * factor) }));
+        let normals = Float32Array.from(_.map(shellJSON.normals, (n) => { return (n * factor) }));
+
+        geom.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geom.addAttribute('normal',   new THREE.BufferAttribute(normals, 3));
+        let faces = this._faceload(shellJSON.faces);
+        let faceids = Int32Array.from(faces.faces);
+        let colors = Float32Array.from(faces.colors);
+        geom.addAttribute('faces',    new THREE.BufferAttribute(faceids, 1));
+        geom.addAttribute('color',    new THREE.BufferAttribute(colors, 3));
 
         // Compute bbox
-        this._geometry.computeBoundingBox();
-        this._boundingBox = this._geometry.boundingBox.clone();
+        geom.computeBoundingBox();
+        this._boundingBox = geom.boundingBox.clone();
+        this._mesh = new THREE.Mesh(geom,MESHMATERIAL,false);
+        this._mesh.castShadow = true;
+        this._mesh.receiveShadow = true;
         // All done - signal completion
         this._isLoaded = true;
         this.dispatchEvent({type: "shellEndLoad", shell: this});

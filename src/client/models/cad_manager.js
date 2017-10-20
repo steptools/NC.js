@@ -43,7 +43,7 @@ export default class CADManager extends THREE.EventDispatcher {
       // Add the model to the list of loaded models
       this._models[req.path] = model;
       this.dispatchEvent({
-        type: 'model:add',
+        type: 'rootmodel:add',
         path: req.path,
         viewType: req.viewType,
       });
@@ -54,6 +54,20 @@ export default class CADManager extends THREE.EventDispatcher {
     this._loader.runLoadQueue();
   }
 
+  addShape(shape){
+    this.dispatchEvent({
+      type: 'model:add',
+      model: shape,
+      viewType: 'cadjs'
+    });
+  }
+  removeShape(shape){
+    this.dispatchEvent({
+      type:'model:remove',
+      model:shape,
+      viewType: 'cadjs'
+    })
+  }
   centerModels() { }
 
   bindFunctions() {
