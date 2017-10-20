@@ -305,8 +305,8 @@ export default class GeometryView extends React.Component {
     if(this.props.viewType !== event.viewType){
       return;
     }
-    this.geometryScene.remove(event.data.model.getGeometry());
-    this.forceUpdate();
+    this.geometryScene.remove(event.model.getGeometry());
+//    this.forceUpdate();
   }
   onRootModelAdd(event) {
     if (this.props.viewType !== event.viewType) {
