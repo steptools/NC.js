@@ -80,7 +80,9 @@ class GeomBtn extends React.Component {
     this.props.actionManager.emit('STLDL',this.props.type);
   }
   visClick(info){
-    this.props.actionManager.emit('changeVis',this.props.type);
+    let eventArgs = {'usage':this.props.type};
+    if(this.props.view ==='noview') eventArgs.show = true;
+    this.props.actionManager.emit('changeVis',eventArgs);
   }
   render() {
     let icon = getIcon(this.props.view);
@@ -220,17 +222,20 @@ class GeomMenu extends React.Component {
     });
     this.props.actionManager.on('changeVis',(arg)=>{
       let l={}; 
-      if(this.state[arg]==='view')
-        l[arg]='noview'; 
+      if(this.state[arg.usage]==='view')
+        l[arg.usage]='noview'; 
       else
-        l[arg]='view';
+        l[arg.usage]='view';
       this.setState(l);
     });
   }
 
   pathClick(info){
-    if(info.key==='toolpath')
-      this.props.actionManager.emit('changeVis','toolpath');
+    if(info.key==='toolpath'){
+      let eventArgs = {usage:'toolpath'};
+      if(this.state.toolpath == 'noview') eventArgs.show = true;
+      this.props.actionManager.emit('changeVis',eventArgs);
+    }
   }
   render(){ return(
       <SubMenu {...this.props} onClick={this.pathClick} className="geommenu" title={

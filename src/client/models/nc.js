@@ -99,7 +99,7 @@ export default class NC extends THREE.EventDispatcher {
   }
   vis (arg) {
     let changes = {};
-    switch (arg) {
+    switch (arg.usage) {
       case 'asis':
       changes = _.filter(this._curObjects,(obj)=>{
         return obj.usage==='asis';
@@ -144,9 +144,15 @@ export default class NC extends THREE.EventDispatcher {
       default:
       break;
     }
+    if(arg.show){
     _.each(changes,(obj)=>{
-      obj.toggleVisibility();
+      obj.show();
     });
+    } else{
+    _.each(changes,(obj)=>{
+      obj.hide();
+    });
+    }
   }
   getVis(){
     return this.state.usagevis;
