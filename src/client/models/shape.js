@@ -81,7 +81,21 @@ export default class Shape extends THREE.EventDispatcher {
     hide(){
         this._geoms.visible = false;
     }
-
+    isInScene(){
+        return this._inScene;
+    }
+    repositionInScene(bbox,xform){
+        let transform = new THREE.Matrix4();
+        transform.set(
+            xform[0],xform[4],xform[8],xform[12],
+            xform[1],xform[5],xform[9],xform[13],
+            xform[2],xform[6],xform[10],xform[14],
+            xform[3],xform[7],xform[11],xform[15],
+        )
+        this._geoms.matrix.copy(transform);
+        this._bbox = bbox;
+        this._transform = transform;
+    }
     addToScene(bbox,xform){
         let transform = new THREE.Matrix4();
         transform.set(

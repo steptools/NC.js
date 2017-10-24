@@ -68,6 +68,11 @@ export default class CADManager extends THREE.EventDispatcher {
       viewType: 'cadjs'
     })
   }
+  clearScene(){
+    this.dispatchEvent({
+      type:'clearScene'
+    })
+  }
   centerModels() { }
 
   bindFunctions() {

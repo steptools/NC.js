@@ -16,7 +16,7 @@ let dynqueuegetting = false;
 let dynqueuenext = false;
 let dynqueuecur = -1;
 let dynqueuecb = ()=>{};
-
+let clearct=0;
 export default class NC extends THREE.EventDispatcher {
   constructor(project, workingstep, timeIn, loader) {
     super();
@@ -99,7 +99,7 @@ export default class NC extends THREE.EventDispatcher {
   }
   vis (arg) {
     let changes = {};
-    switch (arg) {
+    switch (arg.usage) {
       case 'asis':
       changes = _.filter(this._curObjects,(obj)=>{
         return obj.usage==='asis';
@@ -144,9 +144,15 @@ export default class NC extends THREE.EventDispatcher {
       default:
       break;
     }
+    if(arg.show){
     _.each(changes,(obj)=>{
-      obj.toggleVisibility();
+      obj.show();
     });
+    } else{
+    _.each(changes,(obj)=>{
+      obj.hide();
+    });
+    }
   }
   getVis(){
     return this.state.usagevis;
@@ -371,10 +377,14 @@ export default class NC extends THREE.EventDispatcher {
         _.each(state.geom, (geomref) => {
           if(geomref.usage === 'inprocess' || geomref.usage === 'removal') return;
           if(this._objectCache[geomref.id] !==undefined){
+            if(this._curObjects[geomref.id] !==undefined){
+              this._corObjects[geomref.id].repositionInScene(geomref.bbox,geomref.xform);
+            } else{
             this._objectCache[geomref.id].addToScene(geomref.bbox,geomref.xform);
             this._curObjects[geomref.id] = this._objectCache[geomref.id];
             this._curObjects[geomref.id].usage = geomref.usage;
             this._curObjects[geomref.id].getGeometry().name = geomref.usage;
+            }
             if(this.state.usagevis[geomref.usage]===true) {
               this._objectCache[geomref.id].show();
             } else {
@@ -429,6 +439,14 @@ export default class NC extends THREE.EventDispatcher {
       //If we get a KeyState, we need to re-render the scene.
       //If we get a DeltaState, we need to update the scene.
       //First we handle KeyState.
+      if(clearct++>100){
+        clearct=0;
+        _.each(this._curObjects,(obj)=>{
+          obj.removeFromScene();
+        });
+        this._curObjects = {};
+        this.app.cadManager.clearScene();
+      }
       if (forceKey || !delta.hasOwnProperty('prev')){
         //  let lineGeometries = event.annotation.getGeometry();
         return this.applyKeyState(delta,forceDynamic);
