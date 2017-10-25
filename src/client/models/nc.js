@@ -440,7 +440,7 @@ export default class NC extends THREE.EventDispatcher {
       //If we get a KeyState, we need to re-render the scene.
       //If we get a DeltaState, we need to update the scene.
       //First we handle KeyState.
-      if(clearct++>10){
+      if((clearct++>10) || this.workingstep!==delta.workingstep){
         clearct=0;
         _.each(this._curObjects,(obj)=>{
           obj.removeFromScene();
