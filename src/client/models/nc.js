@@ -366,10 +366,11 @@ export default class NC extends THREE.EventDispatcher {
     _.each(this._objectCache, (obj) => {
       if (!_.find(state.geom, (g) => { return (g.id === obj.id); })) {
         obj.removeFromScene();
+        this._curObjects[obj.id] = {};
+        delete this._curObjects[obj.id];
         //console.log("Removed "+obj.id);
       }
     });
-    this._curObjects = {};
     return new Promise((resolve)=>{
       this.handleDynamicGeom(dyn, forceDynamic, () => {
         let rtn = true;
@@ -378,7 +379,7 @@ export default class NC extends THREE.EventDispatcher {
           if(geomref.usage === 'inprocess' || geomref.usage === 'removal') return;
           if(this._objectCache[geomref.id] !==undefined){
             if(this._curObjects[geomref.id] !==undefined){
-              this._corObjects[geomref.id].repositionInScene(geomref.bbox,geomref.xform);
+              this._curObjects[geomref.id].repositionInScene(geomref.bbox,geomref.xform);
             } else{
             this._objectCache[geomref.id].addToScene(geomref.bbox,geomref.xform);
             this._curObjects[geomref.id] = this._objectCache[geomref.id];
@@ -439,10 +440,13 @@ export default class NC extends THREE.EventDispatcher {
       //If we get a KeyState, we need to re-render the scene.
       //If we get a DeltaState, we need to update the scene.
       //First we handle KeyState.
-      if(clearct++>100){
+      if(clearct++>10){
         clearct=0;
         _.each(this._curObjects,(obj)=>{
           obj.removeFromScene();
+        if(obj instanceof DynamicShell) {
+          this._objectCache[obj.id].version=-1;
+        }
         });
         this._curObjects = {};
         this.app.cadManager.clearScene();
