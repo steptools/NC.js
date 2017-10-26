@@ -89,9 +89,14 @@ export default class DynamicShell extends THREE.EventDispatcher {
         // Create the geometry to hold the data
         let geometry = new THREE.BufferGeometry();
         let factor = Math.pow(10, (-1 * shellJSON.precision));
-        let positions = Float32Array.from(_.map(shellJSON.points, (p) => { return (p * factor) }));
-        let normals = Float32Array.from(_.map(shellJSON.normals, (n) => { return (n * factor) }));
-
+        let sz = shellJSON.points.length;
+        let positions = new Float32Array(sz);
+        let normals = new Float32Array(sz);
+        let i = 0;
+        for(i=0;i<sz;i++){
+            positions[i] = shellJSON.points[i]*factor;
+            normals[i] = shellJSON.normals[i]*factor;
+        }
         geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
         let colors = Float32Array.from(this._faceload(shellJSON.faces));
