@@ -310,12 +310,14 @@ export default class GeometryView extends React.Component {
     this._addqueue.push(event.model);
   }
   onQueueFlush(event){
-    _.each(this.removequeue,(obj)=>{
+    _.each(this._removequeue,(obj)=>{
       this.geometryScene.remove(obj.getGeometry());
     });
+    this._removequeue = [];
     _.each(this._addqueue,(obj)=>{
       this.geometryScene.add(obj.getGeometry());
     });
+    this._addqueue = [];
 //    this.forceUpdate();
   }
   onModelRemove(event){
