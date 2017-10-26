@@ -21,6 +21,7 @@ export default class NC extends THREE.EventDispatcher {
   constructor(project, workingstep, timeIn, loader) {
     super();
     this.app = loader._app;
+    this.sequence=0;
     this.MESHMATERIAL = new THREE.ShaderMaterial(new THREE.VelvetyShader());
     this.project = project;
     this._workingstep = workingstep;
@@ -272,7 +273,7 @@ export default class NC extends THREE.EventDispatcher {
     });
   }
 
-  parseDynamicFull(geom,obj,olddynshell) {
+  parseDynamicFull(geom,obj,sequence,olddynshell) {
     let geometry = {};
     if(olddynshell){
       geometry = olddynshell;
@@ -281,7 +282,7 @@ export default class NC extends THREE.EventDispatcher {
       geometry = new DynamicShell(geom, this.app.cadManager, obj.id);
     }
     geometry.getGeometry().name = 'inprocess '+geom.version;
-    geometry.addToScene(obj.bbox,obj.xform);
+    geometry.addToScene(obj.bbox,obj.xform,sequence);
     geometry.usage="inprocess";
     geometry.version = geom.version;
     this._objectCache[obj.id] = geometry;
@@ -320,7 +321,7 @@ export default class NC extends THREE.EventDispatcher {
       obj.version = geom.version;
     }
 
-  handleDynamicGeom(geom,forceFull,cb,cbdata){
+  handleDynamicGeom(geom,forceFull,sequence,cb,cbdata){
     if (!geom) {
       return cb(cbdata);
     }
@@ -335,12 +336,12 @@ export default class NC extends THREE.EventDispatcher {
       //existingobj = this._objects[geom.id];
 
       this.dynqueue((fulldynamic)=>{
-        this.parseDynamicFull(fulldynamic,geom);//existingobj);
+        this.parseDynamicFull(fulldynamic,geom,sequence);//existingobj);
         cb(cbdata);
       });
     } else if(forceFull){
       this.dynqueue((fulldynamic)=>{
-        this.parseDynamicFull(fulldynamic,geom,existingobj);
+        this.parseDynamicFull(fulldynamic,geom,sequence,existingobj);
         cb(cbdata);
       });
 
@@ -348,7 +349,7 @@ export default class NC extends THREE.EventDispatcher {
       if (existingobj.version !== geom.version) {
         //existingobj.removeFromScene();
         this.dynqueue((updateddynamic)=> {
-          this.parseDynamicFull(updateddynamic, geom,existingobj);
+          this.parseDynamicFull(updateddynamic, geom,sequence,existingobj);
           cb(cbdata);
         });
       } else {
@@ -360,19 +361,20 @@ export default class NC extends THREE.EventDispatcher {
   }
 
   applyKeyState(state,forceDynamic){
+    let sequence = this.sequence++;
     let dyn = _.find(state.geom,['usage','inprocess']);
     let ids = _.map(state.geom,(g)=>{return g.id;});
     //console.log("IDs: %j",ids);
     _.each(this._objectCache, (obj) => {
       if (!_.find(state.geom, (g) => { return (g.id === obj.id); })) {
-        obj.removeFromScene();
+        obj.removeFromScene(sequence);
         this._curObjects[obj.id] = {};
         delete this._curObjects[obj.id];
         //console.log("Removed "+obj.id);
       }
     });
     return new Promise((resolve)=>{
-      this.handleDynamicGeom(dyn, forceDynamic, () => {
+      this.handleDynamicGeom(dyn, forceDynamic,sequence, () => {
         let rtn = true;
         let loadingct = 0;
         _.each(state.geom, (geomref) => {
@@ -381,7 +383,7 @@ export default class NC extends THREE.EventDispatcher {
             if(this._curObjects[geomref.id] !==undefined){
               this._curObjects[geomref.id].repositionInScene(geomref.bbox,geomref.xform);
             } else{
-            this._objectCache[geomref.id].addToScene(geomref.bbox,geomref.xform);
+            this._objectCache[geomref.id].addToScene(geomref.bbox,geomref.xform,sequence);
             this._curObjects[geomref.id] = this._objectCache[geomref.id];
             this._curObjects[geomref.id].usage = geomref.usage;
             this._curObjects[geomref.id].getGeometry().name = geomref.usage;
@@ -400,7 +402,7 @@ export default class NC extends THREE.EventDispatcher {
               type: 'geometry'
             },(ev)=>{
               this._objectCache[geomref.id] = ev;
-              this._objectCache[geomref.id].addToScene(geomref.bbox, geomref.xform);
+              this._objectCache[geomref.id].addToScene(geomref.bbox, geomref.xform,sequence);
               this._curObjects[geomref.id] = ev;
               this._curObjects[geomref.id].getGeometry().name = geomref.usage;
               this._curObjects[geomref.id].usage = geomref.usage;
@@ -411,7 +413,7 @@ export default class NC extends THREE.EventDispatcher {
               }
               loadingct--;
               if(loadingct === 0){
-                resolve(rtn);
+                resolve({ 'update': rtn, 'sequence': sequence });
               };
             });
           }
@@ -423,7 +425,7 @@ export default class NC extends THREE.EventDispatcher {
         if(loadingct > 0){
           this._loader.runLoadQueue();
         } else {
-          resolve(rtn);
+          resolve({'update':rtn,'sequence':sequence});
         }
       });
   });

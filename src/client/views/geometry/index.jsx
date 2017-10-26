@@ -9,8 +9,8 @@ export default class GeometryView extends React.Component {
 
     this.state = {oldColors: {}};
 
-    this._addqueue = [];
-    this._removequeue = [];
+    this._addqueue = {};
+    this._removequeue = {};
 
     this.invalidate = this.invalidate.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
@@ -307,24 +307,26 @@ export default class GeometryView extends React.Component {
     if(this.props.viewType !== event.viewType){
       return;
     }
-    this._addqueue.push(event.model);
+    if(!this._addqueue[event.sequence]) this._addqueue[event.sequence] = [];
+    this._addqueue[event.sequence].push(event.model);
   }
   onQueueFlush(event){
-    _.each(this._removequeue,(obj)=>{
+    _.each(this._removequeue[event.sequence],(obj)=>{
       this.geometryScene.remove(obj.getGeometry());
     });
-    this._removequeue = [];
-    _.each(this._addqueue,(obj)=>{
+    delete this._removequeue[event.sequence];
+    _.each(this._addqueue[event.sequence],(obj)=>{
       this.geometryScene.add(obj.getGeometry());
     });
-    this._addqueue = [];
+    delete this._addqueue[event.sequence];
 //    this.forceUpdate();
   }
   onModelRemove(event){
     if(this.props.viewType !== event.viewType){
       return;
     }
-    this._removequeue.push(event.model);
+    if(!this._removequeue[event.sequence]) this._removequeue[event.sequence] = [];
+    this._removequeue[event.sequence].push(event.model);
 //    this.forceUpdate();
   }
   onRootModelAdd(event) {

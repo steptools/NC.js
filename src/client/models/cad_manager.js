@@ -14,6 +14,7 @@ export default class CADManager extends THREE.EventDispatcher {
     this.config = config;
     this.socket = socket;
     this._models = {};
+    this.deltadone = true;
     // Set this to default empty assembly
     this._root3DObject = new THREE.Object3D();
     // Setup data loader
@@ -54,23 +55,26 @@ export default class CADManager extends THREE.EventDispatcher {
     this._loader.runLoadQueue();
   }
 
-  addShape(shape){
+  addShape(shape,sequence){
     this.dispatchEvent({
       type: 'model:add',
       model: shape,
+      'sequence': sequence,
       viewType: 'cadjs'
     });
   }
-  removeShape(shape){
+  removeShape(shape,sequence){
     this.dispatchEvent({
       type:'model:remove',
       model:shape,
+      'sequence': sequence,
       viewType: 'cadjs'
     })
   }
-  flushModelQueue(){
+  flushModelQueue(sequence){
     this.dispatchEvent({
       type:'model:flush',
+      'sequence': sequence,
       viewType:'cadjs'
     });
   }
@@ -208,21 +212,24 @@ export default class CADManager extends THREE.EventDispatcher {
       undefined
     );
   }
-
   onDelta(delta,forceDynamicReload) {
     _.each(this._models, (model) => {
       if (model.project === delta.project) {
-        model.applyDelta(delta,false,forceDynamicReload).then((alter)=>{
-          if (alter) {
-            this.flushModelQueue();
-            // Only redraw if there were changes
-            this.dispatchEvent({
-              type: 'invalidate',
-              'boundingBox': true,
-              'model': model
-            });
-          }
-        });
+        if (this.deltadone) {
+          this.deltadone = false;
+          model.applyDelta(delta, false, forceDynamicReload).then((alter) => {
+            if (alter.update) {
+              this.flushModelQueue(alter.sequence);
+              // Only redraw if there were changes
+              this.dispatchEvent({
+                type: 'invalidate',
+                'boundingBox': true,
+                'model': model
+              });
+            }
+            this.deltadone = true;
+          });
+      }
       }
     });
   }

@@ -96,7 +96,7 @@ export default class Shape extends THREE.EventDispatcher {
         this._bbox = bbox;
         this._transform = transform;
     }
-    addToScene(bbox,xform){
+    addToScene(bbox,xform,sequence){
         let transform = new THREE.Matrix4();
         transform.set(
             xform[0],xform[4],xform[8],xform[12],
@@ -108,12 +108,12 @@ export default class Shape extends THREE.EventDispatcher {
         this._bbox = bbox;
         this._transform = transform;
         if(this._inScene) return;
-        this._manager.addShape(this);
+        this._manager.addShape(this,sequence);
         this._inScene = true;
     };
-    removeFromScene(){
+    removeFromScene(sequence){
         if(!this._inScene) return;
-        this._manager.removeShape(this);
+        this._manager.removeShape(this,sequence);
         this._inScene = false;  
     };
 };
