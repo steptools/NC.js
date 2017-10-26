@@ -9,6 +9,9 @@ export default class GeometryView extends React.Component {
 
     this.state = {oldColors: {}};
 
+    this._addqueue = [];
+    this._removequeue = [];
+
     this.invalidate = this.invalidate.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
     this.alignCamera = this.alignCamera.bind(this);
@@ -17,6 +20,7 @@ export default class GeometryView extends React.Component {
     this.onShellLoad = this.onShellLoad.bind(this);
     this.onRootModelAdd = this.onRootModelAdd.bind(this);
     this.onRootModelRemove = this.onRootModelRemove.bind(this);
+    this.onQueueFlush = this.onQueueFlush.bind(this);
     this.onModelAdd = this.onModelAdd.bind(this);
     this.onModelRemove = this.onModelRemove.bind(this);
     this.zoomToFit = this.zoomToFit.bind(this);
@@ -259,6 +263,7 @@ export default class GeometryView extends React.Component {
     this.props.manager.addEventListener('rootModel:remove', this.onRootModelRemove);
     this.props.manager.addEventListener('model:add', this.onModelAdd);
     this.props.manager.addEventListener('model:remove', this.onModelRemove);
+    this.props.manager.addEventListener('model:flush', this.onQueueFlush);
     this.props.manager.addEventListener('shellLoad', this.onShellLoad);
     this.props.manager.addEventListener('shapeLoad', this.onShellLoad);
     this.props.manager.addEventListener('clearScene', this.onClearScene);
@@ -272,6 +277,7 @@ export default class GeometryView extends React.Component {
     this.props.manager.removeEventListener('rootModel:remove', this.onRootModelRemove);
     this.props.manager.removeEventListener('model:add', this.onModelAdd);
     this.props.manager.removeEventListener('model:remove', this.onModelRemove);
+    this.props.manager.removeEventListener('model:flush', this.onQueueFlush);
     this.props.manager.removeEventListener('shellLoad', this.onShellLoad);
     this.props.manager.removeEventListener('shapeLoad', this.onShellLoad);
     this.props.manager.removeEventListener('clearScene', this.onClearScene);
@@ -301,14 +307,22 @@ export default class GeometryView extends React.Component {
     if(this.props.viewType !== event.viewType){
       return;
     }
-    this.geometryScene.add(event.model.getGeometry());
-    this.forceUpdate();
+    this._addqueue.push(event.model);
+  }
+  onQueueFlush(event){
+    _.each(this.removequeue,(obj)=>{
+      this.geometryScene.remove(obj.getGeometry());
+    });
+    _.each(this._addqueue,(obj)=>{
+      this.geometryScene.add(obj.getGeometry());
+    });
+//    this.forceUpdate();
   }
   onModelRemove(event){
     if(this.props.viewType !== event.viewType){
       return;
     }
-    this.geometryScene.remove(event.model.getGeometry());
+    this._removequeue.push(event.model);
 //    this.forceUpdate();
   }
   onRootModelAdd(event) {

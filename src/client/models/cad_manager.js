@@ -68,6 +68,12 @@ export default class CADManager extends THREE.EventDispatcher {
       viewType: 'cadjs'
     })
   }
+  flushModelQueue(){
+    this.dispatchEvent({
+      type:'model:flush',
+      viewType:'cadjs'
+    });
+  }
   clearScene(){
     this.dispatchEvent({
       type:'clearScene'
@@ -208,7 +214,7 @@ export default class CADManager extends THREE.EventDispatcher {
       if (model.project === delta.project) {
         model.applyDelta(delta,false,forceDynamicReload).then((alter)=>{
           if (alter) {
-            model.calcBoundingBox();
+            this.flushModelQueue();
             // Only redraw if there were changes
             this.dispatchEvent({
               type: 'invalidate',
