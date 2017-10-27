@@ -96,7 +96,15 @@ export default class NC extends THREE.EventDispatcher {
       default:
       break;
     }
-    saveSTL(arg,changes);
+    let savegeoms = _.map(changes,(c)=>{
+      if(c instanceof DynamicShell) {
+        return c.getGeometry().geometry;
+      } else{
+        let shapegeoms = c.getGeometry();
+        return _.map(shapegeoms.children,(child)=>{return child.geometry});
+      }
+    });
+    saveSTL(arg,_.flatten(savegeoms));
   }
   vis (arg) {
     let changes = {};

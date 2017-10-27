@@ -50,7 +50,7 @@ let geometryToDataView = (geometry) => {
 export function saveSTL(fname,geoms){
     for (let i=0;i<geoms.length;i++) {
       let outgeom = new THREE.Geometry()
-                              .fromBufferGeometry(geoms[i].model._geometry);
+                              .fromBufferGeometry(geoms[i]);
       let dv = geometryToDataView(outgeom);
       let blob = new Blob([dv], {type: 'application/octet-binary'});
       FileSaver.saveAs(blob, fname+' model' + i + '.stl');
