@@ -66,17 +66,27 @@ export default class DynamicShell extends THREE.EventDispatcher {
         this._inScene = false;  
     };
     
-    _faceload(facesJSON){
-        let colors = [];
-        let arr = [];
-        for(let i=0;i<facesJSON.length;i++){
-            arr = new Array(facesJSON[i].count);
-            if(facesJSON[i].color!=null){
-                arr.fill(facesJSON[i].color); //[[0.5,0.5,0.5],[0.5,0.5,0.5]...[0.5,0.5,0.5]]
+    _faceload(facesJSON,length){
+        let colors = new Float32Array(length);
+        let pos=0;
+        let r = 0;
+        let g = 0;
+        let b = 0;
+        for (let i = 0; i < facesJSON.length; i++) {
+            if (facesJSON[i].color != null) {
+                r = facesJSON[i].color[0];
+                g = facesJSON[i].color[1];
+                b = facesJSON[i].color[2];
             } else {
-                arr.fill(defaultColor);
+                r = defaultColor[0];
+                g = defaultColor[1];
+                b = defaultColor[2];
             }
-            colors = colors.concat(_.flatten(arr)); //flatten makes above [0.5,0.5,0.5,0.5,0.5,0.5...0.5,0.5,0.5]
+            for (let j = 0; j < facesJSON[i].count; j++) {
+                colors[pos++] = r;
+                colors[pos++] = g;
+                colors[pos++] = b;
+            }
         }
         return colors;
     }
@@ -99,7 +109,7 @@ export default class DynamicShell extends THREE.EventDispatcher {
         }
         geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
-        let colors = Float32Array.from(this._faceload(shellJSON.faces));
+        let colors = this._faceload(shellJSON.faces,sz);
         geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
 
         // Compute bbox
