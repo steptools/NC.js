@@ -16,7 +16,7 @@ let dynqueuegetting = false;
 let dynqueuenext = false;
 let dynqueuecur = -1;
 let dynqueuecb = ()=>{};
-let clearct=0;
+
 export default class NC extends THREE.EventDispatcher {
   constructor(project, workingstep, timeIn, loader) {
     super();
@@ -444,23 +444,13 @@ export default class NC extends THREE.EventDispatcher {
     //TODO: CHANGEME when optimization code is added.
     return this.applyKeyState(state);
   };
+  
   applyDelta(delta,forceKey,forceDynamic) {
       //There are two types of 'State' that we get- KeyState or DeltaState.
 
       //If we get a KeyState, we need to re-render the scene.
       //If we get a DeltaState, we need to update the scene.
       //First we handle KeyState.
-      if((clearct++>10) || this.workingstep!==delta.workingstep){
-        clearct=0;
-        _.each(this._curObjects,(obj)=>{
-          obj.removeFromScene();
-        if(obj instanceof DynamicShell) {
-          this._objectCache[obj.id].version=-1;
-        }
-        });
-        this._curObjects = {};
-        this.app.cadManager.clearScene();
-      }
       if (forceKey || !delta.hasOwnProperty('prev')){
         //  let lineGeometries = event.annotation.getGeometry();
         return this.applyKeyState(delta,forceDynamic);
