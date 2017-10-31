@@ -1,7 +1,9 @@
 {
   "name": "nodejs",
   "version": "2.0.0",
-  "engines": {"node": ">=8.0.0"},
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "description": "CAD visualization for the web",
   "main": "src/server/api_server.js",
   "private": true,
