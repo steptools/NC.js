@@ -1,7 +1,23 @@
 # NC.js
 
+NC.js is the Web interface for the Digital Thread.  This implement a
+rich REST API for process and models as well as a matching client that
+displays the 3D part models for machining workpiece, tools, CNC, as
+well as removal simulation, PMI annotations, MTConnect positional
+data, QIF face status, and other aspects of a Digital Twin on the
+Digital Thread.
 
-### Setting up a development environment
+The software is implemented in Javascript under the Apache license, so
+the client and REST API may be customized as desired.  On the server,
+the REST API is implemented using the STEPNode native Node.js wrapper
+for the STEP Tools commercial technology stack, which handles STEP and
+STEP-NC read/write, analysis, geometry manipulation, and material
+removal simulation.
+
+![Screenshot](docs/images/fishhead.png "NC.js Screenshot")
+
+
+## Setting up a development environment
 
   1. Download NC.js:
 
@@ -30,7 +46,7 @@
   ------------------------------------------------------------------------------
   4. Install Glyphicons (Semi-Optional)
   
-  If you choose to skip this step, then the application will be missing some icons/buttons.
+  The package contains a placeholder `scss` under the client fonts directory.   If you have access to Glyphicons, you can copy the supporting files into this directory.   If you skip this step, the application will be missing some icons/buttons.
 
   ```
   > cd src/client
@@ -41,31 +57,23 @@
   ```
 
  ------------------------------------------------------------------------------
-  5. Making a server
+  5. Build and start a server
   
-  Ensure you are in the root NC.js directory.
-
-  Making a server will build and then start the server
+  In the root NC.js directory, build and start the sever as follows:
 
   ```
   > npm run make
+  
+  > npm run make-release      # same, but minimizes file sizes
   ```
-
-  or, to minimize the file sizes
-
-  ```
-  > npm run make-release
-  ```
-  ------------------------------------------------------------------------------
-  6. Start a server
-
-  If a server doesn't need to be rebuilt, this will be faster than making everytime. 
+ 
+  If the server has already been built, you can start it as follows.  This will be faster than making everytime. 
 
   ```
   > npm start
   ```
 
-  or to use a specific model and overload the config.js
+  The `config.js` file contains the path to the STEP model.   You can override the value and specify a STEP model on the command line as follows. 
   
    ```
   > npm start -- -f "path_to_.stpnc_file"
