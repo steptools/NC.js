@@ -185,7 +185,10 @@ var spindleUpdate=function(speed){
 //Handle Mp1LPathPos
 var pathUpdate=function(position){
   return new Promise((resolve)=>{
-    if(position===undefined) resolve();
+    if(position===undefined) {
+      resolve();
+      return;
+    }
     let incoords = position.split(' ');
     let coords = {};
     coords.x = Number(incoords[0]);
@@ -195,7 +198,7 @@ var pathUpdate=function(position){
         .then((r)=> {
           if(r.more === true) {
             resolve();
-            return;
+            throw 'more';
           }
           return file.ms.GetDeltaStateJSON();
         }).then((d)=> {
@@ -204,8 +207,12 @@ var pathUpdate=function(position){
         }).then(()=> {
           app.ioServer.emit('nc:delta', deltaCache);
           resolve();
+          return;
+        }).catch(()=>{
+          return;
         });
   });
+  return;
 };
 //Handle Mp1Fact
 var feedUpdate=function(feedrate){
