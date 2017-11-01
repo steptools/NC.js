@@ -22,4 +22,4 @@ for the STEP Tools commercial technology stack, which handles STEP and
 STEP-NC read/write, analysis, geometry manipulation, and material
 removal simulation.
 
-![Screenshot](images/ncjs_structure.svg "NC.js Screenshot")
+![Screenshot](images/ncjs_structure.png "NC.js Screenshot")
