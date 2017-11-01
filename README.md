@@ -14,6 +14,8 @@ for the STEP Tools commercial technology stack, which handles STEP and
 STEP-NC read/write, analysis, geometry manipulation, and material
 removal simulation.
 
+ - [NC.js Documentation](docs/index.md)
+
 ![Screenshot](docs/images/fishhead.png "NC.js Screenshot")
 
 
