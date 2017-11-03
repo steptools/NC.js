@@ -713,6 +713,7 @@ export default class ResponsiveView extends React.Component {
         'left': '390px',
         'bottom': '0px',
         'right': '0px',
+        'top':'0px',
         'height':'100%%'
       };
     } else {
@@ -780,7 +781,7 @@ export default class ResponsiveView extends React.Component {
       }
 
       cadviewStyle = {
-        'top': '0',
+        'top': '0px',
         'right': '0px',
         'width': '100%',
         'height': cadviewHeight,
