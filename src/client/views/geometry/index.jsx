@@ -422,11 +422,11 @@ export default class GeometryView extends React.Component {
     }
       this.controls.setRotationFromEuler(
         new THREE.Euler(
-          1.570795, //90 * (pi/180)
-          0,
+          .7853981633974483, //45 * (pi/180)
+          .7853981633974483, //45 * (pi/180)
           0
         ),
-        new THREE.Vector3(100000,0,1)
+        new THREE.Vector3(0,1,0)
       );
   }
   alignToolView(nc) {
