@@ -30,7 +30,7 @@ export default class Shape extends THREE.EventDispatcher {
     constructor(shapeJSON,manager,id) {
         super();
         this._manager=manager;
-        this.id = id;
+        this._id = id;
         this._shells = [];
         this._annotations = [];
         this._geoms = new THREE.Group();
@@ -88,6 +88,9 @@ export default class Shape extends THREE.EventDispatcher {
     }
     getShells(){
         return this._shells;
+    }
+    getID(){
+        return this._id;
     }
     setManager(manager){
         this._manager = manager;

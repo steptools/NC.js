@@ -34,7 +34,9 @@ export default class Shell extends THREE.EventDispatcher {
         this.getMesh = this.getMesh.bind(this);
     }
 
-
+    getFaces(){
+        return this._faces;
+    }
     getID() {
         return this._id;
     }
@@ -67,14 +69,19 @@ export default class Shell extends THREE.EventDispatcher {
     }
     _faceload(facesJSON){
         let rtn = {
-            faces:[],
+            faces:{},
             colors:[]
         };
         let arr = [];
+        let curpos = 0;
         for(let i=0;i<facesJSON.length;i++){
             arr = new Array(facesJSON[i].count);
-            arr.fill(facesJSON[i].id);
-            rtn.faces = rtn.faces.concat(arr);
+            let face = {
+                'start':curpos,
+                'end':(curpos+facesJSON[i].count)-1
+            };
+            curpos = curpos+facesJSON[i].count;
+            rtn.faces[facesJSON[i].id] = face;
             if(facesJSON[i].color!=null){
                 arr.fill(facesJSON[i].color); //[[0.5,0.5,0.5],[0.5,0.5,0.5]...[0.5,0.5,0.5]]
             } else {
@@ -95,10 +102,9 @@ export default class Shell extends THREE.EventDispatcher {
         geom.addAttribute('position', new THREE.BufferAttribute(positions, 3));
         geom.addAttribute('normal',   new THREE.BufferAttribute(normals, 3));
         let faces = this._faceload(shellJSON.faces);
-        let faceids = Int32Array.from(faces.faces);
         let colors = Float32Array.from(faces.colors);
-        geom.addAttribute('faces',    new THREE.BufferAttribute(faceids, 1));
         geom.addAttribute('color',    new THREE.BufferAttribute(colors, 3));
+        this._faces = faces.faces;
 
         // Compute bbox
         geom.computeBoundingBox();
