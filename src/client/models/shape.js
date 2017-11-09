@@ -31,6 +31,7 @@ export default class Shape extends THREE.EventDispatcher {
         super();
         this._manager=manager;
         this._id = id;
+        this.id = id;
         this._shells = [];
         this._annotations = [];
         this._geoms = new THREE.Group();
