@@ -1,3 +1,19 @@
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use strict';
 
 import ViewerControls   from './viewer_controls';
@@ -14,6 +30,9 @@ export default class GeometryView extends React.Component {
       visibleAxes: false
     };
 
+    this._addqueue = {};
+    this._removequeue = {};
+
     this.invalidate = this.invalidate.bind(this);
     this.alignToolView = this.alignToolView.bind(this);
     this.alignCamera = this.alignCamera.bind(this);
@@ -25,10 +44,14 @@ export default class GeometryView extends React.Component {
     this.workpieceMovement = this.workpieceMovement.bind(this);
     this.coordinateAxes = this.coordinateAxes.bind(this);
     this.onShellLoad = this.onShellLoad.bind(this);
+    this.onRootModelAdd = this.onRootModelAdd.bind(this);
+    this.onRootModelRemove = this.onRootModelRemove.bind(this);
+    this.onQueueFlush = this.onQueueFlush.bind(this);
     this.onModelAdd = this.onModelAdd.bind(this);
     this.onModelRemove = this.onModelRemove.bind(this);
     this.zoomToFit = this.zoomToFit.bind(this);
     this.addListeners = this.addListeners.bind(this);
+    this.onClearScene = this.onClearScene.bind(this);
   }
 
   componentDidMount() {
@@ -262,18 +285,28 @@ export default class GeometryView extends React.Component {
   componentWillMount() {
     this.sceneCenter = new THREE.Vector3(0,0,0);
     this.sceneRadius = 10000;
+    this.props.manager.addEventListener('rootModel:add', this.onRootModelAdd);
+    this.props.manager.addEventListener('rootModel:remove', this.onRootModelRemove);
     this.props.manager.addEventListener('model:add', this.onModelAdd);
     this.props.manager.addEventListener('model:remove', this.onModelRemove);
+    this.props.manager.addEventListener('model:flush', this.onQueueFlush);
     this.props.manager.addEventListener('shellLoad', this.onShellLoad);
+    this.props.manager.addEventListener('shapeLoad', this.onShellLoad);
+    this.props.manager.addEventListener('clearScene', this.onClearScene);
     this.props.manager.addEventListener('annotationLoad', this.invalidate);
     this.props.manager.addEventListener('invalidate', this.invalidate);
     this.props.manager.app.actionManager.on('invalidate',this.invalidate);
   }
 
   componentWillUnmount() {
+    this.props.manager.removeEventListener('rootModel:add', this.onRootModelAdd);
+    this.props.manager.removeEventListener('rootModel:remove', this.onRootModelRemove);
     this.props.manager.removeEventListener('model:add', this.onModelAdd);
     this.props.manager.removeEventListener('model:remove', this.onModelRemove);
+    this.props.manager.removeEventListener('model:flush', this.onQueueFlush);
     this.props.manager.removeEventListener('shellLoad', this.onShellLoad);
+    this.props.manager.removeEventListener('shapeLoad', this.onShellLoad);
+    this.props.manager.removeEventListener('clearScene', this.onClearScene);
     this.props.manager.removeEventListener('annotationLoad', this.invalidate);
     this.props.manager.removeEventListener('invalidate', this.invalidate);
     this.props.manager.app.actionManager.removeListener('invalidate',this.invalidate);
@@ -296,7 +329,33 @@ export default class GeometryView extends React.Component {
     this.invalidate(event);
   }
 
-  onModelAdd(event) {
+  onModelAdd(event){
+    if(this.props.viewType !== event.viewType){
+      return;
+    }
+    if(!this._addqueue[event.sequence]) this._addqueue[event.sequence] = [];
+    this._addqueue[event.sequence].push(event.model);
+  }
+  onQueueFlush(event){
+    _.each(this._removequeue[event.sequence],(obj)=>{
+      this.geometryScene.remove(obj.getGeometry());
+    });
+    delete this._removequeue[event.sequence];
+    _.each(this._addqueue[event.sequence],(obj)=>{
+      this.geometryScene.add(obj.getGeometry());
+    });
+    delete this._addqueue[event.sequence];
+//    this.forceUpdate();
+  }
+  onModelRemove(event){
+    if(this.props.viewType !== event.viewType){
+      return;
+    }
+    if(!this._removequeue[event.sequence]) this._removequeue[event.sequence] = [];
+    this._removequeue[event.sequence].push(event.model);
+//    this.forceUpdate();
+  }
+  onRootModelAdd(event) {
     if (this.props.viewType !== event.viewType) {
       return;
     }
@@ -313,8 +372,14 @@ export default class GeometryView extends React.Component {
     this.zoomToFit(model);
   }
 
-  onModelRemove(event) {
-    console.log('ModelRemove: ' + event.path);
+  onRootModelRemove(event) {
+    console.log('RootModelRemove: ' + event.path);
+  }
+
+  onClearScene(event){
+    _.each(this.geometryScene.children,(obj)=>{
+      this.geometryScene.remove(obj);
+    });
   }
 
   handleResize() {
@@ -359,33 +424,34 @@ export default class GeometryView extends React.Component {
     return rtn;
   }
 
-  alignToolView(object) {
-    if (object === undefined) {
+  alignToolView(nc) {
+    if (nc === undefined) {
       return;
     }
 
     // find the orientation of the referenced object
+    let curobjs = nc.getCurrentObjects();
     let tool = _.find(
-      _.values(object._objects),
-      {'usage': 'cutter', 'rendered': true}
+      _.values(curobjs),
+      {'usage': 'cutter'}
     );
     let part = _.find(
-      _.values(object._objects),
-      {'usage': 'tobe', 'rendered': true}
+      _.values(curobjs),
+      {'usage': 'tobe'}
     );
     if (part === undefined) {
       part = _.find(
-        _.values(object._objects),
-        {'usage': 'asis', 'rendered': true}
+        _.values(curobjs),
+        {'usage': 'asis'}
       );
     }
 
     //let partPos = new THREE.Vector3()
     //  .setFromMatrixPosition(part.object3D.matrixWorld);
-    let toolBox = tool.model.getBoundingBox().clone();
+    let toolBox = tool.getBoundingBox().clone();
 
-    let toolMax = toolBox.max.clone().applyMatrix4(tool.object3D.matrixWorld);
-    let toolMin = toolBox.min.clone().applyMatrix4(tool.object3D.matrixWorld);
+    let toolMax = toolBox.max.clone();//.applyMatrix4(tool.getGeometry().matrixWorld);
+    let toolMin = toolBox.min.clone();//.applyMatrix4(tool.getGeometry().matrixWorld);
 
     let toolAxis = GeometryView.getAxisVector(toolMax.clone().sub(toolMin));
 
@@ -399,12 +465,12 @@ export default class GeometryView extends React.Component {
     // now calculate which side we want to view from
     // TODO: make sure fixtures work properly with machines and other changes
     let machine = _.find(
-      _.values(object._objects),
-      {'usage': 'machine', 'rendered': true}
+      _.values(curobjs),
+      {'usage': 'machine'}
     );
     let fixture = _.find(
-      _.values(object._objects),
-      {'usage': 'fixture', 'rendered': true}
+      _.values(curobjs),
+      {'usage': 'fixture'}
     );
     let newPos = new THREE.Vector3();
     if (machine) {
@@ -456,8 +522,8 @@ export default class GeometryView extends React.Component {
 
   alignCamera(part, tool, toolBox) {
     let boundingBox = new THREE.Box3()
-      .union(part.bbox)
-      .union(toolBox.applyMatrix4(tool.object3D.matrixWorld));
+      .union(part.getBoundingBox())
+      .union(toolBox.applyMatrix4(tool.getGeometry().matrixWorld));
     let radius = boundingBox.size().length() * 0.5;
     let fovRad = THREE.Math.degToRad(this.camera.fov * 0.5);
     let horizontalFOV = 2 * Math.atan(fovRad * this.camera.aspect);
@@ -474,48 +540,43 @@ export default class GeometryView extends React.Component {
     return newTargetPosition;
   }
 
-  highlightFaces(faces, object, unhighlight, newColor, status) {
-    if (!object) {
+  highlightFaces(faces, nc, unhighlight, newColor,status) {
+    if (!nc) {
       return;
     }
-    let shells;
-    shells = _.filter(_.values(object._objects), function (shell) {
-      return shell.usage !== "inprocess"
-    });
-      
-    _.each(shells, (shell) => {
-      if (shell && shell.model._geometry) {
-        let modelFaces = shell.model._geometry.getAttribute('faces');
-        let colors = shell.model._geometry.getAttribute('color');
 
-        let indices = _.map(faces, (id) => modelFaces.array[id]);
+    let shapes = _.filter(
+      _.values(nc.getCurrentObjects()),
+      _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
 
-        if (!unhighlight && !this.state.oldColors[shell.id]) {
+    _.each(shapes, (shape) => {
+      let id = shape.getID(); 
+      _.each(shape.getShells(), (shell) => {
+        let modelFaces = shell.getFaces();
+        let colors = shell.getGeometry().getAttribute('color');
+        if (!unhighlight && !this.state.oldColors[id]) {
           let oldColors = this.state.oldColors;
-          oldColors[shell.id] = colors.clone();
-          this.setState({'oldColors': oldColors});
+          oldColors[id] = colors.clone();
+          this.setState({ 'oldColors': oldColors });
         }
-
-        _.each(indices, (index) => {
-          if (!index) {
-            return;
-          }
-          for (let i = index.start; i < index.end; i += 3) {
-            if (unhighlight && this.state.oldColors[shell.id]) {
-              colors.array[i] = this.state.oldColors[shell.id].array[i];
-              colors.array[i + 1] = this.state.oldColors[shell.id].array[i + 1];
-              colors.array[i + 2] = this.state.oldColors[shell.id].array[i + 2];
+        let foundFaces = _.filter(faces,(f)=>{return !(modelFaces[f]===undefined)});
+        _.each(foundFaces,(face)=>{
+          for(let i = modelFaces[face].start;i<=modelFaces[face].end;i++){
+            if (unhighlight && this.state.oldColors[id]) {
+              colors.array[i*3] = this.state.oldColors[id].array[i*3];
+              colors.array[(i*3) + 1] = this.state.oldColors[id].array[(i*3) + 1];
+              colors.array[(i*3) + 2] = this.state.oldColors[id].array[(i*3) + 2];
             } else if (!unhighlight) {
-              if( (status==='green'||status==='red') && (colors.array[i]===1.0 && colors.array[i+1]===1.0 && colors.array[i+2]===0.0) ) {//Face has yellow status- show it yellow.
+              if ((status === 'green' || status === 'red') && (colors.array[i*3] === 1.0 && colors.array[(i*3) + 1] === 1.0 && colors.array[(i*3) + 2] === 0.0)) {//Face has yellow status- show it yellow.
                 //nop
-              } else if (status === 'green' && colors.array[i] === 1.0 && colors.array[i + 1] === 0.0 && colors.array[i + 2] == 0.0) { //Face has red status, adding green status- show it yellow.
-                colors.array[i + 1] = 1.0;
-              } else if (status === 'red' && colors.array[i] === 0.0 && colors.array[i + 1] === 1.0 && colors.array[i + 2] == 0.0) { //Face has green status, adding red status- show it yellow.
-                colors.array[i] = 1.0;
+              } else if (status === 'green' && colors.array[i*3] === 1.0 && colors.array[(i*3) + 1] === 0.0 && colors.array[(i*3) + 2] == 0.0) { //Face has red status, adding green status- show it yellow.
+                colors.array[(i*3) + 1] = 1.0;
+              } else if (status === 'red' && colors.array[i*3] === 0.0 && colors.array[(i*3) + 1] === 1.0 && colors.array[(i*3) + 2] == 0.0) { //Face has green status, adding red status- show it yellow.
+                colors.array[i*3] = 1.0;
               } else {
-                colors.array[i] = newColor.r;
-                colors.array[i + 1] = newColor.g;
-                colors.array[i + 2] = newColor.b;
+                colors.array[(i*3)] = newColor.r;
+                colors.array[(i*3) + 1] = newColor.g;
+                colors.array[(i*3) + 2] = newColor.b;
               }
             }
           }
@@ -523,7 +584,7 @@ export default class GeometryView extends React.Component {
 
         colors.needsUpdate = true;
         this.invalidate();
-      }
+      });
     });
   }
 

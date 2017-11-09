@@ -1,3 +1,20 @@
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 var md = require('node-markdown').Markdown;
 import Menu, {SubMenu, Item as MenuItem} from 'rc-menu';
 let changetext='';
@@ -9,57 +26,58 @@ function getIcon(type, data) {
 
   switch (type) {
     case 'backward':
-      return 'icon glyphicon glyphicon-step-backward';
+      return 'icon fa fa-step-backward';
     case 'forward':
-      return 'icon glyphicon glyphicon-step-forward';
+      return 'icon fa fa-step-forward';
     case 'play':
-      return 'icon glyphicon glyphicon-play';
+      return 'icon fa fa-play';
     case 'pause':
-      return 'icon glyphicon glyphicon-pause';
+      return 'icon fa fa-pause';
     case 'speed':
       if (data === 'left') {
-        return 'icon left glyphicons glyphicons-turtle';
+        return 'icon left fa fa-bicycle';
       } else if (data === 'right') {
-        return 'icon right glyphicons glyphicons-rabbit';
+        return 'icon right fa fa-rocket';
       }
     case 'feedrate':
-      return 'icon glyphicons glyphicons-dashboard';
+      return 'icon fa fa-tachometer';
     case 'spindlespeed':
       if (data === 'CW') {
-        return 'icon glyphicons glyphicons-rotate-right';
+        return 'icon fa fa-rotate-right';
       } else if (data === 'CCW') {
-        return 'icon glyphicons glyphicons-rotate-left';
+        return 'icon fa fa-rotate-left';
       } else {
-        return 'icon glyphicons glyphicons-refresh';
+	  //return 'icon fa fa-refresh';
+        return 'icon fa fa-stop-circle-o';
       }
     case 'changelog':
-      return 'icon glyphicon glyphicon-book';
+      return 'icon fa fa-book';
     case 'live':
-      return 'icon glyphicons glyphicons-record';
+      return 'icon fa fa-dot-circle-o';
     case 'geometry':
-      return 'icon glyphicons glyphicons-cube-empty';
+      return 'icon fa fa-cube';
     case 'download':
-      return 'icon glyphicons glyphicons-cloud-download';
+      return 'icon fa fa-cloud-download';
     case 'reset':
-      return 'icon glyphicons glyphicons-recycle';
+      return 'icon fa fa-recycle';
     case 'view':
-      return 'icon glyphicons glyphicons-eye-open';
+      return 'icon fa fa-eye';
     case 'noview':
-      return 'icon glyphicons glyphicons-eye-close';
+      return 'icon fa fa-eye-slash';
     case 'setup':
-      return 'icon glyphicons glyphicons-move';
+      return 'icon fa fa-arrows';
     case 'exit':
-      return 'icon glyphicons glyphicons-remove-sign';
+      return 'icon fa fa-times-circle';
     case 'plus':
-      return 'icon glyphicons glyphicons-plus';
+      return 'icon fa fa-plus';
     case 'minus':
-      return 'icon glyphicons glyphicons-minus';
+      return 'icon fa fa-minus';
     case 'left':
-      return 'icon glyphicons glyphicons-arrow-left';
+      return 'icon fa fa-arrow-left';
     case 'right':
-      return 'icon glyphicons glyphicons-arrow-right';
+      return 'icon fa fa-arrow-right';
     default:
-      return 'icon glyphicons glyphicons-question-sign';
+      return 'icon fa fa-question-circle';
   }
 }
 
@@ -92,7 +110,9 @@ class GeomBtn extends React.Component {
     this.props.actionManager.emit('STLDL',this.props.type);
   }
   visClick(info){
-    this.props.actionManager.emit('changeVis',this.props.type);
+    let eventArgs = {'usage':this.props.type};
+    if(this.props.view ==='noview') eventArgs.show = true;
+    this.props.actionManager.emit('changeVis',eventArgs);
   }
   render() {
     let icon = getIcon(this.props.view);
@@ -232,17 +252,20 @@ class GeomMenu extends React.Component {
     });
     this.props.actionManager.on('changeVis',(arg)=>{
       let l={}; 
-      if(this.state[arg]==='view')
-        l[arg]='noview'; 
+      if(this.state[arg.usage]==='view')
+        l[arg.usage]='noview'; 
       else
-        l[arg]='view';
+        l[arg.usage]='view';
       this.setState(l);
     });
   }
 
   pathClick(info){
-    if(info.key==='toolpath')
-      this.props.actionManager.emit('changeVis','toolpath');
+    if(info.key==='toolpath'){
+      let eventArgs = {usage:'toolpath'};
+      if(this.state.toolpath == 'noview') eventArgs.show = true;
+      this.props.actionManager.emit('changeVis',eventArgs);
+    }
   }
   render(){ return(
       <SubMenu {...this.props} onClick={this.pathClick} className="geommenu" title={
@@ -516,6 +539,7 @@ export default class HeaderView extends React.Component {
     this.getFeedSpeedInfo = this.getFeedSpeedInfo.bind(this);
     this.updateSpindleSpeed = this.updateSpindleSpeed.bind(this);
     this.updateFeedrate = this.updateFeedrate.bind(this);
+    this.props.cadManager.addEventListener('rootmodel:add',()=>{this.forceUpdate();});
   }
 
   componentDidMount() {

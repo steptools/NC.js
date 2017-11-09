@@ -1,27 +1,51 @@
-/* Copyright G. Hemingway, 2015 - All rights reserved */
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * Copyright G. Hemingway, 2015
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 "use strict";
 
 
 /********************************* Annotation Class ********************************/
 
 export default class Annotation extends THREE.EventDispatcher {
-  constructor(id, model, isLive) {
+  constructor(annoJSON){
     super();
-    this._id = id;
-    this._model = model;
-    this._geometry = undefined;
-    this._lines = [];
-    this.live = isLive;
-    this.visible = true;
-    return this;
-    this.toggleScene = this.toggleScene.bind(this);
+    this._geometry = new THREE.Group();
+    this.addGeometry(annoJSON);
   }
 
+  getGeometry(){
+    return this._geometry;
+  }
   getID() {
     return this._id;
   }
+  show(){
+    this._geometry.setDrawRange(0,Infinity);
+  }
+  hide(){
+    this._geometry.setDrawRange(0,0);
+  }
 
   addGeometry(data) {
+    let material = new THREE.LineBasicMaterial({
+      vertexColors: THREE.VertexColors,
+      linewidth:1
+    });
     for (const polyline of data) {
       let geometry = new THREE.BufferGeometry();
       //load points & colors
@@ -40,7 +64,7 @@ export default class Annotation extends THREE.EventDispatcher {
       geometry.addAttribute('position', position);
       let color = new THREE.BufferAttribute(colorArray, 3);
       geometry.addAttribute('color', color);
-      this._lines.push(geometry);
+      this._geometry.add(new THREE.Line(geometry,material));
     }
     // All done - signal completion
     this.dispatchEvent({ type: "annotationEndLoad", annotation: this });
@@ -58,9 +82,5 @@ export default class Annotation extends THREE.EventDispatcher {
   removeFromScene() {
     this.dispatchEvent({ type: "annotationMakeNonVisible", annotation: this });
     this.visible = false;
-  }
-
-  getGeometry() {
-    return this._lines;
   }
 };

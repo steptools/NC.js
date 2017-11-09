@@ -1,3 +1,20 @@
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 'use strict';
 let file = require('./file');
 let step = require('./step');
@@ -212,12 +229,12 @@ function handleWSInit(command, res) {
   switch (command) {
     case 'next':
       movequeue.push(()=>{
-        return getNext();
+        return getNext().then(()=>{res.status(200).send();});
       });
       break;
     case 'prev':
       movequeue.push(()=>{
-        return getPrev();
+        return getPrev().then(()=>{res.status(200).send();});
       });
       break;
     default:
@@ -227,10 +244,9 @@ function handleWSInit(command, res) {
       }
       let ws = Number(command);
       movequeue.push(()=>{
-        return getToWS(ws);
+        return getToWS(ws).then(()=>{res.status(200).send();});
       });
   }
-  res.sendStatus(200);
 }
 
 /***************************** Endpoint Functions *****************************/
@@ -338,6 +354,12 @@ var _wsInit = function(req, res) {
 //    });
 };
 
+function _getProductState(req, res) {
+  if (!isNaN(Number(req.params.eid)) && isFinite(Number(req.params.eid))) {
+    res.status(200).send(find.GetJSONProduct(Number(req.params.eid)));
+  }
+  return;
+}
 function _getKeyState(req, res) {
   if (ms === undefined) {
     res.status(404).send('Machine state could not be found');
@@ -384,6 +406,7 @@ function _saveDeltaState(req,res){
 }
 module.exports = function(globalApp, cb) {
   app = globalApp;
+  app.router.get('/v3/nc/state/product/:eid(\\d+)', _getProductState);
   app.router.get('/v3/nc/state/key', _getKeyState);
   app.router.get('/v3/nc/state/delta', _getDeltaState);
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
@@ -404,4 +427,8 @@ module.exports = function(globalApp, cb) {
   if (cb) {
     cb();
   }
+
+  app.events.on('deltaReset',()=>{
+    movequeue.push(()=>{return Promise.resolve();});
+  });
 };

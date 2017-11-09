@@ -1,4 +1,3 @@
-![Alt text](http://www.clker.com/cliparts/q/E/D/g/o/S/stick-figure-dark-grey-th.png "Documenting Mascot")
 
 # **Client Side**
 ---

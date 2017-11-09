@@ -1,4 +1,22 @@
-/* G. Hemingway Copyright @2015
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * G. Hemingway Copyright @2015
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
+/*
  * Context for the visualization of a set of CAD models
  */
 "use strict";
@@ -14,6 +32,7 @@ export default class CADManager extends THREE.EventDispatcher {
     this.config = config;
     this.socket = socket;
     this._models = {};
+    this.deltadone = true;
     // Set this to default empty assembly
     this._root3DObject = new THREE.Object3D();
     // Setup data loader
@@ -43,7 +62,7 @@ export default class CADManager extends THREE.EventDispatcher {
       // Add the model to the list of loaded models
       this._models[req.path] = model;
       this.dispatchEvent({
-        type: 'model:add',
+        type: 'rootmodel:add',
         path: req.path,
         viewType: req.viewType,
       });
@@ -54,6 +73,34 @@ export default class CADManager extends THREE.EventDispatcher {
     this._loader.runLoadQueue();
   }
 
+  addShape(shape,sequence){
+    this.dispatchEvent({
+      type: 'model:add',
+      model: shape,
+      'sequence': sequence,
+      viewType: 'cadjs'
+    });
+  }
+  removeShape(shape,sequence){
+    this.dispatchEvent({
+      type:'model:remove',
+      model:shape,
+      'sequence': sequence,
+      viewType: 'cadjs'
+    })
+  }
+  flushModelQueue(sequence){
+    this.dispatchEvent({
+      type:'model:flush',
+      'sequence': sequence,
+      viewType:'cadjs'
+    });
+  }
+  clearScene(){
+    this.dispatchEvent({
+      type:'clearScene'
+    })
+  }
   centerModels() { }
 
   bindFunctions() {
@@ -61,10 +108,14 @@ export default class CADManager extends THREE.EventDispatcher {
     this.bindLoaderEvents = this.bindLoaderEvents.bind(this);
     this.bindModelEvents = this.bindModelEvents.bind(this);
     this.onVis = this.onVis.bind(this);
+    this.loadKey = this.loadKey.bind(this);
+    this.loadDynamic = this.loadDynamic.bind(this);
   }
 
   bindEvents() {
     this.addEventListener('setModel', this.load);
+    this.addEventListener('loadKey', this.loadKey);
+    this.addEventListener('loadDynamic', this.loadDynamic);
     // Rebroadcast data loader events
     this.bindLoaderEvents();
     // Listen for someone asking for stuff
@@ -179,21 +230,24 @@ export default class CADManager extends THREE.EventDispatcher {
       undefined
     );
   }
-
-  onDelta(delta) {
+  onDelta(delta,forceDynamicReload) {
     _.each(this._models, (model) => {
       if (model.project === delta.project) {
-        model.applyDelta(delta).then((alter)=>{
-          if (alter) {
-            model.calcBoundingBox();
-            // Only redraw if there were changes
-            this.dispatchEvent({
-              type: 'invalidate',
-              'boundingBox': true,
-              'model': model
-            });
-          }
-        });
+        if (this.deltadone) {
+          this.deltadone = false;
+          model.applyDelta(delta, false, forceDynamicReload).then((alter) => {
+            if (alter.update) {
+              this.flushModelQueue(alter.sequence);
+              // Only redraw if there were changes
+              this.dispatchEvent({
+                type: 'invalidate',
+                'boundingBox': true,
+                'model': model
+              });
+            }
+            this.deltadone = true;
+          });
+      }
       }
     });
   }
@@ -208,5 +262,16 @@ export default class CADManager extends THREE.EventDispatcher {
         'model': model
       });
     });
+  }
+
+  loadKey(){
+    request.get('/v3/nc/state/key')
+      .then((d) =>{
+        this.onDelta(JSON.parse(d.text),true);
+      });
+  }
+  loadDynamic(){
+    let dynGeom = _.find(this._models["state/key"]._objects,{usage:'inprocess'});
+    this._models["state/key"].handleDynamicGeom(dynGeom,true);
   }
 }

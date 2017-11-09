@@ -1,3 +1,20 @@
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 'use strict';
 var file = require('./file');
 var find = file.find;
@@ -185,7 +202,10 @@ var spindleUpdate=function(speed){
 //Handle Mp1LPathPos
 var pathUpdate=function(position){
   return new Promise((resolve)=>{
-    if(position===undefined) resolve();
+    if(position===undefined) {
+      resolve();
+      return;
+    }
     let incoords = position.split(' ');
     let coords = {};
     coords.x = Number(incoords[0]);
@@ -195,7 +215,7 @@ var pathUpdate=function(position){
         .then((r)=> {
           if(r.more === true) {
             resolve();
-            return;
+            throw 'more';
           }
           return file.ms.GetDeltaStateJSON();
         }).then((d)=> {
@@ -204,8 +224,12 @@ var pathUpdate=function(position){
         }).then(()=> {
           app.ioServer.emit('nc:delta', deltaCache);
           resolve();
+          return;
+        }).catch(()=>{
+          return;
         });
   });
+  return;
 };
 //Handle Mp1Fact
 var feedUpdate=function(feedrate){
