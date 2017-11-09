@@ -21,70 +21,60 @@ simulation.
 
 ## Getting Started
 
-  1. Download NC.js:
+1. Download NC.js:
 
-  ```
-  > git clone https://github.com/steptools/NC.js.git
-  > cd NC.js
-  ```
+```
+> git clone https://github.com/steptools/NC.js.git
+> cd NC.js
+```
 
-  ------------------------------------------------------------------------------
-  2. Setting up which model to use
-  
-  Sample AP238 files are available at http://www.ap238.org/  
-  In config.js put the path of the STEP-NC file you want to use in the file object
-  under the dir key
- 
-  ```
-  "file" : {"dir": "path_to_.stpnc_file"} 
-  ```
-  ------------------------------------------------------------------------------
-  3. Install node packages
+------------------------------------------------------------------------------
+2. Install node packages
 
-  ```
-  > npm install
-  ```
+```
+> npm install
+```
 
-  ------------------------------------------------------------------------------
-  4. Install Glyphicons (Semi-Optional)
-  
-  The package contains a placeholder `scss` under the client fonts directory.   If you have access to Glyphicons, you can copy the supporting files into this directory.   If you skip this step, the application will be missing some icons/buttons.
+------------------------------------------------------------------------------
+3. Specify the Digital Thread Model
 
-  ```
-  > cd src/client
-  > cp ~Downloads/fonts ./fonts
-  > ls ./fonts
-  glyphicons.scss         glyphicons-regular.svg  glyphicons-regular.woff
-  glyphicons-regular.eot  glyphicons-regular.ttf  glyphicons-regular.woff2
-  ```
 
- ------------------------------------------------------------------------------
-  5. Build and start a server
-  
-  In the root NC.js directory, build and start the sever as follows:
+The config.js file contains the name of the STEP-NC file to use.  You can find sample files at http://www.ap238.org/  
 
-  ```
-  > npm run make
-  
-  > npm run make-release      # same, but minimizes file sizes
-  ```
- 
-  If the server has already been built, you can start it as follows.  This will be faster than making everytime. 
+Update the "file" object and "dir" key with the file that the server should display.
 
-  ```
-  > npm start
-  ```
+```
+"file" : {"dir": "path_to_file.stpnc"} 
+```
 
-  The `config.js` file contains the path to the STEP model.   You can override the value and specify a STEP model on the command line as follows. 
-  
-   ```
-  > npm start -- -f "path_to_.stpnc_file"
-  ```
-  ------------------------------------------------------------------------------
-  7. Open Client
-  
-  With the server running, point a web browser to
-  
-  ```
-  http://localhost:8080/
-  ```
+------------------------------------------------------------------------------
+4. Build and start a server
+
+In the root NC.js directory, build and start the sever as follows:
+
+```
+> npm run make
+
+> npm run make-release      # same, but minimizes file sizes
+```
+
+If the server has already been built, you can start it as follows.
+This will be faster than making everytime.
+
+```
+> npm start
+```
+
+The `config.js` file contains the path to the STEP model.   You can override the value and specify a STEP model on the command line as follows. 
+
+ ```
+> npm start -- -f "path_to_file.stpnc"
+```
+------------------------------------------------------------------------------
+5. Open Client
+
+With the server running, point a web browser to
+
+```
+http://localhost:8080/
+ ```

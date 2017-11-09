@@ -1,4 +1,4 @@
-'use strict';
+ 'use strict';
 var path = require("path"),
     webpack = require("webpack"),
     ExtractTextPlugin = require("extract-text-webpack-plugin");
@@ -45,15 +45,18 @@ module.exports = (env) => {
                         }
                     ]
                 },
-                // required for glyphicons
-                {
-                    test: /\.(eot|svg|ttf|woff|woff2)$/,
-                    use: [
-                        {
-                            loader: 'file-loader?name=public/fonts/[name].[ext]'
-                        }
-                    ]
-                },
+
+		// Font packaging - Font Awesome and custom icons into
+		// public/fonts. Bootstrap still pulls in the free
+		// glyphicons halflings, but that should be omitted if
+		// we can find the right knob.
+		{
+		    test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+		    use: [{
+			// query syntax new, options block may be deprecated
+			loader: 'file-loader?name=public/fonts/[name].[ext]'
+		    }]
+		},
                 // required for react jsx
                 {
                     test: /\.jsx?$/,

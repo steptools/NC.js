@@ -65,6 +65,6 @@ $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabBarHeight});
 .model-tree {
     z-index: 2;
 }
-// NOTE: "glyphicon" refers to the font "Glyphicons Halflings"
-//       "glyphicons" refers to the font "Glyphicons Regular"
-@import '../fonts/glyphicons';
+
+$fa-font-path: "~font-awesome/fonts";
+@import '~font-awesome/scss/font-awesome.scss';

@@ -1,3 +1,20 @@
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 import Menu,{Item as MenuItem} from 'rc-menu';
 import GeometryView from '../../geometry';
 
@@ -8,13 +25,13 @@ function getIcon(type, data) {
 
   switch (type) {
     case 'workplan':
-      return 'icon glyphicons glyphicons-cube-empty';
+      return 'icon fa fa-cube';
     case 'workplan-setup':
-      return 'icon glyphicons glyphicons-cube-black';
+      return 'icon fa fa-cube fa-border';
     case 'selective':
-      return 'icon glyphicons glyphicons-list-numbered';
+      return 'icon fa fa-list-ol';
     case 'workingstep':
-      return 'icon glyphicons glyphicons-blacksmith';
+      return 'icon fa fa-bolt';
     case 'tool':
       return 'icon custom tool';
     case 'workpiece':
@@ -27,48 +44,57 @@ function getIcon(type, data) {
       if (data) {
         return 'icon custom tolerance ' + data;
       }
-      return 'icon glyphicons glyphicons-question-sign';
+      return 'icon fa fa-question-circle';
     case 'tolerance type':
-      return 'icon glyphicons glyphicons-adjust';
+      return 'icon fa fa-adjust';
     case 'tolerance value':
-      return 'icon glyphicons glyphicons-adjust-alt';
+      return 'icon fa fa-sliders';
     case 'tolerance upper':
-      return 'icon glyphicons glyphicons-plus';
+      return 'icon fa fa-plus';
     case 'tolerance lower':
-      return 'icon glyphicons glyphicons-minus';
+      return 'icon fa fa-minus';
     case 'back':
-      return 'icon glyphicons glyphicons-circle-arrow-left';
+      return 'icon fa fa-arrow-circle-left';
     case 'exit':
-      return 'icon glyphicons glyphicons-remove-sign';
+      return 'icon fa fa-times-circle';
     case 'active':
-      return 'icon glyphicons glyphicons-ok-circle';
+      return 'icon fa fa-check-circle-o';
     case 'inactive':
-      return 'icon glyphicons glyphicons-remove-circle';
+      return 'icon fa fa-times-circle-o';
     case 'disabled':
-      return 'icon glyphicons glyphicons-ban-circle';
+      return 'icon fa fa-ban';
     case 'time':
-      return 'icon glyphicons glyphicons-clock';
+      return 'icon fa fa-clock-o';
     case 'length':
     case 'distance':
-      return 'icon glyphicons glyphicons-ruler';
+      return 'icon fa fa-arrows-h';
     case 'feedrate':
-      return 'icon glyphicons glyphicons-dashboard';
+      return 'icon fa fa-tachometer';
     case 'cornerRadius':
       return 'icon custom corner-radius';
     case 'modifiers':
-      return 'icon glyphicons glyphicons-wrench';
+      return 'icon fa fa-wrench';
     case 'spindlespeed':
       if (data === 'CW') {
-        return 'icon glyphicons glyphicons-rotate-right';
+        return 'icon fa fa-rotate-right';
       } else if (data === 'CCW') {
-        return 'icon glyphicons glyphicons-rotate-left';
+        return 'icon fa fa-rotate-left';
       } else {
-        return 'icon glyphicons glyphicons-refresh';
+	  //return 'icon fa fa-refresh';
+        return 'icon fa fa-stop-circle-o';
       }
-    case 'highlight':
-      return 'highlight-button glyphicons glyphicons-eye-' + data;
+  case 'highlight':
+      switch (data) {
+      case 'close':  // old values matched glyphicon symbols
+      case 'off':
+	  return 'highlight-button fa fa-eye-slash';
+      case 'open':
+      case 'on':
+      default:
+	  return 'highlight-button fa fa-eye';
+      }
     default:
-      return 'icon glyphicons glyphicons-question-sign';
+      return 'icon fa fa-question-sign';
   }
 }
 
@@ -292,7 +318,7 @@ export default class PropertiesPane extends React.Component {
         className='button'
       >
         Preview
-        <span className={'icon glyphicons glyphicons-new-window-alt'}/>
+        <span className={'icon fa fa-external-link-square'}/>
       </MenuItem>
     );
   }
@@ -410,7 +436,7 @@ export default class PropertiesPane extends React.Component {
       highlightButton = (
         <span
           key='preview'
-          className='icon preview glyphicons glyphicons-new-window-alt'
+          className='icon preview fa fa-external-link-square'
           onClick={(ev) => {
             ev.preventDefault();
             ev.stopPropagation();
