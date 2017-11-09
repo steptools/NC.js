@@ -498,6 +498,7 @@ $icons: '../icons/';
         cursor: pointer;
         font-size: 10px;
         background-color: transparent;
+        position: relative;
         
         &:before {
             position: absolute;
