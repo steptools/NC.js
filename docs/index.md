@@ -7,7 +7,7 @@ well as removal simulation, PMI annotations, MTConnect positional
 data, QIF face status, and other aspects of a Digital Twin on the
 Digital Thread.
 
- - [REST API Description](API.md)
+ - [REST API Description](api/index.md)
  - [Contents of serialized STEP data](formats.md)
  - [Internal software layout](GettingStarted.md)
 

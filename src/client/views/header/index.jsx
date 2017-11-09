@@ -1,3 +1,20 @@
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 var md = require('node-markdown').Markdown;
 import Menu, {SubMenu, Item as MenuItem} from 'rc-menu';
 let changetext='';
@@ -9,45 +26,46 @@ function getIcon(type, data) {
 
   switch (type) {
     case 'backward':
-      return 'icon glyphicon glyphicon-step-backward';
+      return 'icon fa fa-step-backward';
     case 'forward':
-      return 'icon glyphicon glyphicon-step-forward';
+      return 'icon fa fa-step-forward';
     case 'play':
-      return 'icon glyphicon glyphicon-play';
+      return 'icon fa fa-play';
     case 'pause':
-      return 'icon glyphicon glyphicon-pause';
+      return 'icon fa fa-pause';
     case 'speed':
       if (data === 'left') {
-        return 'icon left glyphicons glyphicons-turtle';
+        return 'icon left fa fa-bicycle';
       } else if (data === 'right') {
-        return 'icon right glyphicons glyphicons-rabbit';
+        return 'icon right fa fa-rocket';
       }
     case 'feedrate':
-      return 'icon glyphicons glyphicons-dashboard';
+      return 'icon fa fa-tachometer';
     case 'spindlespeed':
       if (data === 'CW') {
-        return 'icon glyphicons glyphicons-rotate-right';
+        return 'icon fa fa-rotate-right';
       } else if (data === 'CCW') {
-        return 'icon glyphicons glyphicons-rotate-left';
+        return 'icon fa fa-rotate-left';
       } else {
-        return 'icon glyphicons glyphicons-refresh';
+	  //return 'icon fa fa-refresh';
+        return 'icon fa fa-stop-circle-o';
       }
     case 'changelog':
-      return 'icon glyphicon glyphicon-book';
+      return 'icon fa fa-book';
     case 'live':
-      return 'icon glyphicons glyphicons-record';
+      return 'icon fa fa-dot-circle-o';
     case 'geometry':
-      return 'icon glyphicons glyphicons-cube-empty';
+      return 'icon fa fa-cube';
     case 'download':
-      return 'icon glyphicons glyphicons-cloud-download';
+      return 'icon fa fa-cloud-download';
     case 'reset':
-      return 'icon glyphicons glyphicons-recycle';
+      return 'icon fa fa-recycle';
     case 'view':
-      return 'icon glyphicons glyphicons-eye-open';
+      return 'icon fa fa-eye';
     case 'noview':
-      return 'icon glyphicons glyphicons-eye-close';
+      return 'icon fa fa-eye-slash';
     default:
-      return 'icon glyphicons glyphicons-question-sign';
+      return 'icon fa fa-question-circle';
   }
 }
 

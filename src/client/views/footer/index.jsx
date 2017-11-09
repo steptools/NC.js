@@ -1,3 +1,20 @@
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 import MobileSidebar from '../mobilesidebar';
 
 let actionOffset = 0;
@@ -11,7 +28,7 @@ class ButtonImage extends React.Component {
   }
 
   render() {
-    let classes = 'button-icon glyphicons glyphicons-' + this.props.icon;
+    let classes = 'button-icon fa fa-' + this.props.icon;
     if (this.props.onBtnClick) {
       return (<div className={classes} onClick={this.props.onBtnClick}/>);
     }
@@ -250,9 +267,9 @@ export default class FooterView extends React.Component {
     let ppbtntxt = this.props.ppbutton;
     let drawerbutton;
     if (this.props.msGuiMode) { //drawer open
-      drawerbutton = 'glyphicons glyphicons-chevron-down';
+      drawerbutton = 'fa fa-chevron-down';
     } else { //drawer closed
-      drawerbutton = 'glyphicons glyphicons-chevron-up';
+      drawerbutton = 'fa fa-chevron-up';
     }
 
     return (

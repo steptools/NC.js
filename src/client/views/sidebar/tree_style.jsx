@@ -1,14 +1,31 @@
+/* 
+ * Copyright (c) 2016-2017 by STEP Tools Inc. 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 'use-strict';
 
 function getNodeIcon(node) {
   if (node.type === 'workplan') {
-    return <span className='icon glyphicons glyphicons-cube-empty'/>;
+    return <span className='icon fa fa-cube'/>;
   } else if (node.type === 'selective') {
-    return <span className='icon glyphicons glyphicons-list-numbered'/>;
+    return <span className='icon fa fa-list-ol'/>;
   } else if (node.type === 'workplan-setup') {
-    return <span className='icon glyphicons glyphicons-cube-black'/>;
+    return <span className='icon fa fa-cube fa-border'/>;
   } else if (node.type === 'workingstep') {
-    return <span className='icon glyphicons glyphicons-blacksmith'/>;
+    return <span className='icon fa fa-bolt'/>;
   } else if (node.type === 'tolerance') {
     return <span className={'icon custom tolerance ' + node.toleranceType} />;
   } else if (node.type === 'workpiece') {
@@ -18,7 +35,7 @@ function getNodeIcon(node) {
   } else if (node.type === 'divider') {
     return null;
   } else {
-    return <span className='icon glyphicons glyphicons-question-sign'/>;
+    return <span className='icon fa fa-question-circle'/>;
   }
 }
 
@@ -51,13 +68,12 @@ function hasActiveChildren(node, id) {
 function setDatumInfo(node, props) {
 
   if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
-    node.highlightName = 'open';
+      node.highlightName = 'open';
+      node.highlightIcon = 'highlight-button fa fa-eye';
   } else {
-    node.highlightName = 'close inactive';
+      node.highlightName = 'close inactive';
+      node.highlightIcon = 'highlight-button fa fa-eye-slash inactive';
   }
-
-  node.highlightIcon = 'highlight-button glyphicons glyphicons-eye-';
-  node.highlightIcon += node.highlightName;
 
   let clickEvent = (ev) => {
     ev.stopPropagation();
@@ -94,14 +110,12 @@ function setToleranceInfo(node, props) {
   node.name += ' - ' + node.value + node.unit + ' ' + node.rangeName;
 
   if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
-    node.highlightName = 'open';
+      node.highlightName = 'open';
+      node.highlightIcon = 'highlight-button fa fa-eye';
   } else {
-    node.highlightName = 'close inactive';
+      node.highlightName = 'close inactive';
+      node.highlightIcon = 'highlight-button fa fa-eye-slash inactive';
   }
-
-  node.highlightIcon = 'highlight-button glyphicons glyphicons-eye-';
-  node.highlightIcon += node.highlightName;
-
   let clickEvent = (ev) => {
     ev.stopPropagation();
     ev.preventDefault();
@@ -136,9 +150,9 @@ function setToggle(node) {
   if (node.leaf === true) {
     node.toggleName = 'toggle-hidden';
   } else if (node.toggled === true) {
-    node.toggleName += ' glyphicon glyphicon-chevron-down';
+    node.toggleName += ' fa fa-chevron-down';
   } else {
-    node.toggleName += ' glyphicon glyphicon-chevron-right';
+    node.toggleName += ' fa fa-chevron-right';
   }
 }
 
@@ -147,7 +161,7 @@ function setWorkingstepInfo(node, props) {
   node.highlightButton = (
     <span
       key='preview'
-      className='icon preview glyphicons glyphicons-new-window-alt'
+      className='icon preview fa fa-external-link-square'
       onClick={(ev) => {
         ev.preventDefault();
         ev.stopPropagation();
