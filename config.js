@@ -28,7 +28,7 @@ module.exports = function(environment) {
             "upload": true
           },
           "file" : {
-            "dir": "./boxy.stpnc"
+            "dir" : "C:/Program Files (x86)/STEP Tools/STEP-NC Machine/examples/hardmoldy_imts_signed.stpnc"
           },
           "machine" : {
             "dir" : "C:/Program Files (x86)/STEP Tools/STEP-NC Machine/machines/okuma_M560-V.xml"
