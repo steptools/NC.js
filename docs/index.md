@@ -13,6 +13,8 @@ Digital Thread.
 
 ## Package Structure
 
+![NC.js Structure](images/ncjs_structure.png "NC.js Structure")
+
 The NC.js package is implemented in Javascript under the Apache
 license, so the client and REST API may be customized as desired.  As
 the diagram below shows, the server implements the REST API using the
@@ -25,4 +27,3 @@ analysis, geometry manipulation, and material removal simulation.
  - [STEPNode Github Package](https://github.com/steptools/STEPNode)
  - [STEP Tools Software Stack](https://www.steptools.com/support/)
 
-![NC.js Structure](images/ncjs_structure.png "NC.js Structure")
