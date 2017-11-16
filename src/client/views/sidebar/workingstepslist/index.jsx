@@ -15,12 +15,91 @@
  * 
  */
 
+ class WorkingstepIcon extends React.Component {
+   constructor(props){
+     super(props);
+    }
+   render() {
+     let styles = {};
+     if (this.props.color) {
+       styles = {
+         borderStyle: 'solid',
+         borderWidth: '.25em',
+         borderColor: this.props.color
+       };
+     }
+     return (
+       <div className='icon custom letter' style={styles}>{this.props.number}</div>
+     );
+    }
+ }
+ WorkingstepIcon.propTypes = {
+   number:React.PropTypes.number.isRequired,
+   color:React.PropTypes.string
+ }
+
+ class Workingstep extends React.Component {
+   constructor(props){
+     super(props);
+     this.setWS = this.setWS.bind(this);
+   }
+  
+  setWS(id) {
+    let url = '/v3/nc/state/ws/' + id;
+    request.get('/v3/nc/state/loop/stop')
+      .then((res, err) => {
+        if (err);
+        return request.get(url);
+      }).then((res, err) => {
+        if (err);
+        return request.get('/v3/nc/geometry/delta/reset');
+      });
+  }
+
+   render(){
+    let wstep = this.props.workingstep;
+    let color = "#" + (new THREE.Color(wstep.color)).getHexString();
+    let cName = 'node';
+    let spanCName = 'textbox';
+    if(this.props.isCurWS) {
+      cName += ' running-node';
+    }
+    if (wstep.id ===undefined) {
+      cName += ' setup';
+      spanCName = 'setup-textbox'
+    }
+    return (
+      <div className='m-node'>
+        <div
+          id={wstep.id}
+          className={cName}
+          onClick={() => {
+            if (!cName.includes('setup')) {
+              this.setWS(wstep.id);
+            }
+          }}
+          onMouseDown={function (e) {
+            e.stopPropagation();
+            return false;
+          }}
+          style={{ 'paddingLeft': '5px' }}
+          key={wstep.id}
+        >
+          <WorkingstepIcon number={wstep.number} color={color}/>
+          <span className={spanCName}>{wstep.name}</span>
+        </div>
+      </div>
+    )
+  }
+ }
+ Workingstep.propTypes = {
+   workingstep: React.PropTypes.object.isRequired,
+   isCurWS: React.PropTypes.bool
+ }
+
 export default class WorkingstepList extends React.Component {
   constructor(props) {
     super(props);
-
-    this.renderNode = this.renderNode.bind(this);
-    this.setWS = this.setWS.bind(this);
   }
 
   componentWillUnmount() {
@@ -30,74 +109,24 @@ export default class WorkingstepList extends React.Component {
     }
   }
 
-  setWS(node) {
-    let url = '/v3/nc/state/ws/' + node['id'];
-    request.get('/v3/nc/state/loop/stop')
-      .then((res, err) => {
-        if (err);
-        return request.get(url);
-      }).then((res, err) => {
-        if (err);
-        return request.get('/v3/nc/geometry/delta/reset');
-      }).then((res, err) => { 
-//        this.props.app.cadManager.dispatchEvent({type:'loadDynamic'});
-      });
-  }
-
-  getNodeIcon(node) {
-    if (!isNaN(node.number)) {
-      return <div className='icon custom letter'>{node.number}</div>;
-    }
-  }
-
-  renderNode(nodeId) {
-    let node = this.props.workingstepCache[nodeId];
-    node.icon = this.getNodeIcon(node);
-    let cName = 'node';
-    if (node.id === this.props.ws) {
-      cName += ' running-node';
-    }
-    if (node.id === undefined) {
-      cName += ' setup';
-    }
-
-    return (
-      <div
-        id={node.id}
-        className={cName}
-        onClick={() => {
-          if (!cName.includes('setup')) {
-            this.setWS(node);
-          }
-        }}
-        onMouseDown={function(e) {
-          e.stopPropagation();
-          return false;
-        }}
-        style={{'paddingLeft': '5px'}}
-        key={node.id}
-      >
-        {node.icon}
-        {node.id === undefined
-          ? <span className="setup-textbox">{node.name}</span>
-          : <span className="textbox">{node.name}</span>}
-      </div>
-    );
-  }
-
   render() {
     let treeHeight;
     if (this.props.isMobile) {
       treeHeight = {'height': '100%'};
     }
-
     return (
       <div className='m-tree' style={treeHeight}>
         {this.props.workingstepList.map((workingstep, i) => {
+          
+          let wstep = this.props.workingstepCache[workingstep];
+          let color = "#"+(new THREE.Color(wstep.color)).getHexString();
+          let styles = {'backgroundColor':color};
           return (
-            <div className='m-node' key={i}>
-              {this.renderNode(workingstep)}
-            </div>
+            <Workingstep
+              key={i}
+              workingstep={wstep}
+              isCurWS={wstep.id === this.props.ws}
+            />
           );
         })}
       </div>
