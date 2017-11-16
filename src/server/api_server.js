@@ -1,3 +1,4 @@
+#!/usr/bin/node
 /* 
  * Copyright (c) 2016-2017 by STEP Tools Inc. 
  * Copyright G. Hemingway 2015
