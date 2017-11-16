@@ -1,15 +1,12 @@
 # NC.js Documentation
 
-NC.js is the Web interface for the Digital Thread.  This implements a
-rich REST API for process and models as well as a matching client that
-displays the 3D part models for machining workpiece, tools, CNC, as
-well as removal simulation, PMI annotations, MTConnect positional
-data, QIF face status, and other aspects of a Digital Twin on the
-Digital Thread.
+NC.js is the Web interface for the Digital Thread.  It provides a rich
+REST API for process and models plus a client that displays the 3D
+part models for machining workpiece, tools, CNC, as well as removal
+simulation, PMI annotations, MTConnect positional data, QIF face
+status, and other aspects of a Digital Twin on the Digital Thread.
 
- - [REST API Description](api/index.md)
- - [Contents of serialized STEP data](formats.md)
- - [Internal software layout](GettingStarted.md)
+![NC.js Structure](images/ncjs_structure.png "NC.js Structure")
 
 ## Package Structure
 
@@ -25,4 +22,9 @@ analysis, geometry manipulation, and material removal simulation.
  - [STEPNode Github Package](https://github.com/steptools/STEPNode)
  - [STEP Tools Software Stack](https://www.steptools.com/support/)
 
-![NC.js Structure](images/ncjs_structure.png "NC.js Structure")
+## API and Formats
+
+ - [REST API Description](api/index.md)
+ - [Contents of serialized STEP data](formats.md)
+ - [Internal software layout](GettingStarted.md)
+
