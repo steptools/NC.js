@@ -54,7 +54,9 @@ $icons: '../icons/';
     }
 
     .running-node {
-        background-color: #9BFA9B;
+        border-color: #333333;
+        border-width: 2px;
+        border-style: dashed;
     }
 
     .highlight-button,.icon.preview {
