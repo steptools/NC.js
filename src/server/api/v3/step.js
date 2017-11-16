@@ -70,43 +70,57 @@ function exeFromId(id) {
     }
   }
 
+  let childPromises = [];
   if (!find.IsWorkingstep(id) && !find.IsNcFunction()) {
     let children = find.GetNestedExecutableAll(id);
     if (children !== undefined) {
-      ws.children = children.map(exeFromId);
+      ws.children = [];
+      for(let i=0;i<children.length;i++){
+        childPromises.push(
+          exeFromId(children[i]).then((r)=>{
+            ws.children[i]=r;
+          })
+        );
+      }
     }
   }
+  return Promise.all(childPromises)
+    .then(() => {
+      if (find.IsEnabled(id)) {
+        ws.enabled = true;
+      } else {
+        ws.enabled = false;
+        propagateDisabled(ws);
+      }
 
-  if (find.IsEnabled(id)) {
-    ws.enabled = true;
-  } else {
-    ws.enabled = false;
-    propagateDisabled(ws);
-  }
+      if (find.IsWorkingstep(id)) {
+        ws.type = 'workingstep';
+        ws.tool = find.GetWorkingstepTool(id);
+        ws.feedRate = find.GetProcessFeed(id);
+        ws.feedUnits = find.GetProcessFeedUnit(id);
+        ws.speed = find.GetProcessSpeed(id);
+        ws.speedUnits = find.GetProcessSpeedUnit(id);
+        let tolerances = file.tol.GetWorkingstepToleranceAll(id);
+        if (tolerances.length > 0) {
+          ws.tolerances = tolerances;
+        }
+        return file.ms.GetWSColor(id)
+          .then((c) => {
+            ws.color = c;
+            return ws;
+          });
+      } else if (find.IsSelective(id)) {
+        ws.type = 'selective';
+      } else if (find.IsWorkplanWithSetup(id)) {
+        ws.type = 'workplan-setup';
+      } else if (find.IsWorkplan(id)) {
+        ws.type = 'workplan';
+      } else if (find.IsNcFunction(id)) {
+        ws.type = 'Nc Function';
+      }
 
-  if (find.IsWorkingstep(id)) {
-    ws.type = 'workingstep';
-    ws.tool = find.GetWorkingstepTool(id);
-    ws.feedRate = find.GetProcessFeed(id);
-    ws.feedUnits = find.GetProcessFeedUnit(id);
-    ws.speed = find.GetProcessSpeed(id);
-    ws.speedUnits = find.GetProcessSpeedUnit(id);
-    let tolerances = file.tol.GetWorkingstepToleranceAll(id);
-    if(tolerances.length > 0){
-      ws.tolerances = tolerances;
-    }
-    return ws;
-  } else if (find.IsSelective(id)) {
-    ws.type = 'selective';
-  } else if (find.IsWorkplanWithSetup(id)) {
-    ws.type = 'workplan-setup';
-  } else if (find.IsWorkplan(id)) {
-    ws.type = 'workplan';
-  } else if(find.IsNcFunction(id)) {
-    ws.type = 'Nc Function';
-  }
-
-  return ws;
+      return Promise.resolve(ws);
+});
 }
 
 function propagateDisabled(ws) {
@@ -135,7 +149,9 @@ function _getExeFromId(req, res) {
     let newId = parseInt(wsId);
     let exe = exeFromId(newId);
     if (exe !== undefined) {
-      res.status(200).send(exe);
+      exe.then((r)=>{
+      res.status(200).send(r);
+      });
     } else {
       res.status(404).send('Executable not found');
     }
@@ -146,7 +162,9 @@ function _getExeFromId(req, res) {
 
 function _getMwp(req, res) {
   let mwpId = find.GetMainWorkplan();
-  res.status(200).send(exeFromId(mwpId));
+  exeFromId(mwpId).then((r)=>{
+    res.status(200).send(r);
+  });
 }
 
 function _getSetup(req, res) {
