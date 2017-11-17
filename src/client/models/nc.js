@@ -379,6 +379,7 @@ export default class NC extends THREE.EventDispatcher {
           cb(cbdata);
         });
       } else {
+        existingobj.repositionInScene(geom.bbox,geom.xform);
         cb(cbdata);
       }
     }

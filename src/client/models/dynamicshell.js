@@ -60,6 +60,18 @@ export default class DynamicShell extends THREE.EventDispatcher {
     hide(){
         this._mesh.visible = false;
     }
+    repositionInScene(bbox,xform){
+        this._mesh.matrix.set(
+            xform[0],xform[4],xform[8],xform[12],
+            xform[1],xform[5],xform[9],xform[13],
+            xform[2],xform[6],xform[10],xform[14],
+            xform[3],xform[7],xform[11],xform[15],
+        )
+        let transform = new THREE.Matrix4();
+        transform.copy(this._mesh.matrix);
+        this._bbox = bbox;
+        this._transform = transform;
+    }
     addToScene(bbox,xform,sequence){
 
         this._mesh.matrix.set(
