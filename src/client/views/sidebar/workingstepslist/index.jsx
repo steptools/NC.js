@@ -28,6 +28,7 @@
          borderColor: this.props.color
        };
      }
+     if(this.props.number===undefined) return null;
      return (
        <div className='icon custom letter' style={styles}>{this.props.number}</div>
      );
