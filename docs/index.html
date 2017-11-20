@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>NC.js REST API Documentation</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<H1>NC.js Documentation</H1>
+
+<p>NC.js is the Web interface for the Digital Thread. It provides a
+rich REST API for process and models plus a client that displays the
+3D part models for machining workpiece, tools, CNC, as well as removal
+simulation, PMI annotations, MTConnect positional data, QIF face
+status, and other aspects of a Digital Twin on the Digital Thread.</p>
+
+<figure>
+<img src="images/ncjs_structure.png" alt="NC.js Structure" />
+<figcaption></figcaption>
+</figure>
+
+<H2 id="structure">Package Structure</H2>
+
+<p>The NC.js package is implemented in Javascript under the Apache
+license, so the client and REST API may be customized as desired. As
+the diagram below shows, the server implements the REST API using the
+STEPNode module for Node.js. This module wraps the STEP Tools
+commercial technology stack, which is a set of native libraries for
+Windows/Linux/Mac that reads and writes STEP and STEP-NC models, does
+analysis, geometry manipulation, and material removal simulation.</p>
+
+<ul>
+<li><a href="https://github.com/steptools/NC.js">NC.js Github Package</a></li>
+<li><a href="https://github.com/steptools/STEPNode">STEPNode Github Package</a></li>
+<li><a href="https://www.steptools.com/support/">STEP Tools Software Stack</a></li>
+</ul>
+
+<H2>API and Formats</H2>
+<ul>
+<li><a href="api/index.html">REST API Description</a></li>
+<li><a href="formats.html">Contents of serialized STEP data</a></li>
+<li><a href="GettingStarted.html">Internal software layout</a></li>
+</ul>
+
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>

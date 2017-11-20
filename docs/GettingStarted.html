@@ -1,0 +1,114 @@
+<h2 id="client-side"># <strong>Client Side</strong></h2>
+<h4 id="view-react-components"><strong><em>View</em> React Components</strong></h4>
+<h5 id="view-hierarchy"><strong><em>View</em> Hierarchy</strong></h5>
+<ul>
+<li>Responsive
+<ul>
+<li>HeaderView</li>
+<li>SidebarView
+<ul>
+<li>WorkingstepList View</li>
+<li>WorkplanList View</li>
+<li>ToolList View</li>
+<li>ToleranceList View</li>
+</ul></li>
+<li>Footer View (only in mobile mode)</li>
+<li>CAD View
+<ul>
+<li>Compass View</li>
+<li>Loadqueue View ##### <strong><em>View</em> Layout and Descriptions</strong> <strong>Header View</strong> corresponds to the top pane on the UI that houses the play, previous, next, etc.<br />
+<strong>Footer View</strong> corresponds to the bottom pane on the UI (only in mobile mode) that houses the play, previous, and next buttons.<br />
+<strong>Sidebar View</strong> corresponds to the pane on the left of the screen that houses the five views:</li>
+</ul></li>
+</ul></li>
+</ul>
+<ol type="1">
+<li><strong>Workingsteplist View</strong>
+<ul>
+<li>This view will render when the svmode of <strong>Responsive View</strong> is set to ‘ws’ and uses renderNode to populate the pane with elements from workingstepCache which are keyed off of iDs that reside in the workingstepList in <strong>Responsive View</strong></li>
+</ul></li>
+<li><strong>WorkplanList View</strong>
+<ul>
+<li>This view will render when the svmode of <strong>Responsive View</strong> is set to ‘tree’ and uses renderNode to populate the pane with elements from workplanCache in <strong>Responsive View</strong> and uses TreeBeard React Component which can be found <a href="https://github.com/alexcurtis/react-treebeard">here</a></li>
+</ul></li>
+<li><strong>ToolList View</strong>
+<ul>
+<li>This view will render when the svmode of <strong>Responsive View</strong> is set to ‘tools’ and uses renderNode to populate the pane with elements from toolList in <strong>Responsive View</strong></li>
+</ul></li>
+<li><strong>ToleranceList View</strong>
+<ul>
+<li>This view will render when the svmode of <strong>Responsive View</strong> is set to ‘tolerance’ and uses renderNode to populate the pane with elements from toleranceCache in <strong>Responsive View</strong> and uses TreeBeard React Component which can be found <a href="https://github.com/alexcurtis/react-treebeard">here</a></li>
+</ul></li>
+<li><strong>PropertiesPane View</strong>
+<ul>
+<li>This view will always render off the left side of the viewing window and will be pulled from the left side when the openProperties callback function is used</li>
+</ul></li>
+</ol>
+<p>as well as the information that is displayed below each of these tabs according to the model currently loaded. The sidebar handles which view is being shown by changing the svmode within the responsive view state.<br />
+<strong>CAD View</strong> corresponds to the scene pane in the middle that houses all of the geometry that is rendered as well as the <strong>Compass View</strong> in the top right corner that allows for orientation of the model to be tracked and <strong>LoadQueue View</strong> in the bottom right corner to track whether or not a piece of geometry has finished loading initially.<br />
+<strong>Responsive View</strong> is the top level view that houses all other views and will render certain ones based on the guimode variable (zero = desktop, one = mobile)</p>
+<h4 id="model-react-components"><strong><em>Model</em> React Components</strong></h4>
+<h5 id="model-hierarchy"><strong><em>Model</em> Hierarchy</strong></h5>
+<ul>
+<li>CADManager</li>
+<li>DataLoader</li>
+<li>WebWorker</li>
+<li>NC
+<ul>
+<li>Annotation</li>
+<li>Shell</li>
+</ul></li>
+<li>Assembly
+<ul>
+<li>Shape</li>
+<li>Product</li>
+</ul></li>
+</ul>
+<h5 id="model-descriptions"><strong><em>Model</em> Descriptions</strong></h5>
+<p><em>Annotation</em> - Used to process incoming annotation data into Three.js geometry so that it can be rendered by the <strong>CAD View</strong>.<br />
+An Annotation is rendered when postMessage is called from the background webworker and this message must contain the annotationLoad message which is caught by the DataLoader for processing.</p>
+<p><em>Assembly</em> - Used to process incoming annotation data into Three.js geometry so that it can be rendered by the <strong>CAD View</strong>.</p>
+<p><em>CADManager</em> - Used to manage all events that are aimed at the <strong>CAD view</strong>. Will handle any highlighting of the geometry, necessary exploding of independent pieces of geometry, providing a Three.js raycaster for collision testing, and handling of incoming deltas that need to be applied to the existing geometry.</p>
+<p><em>DataLoader</em> - Used to issue all calls to instantiate all components that are necessary from the incoming data such as shells, products, shapes, annotations, etc. Acts as the mediator between the main thread and the active webworkers.</p>
+<p><em>NC</em> - Used to perform the rootLoad operation that is triggered by a webworker postMessage with message “rootLoad”.<br />
+NC is the housing component for all shell and annotation Three.js geometry.</p>
+<p><em>Product</em> - Used to process incoming product data into Three.js geometry so that it can be rendered by the <strong>CAD View</strong>.</p>
+<p><em>Shape</em> - Used to process incoming shape data into Three.js geometry so that it can be rendered by the <strong>CAD View</strong>.</p>
+<p><em>Shell</em> - Used to process incoming shell data into Three.js geometry so that it can be rendered by the <strong>CAD View</strong>.</p>
+<p><em>WebWorker</em> - Background thread of application that is used to process data sent by the DataLoader</p>
+<h2 id="server-side"># Server Side</h2>
+<p><strong>api_server.js</strong></p>
+<ul>
+<li>Used to set the API server:
+<ul>
+<li>Setup the express server which is used for all routing of the application</li>
+<li>Setup the socket server for communication from server to client<br />
+</li>
+<li>Link to the core server using util.inherits</li>
+<li>Setup the static site that is served with each view</li>
+<li>Setup all routes within the applicaiton</li>
+<li>Run the application and being listening on the specified port in config.js</li>
+</ul></li>
+</ul>
+<p><strong>core_server.js</strong></p>
+<ul>
+<li>Used to set the Core server:
+<ul>
+<li>Commander package is used to deal with command line options and adding a .option(<path>, <description>) adds another command line option to the app</li>
+<li>config.js is loaded here as well to set all options and flags that are specified</li>
+<li>The file being used for the entire simulation is set through this.project</li>
+<li>The machine used for the entire project is set through this.machinetool</li>
+<li>file.init(this.project, this.machinetool) initializes the StepNC finder, machinestate, tolerance, and aptstepmaker objects for the entire application and can be accessed by requiring (‘file’)
+<ul>
+<li>file.ms = machineState</li>
+<li>file.tol = tolerance</li>
+<li>file.find = finder</li>
+<li>file.apt = aptstepmaker</li>
+</ul></li>
+<li>Winston logger is used throughout the app for debugging purposes</li>
+</ul></li>
+</ul>
+<p><strong>views/</strong></p>
+<p>Contains any server side views that will be rendered upon first starting the server. Base.jade is used to carry over the appConfig that is instantiated in API server.</p>
+<p><strong>api/</strong></p>
+<p>All api endpoints are stored in here and are thoroughly described in docs/API.md</p>

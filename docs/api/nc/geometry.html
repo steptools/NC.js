@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Geometry</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Geometry</h1>
+<p>
+<a href=#shape><code>/v3/nc/geometry/:uuid</code></a><br>
+<a href=#get-inprocess><code>/v3/nc/geometry/delta/:version</code></a><br>
+<a href=#reset-inprocess><code>/v3/nc/geometry/delta/reset</code></a><br>
+<a href=#product><code>/v3/nc/geometry/product/:uuid</code></a><br>
+<a href=#tool><code>/v3/nc/geometry/tool/:id</code></a></p>
+
+<p>Defined in <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/geometry.js">geometry.js</a></p>
+
+The 
+
+
+
+<H2 id="shape">GET Shape Description</H2>
+
+<PRE>GET /v3/nc/geometry/{id}</PRE>
+
+<p>The Digital Thread model contains a variety of CAD shapes
+associated with different aspects of design and machining process.
+
+GET on the geometry endpoint returns a shape identified by a UUID,
+which will contain an array of shells or polyline annotations.  The
+shell geometry is a triangular mesh representation of some CAD shape
+for 3D display.</p>
+
+<p>The shell object is an array of the following type/geom
+structures.</p>
+
+<pre>[{
+  'type': 	string,
+  'class':	(optional) string, 
+  'geom': {
+    	<a href="#mesh">Mesh</a>, <a href="#polyline">Polyline</a>, or <a href="#placement">Placement</a> object
+  }
+}]</pre>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th>	<th>Type</th>	<th>Description</th></tr>
+</thead>
+<tbody>
+<tbody>
+<tr>
+<td>type</td>
+<td>string</td>
+<td>This string determines the contents of the "geom" property.  Valid
+values are <code>"mesh"</code>, <code>"polyline"</code>,
+and <code>"placement"</code>.</td>
+</tr>
+<tr>
+<td>class</td>
+<td>string</td>
+<td>Optional.  When omitted, the geometry is part of the fundamental
+shape information.  The <code>"annotation"</code> value means that the
+geometry describes PMI callouts on the shape.
+The <code>"constructive"</code> value means that the geometry
+describes auxilliary planes and placements on the shape.</td>
+</tr>
+<tr>
+<td>geom</td>
+<td>object</td>
+<td>The geometric description of the shape element.  The object for
+each of the different types is different and detailed below.</td>
+</tr>
+</tbody>
+</table>
+
+<H3 id=mesh>Mesh Geometry</H3>
+
+<p>When the type is <code>"mesh"</code>, the geometry object is a
+triangular mesh representation of some CAD shape for 3D display.  This
+shell is described as follows:
+
+<pre>
+  'geom': {	
+     'id': 		string,
+     'faces': 		FaceRef[],
+     'precision': 	int,
+     'points': 		int[],
+     'normals': 	int[]
+  }
+</pre>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th>	<th>Type</th>	<th>Description</th></tr>
+</thead>
+<tbody>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>The unique identifier for the Shell.</td>
+</tr>
+<tr>
+<td>faces</td>
+<td>FaceRef</a>[]</td>
+<td>See below.  An array of face information for the Shell.</td>
+</tr>
+<tr>
+<td>precision</td>
+<td>int</td>
+<td>The power of ten scaling factor applied to the normal and point
+arrays to get integer values.</td>
+</tr>
+<tr>
+<td>points</td>
+<td>int[]</td>
+<td>
+<p>A sequence of XYZ values describing each vertex in the shell.
+Items [0-2] of the array describe the first XYZ point, items [3-5]
+describe the second set of XYZ values, etc.  Each group of three XYZ
+points describe a single triangle, and the points are ordered so that
+the right hand rule will give the surface normal of the triangle.</p>
+
+<p>So the nine integers in points[0-8] describe a single triangle,
+which goes from points[0-2], to points[3-5], to points[6-8].  The
+second triangle is given by the next nine integers in points[9-17].</p>
+
+<p>The mesh is scaled so that all XYZ coordinate values and IJK normal
+direction components are integers.  To get the original floating point
+values, divide by 10<sup>precision</sup>.
+</td>
+</tr>
+<tr>
+<td>normals</td>
+<td>int[]</td>
+<td>
+<p>A sequence of IJK values describing the surface normal at each
+vertex in the shell.  This operates in parallel with the 'points'
+array, so the IJK given by normals[0-2] is the surface normal for the
+vertex given by points[0-2].
+
+<p>These vertex normals are typically used for smooth shading of the
+triangular mesh.</p></td>
+</tr>
+
+</tbody>
+</table>
+
+<p>The FaceRef objects hold a face ID, a color, and a count of
+triangles in the face.  The triangles in the shell points array are
+sorted by face.  The first face starts with the first triangle and
+extends for 'face1.count' triangles.  The second face starts at the
+next triangle and continues for 'face2.count' triangles. This face
+description is expanded into a start/end index by the client code for
+easier access.
+
+<pre>{
+  'count': int,
+  'id':	   string,
+  'color': double[3]
+}</pre>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th>	<th>Type</th>	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>The unique ID for the associated face.</td>
+</tr>
+<tr>
+<td>count</td>
+<td>int</td>
+<td>Number of points this applies to?</td>
+</tr>
+<tr>
+<td>color</td>
+<td>double[3]</td>
+<td>The RGB color of the face, using (0..1) ranges.</td>
+</tr>
+</tbody>
+</table>
+
+<p>An abbreviated example of a mesh is shown below.  The precision is
+4, so the integer values must be dividied by 10000 to get the original
+floating point values.  So the first normal is (0,0,-1) and the first
+point is at (800, 235.4999, 134.9991).  The first face contains the
+first 312 triangles, the second face contains the next 42 triangles,
+and so on.
+<pre>[{
+   "type": "mesh",
+   "geom": {
+     "faces": [
+       {
+	 "count": 312,
+	 "id": 23343,
+	 "color": [0.250980, 0.250980, 0.250980]
+       },
+       {
+	 "count": 42,
+	 "id": 23344,
+	 "color": [0.250980, 0.250980, 0.250980]
+       },
+       <em class="text-info">Many faces omitted</em>
+     ],
+     "precision": 4,
+     "normals": [0,0,-10000,
+     	0,0,-10000,
+     	0,0,-10000,
+      	<em class="text-info">Many normals omitted</em> ],
+     "points": [8000000,2354999,1349991,
+        7810000,3360000,1349991,
+     	8000000,4659999,1349991,
+        <em class="text-info">Many points omitted</em> ]}
+}]
+</pre>
+
+
+
+<H3 id=polyline>Polyline Geometry</H3>
+
+<p>When the type is <code>"polyline"</code>, the geometry object is a
+an array of polyline segments objects.  Each segment contains an RGB
+color and an sequence of floating point XYZ values as follows:
+
+<pre>
+  'geom': [{
+     'color':   double[3],
+     'points':  [ double[3] ]
+  }
+</pre>
+
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th>	<th>Type</th>	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>color</td>
+<td>double[3]</td>
+<td>The RGB color of the face, using (0..1) ranges.</td>
+</tr>
+<tr>
+<td>points</td>
+<td>array of double[3]</td>
+<td>The XYZ values for each point in the polyline.  These are
+conventional floating point values, not the scaled integers used by
+the mesh structures.</td>
+</tr>
+</tbody>
+</table>
+
+<p>An abbreviated example of a polyline is shown below.  
+<pre>[{
+    "type": "polyline",
+    "geom": [
+     {
+       "color": [0.000000, 1.000000, 0.000000],
+       "points": [
+	 [0,0,30],
+	 [24.9624,-37.3252,25],
+	 [49.9248,-74.6505,20],
+	 [74.8873,-111.976,15],
+	 [99.8497,-149.301,10]
+       ]  }
+     ,
+     {
+       "color": [1.000000, 1.000000, 1.000000],
+       "points": [
+	 [99.8497,-149.301,10],
+	 [99.8497,-149.301,7],
+	 [99.8497,-149.301,4],
+	 [99.8497,-149.301,1],
+	 [99.8497,-149.301,-2]
+       ]  }
+     ,
+     <em class="text-info">Many polyline segments omitted</em>
+     ]
+}]
+</pre>
+
+
+
+
+<H3 id=placement>Placement Geometry</H3>
+
+<p>When the type is <code>"placement"</code>, the geometry object is a
+coordinate system placement.  This describes a location in space, a
+direction for the Z-axis, and a direction for the X-axis.  The Y-axis
+direction can be found by computing the cross product.
+
+<pre>
+  "geom": {
+    "origin": double[3],
+    "axis":   double[3],
+    "ref":    double[3]
+  }
+</pre>
+
+<p>An example of a placement is shown below.  This has the origin at
+(400, 0, 0) and the new Z-axis pointing in the positive X direction.
+The new X-axis points in the positive Y direction.  By cross product
+(Z x X) the new Y-axis will point in the positive Z direction.
+
+
+<pre>{
+  "type": "placement",
+  "class": "constructive",
+  "geom": {
+     "origin": [400, 0, 0],
+     "axis": [1, 0, 0],
+     "ref": [0, 1, 0]
+   }
+}
+</pre>
+
+
+<H2 id="get-inprocess">GET In-Process Workpiece Geometry</H2>
+
+<PRE>GET /v3/nc/geometry/delta/{version}
+GET /v3/nc/geometry/delta/reset</PRE>
+
+<p>While material removal simulation is ongoing, the server will
+transmit regular updates to all clients via websocket, telling them
+about the current tool position, speeds and feeds, and when new
+dynamic geometry is available.
+
+<p>GET on the "geometry/delta" endpoint is used to get the most
+current mesh for the in-process workpiece.  The "version" argument for
+this call is "-1", which means transmit the entire mesh.
+
+<p>Partial mesh updates are not currently implemented.  When they are,
+the version will be the last complete version that the client has and
+the faces/points/normals will contain values that must be appended to
+the lists in base_version.
+
+<pre>{
+   "version":  	   int,
+   "precision":    int,
+   "base_version": int (currently always zero),
+   "faces":        faceRef[],
+   "normals":	   int[],
+   "points":	   int[],
+   "remove":   	   int[] (currently alway empty)
+}
+</pre>
+
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th>	<th>Type</th>	<th>Description</th></tr>
+</thead>
+<tbody>
+<tbody>
+<tr>
+<td>version</td>
+<td>integer</td>
+<td>This string determines the contents of the "geom" property.  Valid
+values are <code>"mesh"</code>, <code>"polyline"</code>,
+and <code>"placement"</code>.</td>
+</tr>
+<tr>
+<td>precision</td>
+<td>integer</td>
+<td>Factor of ten multiplier.  See <a href="#mesh">mesh structure</a>
+for details.</td>
+</tr>
+<tr>
+<td>base_version</td>
+<td>integer</td>
+<td>Currently always zero.  When partial updates are enabled, this
+will be the number of the last full state. </td>
+</tr>
+<tr>
+<td>faces</td>
+<td>FaceRef[]</td>
+<td>Faces for the shell.  See <a href="#mesh">mesh structure</a> for
+details. When partial shells are implemented, will be appended to
+faces of base version.</td>
+</tr>
+<tr>
+<td>normals</td>
+<td>int[]</td>
+<td>Vertex normals as a series of IJK values.
+See <a href="#mesh">mesh structure</a> for details.  When partial
+shells are implemented, will be appended to normals of base
+version.</td>
+</tr>
+<tr>
+<td>points</td>
+<td>int[]</td>
+<td>Vertex positions as a series of XYZ values.
+See <a href="#mesh">mesh structure</a> for details. When partial
+shells are implemented, will be appended to points of base
+version.</td>
+</tr>
+<tr>
+<td>remove</td>
+<td>int[]</td>
+<td>Not currently used, always an empty array.  When partial shells
+are implemented, will be the index of facets that should be removed.
+Multiplying this value by nine will give the starting index of the
+facet in the normal and point arrays.</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+<H2 id="reset-inprocess">Reset In-Process Workpiece Geometry</H2>
+
+<PRE>GET /v3/nc/geometry/delta/reset</PRE>
+
+<p>Calling GET on this endpoint will reset the in-process geometry
+back to the most recent as-is geometry in the STEP-NC process.
+
+
+
+
+<H2 id="product">GET Product Geometry</H2>
+
+<PRE>GET /v3/nc/geometry/product/{uuid}</PRE>
+
+<p>This endpoint returns the geometry for a product with a given ID
+using the same shape structure as
+the <a href="#shape"><code>/nc/geometry/{uuid}</code></a> endpoint.
+
+<H2 id="tool">GET Tool Geometry</H2>
+
+<PRE>GET /v3/nc/geometry/tool/{id}</PRE>
+
+<p>This endpoint returns the geometry for a cutting tool with a given
+ID using the same shape structure as
+the <a href="#shape"><code>/nc/geometry/{uuid}</code></a> endpoint.
+
+
+
+
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

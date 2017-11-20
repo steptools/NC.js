@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>NC.js REST API Documentation</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<h1>REST Endpoints</h1>
+
+<p>The current version of the REST API is v3, and all endpoints can
+currently be found grouped under the <code>/v3/nc/</code> path.  The
+main concepts are as below:
+
+<pre>
+/v3/nc/geometry/:uuid
+/v3/nc/geometry/delta/:version
+/v3/nc/geometry/delta/reset
+/v3/nc/geometry/product/:uuid
+/v3/nc/geometry/tool/:id
+/v3/nc/id/:uuid
+/v3/nc/project
+/v3/nc/setup/:wsId
+/v3/nc/state/delta
+/v3/nc/state/delta/save
+/v3/nc/state/key
+/v3/nc/state/loop/
+/v3/nc/state/loop/
+/v3/nc/state/loop/:loopstate
+/v3/nc/state/machine
+/v3/nc/state/machine/:id
+/v3/nc/state/machines
+/v3/nc/state/mtc
+/v3/nc/state/product/:eid(\\d+)
+/v3/nc/state/ws/:command
+/v3/nc/tolerances
+/v3/nc/tolerances/:wsId
+/v3/nc/tolerances/qif/load
+/v3/nc/tolerances/qif/unload
+/v3/nc/tool/:toolId
+/v3/nc/tools
+/v3/nc/workpieces
+/v3/nc/workplan
+</pre>
+
+
+</div>
+
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

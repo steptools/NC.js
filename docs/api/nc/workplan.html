@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Workplan</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Workplan</h1>
+<p><code>/v3/nc/workplan[/{id}]</code></p>
+<p>Defined in <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/step.js">step.js</a></p>
+
+<p>The workplan API endpoint returns some key information about the
+STEP-NC process held by the digital thread.  The process is composed
+of a nested series of executable objects.  A workingstep describes a
+single machining operation with some toolpaths.  Workplans contain a
+sequence of executables.  Some workplans have a setup transform to
+describe a fixturing of the part.  Selectives contain a set of
+alternative executables.
+
+
+<H2>Get Complete Main Workplan</H2>
+
+<PRE>GET /v3/nc/workplan</PRE>
+
+<p>GET on the Workplan root endpoint returns the main workplan of a
+STEP-NC process as a tree of nested executable objects.  A numeric id
+can be added to the URL to return just the description of a single
+executable</p>
+
+<pre>
+{
+  'id': 	string,
+  'name': 	string,
+  'type': 	string,
+  'baseTime': 	double,
+  'timeUnits': 	string,
+  'distance': 	double,
+  'distanceUnits': string,
+  'setupID': 	int,
+  'asIs': 	workpieceref,
+  'toBe': 	workpieceref,
+  'delta': 	workpieceref,
+  'children': 	Executable[],
+  'enabled':  	bool
+}
+
+// When type === "workingstep", there will be additional properties:
+{
+  tool: string,
+  feedRate: double,
+  feedUnits: string,
+  speed: double,
+  speedUnits:string
+}
+</pre>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th> 	<th>Type</th> 	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>The unique identifier for the Executable.</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>The executable’s name, if any.</td>
+</tr>
+<tr>
+<td>type</td>
+<td>string</td>
+<td>The specific type of the executable.  The type string will be one
+of <code>"Nc
+Function"</code>, <code>"workingstep"</code>, <code>"selective"</code>,
+<code>"workplan"</code>, or <code>"workplan-setup"</code>.  The leaf
+nodes of the executable tree are of type <code>"Nc Function"</code>
+or <code>"workingstep"</code></td>
+
+</tr>
+<tr>
+<td>baseTime</td>
+<td>double</td>
+<td>The expected amount of time to complete this operation (and its children, if any).</td>
+</tr>
+<tr>
+<td>timeUnits</td>
+<td>string</td>
+<td>The unit of baseTime. Usually Seconds?</td>
+</tr>
+<tr>
+<td>distance</td>
+<td>double</td>
+<td>The total length the tool moves in this operation (and its children, if any).</td>
+</tr>
+<tr>
+<td>distanceUnits</td>
+<td>string</td>
+<td>The name of the units the distance property is measured in.</td>
+</tr>
+<tr>
+<td>setupID</td>
+<td>int</td>
+<td>The ID of the setup this executable is in. (The setup endpoint just returns the setup ID. This should become a UUID by the time a proper setup endpoint is made.)</td>
+</tr>
+<tr>
+<td>asIs</td>
+<td><a href="Workpiece-Reference.md">workpieceref</a></td>
+<td>A reference to the As Is (Initial) workpiece for this executable</td>
+</tr>
+<tr>
+<td>toBe</td>
+<td><a href="Workpiece-Reference.md">workpieceref</a></td>
+<td>A reference to the To Be (Final) workpiece for this executable</td>
+</tr>
+<tr>
+<td>delta</td>
+<td><a href="Workpiece-Reference.md">workpieceref</a></td>
+<td>A reference to the delta (Removed) workpiece for this executable</td>
+</tr>
+<tr>
+<td>children</td>
+<td>Executable[]</td>
+<td>An array of Executables beneath this one in the workplan.</td>
+</tr>
+<tr>
+<td>enabled</td>
+<td>bool</td>
+<td>Whether or not this Executable is Enabled. If false, all children should also be disabled.</td>
+</tr>
+</tbody>
+
+<thead>
+<tr><th colspan=3>When type === "workingstep"</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>tool</td>
+<td>string</td>
+<td>The ID for the tool this workingstep uses. See <a href="">Tool Endpoint</a>.</td>
+</tr>
+<tr>
+<td>feedRate</td>
+<td>double</td>
+<td>The rate which the tool moves for this workingstep.</td>
+</tr>
+<tr>
+<td>feedUnits</td>
+<td>string</td>
+<td>The unit feedRate is in.</td>
+</tr>
+<tr>
+<td>speed</td>
+<td>double</td>
+<td>The spindle speed for this workingstep.</td>
+</tr>
+<tr>
+<td>speedUnits</td>
+<td>string</td>
+<td>The unit speed is in.</td>
+</tr>
+</tbody>
+</table>
+
+<H2>Get Individual Executable</H2>
+
+<PRE>GET /v3/nc/workplan/{id}</PRE>
+
+<p>GET with a numeric id will return the description of a single
+executable.  The JSON object is returned as described above.</p>
+
+
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

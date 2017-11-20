@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Project</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Project</h1>
+<p><code>/v3/nc/project</code></p>
+<p>Defined in <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/step.js">step.js</a></p>
+
+
+<H2>Get Project Name</H2>
+
+<PRE>GET /v3/nc/project</PRE>
+
+<p>The STEP-NC process held by the digital thread contains a single
+"project" object with a name.  GET on the project endpoint returns the
+name of the project as a simple string.</p>
+
+<p>For example:</p>
+<PRE>
+http://fishhead.steptools.com:8080/v3/nc/project
+==> fishhead_dallas_sandvik-with-asis-10-6
+</PRE>
+
+
+
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

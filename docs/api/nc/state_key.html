@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Key State</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Key State</h1>
+<p>
+<code>/v3/nc/state/key</code></p>
+
+<strong>Definition:</strong> <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/state.js">State.js</a><br />
+
+<h2>Get Complete Scene Geometry</h2>
+
+<PRE>GET /v3/nc/state/key</PRE>
+
+<p>Returns the most up-to-date ‘full scene’ with all geometry
+currently shown.   The Keystate object is as follows</p>
+
+<pre>{
+  'project': string,
+  'workingstep': string,
+  'time_in_workingstep': 0,
+  'geom': geomRef[]
+}</pre>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th>	<th>Type</th>	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td>string</td>
+<td>The name of the project this keystate applies to.</td>
+</tr>
+<tr>
+<td>workingstep</td>
+<td>string</td>
+<td>The ID of the <a href="workplan.html">workingstep</a> that the
+keystate applies to.</td>
+</tr>
+<tr>
+<td>time_in_workingstep</td>
+<td>N/A</td>
+<td>Always 0. Unused property.</td>
+</tr>
+<tr>
+<td>geom</td>
+<td><a href="geometry.html#object">geomRef</a>[]</td>
+<td>An array of all the geometry in this scene.</td>
+</tr>
+</tbody>
+</table>
+
+
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>
