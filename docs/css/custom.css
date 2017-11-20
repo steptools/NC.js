@@ -36,3 +36,20 @@
 
 
 				      
+
+FIGURE {
+    margin: 3em;
+    text-align: center;
+}
+FIGCAPTION {
+    margin-top: 1em;
+    font-weight: bold;
+}
+
+CAPTION { 
+    margin: 0.5em 0em 1em 0em;
+    font-size: 14pt;
+    font-weight: Bold;
+    caption-side: top; 
+}
+

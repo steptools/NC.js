@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Build and Run a Server</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<H1>Build and Run a Server</H1>
+
+<p>The NC.js package is built from source using the Node Package
+Manager (npm).  This will assemble all of the dependencies, including
+a pre-built version of the STEPNode plugin, then start the server on a
+STEP-NC file that you specify.
+
+<p>This package requires Node.js.  You can download it
+from <a href="https://nodejs.org">nodejs.org</a>.  At the time of
+writing we use Node 8.x LTS branch.  Installing node also installs
+"npm" into your path.
+
+<p>After Node is installed, download the NC.js source code from
+GitHub.</p>
+
+<pre>
+&gt; git clone https://github.com/steptools/NC.js.git
+</pre>
+
+<p>The STEP-NC file to use is named in the "config.js" file in the top
+level directory of the package.  By default, the server will use the
+STEP-NC process and machine tool model sample files in the STEP-NC
+Desktop package.  
+
+<p>To have the server display a different model, change the "file"
+object and "dir" key to the new file.  You can find more sample files
+at <a href="http://www.ap238.org/">www.ap238.org</a>
+
+<pre>
+"file" : {"dir": "path_to_file.stpnc"}
+</pre>
+
+
+<p>In the top level directory of the package, run "npm install".  This
+will assemble all of the package dependencies.  It will also download
+a pre-built version of the STEPNode plugin, but you may need to
+request a <a href="https://www.steptools.com/register/">license
+key</a> in order to run it.
+
+<pre>
+&gt; cd NC.js
+&gt; npm install
+</pre>
+
+<p>Once the dependencies have been assembled, you can build and start
+the server.  When the server is running, point your web browser to
+<a href="http://localhost:8080/">http://localhost:8080/</a>
+
+<pre>
+> npm run make
+
+> npm run make-release      # same, but minimizes file sizes
+</pre>
+
+
+
+<p>If the server has already been built, you can start it with "npm
+start".  This will be faster than making everytime.  You can also
+override the STEP model in "config.js" file by using a command line flag.
+
+<pre>
+> npm start
+
+> npm start -- -f "path_to_file.stpnc"
+</pre>
+
+
+
+<p>When you go
+to <a href="http://localhost:8080/">http://localhost:8080/</a> you
+should see a machining setup like the following:
+
+<figure><img class="img-responsive center-block" src="images/fishhead.png" alt="Thread Example" />
+</figure>
+
+
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>

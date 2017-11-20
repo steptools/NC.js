@@ -22,33 +22,81 @@ rich REST API for process and models plus a client that displays the
 simulation, PMI annotations, MTConnect positional data, QIF face
 status, and other aspects of a Digital Twin on the Digital Thread.</p>
 
+
 <figure>
-<img src="images/ncjs_structure.png" alt="NC.js Structure" />
-<figcaption></figcaption>
+<img class="img-responsive center-block" src="images/ncjs_structure.png" alt="NC.js Structure" />
+<figcaption>NC.js Structure Overview</figcaption>
 </figure>
 
 <H2 id="structure">Package Structure</H2>
 
+<div class="row">
+<div class="col-md-6">
 <p>The NC.js package is implemented in Javascript under the Apache
-license, so the client and REST API may be customized as desired. As
-the diagram below shows, the server implements the REST API using the
-STEPNode module for Node.js. This module wraps the STEP Tools
-commercial technology stack, which is a set of native libraries for
-Windows/Linux/Mac that reads and writes STEP and STEP-NC models, does
-analysis, geometry manipulation, and material removal simulation.</p>
+license, so the client and REST API may be customized as desired. The
+REST API is built using the STEPNode module for Node.js. This module
+wraps the STEP Tools commercial technology stack, which is a set of
+native Windows/Linux/Mac libraries that read and write STEP and
+STEP-NC models, does analysis, geometry manipulation, and material
+removal simulation.</p>
+</div>
 
+<div class="col-md-6">
 <ul>
 <li><a href="https://github.com/steptools/NC.js">NC.js Github Package</a></li>
 <li><a href="https://github.com/steptools/STEPNode">STEPNode Github Package</a></li>
 <li><a href="https://www.steptools.com/support/">STEP Tools Software Stack</a></li>
 </ul>
+</div>
+</div>
 
-<H2>API and Formats</H2>
+
+<H2>Running a Server</H2>
+<div class="row">
+<div class="col-md-6">
+<div class="row">
+<div class="col-md-6"><img class="img-responsive center-block" src="images/fishhead.png" alt="Thread Example" /></div>
+
+<div class="col-md-6">
+<p>Run your own server on a STEP-NC file to do material removal
+simulation. </div>
+</div>
+</div>
+
+<div class="col-md-6">
+<ul>
+<li><a href="build.html">Building and Starting the Server</a></li>
+</ul>
+</div>
+</div>
+
+
+
+
+
+<H2>API and Building Custom Apps</H2>
+
+<div class="row">
+<div class="col-md-6">
+<p>Since the NC.js package is distributed as source, so you can modify
+both the server and the client.   The server provides a 
+<a href="api/index.html">REST API</a>.  The client loads workplan and
+geometry data using that API and visualizes it using react.js
+components.
+
+<p>You can modify the react.js view components to show data in new
+ways, or modify the REST API on the server to extract additional
+information, change information, and so on.
+</div>
+
+<div class="col-md-6">
 <ul>
 <li><a href="api/index.html">REST API Description</a></li>
+<li><a href="source_overview.html">NC.js Source Layout</a></li>
 <li><a href="formats.html">Contents of serialized STEP data</a></li>
-<li><a href="GettingStarted.html">Internal software layout</a></li>
 </ul>
+</div>
+</div>
 
 </div>
 
