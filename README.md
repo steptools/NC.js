@@ -14,7 +14,7 @@ commercial technology stack, which handles STEP and STEP-NC
 read/write, analysis, geometry manipulation, and material removal
 simulation.
 
- - [NC.js Documentation](docs/index.md)
+ - [NC.js Documentation](https://steptools.github.io/NC.js/)
 
 ![Screenshot](docs/images/fishhead.png "NC.js Screenshot")
 
