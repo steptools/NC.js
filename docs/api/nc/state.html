@@ -20,9 +20,9 @@
 
 <h1>State</h1>
 <p>
-<a href="state_delta.html"><code>/v3/nc/state/delta</code><br>
+<a href="#delta"><code>/v3/nc/state/delta</code><br>
 <code>/v3/nc/state/delta/save</code></a><br>
-<a href="state_key.html"><code>/v3/nc/state/key</code></a><br>
+<a href="#key"><code>/v3/nc/state/key</code></a><br>
 <code>/v3/nc/state/loop</code><br>
 <code>/v3/nc/state/loop/{loopstate}</code><br>
 <code>/v3/nc/state/machine</code><br>
@@ -35,12 +35,25 @@
 <p>Defined in <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/state.js">state.js</a> and  <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/MTstate.js">MTstate.js</a></p>
 
 
-The <a href="state_delta.html"><code>delta</code> endpoint</a>
-describes the delta state and
-the <a href="state_key.html"><code>key</code> endpoint</a> describes the key sytate.<br>
+<h2 id="delta">Get Modified Geometry</h2>
+
+<PRE>GET /v3/nc/state/delta</PRE>
+
+<p>Getting the delta endpoint will return
+a <a href="state_object.html#delta">delta state object</a> describing
+the current scene for the most recent material removal.</p>
 
 
+<h2 id="key">Get Complete Scene Geometry</h2>
 
+<PRE>GET /v3/nc/state/key</PRE>
+
+<p>A GET on the key endpoint will return
+a <a href="state_object.html#key">key state object</a> describing the
+current scene for the most recent material removal.</p>
+
+
+</div>
 <script src="../../js/jquery.min.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
 </body>

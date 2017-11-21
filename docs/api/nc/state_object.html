@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>State Objects</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="state.html">State</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="../index.html">REST API</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="../../index.html">Back to Docs</a>
+</nav>
+
+<h1>State Objects</h1>
+
+
+<p>The Delta State and Key State objects transmit information about
+the identity, position, and role of all geometric elements at a
+particular moment in time during a material removal simulation.
+Each geometric element described by a <a href="#geom">Geometry Reference Object</a>.
+
+<h2 id="delta">Delta State Object</h2>
+
+<p>The delta state object is sent by the server with a <code>nc:state</code>
+event, and can be requested by the client through the
+<a href="state.html#delta"><code>/state/delta</code></a>
+endpoint.
+
+<pre>{
+  'project': string,
+  'workingstep': string,
+  'time_in_workingstep': 0,
+  'prev': string,
+  'geom': <a href="#geom">GeomRefObj</a>[]
+}</pre>
+
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th>	<th>Unit</th>	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td>string</td>
+<td>The name of the project this keystate applies to.</td>
+</tr>
+<tr>
+<td>workingstep</td>
+<td>string</td>
+<td>The ID of the <a href="workplan.html">workingstep</a> that this
+state applies to.</td>
+</tr>
+<tr>
+<td>time_in_workingstep</td>
+<td>N/A</td>
+<td>Not currently used.  Always zero.</td>
+</tr>
+<tr>
+<td>prev</td>
+<td>string</td>
+<td>Not currently used.  Always an empty string.  This field will eventually
+identify be the key state that this delta is based on.
+</tr>
+<tr>
+<td>geom</td>
+<td><a href="#geom">GeomRefObj</a>[]</td>
+<td>An array of geometry reference objects that identify shape, role, and position information.</td>
+</tr>
+</tbody>
+</table>
+
+<p>An example of a delta update from an <code>nc:state</code> websocket event pushed to the client.
+<PRE>
+{"project":"fishhead_dallas_sandvik-with-asis-10-6",
+"workingstep":"84315",
+"time_in_workingstep":0,
+"prev":"",
+"geom":[
+   {"id":"fffc7189-6cf8-463d-afba-cd05d9bfb80e",
+    "shape|dynamicshape":"fffc7189-6cf8-463d-afba-cd05d9bfb80e.json",
+    "xform":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+    "bbox":[-869.802,-961,-1565,869.802,1194.25,134.999],
+    "usage":"machine"},
+   { <EM class="text-info">Many more geometry references for other parts of the machine
+     tool, as-is, to-be, cutter, and inprocess shapes.</EM> }
+]}
+</PRE>
+
+
+<h2 id="key">Key State Object</h2>
+
+<p>The key state object is identical to the delta state, but does not
+have a "prev" property.  It represents the most current full scene.
+The Keystate object is as follows</p>
+
+<pre>{
+  'project': string,
+  'workingstep': string,
+  'time_in_workingstep': 0,
+  'geom': <a href="#geom">GeomRefObj</a>[]
+}</pre>
+
+
+
+<h2 id="geom">Geometry Reference Object</h2>
+
+<pre><code>{
+  'id': 	string,
+  &lt;'shape': 	string&gt;,
+  &lt;'dynamicshape': 	string&gt;,
+  'xform': 	double[16],
+  'bbox': 	double[6],
+  'usage': 	string
+  &lt;'version': 	uint&gt;,
+}</code></pre>
+
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th>	<th>Type</th>	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>The UUID of the referenced shape.  The client can request the
+shape
+with <a href="geometry.html#shape"><code>GET /nc/geometry/{id}</code></a>
+if it does not already have a cached version.</td>
+</tr>
+<tr>
+<td>shape</td>
+<td>string</td>
+<td>The ID string with a ".json" extension.  The value is not
+important, but the "shape" and "dynamicshape" properties are mutually
+exclusive.  A geometry reference with a "shape" property identifies
+CAD shape like a cutter or fixture may change position in space but
+will not change shape.</td>
+</tr>
+<tr>
+<td>dynamicshape</td>
+<td>string</td>
+<td>As above, a geometry reference with a "dynamicshape" property
+identifies material removal volume that will change shape as well as
+position over time.  The client does not request this shape by ID,
+instead it typically
+calls <a href="geometry.html#get-inprocess"><code>GET
+nc/geometry/delta/-1</code></a> to get the most recent removal shape.
+</td>
+</tr>
+<tr>
+<td>xform</td>
+<td>double[16]</td>
+<td>The 4x4 transform matrix for the associated geometry.
+The transform follows the GL usage shown below.
+<ul>
+<li>m[0-2] is the x axis direction,	 m[3] is zero
+<li>m[4-6] is the y axis direction,	 m[7] is zero
+<li>m[8-10] is the z axis direction, m[11] is zero
+<li>m[12-14] is the origin,		 m[15] is one
+</ul>
+<PRE>
+double m[16] = [
+       xi, xj, xk, 0.0,	 yi, yj, yk, 0.0,
+       zi, zj, zk, 0.0,	 wx, wy, wz, 1.0
+       ];
+</PRE>
+</td>
+</tr>
+<tr>
+<td>bbox</td>
+<td>double[6]</td>
+<td>The bounding box of the associated geometry as the low X,Y,Z
+values and and the high X,Y,Z values .</td>
+</tr>
+<tr>
+<td>usage</td>
+<td>string</td>
+<td>A string keyword describing what the shape element represents.
+Values are:
+<ul>
+<li><code>asis</code> A CAD workpiece for the starting material.  This
+"rawpiece" or "stock" model may be from the start of the entire
+machining program, or from the start of the operation.  STEP-NC
+process can specify as-is models at any point in the process.
+<li><code>cutter</code> A CAD workpiece for the cutting tool.
+<li><code>fixture</code> A CAD workpiece for fixturing.
+<li><code>inprocess</code> The workpiece with ongoing material removal.
+Only with dynamicshapes.
+<li><code>machine</code> Part of the machine tool.  A machine is
+likely to be an assembly with many components, each of which will be
+continually changing position according to the machine kinematics.
+There will be a machine shape ref for each piece in the assembly.</li>
+<li><code>removal</code> Not currently used.
+
+<li><code>tobe</code> CAD workpiece that is being produced.
+Represents the final form after machining either the operation or the
+entire program.  Like the "asis" model, a STEP-NC process can specify
+to-be models at any point in the process.</li>
+<li><code>toolpath</code> Toolpath curves, the shape will be a polyline.</li>
+</ul></td>
+</tr>
+<tr>
+<td>version</td>
+<td>uint</td>
+<td>The version of the dynamicshape geometry. Only used with
+dynamicshape references.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

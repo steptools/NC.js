@@ -141,6 +141,15 @@ function getSetupFromId(id) {
   return currentid;
 }
 
+
+
+function _putExeFields(req, res) {
+  // put should return some updated code
+  res.status(200).send();
+}
+
+
+
 /***************************** Endpoint Functions *****************************/
 
 function _getExeFromId(req, res) {
@@ -178,9 +187,11 @@ function _getProject(req,res){
   res.status(200).send(find.GetProjectName());
 }
 
+
 module.exports = function(app, cb) {
   app.router.get('/v3/nc/workplan/:wsId', _getExeFromId);
   app.router.get('/v3/nc/workplan', _getMwp);
+  app.router.put('/v3/nc/workplan', _putExeFields);
   app.router.get('/v3/nc/setup/:wsId', _getSetup);
   app.router.get('/v3/nc/project',_getProject);
   if (cb) {
