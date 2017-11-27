@@ -59,7 +59,7 @@
 
    render(){
     let wstep = this.props.workingstep;
-    let color = "#" + (new THREE.Color(wstep.color)).getHexString();
+    let color = "#" + (new THREE.Color(wstep.color[0],wstep.color[1],wstep.color[2])).getHexString();
     let cName = 'node';
     let spanCName = 'textbox';
     if(this.props.isCurWS) {
