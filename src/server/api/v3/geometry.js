@@ -79,11 +79,17 @@ function _getProductGeometry(req, res){
 
 function _getEIDfromUUID(req, res){
   if(req.params.uuid){
+    if(file.ms){
     file.ms.GetEIDfromUUID(req.params.uuid)
       .then((out)=>{
-        res.status(200).send(out)
+        res.status(200).send(out.toString);
       });
     return;
+  } else {
+    let rtn = file.apt.GetIDFromUUID(req.params.uuid);
+    res.status(200).send(rtn.toString);
+    return;
+  }
   }
 }
 
