@@ -1,0 +1,55 @@
+
+/* Bootstrap 4 margin utility classes - delete once available */
+/* there are also .p-* padding classes if we want them */
+.m-a-0 { margin: 0 !important;}
+.m-t-0 { margin-top: 0 !important;}
+.m-r-0 { margin-right: 0 !important;}
+.m-b-0 { margin-bottom: 0 !important;}
+.m-l-0 { margin-left: 0 !important;}
+.m-x-0 { margin-right: 0 !important; margin-left: 0 !important;}
+.m-y-0 { margin-top: 0 !important; margin-bottom: 0 !important;}
+
+.m-a { margin: 1em !important;}
+.m-t { margin-top: 1em !important;}
+.m-r { margin-right: 1em !important;}
+.m-b { margin-bottom: 1em !important;}
+.m-l { margin-left: 1em !important;}
+.m-x { margin-right: 1em !important; margin-left: 1em !important;}
+.m-y { margin-top: 1em !important; margin-bottom: 1em !important;}
+.m-x-auto { margin-right: auto !important; margin-left: auto !important;}
+
+.m-a-md { margin: 1.5em !important;}
+.m-t-md { margin-top:1.5em !important;}
+.m-r-md { margin-right:1.5em !important;}
+.m-b-md { margin-bottom:1.5em !important;}
+.m-l-md { margin-left:1.5em !important;}
+.m-x-md { margin-right:1.5em !important; margin-left: 1.5em !important;}
+.m-y-md { margin-top: 1.5em !important; margin-bottom: 1.5em !important;}
+
+.m-a-lg { margin: 3em !important;}
+.m-t-lg { margin-top: 3em !important;}
+.m-r-lg { margin-right: 3em !important;}
+.m-b-lg { margin-bottom: 3em !important;}
+.m-l-lg { margin-left: 3em !important;}
+.m-x-lg { margin-right: 3em !important; margin-left: 3em !important;}
+.m-y-lg { margin-top: 3em !important; margin-bottom: 3em !important;}
+
+
+				      
+
+FIGURE {
+    margin: 3em;
+    text-align: center;
+}
+FIGCAPTION {
+    margin-top: 1em;
+    font-weight: bold;
+}
+
+CAPTION { 
+    margin: 0.5em 0em 1em 0em;
+    font-size: 14pt;
+    font-weight: Bold;
+    caption-side: top; 
+}
+

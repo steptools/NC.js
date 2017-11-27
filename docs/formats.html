@@ -1,0 +1,125 @@
+<h1 id="file-formats">File Formats</h1>
+<p>The contents of this directory pertain to the <a href="http://www.json.org/">JSON</a> file formats used by <em>cad.js</em> and a supported binary serialization of those files. The file formats are formally defined using <a href="http://json-schema.org/documentation.html">JSON Schema</a>. Below is a presentation of the elements of this definition. At the conclusion is a presentation of an extension to the <a href="http://ubjson.org/">Universal Binary JSON</a> serialization, called TySON, that can be used with <em>cad.js</em> to further increase compression.</p>
+<h2 id="json-schema">JSON Schema</h2>
+<p>There are three file formats potentially used in the represetntation of a CAD drawing for rendering with <em>cad.js</em>. Only the first is mandatory: a kind of manifest for the drawing, which by convention is called <em>index.json</em>. The corresponding JSON Schema definition for it is provided in the file of the same name in this directory. The remaining two formats are used to externalize definitions that could otherwise be placed directly inside <em>index.json</em>. These representations are for <em>shells</em> and <em>annotations</em>. Their JSON Schema defintions are likewise provided in the files <em>shell.json</em> and <em>annotation.json</em>, respsectively, in this directory.</p>
+<p>The following sections address the JSON Schema definitions of these file formats.</p>
+<h3 id="index.json"><em>index.json</em></h3>
+<p>This file defines a part assembly. This definition is a JSON object. The required properties of this object are:</p>
+<ul>
+<li><em>products</em> (array), defines the assembly’s parts, potentially through a heirarchy of sub-parts</li>
+<li><em>shapes</em> (array), define physical manifestations of products</li>
+<li><em>shells</em> (array), defines aspects of shapes</li>
+<li><em>annotations</em> (array), provide rendered information about shapes</li>
+<li><em>root</em> (string), identifier of the root product</li>
+</ul>
+<p>There are also two optional properties</p>
+<ul>
+<li><em>useTyson</em>. which indicates if the TySON binary serialization is being used</li>
+<li><em>batches</em>, which indicates the number of batches being used to collect externalized definitions</li>
+</ul>
+<p>If <em>useTyson</em> is not present, then it is assumed to be <strong>false</strong>. If <em>batches</em> is not present, then it is assumed that externalized definitions for the assembly have not been batched.</p>
+<h4 id="products">Products</h4>
+<p>Products are defined as a JSON array of <em>product</em> defintions, each a JSON object. Hierarchy is defined through optional <em>child</em> products for an individual product, defined by reference through the child product’s identifier. Shapes can also be associated with individual products. These associations are likewise through identifies associated with individual shapes, as defined below.</p>
+<h5 id="product">Product</h5>
+<p>An individual product is a JSON object with the following required properties:</p>
+<ul>
+<li><em>name</em> (string), which provides a name for the product</li>
+<li><em>id</em> (string), which provides an identifier for the product, which can be used when referencing sub-products</li>
+</ul>
+<p>Optional properties for <em>products</em> include:</p>
+<ul>
+<li><em>children</em> (array), a list of product identifiers, establishing sub-part relationships</li>
+<li><em>shapes</em> (array), a list of identifiers for shapes associated with the product</li>
+<li><em>file</em> (string), a filename or path of the original drawing</li>
+</ul>
+<p>While <em>children</em> and <em>shapes</em> are optional properties, at least one of them must occur in the definition of a product.</p>
+<h4 id="shapes">Shapes</h4>
+<p>Shapes are defined as a JSON array of <em>shape</em> definitions, each a JSON object. Hierarchy is defined through optional <em>child</em> shapes for an individual shape, defined by reference through the child’s identifier, plus some required orientation.</p>
+<h5 id="shape">Shape</h5>
+<p>An individual shape is a JSON object with the following required properties:</p>
+<ul>
+<li><em>id</em> (string), which provides an identifier for the shape</li>
+</ul>
+<p>Optional properties for a shape include:</p>
+<ul>
+<li><em>children</em>, a list for child shape spcifications, as defined below</li>
+<li><em>shells</em>, a list for shell identifiers associated with the shape</li>
+<li><em>annotations</em>, a list of annotation identifiers associated with the shape</li>
+</ul>
+<p>while <em>children</em> and <em>shells</em> are optional properties, at least one of them must occur in the definition of a shape.</p>
+<h6 id="child-shapes">Child Shapes</h6>
+<p>The specification of child shapes is a list of JSON objects that have the following required properties:</p>
+<ul>
+<li><em>ref</em> (string), an identifier for the shape</li>
+<li><em>xform</em> (String or array), a transformation for the shape</li>
+</ul>
+<p>If the <em>xform</em> property is a string, then its value must be a single letter designating a prefeined transform. There is current only one: “I”, indicating the identity transform:</p>
+<pre><code>[ 1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 1, 0,
+  0, 0, 0, 1 ]</code></pre>
+<p>If the <em>xform</em> property is an array, then it must be a sixteen element array of numbers specifying the spatial transformation of the child shape.</p>
+<h4 id="shells">Shells</h4>
+<p>Shells are defined as a list of <em>shell</em> definitions, as described below.</p>
+<h5 id="shell">Shell</h5>
+<p>An individual shell is a JSON object with the following required properties:</p>
+<ul>
+<li><em>id</em> (string), an identifier for the shell</li>
+<li><em>size</em> (integer), the number of faces in the shell</li>
+<li><em>bbox</em> (array), the shell’s bounding box</li>
+</ul>
+<p>The bounding box, which is axis-aligned, is specified by a six element JSON array of numbers, identifying two XYZ coordinates.</p>
+<p>Optional properties of a <em>shell</em> include the following:</p>
+<ul>
+<li><em>href</em> (string), name of an externalized definition for the shell</li>
+<li><em>precision</em> (integer), the normalized precision of data values for the shell</li>
+<li><em>values</em> (array), a list of unique values for the shell’s normals and points</li>
+<li><em>normalsIndex</em> (array), a list coordinates for shell normals as indices into the <em>values</em> array</li>
+<li><em>pointsIndex</em> (array), a list of for shell points as indices from the <em>values</em> array</li>
+<li><em>colorData</em> (array), a list of color specifications, as defined below.</li>
+</ul>
+<p>If the <em>href</em> property is used, then the remaining optional properties must not occur. The externalized definition of the <em>shell</em> must then contain the remaining optional properties, plus the <em>id</em> and <em>size</em> mandatory properties, as defined above. The JSON Schema definition for an externalized shell specification is provided in the file <em>shell.json</em> in this directory.</p>
+<p>For the <em>pointsIndex</em> and <em>normalsIndex</em> arrays, nine elements (defining three XYZ tuples) are used for each triangular face.</p>
+<h6 id="colordata">ColorData</h6>
+<p>The <em>colorData</em> property of a shell specifies a list of color specifications, each one of which is a JSON object. The required properties of this object are:</p>
+<ul>
+<li><em>duration</em> (integer), the number of vertices to which this color applies</li>
+<li><em>data</em> (array), a normalized RGB color specification (JSON numbers from 0 to 1)</li>
+</ul>
+<h4 id="annotations">Annotations</h4>
+<p>Annotations are defined as a list of <em>annotation</em> defintions, as described below.</p>
+<h5 id="annotation">Annotation</h5>
+<p>An <em>annotation</em> is defined by a JSON object with the following required propoerties:</p>
+<ul>
+<li><em>id</em> (string), an identifier for the annotation</li>
+</ul>
+<p>Optional properties of an <em>annotation</em> include the following:</p>
+<ul>
+<li><em>href</em> (string), name of an externalized definition of the annotation</li>
+<li><em>lines</em> (array), a list of line segments for the annotation</li>
+</ul>
+<p>If the <em>href</em> property is used, then the remaining optional properties must not occur. The externalized definition of the <em>annotation</em> must then contain the remaining optional properties, plus the <em>id</em> mandatory property, as defined above.</p>
+<p>The <em>lines</em> array provides a list of line segments, each a six element JSON array defining the starting and ending XYZ coordinates of the segment.</p>
+<h3 id="externalized-definitions">Externalized Definitions</h3>
+<h3 id="shell.json"><em>shell.json</em></h3>
+<p>When externalized from <em>index.json</em>, a single <em>shell</em> is represented as a JSON object. The required properties of thie object are as follows:</p>
+<ul>
+<li><em>id</em> (string), an identifier for the shell</li>
+<li><em>size</em> (integer), the number of faces in the shell</li>
+<li><em>precision</em> (integer), the normalized precision of data values for the shell</li>
+<li><em>values</em> (array), a list of unique values for the shell’s normals and points</li>
+<li><em>normalsIndex</em> (array), a list coordinates for shell normals as indices into the <em>values</em> array</li>
+<li><em>pointsIndex</em> (array), a list of for shell points as indices from the <em>values</em> array</li>
+<li><em>colorData</em> (array), a list of color specifications, as defined below.</li>
+</ul>
+<p>Please refer to the definitions and notes for these properties above in the section under <em>index.json</em> devoted to <em>shells</em>.</p>
+<h3 id="annotation.json"><em>annotation.json</em></h3>
+<p>When externalized from <em>index.json</em>, a single <em>annotation</em> is represented as a JSON object. The required properties of thie object are as follows:</p>
+<ul>
+<li><em>id</em> (string), an identifier for the annotation</li>
+<li><em>lines</em> (array), a list of line segments for the annotation</li>
+</ul>
+<p>Please refer to the definitions and notes for these properties above in the section under <em>index.json</em> devoted to <em>annotations</em>.</p>
+<h2 id="tyson-and-universal-binary-json">TySON and Universal Binary JSON</h2>
+<p><a href="http://ubjson.org/">Universal Binary JSON</a>, or UBJSON, supports binary serialization of JSON. A minor extension to UBJSON, called TySON, was created to further improve the compactness of the serialization for the purposes of <em>cad.js</em> . The extension addresses arrays of integers whose values can collectively be defined by a single UBJSON type descriptor. Due to data compression techniques employed in <em>cad.js</em>, this is a recurring case and the resulting compression improvements are significant.</p>
+<p>A Python implementation of a TySON serializer is provided with <em>cad.js</em>. Algorithmically, it is quite straightforward. It detects arrays consisting entirely of integers, selects a UBJSON type designator for the largest value in the array, and then encodes the entire sequence using this single type designator. See <em>scripts/tyson.py</em> for futher details.</p>

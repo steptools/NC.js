@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>NC.js REST API Documentation</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<link rel="stylesheet" href="../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="../index.html">Back to Docs</a>
+</nav>
+
+
+<h1 id="api-endpoints">NC.js REST API Documentation</h1>
+
+
+
+<h2>REST Endpoints</h2>
+
+<p>The current version of the REST API is v3, and all endpoints can
+currently be found grouped under the <code>/v3/nc/</code> path.  The
+main concepts are as below:
+
+<ul>
+<li><a href="nc/geometry.html"><code>/v3/nc/geometry</code> - Shell geometry used by the machining process</a></li>
+<li><a href="nc/id.html"><code>/v3/nc/id</code> - Find EID number from UUID</a></li>
+<li><a href="nc/project.html"><code>/v3/nc/project</code> - Name for the machining process</a></li>
+<li><a href="nc/state.html"><code>/v3/nc/state</code> - Material removal state for the machining process</a></li>
+<li><a href="nc/workplan.html"><code>/v3/nc/workplan</code> - Machining process, workplans and individual operations</a></li>
+
+<li><code>/v3/nc/setup</code>
+<li><code>/v3/nc/tolerances</code>
+<li><code>/v3/nc/tool</code>
+<li><code>/v3/nc/tools</code>
+<li><code>/v3/nc/workpieces</code>
+
+</ul>
+
+<p>There is also some <a href="older.md">Older API documentation</a>,
+which may be outdated.  The full set of endpoints is as follows:</p>
+
+
+
+<h2>Data Structures</h2>
+<ul>
+<li><a href="nc/geomstruct.html">Geometry</a></li>
+<li><a href="Workpiece-Reference.html">Workpiece</a></li>
+<li><a href="schema.html">State &amp; Geometry info pseudo schema</a></li>
+</ul>
+
+
+
+<h2>Server Client Communication</h2>
+<p>Initial connect:</p>
+<ol>
+<li>Server sends client to browser. Client establishes websocket
+connection to be notified on updates.</li>
+
+<li>Client requests /v3/nc/state/key
+(see <a href="schema.html">Pseudo-Schema</a>) <a href="https://github.com/steptools/NC.js/blob/master/src/client/models/data_loader.js#L361">Code
+in data_loader.js</a></li>
+<li>Client parses keystate (see Client ApplyDelta logic, below) / <a href="https://github.com/steptools/NC.js/blob/mtconnectstepnode2.0.0/src/client/models/data_loader.js#L365">Code in data_loader.js</a></li>
+</ol>
+
+<p>On change (tool movement):</p>
+<ol>
+<li>Server sends {‘nc:delta’, &hellip;} object over
+websocket. <a href="https://github.com/steptools/NC.js/blob/NewDeltas/src/server/api/v3/state.js#L73">Code in state.js</a></li>
+
+<li>Client parses state (see Client ApplyDelta logic, below) / <a href="https://github.com/steptools/NC.js/blob/master/src/client/models/cad_manager.js#L151">Code in cad_manager.js</a></li>
+</ol>
+
+
+
+<h2>Client ApplyDelta logic</h2>
+
+<p>On receipt of a KeyState or DeltaState, the client invokes
+the <a href="https://github.com/steptools/NC.js/blob/master/src/client/models/nc.js#L221">applyDelta function in nc.js</a></p>
+
+<ol>
+<li>Hide any geometry currently displayed</li>
+<li>Call the <a href="https://github.com/steptools/NC.js/blob/NewDeltas/src/client/models/nc.js#L265">dynamicShell handler</a>, which attempts to update the dynamic shell if necessary (if newversion &gt; currentversion).</li>
+<li>Display any requested geometry which is in our local cache</li>
+<li>Queue geometry loads from server for geometry which is not in local cache</li>
+</ol>
+
+</div>
+
+<script src="../js/jquery.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+</body>
+</html>
