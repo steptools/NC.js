@@ -23,14 +23,10 @@
 <a href="#delta"><code>/v3/nc/state/delta</code><br>
 <code>/v3/nc/state/delta/save</code></a><br>
 <a href="#key"><code>/v3/nc/state/key</code></a><br>
-<code>/v3/nc/state/loop</code><br>
-<code>/v3/nc/state/loop/{loopstate}</code><br>
-<code>/v3/nc/state/machine</code><br>
-<code>/v3/nc/state/machine/{id}</code><br>
-<code>/v3/nc/state/machines</code><br>
-<code>/v3/nc/state/mtc</code><br>
-<code>/v3/nc/state/product/:eid(\\d+)</code><br>
-<code>/v3/nc/state/ws/{command}</code></p>
+<a href="#loop"><code>/v3/nc/state/loop</code><br>
+<code>/v3/nc/state/loop/{loopstate}</code></a><br>
+<a href="#product"><code>/v3/nc/state/product/{eid}</code></a><br>
+<a href="#ws"><code>/v3/nc/state/ws/{command}</code></a></p>
 
 <p>Defined in <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/state.js">state.js</a> and  <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/MTstate.js">MTstate.js</a></p>
 
@@ -51,6 +47,99 @@ the current scene for the most recent material removal.</p>
 <p>A GET on the key endpoint will return
 a <a href="state_object.html#key">key state object</a> describing the
 current scene for the most recent material removal.</p>
+
+<h2 id="loop">Get Current Loop State</h2>
+
+<PRE>GET /v3/nc/state/loop</PRE>
+
+<p>GET on the loop endpoint will return an object that describes the
+current status of the simulation loop.  The object has a state field
+with a string value of "play" or "pause", a speed value for the
+playback speed, and the current spindle/feed values.
+
+<p>The value for the playback speed ranges from zero to infinity, with
+a baseline value of 100. 
+</p>
+
+<PRE>
+{
+   "state": 	string,
+   "speed":	double,
+   "spindle":	double,
+   "feed":	double
+}
+</PRE>
+
+<PRE>
+GET /v3/nc/state/loop
+==> {"state":"play","speed":100,"spindle":-9947,"feed":1989.43}
+</PRE>
+
+
+<h2>Change Current Loop State</h2>
+
+<PRE>GET /v3/nc/state/loop/start
+GET /v3/nc/state/loop/stop
+GET /v3/nc/state/loop/{speed}</PRE>
+
+
+<p>GET on the loop endpoint with an state argument will change the
+speed or running state of the simulation loop and return a status
+object as above with just the "state" and "speed" fields.
+
+<p>The acceptable values for state are the strings "start" and "stop",
+or a numeric speed value for the playback speed.
+
+If the simulation has changed from stopped to started,
+a <code>nc:state</code> event is sent to all clients with a string
+argument of "play".
+
+If the simulation has changed from stopped to started,
+a <code>nc:state</code> event is sent to all clients with a string
+argument of "pause".
+
+<p>The speed value ranges from zero to infinity, with a baseline value
+of 100.  If the speed is changed, an <code>nc:speed</code> event is
+sent to all clients with a numeric argument indicating the new speed.
+</p>
+
+
+
+
+<h2 id="product">Get Geometry Reference for Product</h2>
+
+<PRE>GET /v3/nc/state/product/{eid}</PRE>
+
+<p>GET on the state product endpoint with a numeric ID argument will
+return an <a href="state_object.html#key">key state object</a>
+representing the product that is associated with the given eid.</p>
+
+<PRE>
+GET /v3/nc/state/product/8052
+==> {
+   "project": "fishhead_dallas_sandvik-with-asis-11-22",
+   "geom": [
+   	   {"id":"6f2db813-ca58-480e-a92b-8e1d350d40e9",
+ 	    "shape": "6f2db813-ca58-480e-a92b-8e1d350d40e9.json",
+ 	    "xform":[0,-1,0,0,1,0,0,0,0,0,1,0,-47.1694,138.085,-50,1],
+ 	    "bbox": [-147.169,-166.915,-50,60.8691,138.085,5.99996e-10],
+ 	    "usage": ""}
+ 	    ]
+}
+</PRE>
+
+
+<h2 id="ws">Change Current Workingstep</h2>
+
+<PRE>GET /v3/nc/state/ws/next
+GET /v3/nc/state/ws/prev
+GET /v3/nc/state/ws/{id}</PRE>
+
+
+<p>GET on the ws endpoint with an argument will change the current
+workingstep of the simulation loop.  The acceptable argument values
+are the strings "next" and "prev", or a numeric ID for the workingstep
+to focus on.</p>
 
 
 </div>

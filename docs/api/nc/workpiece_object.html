@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Workpiece Object</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="tolerances.html">Tolerances</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="../index.html">REST API</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="../../index.html">Back to Docs</a>
+</nav>
+
+<h1>Workpiece Object</h1>
+
+<p>The workpiece object describes a product defined by the digital
+thread model.  A workpiece object describes the ID, name, and other
+associated information.
+
+<PRE>
+{
+  "id":		int,
+  "name":	string,
+  "workingsteps": int[],
+  "wpType":	string,
+  "tolerances":	int[],
+  "datums":	string[],
+  "children":	int[],
+  "type":	string,
+  "size":{
+    "x": double, "y": double, "z": double,
+    "length": double,
+    "width":  double,
+    "height": double
+  },
+}
+</PRE>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th> 	<th>Type</th> 	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>The unique identifier for the workpiece.</td>
+</tr>
+
+<tr>
+<td>name</td>
+<td>string</td>
+<td>The workpiece name, if any.</td>
+</tr>
+
+<tr>
+<td>workingsteps</td>
+<td>int[]</td>
+<td>An array of integer identifiers for the workingsteps that operate
+on the workpiece.</td>
+</tr>
+
+<tr>
+<td>wpType</td>
+<td>string</td>
+<td>Always "workpiece" for objects returned by
+the <a href="workpieces.html">workpieces</a> endpoint.</td>
+</tr>
+
+<tr>
+<td>tolerances</td>
+<td>int[]</td>
+<td>An array containing the identifiers for all tolerances on a
+workpiece including any tolerances on its subassemblies.</td>
+</tr>
+
+<tr>
+<td>datums</td>
+<td>string[]</td>
+<td>An array containing the names of all datums on a workpiece
+including any datums on its subassemblies.</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>Always "workpiece" for objects returned by
+the <a href="workpieces.html">workpieces</a> endpoint.</td>
+</tr>
+
+<tr>
+<td>children</td>
+<td>int[]</td>
+<td>Always an empty array.</td>
+</tr>
+
+<tr>
+<td>subs</td>
+<td>object[]</td>
+<td>Always an empty array.</td>
+</tr>
+
+<tr>
+<td>size</td>
+<td>object</td>
+<td>The size is an object containing the length, width, and height of
+a block surrounding the workpiece geometry, plus the smallest x, y and
+z values in the coordinates of the geometry.</td>
+</tr>
+
+</tbody>
+</table>
+
+
+<p>For example, the following describes a surface profile tolerance
+with several datums:</p>
+<PRE>
+{
+  "8052": {
+    "id":8052,
+    "name":"unnamed workpiece",
+    "workingsteps":[86380, 86394, 86401, 87417, 87426, 87444],
+    "wpType":"workpiece",
+    "datums":[],
+    "children":[],
+    "type":"workpiece",
+    "size":{
+      "x":-43.150178113500004,
+      "y":-14.415078999999992,
+      "z":-50,
+      "length":50.0000000006,
+      "width":208.03847577300002,
+      "height":305}
+  },
+  "10504":{
+    "id":10504,
+    "name":"asis84155",
+    "workingsteps":[86394],
+    "wpType":"workpiece",
+    "datums":[],
+    "children":[],
+    "type":"workpiece",
+    "size":{
+      "x":0,
+      "y":0,
+      "z":0,
+      "length":0,
+      "width":0,
+      "height":0}
+  }
+}
+</PRE>
+
+
+
+</div>
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

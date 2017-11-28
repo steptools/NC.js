@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Tool Object</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="tolerances.html">Tolerances</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="../index.html">REST API</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="../../index.html">Back to Docs</a>
+</nav>
+
+<h1>Tool Object</h1>
+
+<p>The tool object describes a cutting tool defined by the digital
+thread model.  A tool object describes the ID, name, and other
+associated information.
+
+<PRE>
+{
+    "id":	int,
+    "name":	string,
+    "type":	string,
+    "toolType":	string, 
+    "workingsteps": 	int[],
+    "diameter":		double,
+    "diameterUnit":	string,
+    "cornerRadius":	double,
+    "cornerRadiusUnit":	string,
+    "length": 		double,
+    "lengthUnit":	string
+}
+</PRE>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th> 	<th>Type</th> 	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>The unique identifier for the tool.</td>
+</tr>
+
+<tr>
+<td>name</td>
+<td>string</td>
+<td>The tool name, if any.</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>Always "tool" for objects returned by
+the <a href="tools.html">tools</a> endpoint.</td>
+</tr>
+
+<tr>
+<td>toolType</td>
+<td>string</td>
+<td>A string describing the general type of tool.  Most tools will
+return "User Defined Milling Tool", but "Touch Probe" is another
+string that may appear.</td>
+</tr>
+
+<tr>
+<td>workingsteps</td>
+<td>int[]</td>
+<td>An array containing the identifiers for all workingsteps that use
+the tool.</td>
+</tr>
+
+<tr>
+<td>diameter</td>
+<td>double</td>
+<td>The numeric value of the cutter diameter.</td>
+</tr>
+<tr>
+<tr>
+<td>diameterUnit</td>
+<td>string</td>
+<td>The name of the unit that applies to the diameter value.</td>
+</tr>
+<tr>
+
+
+<tr>
+<td>cornerRadius</td>
+<td>double</td>
+<td>The numeric value of the cutter corner radius.</td>
+</tr>
+<tr>
+<tr>
+<td>cornerRadiusUnit</td>
+<td>string</td>
+<td>The name of the unit that applies to the corner radius value.</td>
+</tr>
+<tr>
+
+
+<tr>
+<td>length</td>
+<td>double</td>
+<td>The numeric value of the length radius.</td>
+</tr>
+<tr>
+<tr>
+<td>lengthUnit</td>
+<td>string</td>
+<td>The name of the unit that applies to the length value.</td>
+</tr>
+<tr>
+</tbody>
+</table>
+
+
+<p>For example, the following describes a pair of end-mills	:</p>
+<PRE>
+[
+  {
+    "id":87713,
+    "name":"End Mill 44 mm",
+    "type":"tool",
+    "toolType":"User Defined Milling Tool",
+    "workingsteps":[86380, 86499, 86506, 86513],
+    "diameter":44,
+    "diameterUnit":"mm",
+    "cornerRadius":4,
+    "cornerRadiusUnit":"mm",
+    "length":2.2250738585072014e-308,
+    "lengthUnit":""
+  },
+  {
+    "id":87753,
+    "name":"End Mill 20 mm",
+    "type":"tool",
+    "toolType":"User Defined Milling Tool",
+    "workingsteps":[86520, 86527, 86534, 86541, 86548],
+    "diameter":20,
+    "diameterUnit":"mm",
+    "cornerRadius":4,
+    "cornerRadiusUnit":"mm",
+    "length":2.2250738585072014e-308,
+    "lengthUnit":""
+  }
+]
+</PRE>
+
+
+
+</div>
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

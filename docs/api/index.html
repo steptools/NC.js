@@ -39,16 +39,23 @@ main concepts are as below:
 
 <li><a href="nc/tolerances.html"><code>/v3/nc/tolerances</code> - Tolerances applied to the digital thread model</a></li>
 
-<li><code>/v3/nc/tool</code>
-<li><code>/v3/nc/tools</code>
-<li><code>/v3/nc/workpieces</code>
+<li><a href="nc/tool.html"><code>/v3/nc/tool</code> - Test if tool is enabled</a></li>
 
+<li><a href="nc/tools.html"><code>/v3/nc/tools</code> - Find all tools or tool used by a workingstep</a></li>
+
+<li><a href="nc/workpieces.html"><code>/v3/nc/workpieces</code> - Basic information about all workpieces in the digital thread model</a></li>
 </ul>
+<p>These API endpoints return JSON objects describing
+<a href="nc/geometry_object.html">3D geometry</a> and
+<a href="nc/state_object.html">simulation state</a>,
+<a href="nc/workplan_object.html">machining process</a>,
+<a href="nc/workpiece_object.html">workpieces</a>,
+<a href="nc/tolerance_object.html">tolerances</a>, and 
+<a href="nc/tool_object.html">cutting tools</a>.</p>
 
-<p>There is also some <a href="older.md">Older API documentation</a>,
-which may be outdated.  There is also an
-older <a href="schema.html">summary of the objects passed by the
-server</a>
+<p>Custom Apps may need new endpoints for value-added operations.
+These should be placed under <code>/v3/custom</code> to keep them
+separate from the baseline endpoints.</p>
 
 
 <H2 id="events">Server Events</H2>
@@ -57,10 +64,9 @@ server</a>
 for notifications.  The server emits the following notifications
 
 <ul>
-<li><code id="delta">nc:delta</code> - Issued every time the
-machine tool position changes or material removal occurs.  The
-argument is a <a href="nc/state_object.html#delta">delta state
-object</a>
+<li><code id="delta">nc:delta</code> - Issued when the machine tool
+position changes or material removal occurs.  The argument is
+a <a href="nc/state_object.html#delta">delta state object</a>
 
 <li><code id="feed">nc:feed</code> - Issued every time the
 machine tool feedrate changes.  The argument is the numeric value of
@@ -68,40 +74,53 @@ the new feed.
 
 <li><code id="mtc">nc:mtc</code>  (MTstate.js)
 <li><code id="probe">nc:probe</code>
-<li><code id="qifLoad">nc:qifLoad</code> (tolerances.js)
-<li><code id="speed">nc:speed</code> Defined in state.js.
+<li><code id="qifLoad">nc:qifLoad</code> - Issued when a QIF file is
+loaded and applied to the tolerances in the digital thread model.  See
+the <a href="nc/tolerances.html#qifload">qif load endpoint</a> for
+discussion.</li>
+
+<li><code id="speed">nc:speed</code> - Issued whenever the simulation
+speed slider is changed.  The argument is the new numeric value for
+the speed factor.  See the <a href="nc/state.html#loop">state loop
+endpoint</a> for more information.</li>
 
 <li><code id="spindle">nc:spindle</code> - Issued every time the
 machine tool spindle speed changes.  The argument is the numeric value
 of the new spindle speed.  Defined in state.js.
 
-<li><code id="state">nc:state</code>
+<li><code id="state">nc:state</code> - Issued whenever the simulation
+loop starts or stops.  the argument is the string "play" when the loop
+has started, and "pause" when the loop has stopped.
 </ul>
 
 
-<h2>Server Client Communication</h2>
-<p>Initial connect:</p>
-<ol>
-<li>Server sends client to browser. Client establishes websocket
-connection to be notified on updates.</li>
+<H2>Server / Client Communication</H2>
 
-<li>Client requests /v3/nc/state/key
-(see <a href="schema.html">Pseudo-Schema</a>) <a href="https://github.com/steptools/NC.js/blob/master/src/client/models/data_loader.js#L361">Code
-in data_loader.js</a></li>
-<li>Client parses keystate (see Client ApplyDelta logic, below) / <a href="https://github.com/steptools/NC.js/blob/mtconnectstepnode2.0.0/src/client/models/data_loader.js#L365">Code in data_loader.js</a></li>
-</ol>
+<p>Upon inital connection to the server, the server will send the
+packaged client javascript to the browser.  This client will then
+establishes a websocket connection back to the server to listen for
+the server events described above.
 
-<p>On change (tool movement):</p>
-<ol>
-<li>Server sends {‘nc:delta’, &hellip;} object over
-websocket. <a href="https://github.com/steptools/NC.js/blob/NewDeltas/src/server/api/v3/state.js#L73">Code in state.js</a></li>
+<p>The first action of the client is to GET /v3/nc/state/key, and
+receive a <a href="state_object.html#key">key state object</a> that
+describes the initial position of everything in the digital thread
+model.  The client will parse the key state and executes the
+ApplyDelta logic described below.
+(<a href="https://github.com/steptools/NC.js/blob/master/src/client/models/data_loader.js">Code in data_loader.js</a></p>
 
-<li>Client parses state (see Client ApplyDelta logic, below) / <a href="https://github.com/steptools/NC.js/blob/master/src/client/models/cad_manager.js#L151">Code in cad_manager.js</a></li>
-</ol>
+<p>Whenever the tool moves, the server will send
+an <code>nc:delta</code> event over the websocket, with
+a <a href="state_object.html#delta">delta state object</a> that
+describes the new dynamic shell and the positions of everything.  The
+client will parse the delta state and executes the ApplyDelta logic
+described below. <a href="https://github.com/steptools/NC.js/blob/master/src/client/models/cad_manager.js#L151">Code in cad_manager.js</a></p>
+
+<p>Other events are occasionally generated, and the client responds by
+updating the responsive view with new feed rates, spindle speeds,
+speed slider position, play/pause button, etc.
 
 
-
-<h2>Client ApplyDelta logic</h2>
+<H3>Client ApplyDelta logic</H3>
 
 <p>On receipt of a KeyState or DeltaState, the client invokes
 the <a href="https://github.com/steptools/NC.js/blob/master/src/client/models/nc.js#L221">applyDelta function in nc.js</a></p>
