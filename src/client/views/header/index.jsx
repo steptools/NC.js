@@ -132,6 +132,9 @@ class TolBtn extends React.Component {
     if(this.props.view ==='noview') eventArgs.show = true;
     this.props.actionManager.emit('changeVis',eventArgs);
   }
+  refreshClick(){
+   request.get('/v3/nc/geometry/delta/tolerance/reset').end(); 
+  }
   render() {
     let icon = getIcon(this.props.view);
     let iid='';
@@ -140,7 +143,7 @@ class TolBtn extends React.Component {
       <MenuItem {...this.props} className = "button">
         <div className="geom">
           <div className={icon} id={iid} onClick = {this.visClick} />
-          <div className={getIcon("reset")} onClick = {()=>{request.get('/v3/nc/geometry/delta/tolerance/reset')}}/>
+          <div className={getIcon("reset")} onClick = {this.refreshClick}/>
         </div>
         {this.props.children}
       </MenuItem>
