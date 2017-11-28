@@ -117,6 +117,36 @@ class GeomBtn extends React.Component {
     );
   }  
 }
+class TolBtn extends React.Component {
+  constructor(props) {
+    super(props);
+    this.dlClick = this.dlClick.bind(this);
+    this.visClick = this.visClick.bind(this);
+  }
+
+  dlClick(info){
+    this.props.actionManager.emit('STLDL',this.props.type);
+  }
+  visClick(info){
+    let eventArgs = {'usage':this.props.type};
+    if(this.props.view ==='noview') eventArgs.show = true;
+    this.props.actionManager.emit('changeVis',eventArgs);
+  }
+  render() {
+    let icon = getIcon(this.props.view);
+    let iid='';
+    if(this.props.iid) iid=this.props.iid;
+    return (
+      <MenuItem {...this.props} className = "button">
+        <div className="geom">
+          <div className={icon} id={iid} onClick = {this.visClick} />
+          <div className={getIcon("reset")} onClick = {()=>{request.get('/v3/nc/geometry/delta/tolerance/reset')}}/>
+        </div>
+        {this.props.children}
+      </MenuItem>
+    );
+  }  
+}
 class Slider extends React.Component {  constructor(props) {
     super(props);
     this.changed = this.changed.bind(this);
@@ -270,6 +300,7 @@ class GeomMenu extends React.Component {
         <GeomBtn actionManager = {this.props.actionManager} view={this.state.fixture} type='fixture'>Fixture</GeomBtn>
         <GeomBtn actionManager = {this.props.actionManager} view={this.state.machine} type='machine'>Machine</GeomBtn>
         <GeomBtn actionManager = {this.props.actionManager} view={this.state.inprocess} type='inprocess'>Removal</GeomBtn>
+        <TolBtn actionManager = {this.props.actionManager} view={this.state.tolerance} type='tolerance'>Tolerance</TolBtn>
         <Button icon={this.state.toolpath} key='toolpath'>Toolpath</Button>
       </SubMenu>
   )}

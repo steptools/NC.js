@@ -46,7 +46,17 @@ function _getDelta(req,res){
   res.setHeader('Content-Type', 'application/json');
   res.status(200).send(__curdelt);
 }
-
+function _getDeltaTol(req,res){
+  res.setHeader('Content-Type','application/json');
+  return ms.GetToleranceGeometryJSON().then((r)=>{
+    res.status(200).send(r);
+  });
+}
+function _setDeltaTol(req,res){
+  return ms.ResetToleranceGeometry().then(()=>{
+    res.status(200).send();
+  });
+}
 function _resetDelta(req,res){
   ms.ResetDynamicGeometry().then(()=>{
     _curdeltv = -1;
@@ -99,6 +109,8 @@ module.exports = function(globalApp, cb){
   app.router.get('/v3/nc/geometry/tool/:id', _getToolGeometry);
   app.router.get('/v3/nc/geometry/product/:uuid', _getProductGeometry);
   app.router.get('/v3/nc/geometry/:uuid', _getUUIDGeometry);
+  app.router.get('/v3/nc/geometry/delta/tolerance', _getDeltaTol);
+  app.router.get('/v3/nc/geometry/delta/tolerance/reset', _setDeltaTol);
   app.router.get('/v3/nc/geometry/delta/reset', _resetDelta);
   app.router.get('/v3/nc/geometry/delta/:version', _getDelta);
   app.router.get('/v3/nc/id/:uuid', _getEIDfromUUID);

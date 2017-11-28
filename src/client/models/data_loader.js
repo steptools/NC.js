@@ -199,7 +199,7 @@ export default class DataLoader extends THREE.EventDispatcher {
         let req, shell, anno;
         // console.log("Worker Data: " + event.data.file);
         // Find the request this message corresponds to
-        if (_.indexOf(["stateLoad", "shapeLoad", "shellLoad", "annotationLoad", "loadError", "previewLoad", "previewEndLoad"], event.data.type) != -1) {
+        if (_.indexOf(["stateLoad", "shapeLoad","toleranceLoad", "shellLoad", "annotationLoad", "loadError", "previewLoad", "previewEndLoad"], event.data.type) != -1) {
             req = this._loading[event.data.workerID];
         }
         // Put worker back into the queue - if it is the time
@@ -252,6 +252,18 @@ export default class DataLoader extends THREE.EventDispatcher {
                     req.callback(sh);
                 }
                 break;
+            case "toleranceLoad":
+                console.log('here');
+                let r =[];
+                r.push({
+                    'geom':event.data.data,
+                    'type':'mesh'
+                    });
+                let tolsh = new Shape(r,this._app.cadManager,event.data.id);
+                if(req.callback) {
+                    req.callback(tolsh);
+                }
+                break;
             case "workerFinish":
                 this.dispatchEvent({ type: "workerFinish", file: event.data.file });
                 break;
@@ -282,6 +294,7 @@ export default class DataLoader extends THREE.EventDispatcher {
             url: req.baseURL + '/' + req.type + '/' + req.path,
             workerID: req.workerID,
             type: req.type,
+            id: req.id,
             dataType: req.dataType ? req.dataType : 'json'
         };
         
@@ -295,6 +308,8 @@ export default class DataLoader extends THREE.EventDispatcher {
         }
         else if (data.type === "shape") {
             let newpath = (req.baseURL).split('state')[0];
+        } else if (data.type ==="toleranceShell") {
+            data.url = req.baseURL + '/geometry/delta/tolerance';
         }
         worker.postMessage(data);
     }

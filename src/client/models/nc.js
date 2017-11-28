@@ -66,6 +66,7 @@ export default class NC extends THREE.EventDispatcher {
         cutter:     true,
         inprocess:  true,
         toolpath:   true,
+        tolerance:  true,
         fixture:    true
       }
     };
@@ -163,11 +164,17 @@ export default class NC extends THREE.EventDispatcher {
       });
       this.state.usagevis.inprocess = !this.state.usagevis.inprocess;
       break;
+      case 'tolerance':
+      changes = _.filter(this._curObjects,(obj)=>{
+        return obj.usage==='tolerance';
+      });
+      break;
       case 'toolpath':
       changes = _.filter(this._curObjects,(obj)=>{
         return obj.usage==='toolpath';
       });
       this.state.usagevis.toolpath=!this.state.usagevis.toolpath;
+      break;
       default:
       break;
     }
@@ -423,10 +430,16 @@ export default class NC extends THREE.EventDispatcher {
             return;
           } else {
             loadingct++;
+            let path = geomref.id;
+            let type = 'geometry';
+            if(geomref.usage==='tolerance') {
+              type = 'toleranceShell';
+            }
             this._loader.addRequest({
-              path:geomref.id,
               baseURL:'/v3/nc',
-              type: 'geometry'
+              id: geomref.id,
+              'path':path,
+              'type': type
             },(ev)=>{
               this._objectCache[geomref.id] = ev;
               this._objectCache[geomref.id].addToScene(geomref.bbox, geomref.xform,sequence);

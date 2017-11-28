@@ -145,6 +145,19 @@ function processShapeJSON(url, workerID, data) {
         'workerID': workerID
     });
 }
+function processToleranceJSON(url,workerID,data){
+    self.postMessage({
+        'type': 'toleranceLoad',
+        'data':data,
+        'id': data.id,
+        'workerID':workerID
+    });
+    self.postMessage({
+        type: "workerFinish",
+        workerID: workerID,
+        file: data.id
+    });
+}
 /*********************************************************************/
 
 
@@ -162,6 +175,7 @@ let messageHandler = function(e) {
     // using arrow function to bind 'this' to the higher-level 'self'
     let loadCb = (res) => {
         //TODO: MAKE THIS LESS HARDCODED
+        let rtn = '';
         let file = parts.slice(-2, -1).join('/');
         if (file === 'state') {
             file = parts.slice(-2).join('/');
@@ -207,10 +221,15 @@ let messageHandler = function(e) {
             case "nc":
                 processNCState(url, workerID, res.text);
                 break;
+            case "toleranceShell":
+                rtn = res.body;
+                rtn.id = e.data.id;
+                processToleranceJSON(url, workerID, rtn);
+            break;
             case "shape":
             case "geometry":
-                let rtn = res.body;
-                rtn.id = parts[4];
+                rtn = res.body;
+                rtn.id = e.data.id;
                 processShapeJSON(url,workerID, rtn);
                 break;
             default:
