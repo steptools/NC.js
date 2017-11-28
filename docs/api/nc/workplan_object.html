@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Workplan Executable Object</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="workplan.html">Workplan</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="../index.html">REST API</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="../../index.html">Back to Docs</a>
+</nav>
+
+<h1>Workplan Executable Object</h1>
+
+<p>The executable objects describe a STEP-NC process.  A process is
+composed of a nested series of executables.  Each object has
+a <code>type</code> field that identifies the kind of executable the
+object represents.  The values are:
+
+<ul>
+<li><code>"workingstep"</code> - A workingstep, which describes a
+single machining operation with some toolpaths.
+
+<li><code>"workplan"</code> or <code>"workplan-setup"</code> -
+Workplans contain a sequence of executables in
+the <code>children</code> field.  Some workplans have a setup
+transform to describe a fixturing of the part.
+
+<li><code>"selective"</code> - Selectives contain a set of alternative
+executables in the <code>children</code> field.
+</ul>
+
+<p>The full set of object fields are as follows:
+
+
+<pre>
+{
+  'id': 	string,
+  'name': 	string,
+  'type': 	string,
+  'baseTime': 	double,
+  'timeUnits': 	string,
+  'distance': 	double,
+  'distanceUnits': string,
+  'setupID': 	int,
+  'asIs': 	workpieceref,
+  'toBe': 	workpieceref,
+  'delta': 	workpieceref,
+  'children': 	Executable[],
+  'enabled':  	bool
+}
+
+// When type === "workingstep", there will be additional properties:
+{
+  tool: 	string,
+  feedRate: 	double,
+  feedUnits: 	string,
+  speed: 	double,
+  speedUnits:	string,
+  color:	double[3]
+}
+</pre>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th> 	<th>Type</th> 	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>The unique identifier for the Executable.</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>The executable’s name, if any.</td>
+</tr>
+<tr>
+<td>type</td>
+<td>string</td>
+<td>The specific type of the executable.  The type string will be one
+of <code>"Nc
+Function"</code>, <code>"workingstep"</code>, <code>"selective"</code>,
+<code>"workplan"</code>, or <code>"workplan-setup"</code>.  The leaf
+nodes of the executable tree are of type <code>"Nc Function"</code>
+or <code>"workingstep"</code></td>
+
+</tr>
+<tr>
+<td>baseTime</td>
+<td>double</td>
+<td>The expected amount of time to complete this operation (and its children, if any).</td>
+</tr>
+<tr>
+<td>timeUnits</td>
+<td>string</td>
+<td>The unit of baseTime. Usually Seconds?</td>
+</tr>
+<tr>
+<td>distance</td>
+<td>double</td>
+<td>The total length the tool moves in this operation (and its children, if any).</td>
+</tr>
+<tr>
+<td>distanceUnits</td>
+<td>string</td>
+<td>The name of the units the distance property is measured in.</td>
+</tr>
+<tr>
+<td>setupID</td>
+<td>int</td>
+<td>The ID of the enclosing workplan with setup that this executable
+is in. (The setup endpoint just returns the setup ID. This should
+become a UUID by the time a proper setup endpoint is made.)</td>
+</tr>
+<tr>
+<td>asIs</td>
+<td><a href="Workpiece-Reference.md">workpieceref</a></td>
+<td>A reference to the As Is (Initial) workpiece for this executable</td>
+</tr>
+<tr>
+<td>toBe</td>
+<td><a href="Workpiece-Reference.md">workpieceref</a></td>
+<td>A reference to the To Be (Final) workpiece for this executable</td>
+</tr>
+<tr>
+<td>delta</td>
+<td><a href="Workpiece-Reference.md">workpieceref</a></td>
+<td>A reference to the delta (Removed) workpiece for this executable</td>
+</tr>
+<tr>
+<td>children</td>
+<td>Executable[]</td>
+<td>An array of Executables beneath this one in the workplan.</td>
+</tr>
+<tr>
+<td>enabled</td>
+<td>bool</td>
+<td>Whether or not this Executable is Enabled. If false, all children should also be disabled.</td>
+</tr>
+</tbody>
+
+<thead>
+<tr><th colspan=3><h3>When type === "workingstep"</h3></th></tr>
+</thead>
+<tbody>
+<tr>
+<td>tool</td>
+<td>string</td>
+<td>The ID for the tool this workingstep uses. See <a href="tool.html">Tool Endpoint</a>.</td>
+</tr>
+<tr>
+<td>feedRate</td>
+<td>double</td>
+<td>The rate which the tool moves for this workingstep.</td>
+</tr>
+<tr>
+<td>feedUnits</td>
+<td>string</td>
+<td>The unit feedRate is in.</td>
+</tr>
+<tr>
+<td>speed</td>
+<td>double</td>
+<td>The spindle speed for this workingstep.</td>
+</tr>
+<tr>
+<td>speedUnits</td>
+<td>string</td>
+<td>The unit speed is in.</td>
+</tr>
+<tr>
+<td>color</td>
+<td>double[3]</td>
+<td>The RGB color assigned to the workingstep for identifying faces
+machined by that step. The color is represented as three values using
+(0..1) ranges.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<H2>Example Process</H2>
+
+
+<p>The sample data below describes a workplan named "Operation 1" with
+three workingsteps named "WS 1", "WS 2", and "WS 3".
+
+
+<PRE>
+{
+  "id": 86957,
+  "name": "Operation 1",
+  "baseTime": 296.9719054465057,
+  "timeUnits": "second",
+  "distance": 55130.487150696106,
+  "distanceUnits": "mm",
+  "setupID": 0,
+  "asIs": { "id": 8373, "inherited": true },
+  "toBe": { "id": 8052, "inherited": true },
+  "delta": null,
+  "children": [
+    {
+      "id": 84140,
+      "name": "WS 1",
+      "baseTime": 31.842456700803915,
+      "timeUnits": "second",
+      "distance": 6048.203187781216,
+      "distanceUnits": "mm",
+      "setupID": 0,
+      "asIs": { "id": 8373, "inherited": true },
+      "toBe": { "id": 8052, "inherited": true },
+      "delta": null,
+      "enabled": true,
+      "type": "workingstep",
+      "tool": 85473,
+      "feedRate": 8355.9,
+      "feedUnits": "mm/min",
+      "speed": -7958,
+      "speedUnits": "rpm",
+      "color": [0.250980, 0.250980, 0.250980]
+    },
+    {
+      "id": 84154,
+      "name": "WS 2",
+      "baseTime": 0.7953522517506468,
+      "timeUnits": "second",
+      "distance": 304.9935507459534,
+      "distanceUnits": "mm",
+      "setupID": 0,
+      "asIs": { "id": 87198, "inherited": false },
+      "toBe": { "id": 8052, "inherited": true },
+      "delta": null,
+      "enabled": true,
+      "type": "workingstep",
+      "tool": 85473,
+      "feedRate": 8355.9,
+      "feedUnits": "mm/min",
+      "speed": -7958,
+      "speedUnits": "rpm",
+      "color": [0.250980, 0.250980, 0.250980]
+    },
+    {
+      "id": 84161,
+      "name": "WS 3",
+      "baseTime": 59.973562186600205,
+      "timeUnits": "second",
+      "distance": 11951.802248441392,
+      "distanceUnits": "mm",
+      "setupID": 0,
+      "asIs": { "id": 87289, "inherited": false },
+      "toBe": { "id": 8052, "inherited": true },
+      "delta": null,
+      "enabled": true,
+      "type": "workingstep",
+      "tool": 85473,
+      "feedRate": 8355.9,
+      "feedUnits": "mm/min",
+      "speed": -7958,
+      "speedUnits": "rpm",
+      "color": [0.250980, 0.250980, 0.250980]
+    }],
+  "enabled": true,
+  "type": "workplan"
+} 
+</PRE>
+
+
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

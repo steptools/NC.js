@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Setup</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="../index.html">REST API</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="../../index.html">Back to Docs</a>
+</nav>
+
+<h1>Setup</h1>
+<p>
+<code>/v3/nc/setup/{id}</code></p>
+
+<p>Defined in <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/step.js">step.js</a></p>
+
+
+<h2 id="delta">Get Setup Workplan ID</h2>
+
+<PRE>GET /v3/nc/setup/{id}</PRE>
+
+<p>Getting the setup endpoint for a given executable id will return
+the numeric ID of the enclosing workplan with setup that this
+executable is in.  This is the same value held by the setupID field of
+the executable object.
+
+<p>For example, given some workplan structure as below:</p>
+<PRE>
+{
+  "id":320827,
+  "name":"HARDMOLDY",
+  "setupID":320827,
+  "type":"workplan-setup",
+  "children":[
+    {"id":319589,
+     "name":"Profiling",
+     "setupID":320827,
+     "type":"selective",
+     "children":[
+       {
+	 "id":320865,
+	 "name":"Iscar",
+	 "setupID":320827,
+	 "type":"workplan",
+	 "children":[
+	   {"id":316657,
+	    "name":"2D High Speed (2D Dynamic Core mill)",
+	    "setupID":320827,
+	    "type":"workingstep",
+	   },
+	   {
+	     "id":316671,
+	     "name":"Contour (2D)",
+	     "setupID":320827,
+	     "type":"workingstep",
+	   }]
+       }]
+    }]
+}
+</PRE>
+
+<p>All calls with these elements return the ID of the enclosing setup
+workplan (320827).</p>
+
+<PRE>
+GET /v3/nc/setup/320827
+==> returns 320827
+
+GET /v3/nc/setup/319589
+==> returns 320827
+
+GET /v3/nc/setup/316671
+==> returns 320827
+</PRE>
+
+
+
+</div>
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

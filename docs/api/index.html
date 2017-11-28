@@ -35,8 +35,10 @@ main concepts are as below:
 <li><a href="nc/state.html"><code>/v3/nc/state</code> - Material removal state for the machining process</a></li>
 <li><a href="nc/workplan.html"><code>/v3/nc/workplan</code> - Machining process, workplans and individual operations</a></li>
 
-<li><code>/v3/nc/setup</code>
-<li><code>/v3/nc/tolerances</code>
+<li><a href="nc/setup.html"><code>/v3/nc/setup</code> - ID of enclosing workplan with setup transform</a></li>
+
+<li><a href="nc/tolerances.html"><code>/v3/nc/tolerances</code> - Tolerances applied to the digital thread model</a></li>
+
 <li><code>/v3/nc/tool</code>
 <li><code>/v3/nc/tools</code>
 <li><code>/v3/nc/workpieces</code>
@@ -44,17 +46,37 @@ main concepts are as below:
 </ul>
 
 <p>There is also some <a href="older.md">Older API documentation</a>,
-which may be outdated.  The full set of endpoints is as follows:</p>
+which may be outdated.  There is also an
+older <a href="schema.html">summary of the objects passed by the
+server</a>
 
 
+<H2 id="events">Server Events</H2>
 
-<h2>Data Structures</h2>
+<p>At startup, the client opens a websocket on the server and listens
+for notifications.  The server emits the following notifications
+
 <ul>
-<li><a href="nc/geomstruct.html">Geometry</a></li>
-<li><a href="Workpiece-Reference.html">Workpiece</a></li>
-<li><a href="schema.html">State &amp; Geometry info pseudo schema</a></li>
-</ul>
+<li><code id="delta">nc:delta</code> - Issued every time the
+machine tool position changes or material removal occurs.  The
+argument is a <a href="nc/state_object.html#delta">delta state
+object</a>
 
+<li><code id="feed">nc:feed</code> - Issued every time the
+machine tool feedrate changes.  The argument is the numeric value of
+the new feed.
+
+<li><code id="mtc">nc:mtc</code>  (MTstate.js)
+<li><code id="probe">nc:probe</code>
+<li><code id="qifLoad">nc:qifLoad</code> (tolerances.js)
+<li><code id="speed">nc:speed</code> Defined in state.js.
+
+<li><code id="spindle">nc:spindle</code> - Issued every time the
+machine tool spindle speed changes.  The argument is the numeric value
+of the new spindle speed.  Defined in state.js.
+
+<li><code id="state">nc:state</code>
+</ul>
 
 
 <h2>Server Client Communication</h2>

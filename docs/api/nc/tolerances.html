@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Tolerances</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="../index.html">REST API</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="../../index.html">Back to Docs</a>
+</nav>
+
+<h1>Tolerances</h1>
+<p><code>/v3/nc/tolerances/</code><br>
+<code>/v3/nc/tolerances/:wsId</code><br>
+<code>/v3/nc/tolerances/qif/load</code><br>
+<code>/v3/nc/tolerances/qif/unload</code></p>
+
+<p>Defined in <a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/tolerances.js">tolerances.js</a></p>
+
+
+<h2 id="all">Get All Tolerances</h2>
+
+<PRE>GET /v3/nc/tolerances</PRE>
+
+<p>Getting the tolerances endpoint will return an array of all
+<a href="tolerance_object.html">tolerance objects</a> defined by the
+digital thread model.
+
+<p>The tolerance objects define the ID, name, type, and value of each
+tolerance, as well as any modifiers, datums, or status information.</p>
+
+
+<h2 id="ws">Get Tolerances For a Workingstep</h2>
+
+<PRE>GET /v3/nc/tolerances/{wsId}</PRE>
+
+<p>Getting the tolerances endpoint with a particular workingstep ID
+will return an array of all
+<a href="tolerance_object.html">tolerance objects</a> that are
+associated with that machining operation.</p>
+
+
+
+<h2 id="qifload">Load QIF Measurement Data</h2>
+
+<PRE>GET /v3/nc/tolerances/qif/load</PRE>
+
+<p>Getting the QIF load endpoint will parse a QIF file and apply the
+measured values to each of the matching tolerances in the digital
+thread model.  At the moment, the location of the QIF file is hard
+coded to "swim:5000/assets/&lt;ProjectName&gt;_RES.qif".  This can be
+found in the 
+<a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/parseqif.js">parseqif.js</a> file.
+
+
+<h2 id="qifunload">Unload QIF Measurement Data</h2>
+
+<PRE>GET /v3/nc/tolerances/qif/unload</PRE>
+
+<p>Getting the QIF load endpoint will reset the measurement state of
+all tolerances in the digital thread model.
+
+
+</div>
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>

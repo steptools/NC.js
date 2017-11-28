@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Tolerance Object</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="tolerances.html">Tolerances</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right m-l" href="../index.html">REST API</a>
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="../../index.html">Back to Docs</a>
+</nav>
+
+<h1>Tolerance Object</h1>
+
+<p>The tolerance object describes a geometric tolerance or dimension
+defined by the digital thread model.  A tolerance object describes the
+ID, name, type, and value of each tolerance, as well as any modifiers,
+datums, or status information.
+
+
+<PRE>
+{
+  "id":		int,
+  "type":	string,
+  "name":	string,
+  "tolTypeName": string,
+  "toleranceType": string,
+  "value":	double,
+  "unit":	string,
+  "faces":	int[],
+  "range":	{"flag": bool, "lower": double, "upper": double},
+  "rangeName":	string,
+  "modifiers":	string[],
+  "modName":	string
+  "children":	tolerance[],
+  "status":	string
+}
+</PRE>
+
+<table class="table table-striped">
+<thead>
+<tr><th>Property</th> 	<th>Type</th> 	<th>Description</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>The unique identifier for the Tolerance.</td>
+</tr>
+<tr>
+<td>type</td>
+<td>string</td>
+<td>The specific type of the tolerance.  The type string will be one
+of <code>"tolerance"</code> or <code>"datum"</code>.</td>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>The tolerance name, if any.</td>
+</tr>
+<tr>
+<td>tolTypeName</td>
+<td>string</td>
+<td>A full name of the STEP tolerance type.</td>
+</tr>
+<tr>
+<td>tolType</td>
+<td>string</td>
+<td>A short identifier for the STEP tolerance type.</td>
+</tr>
+
+<tr>
+<td>value</td>
+<td>double</td>
+<td>Numeric value for the tolerance value or nominal value of a dimension.</td>
+</tr>
+
+<tr>
+<td>unit</td>
+<td>string</td>
+<td>Name of the unit for the value.</td>
+</tr>
+<tr>
+<td>faces</td>
+<td>int[]</td>
+<td>An array of integer ids for the geometry faces that the tolerance
+is applied to.</td>
+</tr>
+<tr>
+<td>range</td>
+<td>object</td>
+<td>An object with a boolean flag value, and upper and lower numeric
+values.  Typically only applied to dimensions, as geometric tolerances
+completely define their tolerance zone with the base value.</td>
+</tr>
+<tr>
+<td>rangeName</td>
+<td>string</td>
+<td>This is the range value formatted as a string.</td>
+</tr>
+
+<tr>
+<td>modifiers</td>
+<td>string[]</td>
+<td>An array of string identifiers for the various modifiers attached
+to the tolerance.
+
+<p>A partial list of modifiers that may appear on tolerances include:
+<ul>
+<li>"any_cross_section"	(ACS)
+<li>"common_zone" (CZ)
+<li>"each_radial_element" (EACH RADIAL ELEMENT)
+<li>"free_state" &#x24BB;
+<li>"least_material_requirement" &#x24C1;
+<li>"line_element" (LE)
+<li>"major_diameter" (MD)
+<li>"maximum_material_requirement" &#x24C2;
+<li>"minor_diameter" (LD)
+<li>"not_convex" (NC)
+<li>"pitch_diameter" (PD)
+<li>"reciprocity_requirement"  &#x24C7;
+<li>"separate_requirement"  (SEP REQT)
+<li>"statistical_tolerance" &lt;ST&GT;
+<li>"tangent_plane"  &#x24C9;
+</ul>
+
+<p>A partial list of modifiers that may be specified for datums include:
+<ul>
+<li>"any_cross_section"	[ACS]
+<li>"any_longitudinal_section" [ALS]
+<li>"basic" BSC
+<li>"contacting_feature" [CF]
+<li>"degree_of_freedom_constraint_u" [u]
+<li>"degree_of_freedom_constraint_v" [v]
+<li>"degree_of_freedom_constraint_w" [w]
+<li>"degree_of_freedom_constraint_x" [x]
+<li>"degree_of_freedom_constraint_y" [y]
+<li>"degree_of_freedom_constraint_z" [z]
+<li>"distance_variable" [DV]
+<li>"free_state"  &#x24BB;
+<li>"least_material_requirement" &#x24C1;
+<li>"line" [SL]
+<li>"major_diameter" [MD]
+<li>"maximum_material_requirement" &#x24C2;
+<li>"minor_diameter" [LD]
+<li>"orientation"  [&gt;&lt;]
+<li>"pitch_diameter" [PD]
+<li>"plane" [PL]
+<li>"point" [SP]
+<li>"translation"  &#x24B7;
+</ul>
+</td>
+</tr>
+
+<tr>
+<td>modName</td>
+<td>string</td>
+<td>This is the modifiers array formatted as a string.</td>
+</tr>
+
+<tr>
+<td>children</td>
+<td>object</td>
+<td>The children array contains nested tolerance objects that describe
+any datums that apply to the tolerance.  The type will be "datum" and
+the name field will identify the datum.</td>
+</tr>
+
+<tr>
+<td>status</td>
+<td>string</td>
+<td>The status returns a string characterizing the measured value of
+the tolerance.
+<ul>
+<li>&ldquo;tolerance red&rdquo; if the measured value of the tolerance
+exceeds the defined value
+<li>&ldquo;tolerance green&rdquo; if the measured value is within the
+defined value (or range for a dimension tolerance)
+<li>&ldquo;tolerance none&rdquo; if there is no measured value.
+</ul>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+<p>For example, the following describes a surface profile tolerance
+with several datums:</p>
+<PRE>
+{
+  "id":85366,
+  "type":"tolerance",
+  "name":"Surface Profile Tolerance",
+  "tolTypeName":"Surface Profile Tolerance",
+  "toleranceType":"Surface",
+  "value":0.2,
+  "unit":"mm",
+  "faces":[],
+  "range":{"flag":false,
+	   "lower":2.2250738585072014e-308,
+	   "upper":0},
+  "rangeName":"",
+  "modifiers":[],
+  "children":[{"type":"datum", "name":"A", "id":83082, "faces":[85388]},
+	      {"type":"datum", "name":"B", "id":83085, "faces":[85399]},
+	      {"type":"datum", "name":"C", "id":83088, "faces":[85408]}],
+  "status":"tolerance none"
+}
+</PRE>
+
+
+
+</div>
+<script src="../../js/jquery.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+</body>
+</html>
