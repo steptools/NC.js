@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Using with QIF</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="index.html">Back to Docs</a>
+</nav>
+
+<H1>Using with QIF</H1>
+
+<p>To use the NC.js package with QIF status reporting, you will need
+to adapt the server code for the <a href="api/nc/tolerances.html">QIF
+load/unload REST endpoints</a> to match your situation.</p>
+
+<p>The code for these are in the 
+<a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/tolerances.js">tolerances.js</a> and
+<a href="https://github.com/steptools/NC.js/blob/master/src/server/api/v3/parseqif.js">parseqif.js</a>
+files.
+
+
+<p>GET on the <code>/v3/nc/tolerances/qif/load</code> endpoint
+currently fetchs a QIF report from a pre-determined location, parses
+it, and applies the measured values to each of the matching tolerances
+in the digital thread model.  At the moment, the location of the QIF
+file is hard coded to "swim:5000/assets/&lt;ProjectName&gt;_RES.qif".
+
+<p>After the tolerances have been updated, the "status" field of
+each <a href="api/nc/tolerance_object.html">tolerance object</a> will
+contain a string indicating whether the tolerance is satisfied.  The
+existing code uses this value to display the tolerances with a status
+color.
+
+<p>GET on the <code>/v3/nc/tolerances/qif/unload</code> endpoint
+resets the measurement state of all tolerances in the thread model.
+
+
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>

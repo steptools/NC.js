@@ -1,4 +1,25 @@
-<h2 id="client-side"># <strong>Client Side</strong></h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Build and Run a Server</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="index.html">Back to Docs</a>
+</nav>
+
+<H1>Source Overview</H1>
+<H2>Client Side</H2>
+
 <h4 id="view-react-components"><strong><em>View</em> React Components</strong></h4>
 <h5 id="view-hierarchy"><strong><em>View</em> Hierarchy</strong></h5>
 <ul>
@@ -76,7 +97,10 @@ NC is the housing component for all shell and annotation Three.js geometry.</p>
 <p><em>Shape</em> - Used to process incoming shape data into Three.js geometry so that it can be rendered by the <strong>CAD View</strong>.</p>
 <p><em>Shell</em> - Used to process incoming shell data into Three.js geometry so that it can be rendered by the <strong>CAD View</strong>.</p>
 <p><em>WebWorker</em> - Background thread of application that is used to process data sent by the DataLoader</p>
-<h2 id="server-side"># Server Side</h2>
+
+
+
+<H2 id="server-side">Server Side</h2>
 <p><strong>api_server.js</strong></p>
 <ul>
 <li>Used to set the API server:
@@ -111,4 +135,11 @@ NC is the housing component for all shell and annotation Three.js geometry.</p>
 <p><strong>views/</strong></p>
 <p>Contains any server side views that will be rendered upon first starting the server. Base.jade is used to carry over the appConfig that is instantiated in API server.</p>
 <p><strong>api/</strong></p>
-<p>All api endpoints are stored in here and are thoroughly described in docs/API.md</p>
+<p>All api endpoints are stored in here and are thoroughly described the <a href="api/index.html ">API Documentation</a></p>
+
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
