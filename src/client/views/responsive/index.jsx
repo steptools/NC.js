@@ -94,7 +94,7 @@ export default class ResponsiveView extends React.Component {
           stepNodes[negIndex] = {name: node.name};
           negIndex = negIndex - 1;
         }
-        if (node.children.length !== 0) {
+        if (node.children && node.children.length !== 0) {
           node.children.map(nodeCheck);
         }
         node.leaf = false;
