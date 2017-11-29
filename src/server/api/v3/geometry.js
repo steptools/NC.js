@@ -55,6 +55,7 @@ function _getDeltaTol(req,res){
 function _setDeltaTol(req,res){
   return ms.ResetToleranceGeometry().then(()=>{
     res.status(200).send();
+    app.events.emit('deltaReset');
   });
 }
 function _resetDelta(req,res){

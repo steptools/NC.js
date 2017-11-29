@@ -168,6 +168,7 @@ export default class NC extends THREE.EventDispatcher {
       changes = _.filter(this._curObjects,(obj)=>{
         return obj.usage==='tolerance';
       });
+      this.state.usagevis.tolerance = !this.state.usagevis.tolerance;
       break;
       case 'toolpath':
       changes = _.filter(this._curObjects,(obj)=>{
