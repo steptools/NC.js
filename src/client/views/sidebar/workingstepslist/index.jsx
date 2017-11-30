@@ -61,7 +61,7 @@
     let wstep = this.props.workingstep;
     let color = undefined;
     if(wstep.color){
-    let color = "#" + (new THREE.Color(wstep.color[0],wstep.color[1],wstep.color[2])).getHexString();
+      color = "#" + (new THREE.Color(wstep.color[0], wstep.color[1], wstep.color[2])).getHexString();
     }
     let cName = 'node';
     let spanCName = 'textbox';
