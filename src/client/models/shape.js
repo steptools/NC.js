@@ -22,6 +22,7 @@
 "use strict";
 
 
+import Point from './point';
 import Shell from './shell';
 import Annotation from './annotation';
 
@@ -34,6 +35,7 @@ export default class Shape extends THREE.EventDispatcher {
         this.id = id;
         this._shells = [];
         this._annotations = [];
+        this._points = [];
         this._geoms = new THREE.Group();
         this._geoms.userData.id = id;
         this._geoms.matrixAutoUpdate = false;
@@ -52,6 +54,11 @@ export default class Shape extends THREE.EventDispatcher {
                    let anno = new Annotation(geom.geom);
                    this._geoms.add(anno.getGeometry());
                    this._annotations.push();
+                   break;
+               case 'point':
+                   let point = new Point(geom.geom);
+                   this._geoms.add(point.getPoint());
+                   this._points.push(point);
                    break;
                default:
                    console.log('unexpected item in bagging area');
