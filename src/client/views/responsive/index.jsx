@@ -65,7 +65,13 @@ export default class ResponsiveView extends React.Component {
       toolCacheLoad: false,
       loopStateLoad: false,
       curtoolLoad: false,
-      WPTLoad: false
+      WPTLoad: false,
+
+/*****      
+      // CUSTOM-APP STATE - for sample application that changes the
+      // workplan between several predefined configs.
+      custom_config: null
+*/
     };
     this.addBindings = this.addBindings.bind(this);
     this.addBindings();
@@ -209,6 +215,19 @@ export default class ResponsiveView extends React.Component {
     });
   }
 
+/*****
+  // CUSTOM-APP - Set the state variable from REST call
+  getCustomConfig(res) {
+    let cfg = JSON.parse(res.text);
+    let old_cfg = this.state.custom_config;
+
+    if ((old_cfg === null) ||
+	(old_cfg.selected !== cfg.selected)) {
+      this.setState({'custom_config' : cfg});
+    }
+  }
+*****/
+  
   addBindings() {
     this.ppstate = this.ppstate.bind(this);
     this.ppBtnClicked = this.ppBtnClicked.bind(this);
@@ -236,6 +255,11 @@ export default class ResponsiveView extends React.Component {
     this.toggleHighlight = this.toggleHighlight.bind(this);
     this.toleranceHighlightAll = this.toleranceHighlightAll.bind(this);
     this.addListeners = this.addListeners.bind(this);
+
+/*****
+    // CUSTOM-APP
+    this.getCustomConfig = this.getCustomConfig.bind(this);
+*****/
   }
 
   addListeners() {
@@ -271,8 +295,33 @@ export default class ResponsiveView extends React.Component {
     this.props.app.socket.on('nc:qifLoad', ()=>{
       request.get('/v3/nc/workpieces/').then(this.getWPT);
     });
-  }
 
+/*****
+    // CUSTOM-APP EVENT - for sample application that changes the
+    // workplan between several predefined configs, update the
+    // workplan when it changes.
+    //
+    this.props.app.socket.on('custom:config', (cfg)=>{
+      let old_cfg = this.state.custom_config;
+
+      if ((old_cfg === null) ||
+	  (old_cfg.selected !== cfg.selected)) {
+	this.setState({'custom_config' : cfg});
+      }
+
+      // update the workplan if config has really changed
+      if ((old_cfg !== null) &&
+	  (old_cfg.selected !== cfg.selected)) {
+	request.get('/v3/nc/workplan/')
+	  .then(this.getWorkPlan)
+	  .then(()=>{
+            // get the cache of tools, need workplan first
+            return request.get('/v3/nc/tools/');
+	  }).then(this.getToolCache);
+      }
+    });
+*****/
+  }
 
   componentWillMount(){
     // get the workplan
@@ -297,6 +346,10 @@ export default class ResponsiveView extends React.Component {
     request.get('/v3/nc/workpieces/').then(this.getWPT);
     request.get('/v3/nc/project').then((res)=>{this.setState({'projectName':res.text});});
 
+/*****    
+    // CUSTOM-APP - Get available configs at startup
+    request.get('/v3/custom/config').then(this.getCustomConfig);
+*****/
   }
 
   componentDidMount() {
@@ -568,6 +621,7 @@ export default class ResponsiveView extends React.Component {
       probeMsg = this.state.probe.contact; //JSON.stringify(this.state.probe.contact);
     }
     let HV, SV, FV, cadviewStyle;
+    
     if (this.state.guiMode === 0) {
       HV = (
         <HeaderView
@@ -595,6 +649,10 @@ export default class ResponsiveView extends React.Component {
           }
           probeMsg = {probeMsg}
           fname = {this.state.projectName}
+/*****	
+	  // CUSTOM-APP - Pass config to header object
+	  cfg = {this.state.custom_config}
+*****/
         />
       );
       SV = (

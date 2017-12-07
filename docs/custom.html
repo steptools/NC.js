@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Building Custom Apps</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+
+<div class="container">
+<nav class="navbar">
+<a class="btn btn-info btn-xs navbar-btn pull-right" href="index.html">Back to Docs</a>
+</nav>
+
+<H1>Building Custom Apps</H1>
+
+<p>The NC.js package provides a baseline that a web programmer can
+extend for your own local needs.  Typically, an app will have some new
+capability provided by the server and matching UI elements in the
+client to present or control it.</p>
+
+<p>The existing NC.js source code contains a sample application that
+you can use as a starting point for your own code.  This sample
+searches through a digital thread model for alternative workplans,
+groups them by name, and presents them as buttons for switching
+between the options.  We will walk through the server and client code
+to do this in the sections below.  </p>
+
+<figure>
+<img class="img-responsive center-block" src="images/custom_mixed.png" alt="custom app" />
+<figcaption>Custom Configuration Buttons, Mixed Config</figcaption>
+</figure>
+
+<p>The "Moldy" model has Profile and Pocketing alternatives named
+Boeing, Iscar, and Sandvik.  The model starts with a mix - the Sandvik
+plan is selected for profiling and the Iscar plan for pocketing.
+These partial configs are shown in yellow.  Clicking on one of them
+will select that for both operations and hilight the button in blue.
+
+<figure>
+<img class="img-responsive center-block" src="images/custom_sandvik.png" alt="custom app" />
+<figcaption>Custom Configuration Buttons, All Sandvik</figcaption>
+</figure>
+
+<p>To make this happen, we implement a new custom REST endpoint, at 
+<code>/v3/custom/config</code> that finds the current configuration,
+or sets it if given an argument.  The endpoint returns a JSON object
+with an array of all configs, and the name of the selected one.  We
+also inplement an event, called "custom:config", that gets sent to all
+connected clients when the config is changed.  This keeps all of the
+clients in sync if more than one is looking at the server.
+
+<PRE>
+GET http://localhost:8080/v3/custom/config
+{
+  "configs":["Boeing","Iscar","Sandvik"],
+  "selected":"Sandvik"
+  <em>or "partial": [ list of configs ] if a mix</em>
+}
+
+<em>Change the config to Boeing</em>
+GET http://localhost:8080/v3/custom/config/Boeing
+{
+  "configs":["Boeing","Iscar","Sandvik"],
+  "selected":"Boeing"
+}
+</PRE>
+
+
+<H2>Running the Custom Application</H2>
+
+
+<p>The code for the custom configuration app is included with the
+NC.js source but is <code>/* block commented */</code> out.  To try
+this sample app, search for and uncomment all code marked with the
+string "CUSTOM-APP" in the following files, then rebuild
+with <code>npm run make</code>.
+
+<ul>
+<li><code>NC.js/src/client/views/header/index.jsx</code>
+<li><code>NC.js/src/client/views/responsive/index.jsx</code>
+<li><code>NC.js/src/server/api/v3/custom.js</code>
+</ul>
+
+
+<H2>Custom Server Endpoints</H2>
+
+<p>The <a href="api/index.html">existing server endpoints</a> cover a
+variety of information and behavior.  When your App needs something
+beyond these for its new capability, add your own REST endpoints under
+the <code>/v3/custom</code> prefix.  In our sample, we add the 
+<code>/v3/custom/config</code> endpoint.
+
+<p>The source for the new endpoint
+in <code>NC.js/src/server/api/v3/custom.js</code>.  The server
+endpoints are implemented as javascript functions that use the Finder,
+Tolerance, APT, and Adaptive parts of
+the <a href="https://www.steptools.com/docs/stepnc_api/">STEP-NC
+API</a> to get detailed information from the digital thread model.
+You can prototype the interesting parts of your endpoints as plain
+node programs.  When you move the code into the server, you will get
+the parameters as part of the request URL and return JSON object to
+the client along with a status code.</p>
+
+<p>The module exports at the end of the file connects the REST
+endpoints with javascript functions
+using <a href="http://expressjs.com">Express.js</a>.  Here,
+the <code>_getConfig()</code> function is always called for an HTTP
+GET on the the base <code>config</code> endpoint and the one that is
+followed by a name parameter.  The Express.js docs have
+<a href="http://expressjs.com/en/guide/routing.html">more about
+parameters and endpoint routing</a>.</p>
+
+<p>The <code>NC.js/src/server/api_server.js</code> file will call this
+exported function for <code>custom.js</code> and the other server
+source files. If you put your endpoints in a new source file, be sure
+to add it to the chained calls
+in <code>APIServer.prototype._setRoutes</code>.</p>
+
+<PRE>
+module.exports = function(globalApp, cb) {
+  app = globalApp;
+  app.router.get('/v3/custom/config',       _getConfig);
+  app.router.get('/v3/custom/config/:name', _getConfig);
+  if (cb) { cb(); }
+}
+</PRE>
+
+<p>The <code>_getConfig()</code> function computes the existing config
+if it is not yet known, checks whether it has been called with the
+"name" parameter, and either returns the config or changes to the
+requested one and returns the updated config.  When it changes the
+config, it also sends an event named "custom:config" via the
+websockets that all clients listen on.  The event includes the new
+config as an argument.</p>
+
+<PRE>
+var cfg = {};
+
+function _getConfig(req,res) {
+  // find existing config 
+  if (cfg.configs === undefined) {
+    cfg = _findConfig();
+  }
+  
+  if ((req.params.name !== undefined) &amp;&amp;
+      (cfg.configs.includes(req.params.name))) {
+    // change config, send new, issue event
+    cfg = _setConfig(req.params.name);
+    res.status(200).send(cfg);
+    app.ioServer.emit('custom:config', cfg);
+  } else {
+    // send existing config
+    res.status(200).send(cfg);
+  }
+}
+</PRE>
+
+<p>Finding the config is just a simple traversal using
+<a href="https://www.steptools.com/docs/stepnc_api/">STEP-NC API</a>
+code.  This was prototyped as simple node programs and then dropped
+into the server.
+The <a href="https://www.steptools.com/docs/stepnc_api/Adaptive.html">Adaptive</a>
+object walks the process, looking at all executables, even those that
+are disabled.  It stops at each exec that is an element of a Selective
+(the STEP-NC process element that holds alternatives), then adds the
+ID and enabled/disabled state to a dictionary, grouped by name.
+
+<PRE>
+function _findConfig() {
+  let ctl = new StepNC.Adaptive();
+
+  // Look at the elements of all selectives.  Group by name
+  ctl.SetVisitAllExecs(true);
+  ctl.SetWantedAll(false);
+  ctl.SetWanted(StepNC.CtlEvent.EXEC_SELECT_NEXT);
+  ctl.StartProject();
+
+  let execs = {};
+  while (ctl.Next()) {
+    let id = ctl.GetActiveExec();
+    let nm = file.find.GetExecutableName(id);
+
+    if (execs[nm] === undefined) {
+      execs[nm] = [];
+    }
+    execs[nm].push({'id': id, 'active': file.find.IsEnabled(id) });
+  }
+</PRE>
+
+<p>At the end, the configs are the unique names from the dictionary.
+We also compute a list of configs that have at least one executable
+enabled and the subset that have all of their executables enabled.  If
+we only have one for both, that is the selected config, otherwise we
+return the list of partials.
+
+<PRE>
+  let ret = {
+    "configs": Object.keys(execs).sort()
+  };
+  // look for configs that have some enabled WSs enabled and ones that
+  // have everything enabled.  Selected if both lists have one entry.
+  
+  let partial = ret.configs.filter(
+    nm =&gt; execs[nm].find(elem =&gt; elem.active)
+  ).sort();
+
+  let selected = partial.filter(
+    nm =&gt; execs[nm].every(elem =&gt; elem.active)
+  );
+
+  if ((partial.length === 1) &amp;&amp; (selected.length === 1)) {
+    ret.selected = selected[0];
+  } else if (partial.length &gt; 0) {
+    ret.partial = partial;
+  }
+  return ret;
+}
+</PRE>
+
+<p>The <code>_setConfig()</code> also loops over all selectives with
+using the Adaptive class.  In this case it just adjusts the enabled
+flag of each element depending on whether its name matches a given
+value.</p>
+
+
+
+
+<H2>Custom Client UI</H2>
+
+<p>The client UI is implemented as a collection
+of <a href="https://reactjs.org/">React.js</a> components.  These can
+be found under the <code>NC.js/src/client/views</code> directory.  The
+responsive view is the root component and acts as the clearinghouse
+for data on the client.  It maintains state information and dispatches
+the notification events recieved via the websocket that the client
+sets up with the server.  We also modify the header view to display
+the configuration as a series of buttons.  These two files are:</p>
+
+<ul>
+<li><code>NC.js/src/client/views/header/index.jsx</code>
+<li><code>NC.js/src/client/views/responsive/index.jsx</code>
+</ul>
+
+<p>When writing client javascript, you automatically have access to
+all of the plugins listed below, at the given symbol. The most current
+list can be found in the <code>webpack.config.js</code> file listed
+under the "plugins" tag.</p>
+
+<ul>
+<li><code>React</code> - react</li>
+<li><code>_</code> (underscore) - lodash</li>
+<li><code>$</code> (dollar sign) - jquery</li>
+<li><code>jQuery</code> - jquery</li>
+<li><code>Backbone</code> - backbone</li>
+<li><code>THREE</code> 	- three</li>
+<li><code>FileSaver</code> - file-saver</li>
+<li><code>request</code> - superagent</li>
+<li><code>ReactDOM</code> - react-dom</li>
+<li><code>io</code> - socket.io-client</li>
+</ul>
+
+
+<H3>Responsive View</H3>
+
+<p>In the constructor(), we add a custom entry to the state object for
+our application.  React will track which UI subcomponents use each
+state variable, and when a state variable changes, it will force that
+component to re-render to show the new information.</p>
+
+<PRE>
+this.state = {
+  [ ... other variables ... ] 
+  // CUSTOM APP STATE - for sample application that changes the
+  // workplan between several predefined configs.
+  custom_config: null
+};
+</PRE>
+
+<p>We add a <code>getCustomConfig()</code> function to parse the JSON
+sent back from our custom REST endpoint and update the state variable
+if needed.  There is also an entry in the <code>addBindings()</code>
+function to give our config function access to the state variable.</p>
+
+<p>In <code>addListeners()</code>, we watch for an event and update
+the client data as needed.  This is the notification from the server
+to all connected clients when the workplan has changed.  This code
+updates the client state for the workplan, which updates any UI
+elements that use it.</p>
+
+<PRE>
+this.props.app.socket.on('custom:config', (cfg)=&gt;{
+  let old_cfg = this.state.custom_config;
+
+  if ((old_cfg === null) ||
+      (old_cfg.selected !== cfg.selected)) {
+    this.setState({'custom_config' : cfg});
+  }
+
+  // request new workplan and tool data if config changed
+  if ((old_cfg !== null) &amp;&amp;
+      (old_cfg.selected !== cfg.selected)) {
+    request.get('/v3/nc/workplan/')
+      .then(this.getWorkPlan)
+      .then(()=&gt;{
+	// get the cache of tools, need workplan first
+	return request.get('/v3/nc/tools/');
+      }).then(this.getToolCache);
+  }
+});
+</PRE>
+
+<p>In <code>componentWillMount()</code> which is called when the
+client first loads, we request the config from the server using our
+custom REST endpoint, and set our state variable using
+the <code>getCustomConfig()</code> function.</p>
+
+<PRE>
+// CUSTOM-APP - Get available configs at startup
+request.get('/v3/custom/config').then(this.getCustomConfig);
+</PRE>
+
+<p>Finally, in the <code>render()</code> function, we pass the config
+state variable to the HeaderView component, which will show it on the
+screen and possibly call the REST endpoints to change configs.  This
+is discussed in the next section.</p>
+
+<PRE>
+&lt;HeaderView
+  [ ... many other variable assignments ... ]
+
+  // CUSTOM-APP - Pass config to header object
+  cfg = {this.state.custom_config}
+/&gt;
+</PRE>
+
+
+
+<H3>Header View</H3>
+
+<p>In the <code>header/index.jsx</code> file, we define a new class to
+display the configuration menu.  In the <code>render()</code> function
+for this class, we generate a DIV with a button for each name in the
+configuration array.</p>
+
+<p>The color of the button is deternined by
+the <code>configstyle()</code> function, which returns a different CSS
+style depending on whether it is the selected, partially selected, or
+unselected configuration.</p>
+
+<p>Finally, the click event is handled by the <code>cfgClick()</code>
+function which calls the custom REST endpoint with the new config
+name.</p>
+
+<PRE>
+class ConfigMenu extends React.Component {
+  constructor(props) {
+    super(props);
+    this.cfgClick = this.cfgClick.bind(this);
+  }
+
+  cfgClick(nm){
+    request.get('/v3/custom/config/'+nm).end();
+  }
+  render() {
+    let cfg = this.props.cfg;
+    if (cfg === undefined) { cfg = { configs: [] }; }
+    
+    return (
+	&lt;div&gt;
+      {cfg.configs.map(nm =&gt; (
+	  &lt;div className={configstyle(cfg,nm)}
+	     onClick={() =&gt; {this.cfgClick(nm);}}&gt;{nm}&lt;/div&gt;
+      ))}
+      &lt;/div&gt;
+    ); 
+  }  
+}
+</PRE>
+
+
+<p>Finally, in the <code>render()</code> function of the HeaderView
+class, we use the ConfigMenu element and pass in the parameters that
+it needs to display.</p>
+
+<PRE>
+// CUSTOM-APP - Add config menu to header
+&lt;ConfigMenu cfg={this.props.cfg} actionManager={this.props.actionManager}/&gt;
+</PRE>
+	
+
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>

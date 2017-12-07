@@ -121,19 +121,21 @@ APIServer.prototype._setRoutes = function(cb) {
       require('./api/v3/tolerances')(self, function() {
         require('./api/v3/geometry')(self, function() {
           require('./api/v3/changelog')(self, function() {
-            if (self.config.mtConnect){
-              require('./api/v3/MTstate')(self, function () {
-                if (cb) {
-                  cb();
-                }
-              });
-            } else {
-              require('./api/v3/state')(self, function () {
-                if (cb) {
-                  cb();
-                }
-              });
-            }
+            require('./api/v3/custom')(self, function() {
+              if (self.config.mtConnect){
+		require('./api/v3/MTstate')(self, function () {
+                  if (cb) {
+                    cb();
+                  }
+		});
+              } else {
+		require('./api/v3/state')(self, function () {
+                  if (cb) {
+                    cb();
+                  }
+		});
+              }
+            });
           });
         });
       });

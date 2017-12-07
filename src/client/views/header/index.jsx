@@ -91,7 +91,6 @@ class GeomBtn extends React.Component {
   constructor(props) {
     super(props);
     this.dlClick = this.dlClick.bind(this);
-    this.visClick = this.visClick.bind(this);
   }
 
   dlClick(info){
@@ -312,6 +311,51 @@ class GeomMenu extends React.Component {
 let resetProcessVolume = function(){
   request.get('/v3/nc/geometry/delta/reset').end();
 }
+
+
+
+/*****
+// CUSTOM-APP - ConfigMenu UI elements.  DIV with a button for each
+// configuration.  The color is deternined by whether it matches the
+// selected state.  Selected is btn-primary, partial is btn-warning,
+// and btn-default otherwise.  Click handled by the cfgClick function
+// which calls the custom REST endpoint with the name.
+//
+function  configstyle(cfg, nm) {
+  if (nm === cfg.selected) {
+    return "btn btn-primary";
+  }
+
+  if (cfg.partial && (cfg.partial.includes(nm))) {
+    return "btn btn-warning";
+  }
+  return "btn btn-default";
+}
+
+class ConfigMenu extends React.Component {
+  constructor(props) {
+    super(props);
+    this.cfgClick = this.cfgClick.bind(this);
+  }
+
+  cfgClick(nm){
+    request.get('/v3/custom/config/'+nm).end();
+  }
+  render() {
+    let cfg = this.props.cfg;
+    if (cfg === undefined) { cfg = { configs: [] }; }
+    
+    return (
+	<div>
+      {cfg.configs.map(nm => (
+	  <div className={configstyle(cfg,nm)} onClick={() => {this.cfgClick(nm);}}>{nm}</div>
+      ))}
+      </div>
+    ); 
+  }  
+}
+******/
+
 export default class HeaderView extends React.Component {
   constructor(props) {
     super(props);
@@ -412,6 +456,7 @@ export default class HeaderView extends React.Component {
   }
   }
 
+  
   render() {
     let ppbtntxt = '';
     let ppbutton = this.props.ppbutton;
@@ -427,6 +472,15 @@ export default class HeaderView extends React.Component {
        probeMsg = this.props.probeMsg;
      }
     let curr_ws = this.props.workingstepCache[this.props.ws];
+    let CUSTOM;
+
+/*****
+    // CUSTOM-APP - add config menu to header
+    CUSTOM = (
+	<ConfigMenu cfg={this.props.cfg} actionManager={this.props.actionManager}/>
+    );
+*****/
+    
     const headerMenu = (
       <Menu
         mode='horizontal'
@@ -447,6 +501,7 @@ export default class HeaderView extends React.Component {
   : null }
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <ProbeMessage msg={probeMsg}/>
+	{CUSTOM}
         <MenuItem className="info"> File: {this.props.fname}</MenuItem>
       </Menu>
     );
