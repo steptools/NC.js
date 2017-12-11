@@ -53,8 +53,8 @@ function _getDeltaTol(req,res){
   });
 }
 function _setDeltaTol(req,res){
+  res.status(200).send();
   return ms.ResetToleranceGeometry().then(()=>{
-    res.status(200).send();
     app.events.emit('deltaReset');
   });
 }
