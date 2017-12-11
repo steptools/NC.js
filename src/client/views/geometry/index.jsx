@@ -620,20 +620,26 @@ export default class GeometryView extends React.Component {
   }
 
   render() {
-    let compass = this.camera ? <CompassView
-      camera={this.camera}
-      controls={this.controls}
-      dispatcher={this.props.manager}
-      guiMode={this.props.guiMode}
-      parentSelector={this.props.parentSelector + ' .geometry-container'}
-    /> : undefined;
-    return <div className='geometry-container'>
-      <canvas
-        className='cadjs-canvas'
-        onMouseUp={this.props.onMouseUp}
-        onMouseMove={this.onMouseMove}
-      />
-      {compass}
-    </div>;
+    let compass = undefined; 
+    if(this.camera!==undefined){
+      compass = (
+        <CompassView
+          camera={this.camera}
+          controls={this.controls}
+          dispatcher={this.props.manager}
+          guiMode={this.props.guiMode}
+          parentSelector={this.props.parentSelector + ' .geometry-container'}
+        />);
+    }
+    return (
+      <div className='geometry-container'>
+        <canvas
+          className='cadjs-canvas'
+          onMouseUp={this.props.onMouseUp}
+          onMouseMove={this.onMouseMove}
+        />
+        {compass}
+      </div>
+    );
   }
 };
