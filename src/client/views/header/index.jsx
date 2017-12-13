@@ -91,6 +91,7 @@ class GeomBtn extends React.Component {
   constructor(props) {
     super(props);
     this.dlClick = this.dlClick.bind(this);
+    this.visClick = this.visClick.bind(this);
   }
 
   dlClick(info){
