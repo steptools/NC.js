@@ -68,12 +68,19 @@ function _resetDelta(req,res){
   });
 }
 
+let geomcache = {};
 function _getUUIDGeometry(req, res) {
   //Route the /geometry/delta/:current endpoint first.
+  if(geomcache[req.params.uuid]){
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(geomcache[req.params.uuid]);
+    return;
+  }
   ms.GetGeometryJSON(req.params.uuid)
   .then((out)=>{
     res.setHeader('Content-Type', 'application/json');
     res.status(200).send(out);
+    geomcache[req.params.uuid] = out;
   }).catch(()=>{
     res.status(404).send();
   })
