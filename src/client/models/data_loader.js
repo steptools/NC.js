@@ -253,7 +253,6 @@ export default class DataLoader extends THREE.EventDispatcher {
                 }
                 break;
             case "toleranceLoad":
-                console.log('here');
                 let r =[];
                 r.push({
                     'geom':event.data.data,
