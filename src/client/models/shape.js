@@ -39,8 +39,9 @@ export default class Shape extends THREE.EventDispatcher {
         this._geoms = new THREE.Group();
         this._geoms.userData.id = id;
         this._geoms.matrixAutoUpdate = false;
-        this._bbox = [0,0,0,0,0,0];
+        this._bbox = new THREE.Box3();
         this._transform = new THREE.Matrix4();
+        this._up = new THREE.Vector3();
         this._inScene = false;
         this._isVisible = false;
         _.each(shapeJSON,(geom)=>{
@@ -75,6 +76,7 @@ export default class Shape extends THREE.EventDispatcher {
         this.isVisible = this.isVisible.bind(this);
         this.getBoundingBox = this.getBoundingBox.bind(this);
         this.getGeometry = this.getGeometry.bind(this);
+        this.getUpVector = this.getUpVector.bind(this);
         this.getShells = this.getShells.bind(this);
         this.setManager = this.setManager.bind(this);
         this.show = this.show.bind(this);
@@ -89,7 +91,12 @@ export default class Shape extends THREE.EventDispatcher {
         return this._geoms.visible;
     }
     getBoundingBox(){
-        return new THREE.Box3().setFromObject(this._geoms);
+        let rtn = new THREE.Box3().setFromObject(this._geoms);
+        if(rtn.max.x === -Infinity) return this._bbox;
+        return rtn;
+    }
+    getUpVector(){
+        return this._up;
     }
     getGeometry(){
         return this._geoms;
@@ -121,8 +128,9 @@ export default class Shape extends THREE.EventDispatcher {
             xform[2],xform[6],xform[10],xform[14],
             xform[3],xform[7],xform[11],xform[15],
         )
+        this._up = new THREE.Vector3(xform[2],xform[6],xform[10]);
         this._geoms.matrix.copy(transform);
-        this._bbox = bbox;
+        this._bbox = new THREE.Box3(new THREE.Vector3(bbox[0],bbox[1],bbox[2]),new THREE.Vector3(bbox[3],bbox[4],bbox[5]));
         this._transform = transform;
     }
     addToScene(bbox,xform,sequence){
@@ -133,8 +141,9 @@ export default class Shape extends THREE.EventDispatcher {
             xform[2],xform[6],xform[10],xform[14],
             xform[3],xform[7],xform[11],xform[15],
         )
+        this._up = new THREE.Vector3(xform[2],xform[6],xform[10]);
         this._geoms.matrix.copy(transform);
-        this._bbox = bbox;
+        this._bbox = new THREE.Box3(new THREE.Vector3(bbox[0],bbox[1],bbox[2]),new THREE.Vector3(bbox[3],bbox[4],bbox[5]));
         this._transform = transform;
         if(this._inScene) return;
         this._manager.addShape(this,sequence);

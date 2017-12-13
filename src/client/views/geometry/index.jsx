@@ -421,7 +421,7 @@ export default class GeometryView extends React.Component {
 
     // find the orientation of the referenced object
     let curobjs = nc.getCurrentObjects();
-    let tool = _.find(
+    let tools = _.filter(
       _.values(curobjs),
       {'usage': 'cutter'}
     );
@@ -435,22 +435,27 @@ export default class GeometryView extends React.Component {
         {'usage': 'asis'}
       );
     }
+    let toolBox = new THREE.Box3();
+    let minz = Infinity;
+    let up = new THREE.Vector3();
+    _.each(tools,(tool)=>{
+      let toolbb = tool.getBoundingBox();
+      toolBox.union(toolbb);
+      if(toolbb.min.z <minz) {
+        up = tool.getUpVector();
+        minz = toolbb.min.z;
+      }
+    })
 
-    //let partPos = new THREE.Vector3()
-    //  .setFromMatrixPosition(part.object3D.matrixWorld);
-    let toolBox = tool.getBoundingBox().clone();
+    if(toolBox.max.x === -Infinity) return;
+    let toolMax = toolBox.max.clone();
+    let toolMin = toolBox.min.clone();
 
-    let toolMax = toolBox.max.clone();//.applyMatrix4(tool.getGeometry().matrixWorld);
-    let toolMin = toolBox.min.clone();//.applyMatrix4(tool.getGeometry().matrixWorld);
-
-    let toolAxis = GeometryView.getAxisVector(toolMax.clone().sub(toolMin));
-
-    //let toolPos = tool.object3D.position.clone().sub(partPos);
+    // get the unit vector corresponding to this view
+    let toolAxis = GeometryView.getAxisVector(up);
 
     let newUp = toolAxis.clone();
 
-    // get the unit vector corresponding to this view
-    newUp = GeometryView.getAxisVector(newUp);
 
     // now calculate which side we want to view from
     // TODO: make sure fixtures work properly with machines and other changes
@@ -464,14 +469,17 @@ export default class GeometryView extends React.Component {
     );
     let newPos = new THREE.Vector3();
     if (machine) {
-      newPos.crossVectors(newUp, new THREE.Vector3(1, 0, 0));
+      newPos.crossVectors(newUp, new THREE.Vector3(-1, 0, 0));
     } else {
       this.alignFixture(fixture, newUp, newPos);
     }
+    newUp = newUp.applyMatrix4(this.geometryScene.matrixWorld).normalize();
+
+    newPos = newPos.applyMatrix4(this.geometryScene.matrixWorld).normalize();
 
     // TODO: See if we can actually use the tool in calculations
     // zoom to fit just the part
-    let newTargetPosition = this.alignCamera(part, tool, toolBox);
+    let newTargetPosition = this.alignCamera(part, toolBox);
     
     this.controls.target.copy(newTargetPosition);
     this.controls.alignTop(newUp, newPos);
@@ -510,10 +518,10 @@ export default class GeometryView extends React.Component {
     }
   }
 
-  alignCamera(part, tool, toolBox) {
+  alignCamera(part, toolBox) {
     let boundingBox = new THREE.Box3()
       .union(part.getBoundingBox())
-      .union(toolBox.applyMatrix4(tool.getGeometry().matrixWorld));
+      .union(toolBox);
     let radius = boundingBox.size().length() * 0.5;
     let fovRad = THREE.Math.degToRad(this.camera.fov * 0.5);
     let horizontalFOV = 2 * Math.atan(fovRad * this.camera.aspect);
