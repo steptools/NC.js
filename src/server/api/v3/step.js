@@ -118,7 +118,6 @@ function exeFromId(id) {
       } else if (find.IsNcFunction(id)) {
         ws.type = 'Nc Function';
         let type = find.GetExecutableType(id);
-        console.log("type "+type);
         switch(type){
           case "DISPLAY_MESSAGE":
           ws.name = find.GetFunctionDisplayMessage(id); 
