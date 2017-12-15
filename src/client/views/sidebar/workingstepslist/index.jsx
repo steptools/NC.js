@@ -39,7 +39,7 @@
    color:React.PropTypes.string
  }
 
- class Workingstep extends React.Component {
+ export class Workingstep extends React.Component {
    constructor(props){
      super(props);
      this.setWS = this.setWS.bind(this);
@@ -68,29 +68,48 @@
     if(this.props.isCurWS) {
       cName += ' running-node';
     }
+    let propBtn = (
+          <span 
+            key ='preview'
+            className='icon preview fa fa-external-link-square' 
+            onClick= {(e)=>{e.stopPropagation();this.props.propertyCb(wstep)}}
+            onMouseDown={(e)=>{
+              e.stopPropagation();
+              return false;
+            }}
+          />
+    );
     if (wstep.id ===undefined) {
       cName += ' setup';
       spanCName = 'setup-textbox'
+      propBtn = undefined;
     }
+    let rootcName = 'm-node';
+    if(this.props.className) rootcName +=' '+this.props.className;
     return (
-      <div className='m-node'>
+      <div className={rootcName}>
         <div
           id={wstep.id}
           className={cName}
-          onClick={() => {
-            if (!cName.includes('setup')) {
-              this.setWS(wstep.id);
-            }
-          }}
-          onMouseDown={function (e) {
-            e.stopPropagation();
-            return false;
-          }}
           style={{ 'paddingLeft': '5px' }}
           key={wstep.id}
+            onClick={() => {
+              if (!cName.includes('setup')) {
+                this.setWS(wstep.id);
+              }
+            }}
+            onMouseDown={(e)=>{
+              e.stopPropagation();
+              return false;
+            }}
         >
           <WorkingstepIcon number={wstep.number} color={color}/>
-          <span className={spanCName}>{wstep.name}</span>
+          <span
+           className={spanCName}
+           >
+           {wstep.name}
+           </span>
+           {propBtn}
         </div>
       </div>
     )
@@ -129,6 +148,7 @@ export default class WorkingstepList extends React.Component {
             <Workingstep
               key={i}
               workingstep={wstep}
+              propertyCb={this.props.propertyCb}
               isCurWS={wstep.id === this.props.ws}
             />
           );
@@ -142,6 +162,7 @@ let rp = React.PropTypes;
 WorkingstepList.propTypes = {
   cbMode: rp.func.isRequired,
   cbTree: rp.func.isRequired,
+  propertyCb: rp.func.isRequired,
   ws: rp.oneOfType([rp.string, rp.number]).isRequired,
   app: rp.object.isRequired
 };

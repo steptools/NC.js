@@ -16,6 +16,7 @@
  */
 
 'use-strict';
+import {Workingstep} from './workingstepslist/index.jsx'
 
 function getNodeIcon(node) {
   if (node.type === 'workplan') {
@@ -212,6 +213,29 @@ function setNodeInfo(props) {
 }
 
 const Container = (props) => {
+  if(props.node.type === 'workingstep') {
+    return (<div className="node">
+    <div className="toggle-hidden" />
+    <Workingstep 
+      className="inner"
+      key={props.node.id}
+      workingstep={props.node}
+      propertyCb={props.decorators.propertyCb}
+      isCurWS={props.node.id === props.decorators.ws}
+    /></div>
+    );
+  }
+  if(props.node.type === 'Nc Function'){
+    return (
+      <div className="node">
+        <div className="toggle-hidden"/>
+        <div className="inner">
+          <span className="icon fa fa-file-text-o"/>
+          <span className="textbox">{props.node.name}</span>
+        </div>
+        </div>
+    );
+  }
   let node = setNodeInfo(props);
   let outerName = node.outerName;
   if(node.status === 'tolerance red'){

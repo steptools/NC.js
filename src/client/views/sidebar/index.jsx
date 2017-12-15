@@ -133,6 +133,7 @@ export default class SidebarView extends React.Component {
         <WorkingstepList
           cbMode={this.props.cbMode}
           cbTree={this.props.cbTree}
+          propertyCb={this.props.openProperties}
           ws={this.props.ws}
           app={this.props.app}
           workingstepCache={this.props.workingstepCache}

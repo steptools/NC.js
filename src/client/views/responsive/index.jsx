@@ -90,7 +90,7 @@ export default class ResponsiveView extends React.Component {
         node.number = index;
         node.leaf = true;
         stepNodes[node.id] = node;
-        if (node.enabled) {
+        if (node.enabled && node.type ==='workingstep') {
           wsList.push(node.id);
           index = index + 1;
         }

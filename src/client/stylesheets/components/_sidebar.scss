@@ -46,6 +46,9 @@ $icons: '../icons/';
                 display: table;
                 margin: 0px auto;
             }
+            .textbox {
+                flex-grow: 1;
+            }
         }
         
         .disabled {

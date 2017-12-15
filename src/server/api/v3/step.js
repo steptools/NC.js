@@ -117,6 +117,18 @@ function exeFromId(id) {
         ws.type = 'workplan';
       } else if (find.IsNcFunction(id)) {
         ws.type = 'Nc Function';
+        let type = find.GetExecutableType(id);
+        console.log("type "+type);
+        switch(type){
+          case "DISPLAY_MESSAGE":
+          ws.name = find.GetFunctionDisplayMessage(id); 
+            break;
+          case "EXTENDED_NC_FUNCTION":
+            ws.name = find.GetFunctionExtendedNcDescription(id);
+            break;
+          default:
+            ws.name = type;
+        }
       }
 
       return Promise.resolve(ws);
