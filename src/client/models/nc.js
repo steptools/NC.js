@@ -66,7 +66,7 @@ export default class NC extends THREE.EventDispatcher {
         cutter:     true,
         inprocess:  true,
         toolpath:   true,
-        tolerance:  true,
+        tolerance:  false,
         fixture:    true
       }
     };
