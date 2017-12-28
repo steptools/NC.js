@@ -262,6 +262,7 @@ export default class DataLoader extends THREE.EventDispatcher {
                 if(req.callback) {
                     req.callback(tolsh);
                 }
+                this.dispatchEvent({ type: "loadComplete", file: event.data.id });
                 break;
             case "workerFinish":
                 this.dispatchEvent({ type: "workerFinish", file: event.data.file });
