@@ -42,7 +42,7 @@
                 flex: 2;
             }
         }
-        li:last-child{
+        li:last-child, li:nth-last-child(2){
             float: none;
         }
     }
