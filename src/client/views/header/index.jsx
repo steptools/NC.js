@@ -87,6 +87,34 @@ class Button extends React.Component {
     );
   }
 }
+class InfoBtn extends React.Component{
+  constructor(props){
+    super(props);
+  }
+  render(){
+    return (
+        <MenuItem {...this.props} className='info' > 
+            File: {this.props.file} 
+        </MenuItem>
+    );
+  }
+}
+class LinkBtn extends React.Component {
+  constructor(props){
+    super(props);
+  }
+  render(){
+    return(
+      <MenuItem {...this.props} className='info' onClick = {()=>{
+              window.location.href = 'http://steptools.github.io/NC.js/'; 
+            }}
+      >
+            <div className={getIcon('changelog')}></div>
+            More info
+            </MenuItem>
+    )
+  }
+}
 class GeomBtn extends React.Component {
   constructor(props) {
     super(props);
@@ -436,16 +464,6 @@ export default class HeaderView extends React.Component {
       case 'backward':
         this.props.actionManager.emit('sim-b');
         break;
-      case 'changelog':
-        let changelog = document.getElementById('changes');
-        if (this.props.logstate === false) {
-          changelog.className = 'changelog visible';
-          this.props.cbLogstate(true);
-        } else {
-          changelog.className = 'changelog';
-          this.props.cbLogstate(false);
-        }
-        break;
       case 'reset':
         resetProcessVolume();
         break;
@@ -503,14 +521,14 @@ export default class HeaderView extends React.Component {
         <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
         <ProbeMessage msg={probeMsg}/>
 	{CUSTOM}
-        <MenuItem className="info"> File: {this.props.fname}</MenuItem>
+        <InfoBtn file={this.props.fname} />
+        <LinkBtn />
       </Menu>
     );
 
     return (
       <div className='header'>
         {headerMenu}
-        <div className='changelog' id='changes'/>
       </div>
     );
   }

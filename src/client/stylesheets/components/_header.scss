@@ -46,7 +46,7 @@
             float: none;
         }
     }
-    li:last-child {
+    li:last-child, li:nth-last-child(2) {
         float: right;
         border-left: 1px solid #DDDDDD;
     }
