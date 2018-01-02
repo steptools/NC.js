@@ -696,7 +696,7 @@ export default class PropertiesPane extends React.Component {
     if (entity.type !== 'tool') {
       return null;
     }
-    if (entity.cornerRadius.toFixed(0) !== '0') {
+    if (entity.cornerRadius && (entity.cornerRadius.toFixed(0) !== '0')) {
       let crData = 'Corner Radius: ';
       crData += entity.cornerRadius.toFixed(2) + ' ';
       crData += entity.cornerRadiusUnit;

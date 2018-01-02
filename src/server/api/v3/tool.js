@@ -59,7 +59,7 @@ function _getTools(req, res) {
   let toolList = find.GetToolAll();
   let rtn = [];
   for (let id of toolList) {
-    let name = find.GetToolPartName(id).replace(/_/g, ' ');
+    let name = find.GetToolIdentifier(id).replace(/_/g, ' ');
     let toolType = titleCase(find.GetToolType(id));
     if(name.trim() === '' || name === undefined){
       if(toolType.trim() === '' || toolType === undefined){
@@ -72,6 +72,7 @@ function _getTools(req, res) {
     }
     let workingsteps = getWorkstepsForTool(find.GetMainWorkplan(), id);
     let d = find.GetToolDiameter(id);
+    let number = find.GetToolNumber(id);
     let dUnit = find.GetToolDiameterUnit(id);
     let rad = find.GetToolCornerRadius(id);
     let radUnit = find.GetToolCornerRadiusUnit(id);
@@ -80,6 +81,7 @@ function _getTools(req, res) {
     rtn.push({
       'id' : id,
       'name': name,
+      'number': number,
       'type': 'tool',
       'toolType': toolType,
       'workingsteps': workingsteps,
