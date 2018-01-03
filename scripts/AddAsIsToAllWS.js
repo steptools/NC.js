@@ -32,17 +32,18 @@ let loadAsIs = ()=>{
     .then((state)=>{
         if(state.value===0) return loadAsIs();
         cur++;
+        if(!WSCache[cur]) return;
         let asisname = WSCache[cur]+'asis'+file.find.GetExecutableName(WSCache[cur])+'.stp';
         console.log('writing %s (%d/%d)',asisname,cur,WSCache.length);
-        return file.ms.WriteDynamicGeometrySTEP(asisname);
+        return file.ms.WriteDynamicGeometrySTEP(asisname).then(()=>{
+            file.apt.ExecutableWorkpieceAsIs(WSCache[cur],asisname);
+        });
     }).then(()=>{
         return file.ms.NextWS();
     }).then(()=>{
         return file.ms.GetWSID();
     }).then((id)=>{
-        if(id===WSCache[0]||id===WSCache[WSCache.length]) return;
-        let asisname = WSCache[cur]+'asis'+file.find.GetExecutableName(WSCache[cur])+'.stp';
-        file.apt.ExecutableWorkpieceAsIs(id,asisname);
+        if(id===WSCache[0]||id===WSCache[WSCache.length]||!WSCache[cur]) return;
         console.log('starting %d',id);
         return loadAsIs();
         //return file.apt.
