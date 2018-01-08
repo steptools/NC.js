@@ -48,9 +48,9 @@ class CADApp extends THREE.EventDispatcher {
 
     // Create application-level action manager
     this.actionManager = actionManager;
-    let cookiearr = document.cookie.split('=');
-    if(cookiearr.length>1){
-     this.cookie = JSON.parse(cookiearr[1]);
+    let cookie = window.localStorage.getItem('_jsoncache');
+    if(cookie){
+     this.cookie = JSON.parse(cookie);
     } else {
       this.cookie = {};
     }
@@ -84,7 +84,7 @@ class CADApp extends THREE.EventDispatcher {
     );
   }
   updateCookie(){
-    document.cookie = '__jsoncookie='+JSON.stringify(this.cookie);
+    window.localStorage.setItem('_jsoncache',JSON.stringify(this.cookie));
   }
 }
 
