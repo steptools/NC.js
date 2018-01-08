@@ -52,14 +52,7 @@ export default class NC extends THREE.EventDispatcher {
     this._object3D = new THREE.Object3D();
     this._overlay3D = new THREE.Object3D();
     this._annotation3D = new THREE.Object3D();
-    this.state = {
-      selected:       false,
-      highlighted:    false,
-      visible:        true,
-      opacity:        1.0,
-      explodeDistance: 0,
-      collapsed:      false,
-      usagevis: {
+    let defaultusagevis = {
         asis:       false,
         tobe:       false,
         machine:    true,
@@ -68,7 +61,18 @@ export default class NC extends THREE.EventDispatcher {
         toolpath:   true,
         tolerance:  false,
         fixture:    true
-      }
+      };
+    if(this.app.cookie && this.app.cookie.usagevis){
+      defaultusagevis=this.app.cookie.usagevis;
+    }
+    this.state = {
+      selected:       false,
+      highlighted:    false,
+      visible:        true,
+      opacity:        1.0,
+      explodeDistance: 0,
+      collapsed:      false,
+      usagevis: defaultusagevis
     };
     this.bindFunctions();
     this.app.actionManager.on('STLDL',this.save);
@@ -188,6 +192,8 @@ export default class NC extends THREE.EventDispatcher {
       obj.hide();
     });
     }
+    this.app.cookie.usagevis = this.state.usagevis;
+    this.app.updateCookie();
   }
   getVis(){
     return this.state.usagevis;

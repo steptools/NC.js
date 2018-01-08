@@ -33,7 +33,7 @@ class CADApp extends THREE.EventDispatcher {
     let $body = $('body');
     this.services = $body.data('services');
     this.config = $body.data('config');
-
+    this.updateCookie = this.updateCookie.bind(this);
     // Setup socket
     this.socket = undefined;
     if (this.config.socket) {
@@ -48,7 +48,12 @@ class CADApp extends THREE.EventDispatcher {
 
     // Create application-level action manager
     this.actionManager = actionManager;
-
+    let cookiearr = document.cookie.split('=');
+    if(cookiearr.length>1){
+     this.cookie = JSON.parse(cookiearr[1]);
+    } else {
+      this.cookie = {};
+    }
     // Create data manager
     this.cadManager = new CADManager(this.config, this.socket,this);
     this.cadManager.dispatchEvent({
@@ -77,6 +82,9 @@ class CADApp extends THREE.EventDispatcher {
         // Dispatch setModel to the CADManager
       }
     );
+  }
+  updateCookie(){
+    document.cookie = '__jsoncookie='+JSON.stringify(this.cookie);
   }
 }
 
