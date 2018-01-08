@@ -31,11 +31,16 @@ export default class ResponsiveView extends React.Component {
     if ((innerWidth - 390 > innerHeight) && (innerWidth > 800)) {
       tempGuiMode = 0;
     }
-
+    let defaultsvmode = 'ws';
+    if(this.props.app.cookie && this.props.app.cookie.svmode){
+      defaultsvmode = this.props.app.cookie.svmode;
+    } else {
+      this.props.app.cookie.svmode = defaultsvmode;
+    }
     this.state = {
       guiMode: tempGuiMode,
       msGuiMode: false,
-      svmode: 'ws',
+      svmode: defaultsvmode,
       ws: -1,
       svtree: {
         'name': 'No Project Loaded',
@@ -667,7 +672,11 @@ export default class ResponsiveView extends React.Component {
           tree={this.state.svtree}
           altmenu={this.state.svaltmenu}
           cbMode={
-              (newMode) => this.setState({svmode: newMode})
+              (newMode) => {
+                this.setState({svmode: newMode})
+                this.props.app.cookie.svmode = newMode;
+                this.props.app.updateCookie();
+              }
           }
           cbWS={this.cbWS}
           cbTree={
@@ -723,7 +732,11 @@ export default class ResponsiveView extends React.Component {
           tree={this.state.svtree}
           altmenu={this.state.svaltmenu}
           cbMode={
-              (newMode) => this.setState({svmode: newMode})
+              (newMode) => {
+                this.setState({svmode: newMode})
+                this.props.app.cookie.svmode = newMode;
+                this.props.app.updateCookie();
+              }
           }
           cbTree={
               (newTree) => this.setState({svtree: newTree})
