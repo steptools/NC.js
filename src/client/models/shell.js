@@ -72,22 +72,23 @@ export default class Shell extends THREE.EventDispatcher {
             faces:{},
             colors:[]
         };
-        let arr = [];
         let curpos = 0;
         for(let i=0;i<facesJSON.length;i++){
-            arr = new Array(facesJSON[i].count);
             let face = {
                 'start':curpos,
                 'end':(curpos+facesJSON[i].count)-1
             };
             curpos = curpos+facesJSON[i].count;
             rtn.faces[facesJSON[i].id] = face;
+            let newColor = [];
             if(facesJSON[i].color!=null){
-                arr.fill(facesJSON[i].color); //[[0.5,0.5,0.5],[0.5,0.5,0.5]...[0.5,0.5,0.5]]
+                newColor = facesJSON[i].color;
             } else {
-                arr.fill(defaultColor);
+                newColor = defaultColor;
             }
-            rtn.colors = rtn.colors.concat(_.flatten(arr)); //flatten makes above [0.5,0.5,0.5,0.5,0.5,0.5...0.5,0.5,0.5]
+            for(let j=0;j<facesJSON[i].count;j++){
+              rtn.colors.push.apply(rtn.colors,newColor);
+            }
         }
         return rtn;
     }
