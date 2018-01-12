@@ -59,7 +59,62 @@ class ToleranceHighlight extends React.Component {
     );
   }
 }
-
+class ToleranceGeometry extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {  
+      loading:false,
+    };
+    this.visClick = this.visClick.bind(this);
+    this.hideClick = this.hideClick.bind(this);
+  }
+  visClick() {
+    this.setState({ loading: true });
+    request.get('/v3/nc/geometry/delta/tolerance/reset').then(() => {
+      this.props.actionManager.emit('changeVis', {'usage':'tolerance'});
+      this.setState({ 
+        loading: false,
+        loaded:true 
+      });
+    });
+  }
+  hideClick() {
+    this.props.actionManager.emit('changeVis',{'usage':'tolerance'});
+    this.setState({
+      loaded:false
+    });
+  }
+  componentWillUnmount() {
+    if(this.state.loaded){
+      this.props.actionManager.emit('changeVis', { 'usage': 'tolerance' });
+    }    
+  }
+  render(){
+    let txt = "Load Tolerance Geometry";
+    let clickFn = this.visClick;
+    if(this.state.loading) {
+      txt = "Loading..."
+      clickFn = ()=>{};
+    }
+    if(this.state.loaded){
+      txt = "Hide Tolerance Geometry";
+      clickFn = this.hideClick;
+    }
+    return (
+      <div className="button-dock">
+        <Menu 
+          className="buttons" 
+          mode="horizontal"
+          onClick={clickFn}
+        >
+          <MenuItem className="button" >
+            {txt}
+          </MenuItem>
+        </Menu>
+      </div>
+    );
+  }
+}
 class ToleranceMode extends React.Component {
   constructor(props) {
     super(props);
@@ -412,6 +467,7 @@ export default class ToleranceList extends React.Component {
         <ToleranceHighlight
           toleranceHighlightAll={this.props.toleranceHighlightAll}
         />
+        <ToleranceGeometry actionManager={this.props.app.actionManager} />
       </div>
     );
   }

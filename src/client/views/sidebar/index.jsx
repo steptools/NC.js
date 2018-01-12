@@ -155,6 +155,7 @@ export default class SidebarView extends React.Component {
     } else if (this.props.mode === 'tolerance') {
       currentView = (
         <ToleranceList
+          app={this.props.app}
           curWS={this.props.workingstepCache[this.props.ws]}
           cbMode={this.props.cbMode}
           cbTree={this.props.cbTree}
