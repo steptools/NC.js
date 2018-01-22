@@ -259,6 +259,9 @@ export default class ResponsiveView extends React.Component {
 
     this.toggleHighlight = this.toggleHighlight.bind(this);
     this.toleranceHighlightAll = this.toleranceHighlightAll.bind(this);
+
+    this.updateMTC = this.updateMTC.bind(this);
+
     this.addListeners = this.addListeners.bind(this);
 
 /*****
@@ -288,6 +291,10 @@ export default class ResponsiveView extends React.Component {
     this.props.app.actionManager.on('simulate-setspeed', this.changeSpeed);
     this.props.app.socket.on('nc:speed', (speed) => {
       this.speedChanged(speed);
+    });
+
+    this.props.app.socket.on('nc:mtc', (MTC) => {
+      this.updateMTC(MTC);
     });
 
     this.props.app.socket.on('nc:feed', (feed) => {
@@ -512,6 +519,20 @@ export default class ResponsiveView extends React.Component {
     };
 
     request.get(url).end(requestCB);
+  }
+
+  updateMTC(MTC) {
+    let mtc = MTC;
+    let stateup = {};
+    if(this.state.live !=mtc.live) stateup.live = mtc.live;
+    if(this.state.spindleSpeed !=mtc.spindleSpeed) stateup.spindleSpeed = Number(mtc.spindleSpeed);
+    if(this.state.feedRate != mtc.feedrate) stateup.feedRate = Number(mtc.feedrate);
+    if(this.state.baseFeed != mtc.baseFeed) stateup.baseFeed=mtc.baseFeed;
+    if(this.state.optimizedFeed != mtc.optimizedFeed) stateup.optimizedFeed = mtc.optimizedFeed;
+    if(this.state.feedUnit!=mtc.feedrateUnits) stateup.feedUnit = mtc.feedrateUnits;
+    if(this.state.currentGcode != mtc.currentGcode) stateup.currentGcode = mtc.currentGcode;
+    if(!_.isEmpty(stateup))
+      this.setState(stateup);
   }
 
   toggleHighlight(id) {
