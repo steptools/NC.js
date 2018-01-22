@@ -25,7 +25,8 @@ var fs = require('fs');
 var path = require('path');
 /******************************************************************************/
 
-function CoreServer() {
+module.exports = class CoreServer{
+  constructor(){
   var pjson = require('../../package.json');
   opts
     .version(pjson.version)
@@ -124,5 +125,4 @@ function CoreServer() {
     ],
   });
 }
-
-module.exports = CoreServer;
+}
