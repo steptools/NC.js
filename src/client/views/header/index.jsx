@@ -47,7 +47,6 @@ function getIcon(type, data) {
       } else if (data === 'CCW') {
         return 'icon fa fa-rotate-left';
       } else {
-	  //return 'icon fa fa-refresh';
         return 'icon fa fa-stop-circle-o';
       }
     case 'changelog':
@@ -58,8 +57,6 @@ function getIcon(type, data) {
       return 'icon fa fa-cube';
     case 'download':
       return 'icon fa fa-cloud-download';
-    case 'reset':
-      return 'icon fa fa-recycle';
     case 'view':
       return 'icon fa fa-eye';
     case 'noview':
@@ -139,39 +136,6 @@ class GeomBtn extends React.Component {
         <div className="geom">
           <div className={icon} id={iid} onClick = {this.visClick} />
           <div className={getIcon("download")} onClick = {this.dlClick} />
-        </div>
-        {this.props.children}
-      </MenuItem>
-    );
-  }  
-}
-class TolBtn extends React.Component {
-  constructor(props) {
-    super(props);
-    this.dlClick = this.dlClick.bind(this);
-    this.visClick = this.visClick.bind(this);
-  }
-
-  dlClick(info){
-    this.props.actionManager.emit('STLDL',this.props.type);
-  }
-  visClick(info){
-    let eventArgs = {'usage':this.props.type};
-    if(this.props.view ==='noview') eventArgs.show = true;
-    this.props.actionManager.emit('changeVis',eventArgs);
-  }
-  refreshClick(){
-   request.get('/v3/nc/geometry/delta/tolerance/reset').end(); 
-  }
-  render() {
-    let icon = getIcon(this.props.view);
-    let iid='';
-    if(this.props.iid) iid=this.props.iid;
-    return (
-      <MenuItem {...this.props} className = "button">
-        <div className="geom">
-          <div className={icon} id={iid} onClick = {this.visClick} />
-          <div className={getIcon("reset")} onClick = {this.refreshClick}/>
         </div>
         {this.props.children}
       </MenuItem>
