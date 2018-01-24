@@ -362,7 +362,7 @@ export default class NC extends THREE.EventDispatcher {
       obj.version = geom.version;
     }
 
-  handleDynamicGeom(geom,forceFull,cb,cbdata){
+  handleDynamicGeom(geom,forceFull,sequence,cb,cbdata){
     geom = undefined;
     if (!geom) {
       return cb(cbdata);
