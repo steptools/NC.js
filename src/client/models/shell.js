@@ -100,8 +100,8 @@ export default class Shell extends THREE.EventDispatcher {
         let positions = new Float32Array(_size);
         let normals = new Float32Array(_size);
         for(let i=0;i<_size;i++){
-            positions[i] = shellJSON.points[i](factor);
-            normals[i] = shellJSON.normals[i](factor);
+            positions[i] = shellJSON.points[i]*factor;
+            normals[i] = shellJSON.normals[i]*factor;
         }
 
         geom.addAttribute('position', new THREE.BufferAttribute(positions, 3));
