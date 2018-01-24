@@ -62,10 +62,6 @@ export default class NC extends THREE.EventDispatcher {
         tolerance:  false,
         fixture:    true
       };
-    if(this.app.cookie && this.app.cookie.usagevis){
-      defaultusagevis=this.app.cookie.usagevis;
-      defaultusagevis.tolerance = false;
-    }
     this.state = {
       selected:       false,
       highlighted:    false,
