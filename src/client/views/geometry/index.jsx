@@ -441,7 +441,7 @@ export default class GeometryView extends React.Component {
       _.values(curobjs),
       {'usage': 'cutter'}
     );
-    if(tool===undefined) {
+    if(tools.length===0) {
       this.alignDefaultView(true);
       return;
     }
