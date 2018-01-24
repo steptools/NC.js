@@ -97,8 +97,12 @@ export default class Shell extends THREE.EventDispatcher {
         let geom = new THREE.BufferGeometry();
         let _size = shellJSON.normals.length;
         let factor = Math.pow(10,(-1*shellJSON.precision));
-        let positions = Float32Array.from(_.map(shellJSON.points, (p) => { return (p * factor) }));
-        let normals = Float32Array.from(_.map(shellJSON.normals, (n) => { return (n * factor) }));
+        let positions = new Float32Array(_size);
+        let normals = new Float32Array(_size);
+        for(let i=0;i<_size;i++){
+            positions[i] = shellJSON.points[i](factor);
+            normals[i] = shellJSON.normals[i](factor);
+        }
 
         geom.addAttribute('position', new THREE.BufferAttribute(positions, 3));
         geom.addAttribute('normal',   new THREE.BufferAttribute(normals, 3));
