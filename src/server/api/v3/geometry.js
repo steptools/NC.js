@@ -72,7 +72,13 @@ let geomcache = {};
 function _getUUIDGeometry(req, res) {
   //Route the /geometry/delta/:current endpoint first.
   if(ms===undefined){
-    let out = file.find.GetJSONGeometry(req.params.uuid);
+    let out = {};
+    if(geomcache[req.params.uuid]) {
+      out = geomcache[req.params.uuid];
+    } else {
+      out = file.find.GetJSONGeometry(req.params.uuid);
+      geomcache[req.params.uuid] = out;
+    }
     res.setHeader('Content-Type', 'application/json');
     res.status(200).send(out);
     return;
