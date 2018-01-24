@@ -72,6 +72,7 @@ export default class Shell extends THREE.EventDispatcher {
             faces:{},
             colors:[]
         };
+        let rtnColorsLength = 0;
         let curpos = 0;
         for(let i=0;i<facesJSON.length;i++){
             let face = {
@@ -87,7 +88,9 @@ export default class Shell extends THREE.EventDispatcher {
                 newColor = defaultColor;
             }
             for(let j=0;j<facesJSON[i].count;j++){
-              rtn.colors.push.apply(rtn.colors,newColor);
+                for(let k=0;k<rtn.colors.length;k++){
+                    rtn.colors[rtnColorsLength++]=newColor[k];
+                }
             }
         }
         return rtn;
@@ -99,15 +102,17 @@ export default class Shell extends THREE.EventDispatcher {
         let factor = Math.pow(10,(-1*shellJSON.precision));
         let positions = new Float32Array(_size);
         let normals = new Float32Array(_size);
+        
+        let faces = this._faceload(shellJSON.faces);
+        let colors = new Float32Array(faces.colors.length);
         for(let i=0;i<_size;i++){
-            positions[i] = shellJSON.points[i](factor);
-            normals[i] = shellJSON.normals[i](factor);
+            positions[i] = shellJSON.points[i]*factor;
+            normals[i] = shellJSON.normals[i]*factor;
+            colors[i]=faces.colors[i];
         }
 
         geom.addAttribute('position', new THREE.BufferAttribute(positions, 3));
         geom.addAttribute('normal',   new THREE.BufferAttribute(normals, 3));
-        let faces = this._faceload(shellJSON.faces);
-        let colors = Float32Array.from(faces.colors);
         geom.addAttribute('color',    new THREE.BufferAttribute(colors, 3));
         this._faces = faces.faces;
 
