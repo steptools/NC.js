@@ -88,7 +88,7 @@ export default class Shell extends THREE.EventDispatcher {
                 newColor = defaultColor;
             }
             for(let j=0;j<facesJSON[i].count;j++){
-                for(let k=0;k<rtn.colors.length;k++){
+                for(let k=0;k<newColor.length;k++){
                     rtn.colors[rtnColorsLength++]=newColor[k];
                 }
             }
