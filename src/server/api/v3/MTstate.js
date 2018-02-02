@@ -116,31 +116,59 @@ var loadMTCHold = (addr,port)=>{
   return new Promise((resolve)=>{
     request
     .get(addr+":"+port+"/current")
-    .then((res)=>{
-    parseXMLString.parseString((res.text),(err,result)=>{
-    startSequence = result.MTConnectStreams.Header[0]['$'].nextSequence;
-  let find = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream;
-  let spindletag = _.find(find,(tag)=>{
-      if(tag.$.name ==='C' && tag.$.component ==='Rotary'){
-    return true;
-  } else {
-    return false;
-  }
-});
-  let pathtag = _.find(find,(tag)=>{
-      if(tag.$.name === 'path') {
-    return true;
-  } else {
-    return false;
-  }
-});
-  MTCHold.live=true;
-  spindleUpdate(spindletag.Samples[0].RotaryVelocity[1]._);
-  feedUpdate(pathtag.Samples[0].PathFeedrate[1]._);
-  blockUpdate(pathtag.Events[0]['e:BlockNumber'][0]._,pathtag.Events[0].Block[0]._);
-  pathUpdate(pathtag.Samples[0].PathPosition[0]._);
-  resolve();
-});
+      .then((res) => {
+        parseXMLString.parseString((res.text), (err, result) => {
+          startSequence = result.MTConnectStreams.Header[0]['$'].nextSequence;
+          let find = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream;
+          console.log(find);
+          let spindletag = _.find(find, (tag) => {
+            if (tag.$.name === 'C' && tag.$.component === 'Rotary') {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          let pathtag = _.find(find, (tag) => {
+            if (tag.$.name === 'path') {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          MTCHold.live = true;
+          spindleUpdate(spindletag.Samples[0].RotaryVelocity[1]._);
+          feedUpdate(pathtag.Samples[0].PathFeedrate[1]._);
+          //blockUpdate(pathtag.Events[0]['e:BlockNumber'][0]._, pathtag.Events[0].Block[0]._);
+          console.log(pathtag.Events[0]['e:Variables']);
+          let xoff = 0;
+          let yoff = 0;
+          let zoff = 0;
+          let aoff = 0;
+          let coff = 0;
+          _.each(pathtag.Events[0]['e:Variables'],(g)=>{
+            switch(g.$.subType){
+              case 'x:WORKOFFSET_X_AXIS':
+                xoff=g._;
+              break;
+              case 'x:WORKOFFSET_Y_AXIS':
+                yoff=g._;
+              break;
+              case 'x:WORKOFFSET_Z_AXIS':
+                zoff=g._;
+              break;
+              case 'x:WORKOFFSET_A_AXIS':
+                aoff=g._;
+              break;
+              case 'x:WORKOFFSET_C_AXIS':
+                coff=g._;
+              break;
+            }
+          });
+
+          file.mtc.SetWorkpieceOffset(xoff,yoff,zoff,aoff,coff);
+          //pathUpdate(pathtag.Samples[0].PathPosition[0]._);
+          resolve();
+        });
 })
 .catch((err)=>{
     console.log(err);
@@ -199,19 +227,15 @@ var spindleUpdate=function(speed){
     updateMTC();
   }
 };
+var xCur = 0;
+var yCur = 0;
+var zCur = 0;
+var aCur = 0;
+var cCur = 0;
 //Handle Mp1LPathPos
-var pathUpdate=function(position){
+var pathUpdate=function(){
   return new Promise((resolve)=>{
-    if(position===undefined) {
-      resolve();
-      return;
-    }
-    let incoords = position.split(' ');
-    let coords = {};
-    coords.x = Number(incoords[0]);
-    coords.y = Number(incoords[1]);
-    coords.z = Number(incoords[2]);
-    file.ms.SetToolPosition(coords.x, coords.y, coords.z, 0, 0, 1)
+    file.ms.SetToolPosition(xCur,yCur,zCur,aCur,cCur)
         .then((r)=> {
           if(r.more === true) {
             resolve();
@@ -238,6 +262,46 @@ var feedUpdate=function(feedrate){
       updateMTC();
   }
 };
+var xUpdate = (val)=>{
+  val = Number(val);
+  if(val!== xCur){
+    xCur = val;
+    pathUpdate();
+  }
+  return;
+}
+var yUpdate = (val)=>{
+  val = Number(val);
+  if(val!== yCur){
+    yCur = val;
+    pathUpdate();
+  }
+  return;
+}
+var zUpdate = (val)=>{
+  val = Number(val);
+  if(val!== zCur){
+    zCur = val;
+    pathUpdate();
+  }
+  return;
+}
+var aUpdate = (val)=>{
+  val = Number(val);
+  if(val!== aCur){
+    aCur = val;
+    pathUpdate();
+  }
+  return;
+}
+var cUpdate = (val)=>{
+  val = Number(val);
+  if(val!== cCur){
+    cCur = val;
+    pathUpdate();
+  }
+  return;
+}
 //==========END STATE UPDATERS==========
 //==========WORKER THREAD PROCESSOR=====
 worker.on('message',(ev)=> {
@@ -245,6 +309,21 @@ worker.on('message',(ev)=> {
     switch (key) {
       case "pathUpdate":
         pathUpdate(val);
+        break;
+      case "xUpdate":
+        xUpdate(val);
+        break;
+      case "yUpdate":
+        yUpdate(val);
+        break;
+      case "zUpdate":
+        zUpdate(val);
+        break;
+      case "aUpdate":
+        aUpdate(val);
+        break;
+      case "cUpdate":
+        cUpdate(val);
         break;
       case "feedUpdate":
         feedUpdate(val);

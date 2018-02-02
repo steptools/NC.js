@@ -49,9 +49,21 @@ var updateLoop = function(data){
                                     case "Mp1Fact":
                                         process.send({'feedUpdate':g._});
                                         break;
-                                    case "Mp1LPathPos":
-                                        process.send({'pathUpdate':g._});
-                                        break;
+                                    case "X1actm":
+                                      process.send({'xUpdate':g._});
+                                      break;
+                                    case "Y1actm":
+                                      process.send({'yUpdate':g._});
+                                      break;
+                                    case "Z1actm":
+                                      process.send({'zUpdate':g._});
+                                      break;
+                                    case "A1actm":
+                                      process.send({'aUpdate':g._});
+                                      break;
+                                    case "C21actm":
+                                      process.send({'cUpdate':g._});
+                                      break;
                                 }
                             });
                         });
