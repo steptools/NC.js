@@ -71,7 +71,7 @@ function exeFromId(id) {
   }
 
   let childPromises = [];
-  if (!find.IsWorkingstep(id) && !find.IsNcFunction()) {
+  if (find.IsWorkplan(id)||find.IsSelective(id)) {
     let children = find.GetNestedExecutableAll(id);
     if (children !== undefined) {
       ws.children = [];

@@ -57,7 +57,7 @@ function getWorkingstepsArray(id){
   if(find.IsWorkingstep(id)){
     WSArray.push(id);
   }
-  if (!find.IsWorkingstep(id)) {
+  if (!find.IsWorkingstep(id) && !find.IsNcFunction(id)) {
     let children = find.GetNestedExecutableAll(id);
     if (children !== undefined) {
       children.map((child) => getWorkingstepsArray(child));
