@@ -148,24 +148,24 @@ var loadMTCHold = (addr,port)=>{
           _.each(pathtag.Events[0]['e:Variables'],(g)=>{
             switch(g.$.subType){
               case 'x:WORKOFFSET_X_AXIS':
-                xoff=g._;
+                xoff=Number(g._);
               break;
               case 'x:WORKOFFSET_Y_AXIS':
-                yoff=g._;
+                yoff=Number(g._);
               break;
               case 'x:WORKOFFSET_Z_AXIS':
-                zoff=g._;
+                zoff=Number(g._);
               break;
               case 'x:WORKOFFSET_A_AXIS':
-                aoff=g._;
+                aoff=Number(g._);
               break;
               case 'x:WORKOFFSET_C_AXIS':
-                coff=g._;
+                coff=Number(g._);
               break;
             }
           });
 
-          file.ms.SetWorkpieceOffset(xoff,yoff,zoff,aoff,coff);
+          file.ms.SetWorkpieceOffset(xoff/25.4,yoff/25.4,zoff/25.4,aoff,coff);
           //pathUpdate(pathtag.Samples[0].PathPosition[0]._);
           resolve();
         });
