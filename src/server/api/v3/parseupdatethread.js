@@ -49,13 +49,13 @@ var updateLoop = function(data){
                                     case "Mp1Fact":
                                         process.send({'feedUpdate':g._});
                                         break;
-                                    case "X1actm":
+                                    case "MX1actm":
                                       process.send({'xUpdate':g._});
                                       break;
-                                    case "Y1actm":
+                                    case "MY1actm":
                                       process.send({'yUpdate':g._});
                                       break;
-                                    case "Z1actm":
+                                    case "MZ1actm":
                                       process.send({'zUpdate':g._});
                                       break;
                                     case "A1actm":
