@@ -164,7 +164,7 @@ var loadMTCHold = (addr,port)=>{
             }
           });
 
-          file.ms.SetWorkpieceOffset(xoff/25.4,yoff/25.4,zoff/25.4,aoff,coff);
+          file.ms.SetWorkpieceOffset(xoff,yoff,zoff,aoff,coff);
           //pathUpdate(pathtag.Samples[0].PathPosition[0]._);
           resolve();
         });
@@ -235,7 +235,7 @@ var cCur = 0;
 var pathUpdate=function(){
   return new Promise((resolve)=>{
     console.log('moving to %d %d %d %d %d',xCur,yCur,zCur,aCur,cCur);
-    file.ms.SetToolPosition(xCur/25.4,yCur/25.4,zCur/25.4,aCur,cCur)
+    file.ms.SetToolPosition(xCur,yCur,zCur,aCur,cCur)
         .then((r)=> {
           if(r.more === true) {
             resolve();
