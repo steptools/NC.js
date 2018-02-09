@@ -139,7 +139,6 @@ var loadMTCHold = (addr,port)=>{
           spindleUpdate(spindletag.Samples[0].RotaryVelocity[1]._);
           feedUpdate(pathtag.Samples[0].PathFeedrate[1]._);
           //blockUpdate(pathtag.Events[0]['e:BlockNumber'][0]._, pathtag.Events[0].Block[0]._);
-          console.log(pathtag.Events[0]['e:Variables']);
           let xoff = 0;
           let yoff = 0;
           let zoff = 0;
