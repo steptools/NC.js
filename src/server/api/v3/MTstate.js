@@ -235,7 +235,7 @@ var cCur = 0;
 var pathUpdate=function(){
   return new Promise((resolve)=>{
     console.log('moving to %d %d %d %d %d',xCur,yCur,zCur,aCur,cCur);
-    file.ms.SetToolPosition(xCur/25.4,yCur/25.4,zCur/25.4,aCur/25.4,cCur/25.4)
+    file.ms.SetToolPosition(xCur/25.4,yCur/25.4,zCur/25.4,aCur,cCur)
         .then((r)=> {
           if(r.more === true) {
             resolve();
