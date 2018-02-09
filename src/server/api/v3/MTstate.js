@@ -165,7 +165,7 @@ var loadMTCHold = (addr,port)=>{
             }
           });
 
-          file.mtc.SetWorkpieceOffset(xoff,yoff,zoff,aoff,coff);
+          file.ms.SetWorkpieceOffset(xoff,yoff,zoff,aoff,coff);
           //pathUpdate(pathtag.Samples[0].PathPosition[0]._);
           resolve();
         });
