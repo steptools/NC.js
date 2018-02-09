@@ -37,6 +37,7 @@ var updateLoop = function(data){
         //Mp1block (gcode update)
         //Mp1Fact (feedrate update)
         try{
+            let movevars = {};
             _.each(res.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream,
                 (e)=>{
                     _.each(e.Samples,(f)=>{
@@ -50,19 +51,24 @@ var updateLoop = function(data){
                                         process.send({'feedUpdate':g._});
                                         break;
                                     case "MX1actm":
-                                      process.send({'xUpdate':g._});
+                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].x=g._;
+                                      else movevars[g.$.timestamp] = {x:g._};
                                       break;
                                     case "MY1actm":
-                                      process.send({'yUpdate':g._});
+                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].y=g._;
+                                      else movevars[g.$.timestamp] = {y:g._};
                                       break;
                                     case "MZ1actm":
-                                      process.send({'zUpdate':g._});
+                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].z=g._;
+                                      else movevars[g.$.timestamp] = {z:g._};
                                       break;
                                     case "A1actm":
-                                      process.send({'aUpdate':g._});
+                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].a=g._;
+                                      else movevars[g.$.timestamp] = {a:g._};
                                       break;
                                     case "C21actm":
-                                      process.send({'cUpdate':g._});
+                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].c=g._;
+                                      else movevars[g.$.timestamp] = {c:g._};
                                       break;
                                 }
                             });
@@ -83,6 +89,9 @@ var updateLoop = function(data){
                         });
                     });
                 });
+            _.each(movevars,(v,key)=>{
+                process.send({'positionUpdate':v});
+            })
         } catch(e){
             console.log(e);
         }

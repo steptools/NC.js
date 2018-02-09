@@ -262,51 +262,78 @@ var feedUpdate=function(feedrate){
       updateMTC();
   }
 };
-var xUpdate = (val)=>{
+var xUpdate = (val,noUpdate)=>{
   val = Number(val);
   if(val!== xCur){
     xCur = val;
-    pathUpdate();
+    if(!noUpdate) pathUpdate();
+    return true;
   }
-  return;
+  return false;
 }
-var yUpdate = (val)=>{
+var yUpdate = (val,noUpdate)=>{
   val = Number(val);
   if(val!== yCur){
     yCur = val;
-    pathUpdate();
+    if(!noUpdate)pathUpdate();
+    return true;
   }
-  return;
+  return false;
 }
-var zUpdate = (val)=>{
+var zUpdate = (val,noUpdate)=>{
   val = Number(val);
   if(val!== zCur){
     zCur = val;
-    pathUpdate();
+    if(!noUpdate)pathUpdate();
+    return true;
   }
-  return;
+  return false;
 }
-var aUpdate = (val)=>{
+var aUpdate = (val,noUpdate)=>{
   val = Number(val);
   if(val!== aCur){
     aCur = val;
-    pathUpdate();
+    if(!noUpdate)pathUpdate();
+    return true;
   }
-  return;
+  return false;
 }
-var cUpdate = (val)=>{
+var cUpdate = (val,noUpdate)=>{
   val = Number(val);
   if(val!== cCur){
     cCur = val;
-    pathUpdate();
+    if(!noUpdate)pathUpdate();
+    return true;
   }
-  return;
+  return false;
+}
+var posUpdate = (val)=>{
+  let changed = false;
+  if(val.x){
+    changed |= xUpdate(val.x);
+  }
+  if(val.y){
+    changed |= yUpdate(val.y);
+  }
+  if(val.z){
+    changed |= zUpdate(val.z);
+  }
+  if(val.a){
+    changed |= aUpdate(val.a);
+  }
+  if(val.c){
+    changed |= cUpdate(val.c);
+  }
+  if(changed) pathUpdate();
 }
 //==========END STATE UPDATERS==========
 //==========WORKER THREAD PROCESSOR=====
 worker.on('message',(ev)=> {
   _.forIn(ev, (val, key)=> {
     switch (key) {
+      case "positionUpdate":
+        posUpdate(val);
+        break;
       case "pathUpdate":
         pathUpdate(val);
         break;
