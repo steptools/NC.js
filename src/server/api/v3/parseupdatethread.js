@@ -62,11 +62,11 @@ var updateLoop = function(data){
                                       if(movevars[g.$.timestamp]) movevars[g.$.timestamp].z=g._;
                                       else movevars[g.$.timestamp] = {z:g._};
                                       break;
-                                    case "A1actm":
-                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].a=g._;
-                                      else movevars[g.$.timestamp] = {a:g._};
+                                    case "MB1actm":
+                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].b=g._;
+                                      else movevars[g.$.timestamp] = {b:g._};
                                       break;
-                                    case "C21actm":
+                                    case "MC2actm":
                                       if(movevars[g.$.timestamp]) movevars[g.$.timestamp].c=g._;
                                       else movevars[g.$.timestamp] = {c:g._};
                                       break;
@@ -78,7 +78,7 @@ var updateLoop = function(data){
                         _.forIn(f,(val)=>{
                             _.each(val,(g)=>{
                                 switch(g.$.dataItemId){
-                                    case "Mp1BlockNumber":
+                                    case "path22_01":
                                         process.send({'blockNumberUpdate':g._});
                                         break;
                                     case "Mp1block":

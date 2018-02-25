@@ -142,7 +142,7 @@ var loadMTCHold = (addr,port)=>{
           let xoff = 0;
           let yoff = 0;
           let zoff = 0;
-          let aoff = 0;
+          let boff = 0;
           let coff = 0;
           _.each(pathtag.Events[0]['e:Variables'],(g)=>{
             switch(g.$.subType){
@@ -155,8 +155,8 @@ var loadMTCHold = (addr,port)=>{
               case 'x:WORKOFFSET_Z_AXIS':
                 zoff=Number(g._);
               break;
-              case 'x:WORKOFFSET_A_AXIS':
-                aoff=Number(g._);
+              case 'x:WORKOFFSET_B_AXIS':
+                boff=Number(g._);
               break;
               case 'x:WORKOFFSET_C_AXIS':
                 coff=Number(g._);
@@ -164,7 +164,7 @@ var loadMTCHold = (addr,port)=>{
             }
           });
 
-          file.ms.SetWorkpieceOffset(xoff,yoff,zoff,aoff,coff);
+          file.ms.SetWorkpieceOffset(xoff,yoff,zoff,boff,coff);
           //pathUpdate(pathtag.Samples[0].PathPosition[0]._);
           resolve();
         });
@@ -226,16 +226,15 @@ var spindleUpdate=function(speed){
     updateMTC();
   }
 };
-var xCur = 0;
-var yCur = 0;
-var zCur = 0;
-var aCur = 0;
-var cCur = 0;
+var xCur = Number(0);
+var yCur = Number(0);
+var zCur = Number(0);
+var bCur = Number(0);
+var cCur = Number(0);
 //Handle Mp1LPathPos
 var pathUpdate=function(){
   return new Promise((resolve)=>{
-    console.log('moving to %d %d %d %d %d',xCur,yCur,zCur,aCur,cCur);
-    file.ms.SetToolPosition(xCur,yCur,zCur,aCur,cCur)
+    file.ms.SetToolPosition(xCur,yCur,zCur,bCur,cCur)
         .then((r)=> {
           if(r.more === true) {
             resolve();
@@ -289,10 +288,10 @@ var zUpdate = (val,noUpdate)=>{
   }
   return false;
 }
-var aUpdate = (val,noUpdate)=>{
+var bUpdate = (val,noUpdate)=>{
   val = Number(val);
-  if(val!== aCur){
-    aCur = val;
+  if(val!== bCur){
+    bCur = val;
     if(!noUpdate)pathUpdate();
     return true;
   }
@@ -318,8 +317,8 @@ var posUpdate = (val)=>{
   if(val.z){
     changed |= zUpdate(val.z);
   }
-  if(val.a){
-    changed |= aUpdate(val.a);
+  if(val.b){
+    changed |= bUpdate(val.b);
   }
   if(val.c){
     changed |= cUpdate(val.c);
@@ -346,8 +345,8 @@ worker.on('message',(ev)=> {
       case "zUpdate":
         zUpdate(val);
         break;
-      case "aUpdate":
-        aUpdate(val);
+      case "bUpdate":
+        bUpdate(val);
         break;
       case "cUpdate":
         cUpdate(val);
@@ -490,6 +489,7 @@ var _loopInit = function(req, res) {
               res.status(200).send('OK');
               update('play');
               console.log('starting...');
+              file.ms.SetBCMode(true);
               let machineAddress = app.config.machineList[0].address.split(':')[0];
               let machinePort = app.config.machineList[0].address.split(':')[1];
               loadMTCHold(machineAddress,machinePort)
