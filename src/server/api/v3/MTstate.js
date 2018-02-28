@@ -112,6 +112,11 @@ var BaseOptFeed = (lineNumber)=>{
 }
 
 let startSequence = "";
+var xCur = Number(0);
+var yCur = Number(0);
+var zCur = Number(0);
+var bCur = Number(0);
+var cCur = Number(0);
 var loadMTCHold = (addr,port)=>{
   return new Promise((resolve)=>{
     request
@@ -135,6 +140,26 @@ var loadMTCHold = (addr,port)=>{
               return false;
             }
           });
+	  let xtag = _.find(find, (tag) =>{
+	    return(tag.$.name ==='X' && tag.$.component === 'Linear');
+	  });
+	  let ytag = _.find(find, (tag) =>{
+	    return(tag.$.name ==='Y' && tag.$.component === 'Linear');
+	  });
+	  let ztag = _.find(find, (tag) =>{
+	    return(tag.$.name ==='Z' && tag.$.component === 'Linear');
+	  });
+	  let btag = _.find(find, (tag) =>{
+	    return(tag.$.name ==='B' && tag.$.component === 'Rotary');
+	  });
+	  let ctag = _.find(find, (tag) =>{
+	    return(tag.$.name ==='C2' && tag.$.component === 'Rotary');
+	  });
+	  xCur=Number(xtag.Samples[0].Position[0]._);	  
+	  yCur=Number(ytag.Samples[0].Position[0]._);	  
+	  zCur=Number(ztag.Samples[0].Position[0]._);	  
+	  bCur=Number(btag.Samples[0].Angle[0]._);	  
+	  cCur=Number(ctag.Samples[0].Angle[0]._);
           MTCHold.live = true;
           spindleUpdate(spindletag.Samples[0].RotaryVelocity[1]._);
           feedUpdate(pathtag.Samples[0].PathFeedrate[1]._);
@@ -226,11 +251,6 @@ var spindleUpdate=function(speed){
     updateMTC();
   }
 };
-var xCur = Number(0);
-var yCur = Number(0);
-var zCur = Number(0);
-var bCur = Number(0);
-var cCur = Number(0);
 //Handle Mp1LPathPos
 var pathUpdate=function(){
   return new Promise((resolve)=>{
