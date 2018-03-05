@@ -234,7 +234,6 @@ var cCur = 0;
 //Handle Mp1LPathPos
 var pathUpdate=function(){
   return new Promise((resolve)=>{
-    console.log('moving to %d %d %d %d %d',xCur,yCur,zCur,aCur,cCur);
     file.ms.SetToolPosition(xCur,yCur,zCur,aCur,cCur)
         .then((r)=> {
           if(r.more === true) {
