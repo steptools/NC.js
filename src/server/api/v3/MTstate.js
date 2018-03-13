@@ -50,6 +50,11 @@ let currentMachine = 0;
 let keyCache = {};
 let deltaCache = {};
 
+var xCur = 0;
+var yCur = 0;
+var zCur = 0;
+var aCur = 0;
+var cCur = 0;
 /****************************** Helper Functions ******************************/
 
 function getWorkingstepsArray(id){
@@ -135,6 +140,37 @@ var loadMTCHold = (addr,port)=>{
               return false;
             }
           });
+          let xtag = _.find(find,(tag)=>{
+            if((tag.$.name === 'X')){
+              return true;
+            } return false;
+          });
+          console.log("%j",xtag.Samples[0]);
+          xCur = Number(xtag.Samples[0]['Position'][0]._);
+          let ytag = _.find(find,(tag)=>{
+            if((tag.$.name === 'Y')){
+              return true;
+            } return false;
+          });
+          yCur = Number(ytag.Samples[0]['Position'][0]._);
+          let ztag = _.find(find,(tag)=>{
+            if((tag.$.name === 'Z')){
+              return true;
+            } return false;
+          });
+          zCur = Number(ztag.Samples[0]['Position'][0]._);
+          let atag = _.find(find,(tag)=>{
+            if((tag.$.name === 'A')){
+              return true;
+            } return false;
+          });
+          aCur = Number(atag.Samples[0]['Angle'][0]._);
+          let ctag = _.find(find,(tag)=>{
+            if((tag.$.name === 'C2')){
+              return true;
+            } return false;
+          });
+          cCur = Number(ctag.Samples[0]['Angle'][0]._);
           MTCHold.live = true;
           spindleUpdate(spindletag.Samples[0].RotaryVelocity[1]._);
           feedUpdate(pathtag.Samples[0].PathFeedrate[1]._);
@@ -226,11 +262,6 @@ var spindleUpdate=function(speed){
     updateMTC();
   }
 };
-var xCur = 0;
-var yCur = 0;
-var zCur = 0;
-var aCur = 0;
-var cCur = 0;
 //Handle Mp1LPathPos
 var pathUpdate=function(){
   return new Promise((resolve)=>{
@@ -309,19 +340,19 @@ var cUpdate = (val,noUpdate)=>{
 var posUpdate = (val)=>{
   let changed = false;
   if(val.x){
-    changed |= xUpdate(val.x);
+    changed |= xUpdate(val.x,true);
   }
   if(val.y){
-    changed |= yUpdate(val.y);
+    changed |= yUpdate(val.y,true);
   }
   if(val.z){
-    changed |= zUpdate(val.z);
+    changed |= zUpdate(val.z,true);
   }
   if(val.a){
-    changed |= aUpdate(val.a);
+    changed |= aUpdate(val.a,true);
   }
   if(val.c){
-    changed |= cUpdate(val.c);
+    changed |= cUpdate(val.c,true);
   }
   if(changed) pathUpdate();
 }
