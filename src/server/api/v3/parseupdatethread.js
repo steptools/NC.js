@@ -18,17 +18,21 @@
 'use strict';
 let xml2js = require('xml2js');
 let getMultipartRequest = require(process.cwd()+'/src/server/api/v3/getmultipartrequest.js');
+let request = require('superagent');
 let _ = require('lodash');
 let readline = require('readline');
 
-let dump=1;
 var updateLoop = function(data){
+    return new Promise((resolve) => {
     xml2js.parseString(data,(err,res)=>{
         if(err){
-            console.log(err);
+                resolve();
             return;
         }
-        if(res===undefined || res.MTConnectStreams.Streams === undefined || res.MTConnectStreams.Streams[0] ==='' ) return;
+            if (res === undefined || res.MTConnectStreams.Streams === undefined || res.MTConnectStreams.Streams[0] === "") {
+                resolve();
+                return;
+            }
         //Need to parse samples and events.
         //Important things are:
         //MS1speed (spindle speed update)
@@ -37,6 +41,7 @@ var updateLoop = function(data){
         //Mp1block (gcode update)
         //Mp1Fact (feedrate update)
         try{
+                let rtn = Number(res.MTConnectStreams.Header[0]['$'].nextSequence);
             let movevars = {};
             _.each(res.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream,
                 (e)=>{
@@ -92,15 +97,33 @@ var updateLoop = function(data){
             _.each(movevars,(v,key)=>{
                 process.send({'positionUpdate':v});
             })
+                resolve(rtn);
+                return;
         } catch(e){
             console.log(e);
+                resolve();
+                return;
         }
     })
+    });
 };
 
+let continueParse = (f)=>{
+    request.get(f.machineAddress+':'+f.machinePort+'/sample?from='+f.startSequence)
+    .then((res)=>{
+        return updateLoop(res.text);
+    }).then((res)=>{
+        if(res > f.startSequence) {
+            f.startSequence = res;
+        }
+        return continueParse(f);
+    });
+
+}
 let parseMessage = (f)=>{
     if(f.msg==='start'){
-        getMultipartRequest({'hostname':f.machineAddress,'port':f.machinePort,'path':'/sample?from='+f.startSequence+'&interval=0&heartbeat=10000'},(r)=>{updateLoop(r);});
+        continueParse(f);
+        //getMultipartRequest({'hostname':f.machineAddress,'port':f.machinePort,'path':'/sample?from='+f.startSequence+'&interval=0&heartbeat=10000'},(r)=>{updateLoop(r);});
     }
 };
 
