@@ -64,7 +64,7 @@ module.exports = class CoreServer{
       'Run the MT Connect server mode. Implies --no-cache.'
     )
     .option(
-      '--dump [path]',
+      '-d, --dump [path]',
       'Directory to dump failed isects into [""]',
       ''
     )

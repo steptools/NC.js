@@ -117,6 +117,11 @@ var BaseOptFeed = (lineNumber)=>{
 }
 
 let startSequence = "";
+let xOff = Number(0);
+let yOff = Number(0);
+let zOff = Number(0);
+let aOff = Number(0);
+let cOff = Number(0);
 var loadMTCHold = (addr,port)=>{
   return new Promise((resolve)=>{
     request
@@ -127,69 +132,63 @@ var loadMTCHold = (addr,port)=>{
           let find = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream;
           console.log(find);
           let spindletag = _.find(find, (tag) => {
-            if (tag.$.name === 'C' && tag.$.component === 'Rotary') {
+            if (tag.$.name === 'SPI1' && tag.$.component === 'Rotary') {
               return true;
             } else {
               return false;
             }
           });
           let pathtag = _.find(find, (tag) => {
-            if (tag.$.name === 'path') {
+            if (tag.$.name === 'p1') {
               return true;
             } else {
               return false;
             }
           });
 	  let xtag = _.find(find, (tag) =>{
-	    return(tag.$.name ==='X' && tag.$.component === 'Linear');
+	    return(tag.$.name ==='X1' && tag.$.component === 'Linear');
 	  });
 	  let ytag = _.find(find, (tag) =>{
-	    return(tag.$.name ==='Y' && tag.$.component === 'Linear');
+	    return(tag.$.name ==='Y1' && tag.$.component === 'Linear');
 	  });
 	  let ztag = _.find(find, (tag) =>{
-	    return(tag.$.name ==='Z' && tag.$.component === 'Linear');
+	    return(tag.$.name ==='Z1' && tag.$.component === 'Linear');
 	  });
-	  let btag = _.find(find, (tag) =>{
-	    return(tag.$.name ==='B' && tag.$.component === 'Rotary');
+	  let atag = _.find(find, (tag) =>{
+	    return(tag.$.name ==='A1' && tag.$.component === 'Rotary');
 	  });
 	  let ctag = _.find(find, (tag) =>{
-	    return(tag.$.name ==='C2' && tag.$.component === 'Rotary');
+	    return(tag.$.name ==='C1' && tag.$.component === 'Rotary');
 	  });
 	  xCur=Number(xtag.Samples[0].Position[0]._);	  
 	  yCur=Number(ytag.Samples[0].Position[0]._);	  
 	  zCur=Number(ztag.Samples[0].Position[0]._);	  
-	  bCur=Number(btag.Samples[0].Angle[0]._);	  
+	  aCur=Number(atag.Samples[0].Angle[0]._);	  
 	  cCur=Number(ctag.Samples[0].Angle[0]._);
           MTCHold.live = true;
           spindleUpdate(spindletag.Samples[0].RotaryVelocity[1]._);
           feedUpdate(pathtag.Samples[0].PathFeedrate[1]._);
           //blockUpdate(pathtag.Events[0]['e:BlockNumber'][0]._, pathtag.Events[0].Block[0]._);
-          let xoff = 0;
-          let yoff = 0;
-          let zoff = 0;
-          let boff = 0;
-          let coff = 0;
           _.each(pathtag.Events[0]['e:Variables'],(g)=>{
             switch(g.$.subType){
               case 'x:WORKOFFSET_X_AXIS':
-                xoff=Number(g._);
+                xOff=Number(g._);
               break;
               case 'x:WORKOFFSET_Y_AXIS':
-                yoff=Number(g._);
+                yOff=Number(g._);
               break;
               case 'x:WORKOFFSET_Z_AXIS':
-                zoff=Number(g._);
+                zOff=Number(g._);
               break;
-              case 'x:WORKOFFSET_B_AXIS':
-                boff=Number(g._);
+              case 'x:WORKOFFSET_A_AXIS':
+                aOff=Number(g._);
               break;
               case 'x:WORKOFFSET_C_AXIS':
-                coff=Number(g._);
+                cOff=Number(g._);
               break;
             }
           });
-
-          file.ms.SetWorkpieceOffset(xoff,yoff,zoff,boff,coff);
+          file.ms.SetWorkpieceOffset(xOff,yOff,zOff,aOff,cOff);
           //pathUpdate(pathtag.Samples[0].PathPosition[0]._);
           resolve();
         });
@@ -254,7 +253,7 @@ var spindleUpdate=function(speed){
 //Handle Mp1LPathPos
 var pathUpdate=function(){
   return new Promise((resolve)=>{
-    file.ms.SetToolPosition(xCur,yCur,zCur,bCur,cCur)
+    file.ms.SetToolPosition(xCur,yCur,zCur,aCur,cCur)
         .then((r)=> {
           if(r.more === true) {
             resolve();
@@ -308,10 +307,10 @@ var zUpdate = (val,noUpdate)=>{
   }
   return false;
 }
-var bUpdate = (val,noUpdate)=>{
+var aUpdate = (val,noUpdate)=>{
   val = Number(val);
-  if(val!== bCur){
-    bCur = val;
+  if(val!== aCur){
+    aCur = val;
     if(!noUpdate)pathUpdate();
     return true;
   }
@@ -337,8 +336,8 @@ var posUpdate = (val)=>{
   if(val.z){
     changed |= zUpdate(val.z,true);
   }
-  if(val.b){
-    changed |= bUpdate(val.b,true);
+  if(val.a){
+    changed |= aUpdate(val.a,true);
   }
   if(val.c){
     changed |= cUpdate(val.c,true);
@@ -365,8 +364,8 @@ worker.on('message',(ev)=> {
       case "zUpdate":
         zUpdate(val);
         break;
-      case "bUpdate":
-        bUpdate(val);
+      case "aUpdate":
+        aUpdate(val);
         break;
       case "cUpdate":
         cUpdate(val);
@@ -469,7 +468,12 @@ var parseGCodes = function(fname) {
 };
 
 /***************************** Endpoint Functions *****************************/
-
+var _gotows = (req,res)=>{
+  if(loopStates[path] === true) res.status(200).send();
+  file.ms.GoToWS(Number(req.params.wsid)).then(()=>{
+    res.status(200).send();
+  });
+}
 
 var _loopInit = function(req, res) {
 
@@ -509,7 +513,7 @@ var _loopInit = function(req, res) {
               res.status(200).send('OK');
               update('play');
               console.log('starting...');
-              file.ms.SetBCMode(true);
+              //file.ms.SetBCMode(true);
               let machineAddress = app.config.machineList[0].address.split(':')[0];
               let machinePort = app.config.machineList[0].address.split(':')[1];
               loadMTCHold(machineAddress,machinePort)
@@ -627,6 +631,7 @@ module.exports = function(globalApp, cb) {
   app.router.get('/v3/nc/state/loop/:loopstate', _loopInit);
   app.router.get('/v3/nc/state/loop/', _loopInit);
   app.router.get('/v3/nc/state/mtc', _getMTCHold);
+  app.router.get('/v3/nc/state/ws/:wsid', _gotows);
   app.router.get('/v3/nc/state/machine/:id', _machineInfo);
   app.router.get('/v3/nc/state/machine', _machineInfo);
   app.router.get('/v3/nc/state/machines', _getAllMachines);

@@ -22,6 +22,7 @@ let request = require('superagent');
 let _ = require('lodash');
 let readline = require('readline');
 
+let dump=0;
 var updateLoop = function(data){
     return new Promise((resolve) => {
     xml2js.parseString(data,(err,res)=>{
@@ -48,32 +49,35 @@ var updateLoop = function(data){
                     _.each(e.Samples,(f)=>{
                         _.forIn(f,(val)=>{
                             _.each(val,(g)=>{
-                                switch(g.$.dataItemId){
+                                switch(g.$.name){
                                     case "MS1speed":
                                         process.send({'speedUpdate':g._});
                                         break;
                                     case "Mp1Fact":
                                         process.send({'feedUpdate':g._});
                                         break;
-                                    case "MX1actm":
+                                    case "Xactm":
                                       if(movevars[g.$.timestamp]) movevars[g.$.timestamp].x=g._;
                                       else movevars[g.$.timestamp] = {x:g._};
                                       break;
-                                    case "MY1actm":
+                                    case "Yactm":
                                       if(movevars[g.$.timestamp]) movevars[g.$.timestamp].y=g._;
                                       else movevars[g.$.timestamp] = {y:g._};
                                       break;
-                                    case "MZ1actm":
+                                    case "Zactm":
                                       if(movevars[g.$.timestamp]) movevars[g.$.timestamp].z=g._;
                                       else movevars[g.$.timestamp] = {z:g._};
                                       break;
-                                    case "MB1actm":
-                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].b=g._;
-                                      else movevars[g.$.timestamp] = {b:g._};
-                                      break;
-                                    case "MC2actm":
+                                    case "Aactm":
                                       if(movevars[g.$.timestamp]) movevars[g.$.timestamp].c=g._;
                                       else movevars[g.$.timestamp] = {c:g._};
+                                      break;
+                                    case "Cactm":
+                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].a=g._;
+                                      else movevars[g.$.timestamp] = {a:g._};
+                                      break;
+                                    default:
+                                      console.log(g.$.name);
                                       break;
                                 }
                             });
@@ -83,10 +87,10 @@ var updateLoop = function(data){
                         _.forIn(f,(val)=>{
                             _.each(val,(g)=>{
                                 switch(g.$.dataItemId){
-                                    case "path22_01":
+                                    case "path1_line":
                                         process.send({'blockNumberUpdate':g._});
                                         break;
-                                    case "Mp1block":
+                                    case "path1_block":
                                         process.send({'blockUpdate':g._});
                                         break;
                                 }
@@ -95,6 +99,8 @@ var updateLoop = function(data){
                     });
                 });
             _.each(movevars,(v,key)=>{
+                if(dump++<20)return;
+                dump=0;
                 process.send({'positionUpdate':v});
             })
                 resolve(rtn);
