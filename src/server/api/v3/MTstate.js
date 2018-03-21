@@ -50,6 +50,11 @@ let currentMachine = 0;
 let keyCache = {};
 let deltaCache = {};
 
+var xCur = 0;
+var yCur = 0;
+var zCur = 0;
+var bCur = 0;
+var cCur = 0;
 /****************************** Helper Functions ******************************/
 
 function getWorkingstepsArray(id){
@@ -112,11 +117,6 @@ var BaseOptFeed = (lineNumber)=>{
 }
 
 let startSequence = "";
-var xCur = Number(0);
-var yCur = Number(0);
-var zCur = Number(0);
-var bCur = Number(0);
-var cCur = Number(0);
 var loadMTCHold = (addr,port)=>{
   return new Promise((resolve)=>{
     request
@@ -329,19 +329,19 @@ var cUpdate = (val,noUpdate)=>{
 var posUpdate = (val)=>{
   let changed = false;
   if(val.x){
-    changed |= xUpdate(val.x);
+    changed |= xUpdate(val.x,true);
   }
   if(val.y){
-    changed |= yUpdate(val.y);
+    changed |= yUpdate(val.y,true);
   }
   if(val.z){
-    changed |= zUpdate(val.z);
+    changed |= zUpdate(val.z,true);
   }
   if(val.b){
-    changed |= bUpdate(val.b);
+    changed |= bUpdate(val.b,true);
   }
   if(val.c){
-    changed |= cUpdate(val.c);
+    changed |= cUpdate(val.c,true);
   }
   if(changed) pathUpdate();
 }
