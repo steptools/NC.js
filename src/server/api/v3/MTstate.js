@@ -53,7 +53,7 @@ let deltaCache = {};
 var xCur = 0;
 var yCur = 0;
 var zCur = 0;
-var bCur = 0;
+var aCur = 0;
 var cCur = 0;
 /****************************** Helper Functions ******************************/
 
