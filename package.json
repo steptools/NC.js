@@ -76,7 +76,7 @@
     "uglify-js": "latest",
     "uglify-loader": "latest",
     "url-loader": "latest",
-    "webpack": "@3.5.5",
+    "webpack": "^3.5.5",
     "webpack-config": "latest",
     "webpack-glsl-loader": "latest",
     "webpack-sources": "latest"
