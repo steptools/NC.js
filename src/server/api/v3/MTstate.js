@@ -50,6 +50,11 @@ let currentMachine = 0;
 let keyCache = {};
 let deltaCache = {};
 
+var xCur = 0;
+var yCur = 0;
+var zCur = 0;
+var aCur = 0;
+var cCur = 0;
 /****************************** Helper Functions ******************************/
 
 function getWorkingstepsArray(id){
@@ -57,7 +62,7 @@ function getWorkingstepsArray(id){
   if(find.IsWorkingstep(id)){
     WSArray.push(id);
   }
-  if (!find.IsWorkingstep(id)) {
+  if (!find.IsWorkingstep(id) && !find.IsNcFunction(id)) {
     let children = find.GetNestedExecutableAll(id);
     if (children !== undefined) {
       children.map((child) => getWorkingstepsArray(child));
@@ -116,31 +121,89 @@ var loadMTCHold = (addr,port)=>{
   return new Promise((resolve)=>{
     request
     .get(addr+":"+port+"/current")
-    .then((res)=>{
-    parseXMLString.parseString((res.text),(err,result)=>{
-    startSequence = result.MTConnectStreams.Header[0]['$'].nextSequence;
-  let find = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream;
-  let spindletag = _.find(find,(tag)=>{
-      if(tag.$.name ==='C' && tag.$.component ==='Rotary'){
-    return true;
-  } else {
-    return false;
-  }
-});
-  let pathtag = _.find(find,(tag)=>{
-      if(tag.$.name === 'path') {
-    return true;
-  } else {
-    return false;
-  }
-});
-  MTCHold.live=true;
-  spindleUpdate(spindletag.Samples[0].RotaryVelocity[1]._);
-  feedUpdate(pathtag.Samples[0].PathFeedrate[1]._);
-  blockUpdate(pathtag.Events[0]['e:BlockNumber'][0]._,pathtag.Events[0].Block[0]._);
-  pathUpdate(pathtag.Samples[0].PathPosition[0]._);
-  resolve();
-});
+      .then((res) => {
+        parseXMLString.parseString((res.text), (err, result) => {
+          startSequence = result.MTConnectStreams.Header[0]['$'].nextSequence;
+          let find = result.MTConnectStreams.Streams[0].DeviceStream[0].ComponentStream;
+          console.log(find);
+          let spindletag = _.find(find, (tag) => {
+            if (tag.$.name === 'C' && tag.$.component === 'Rotary') {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          let pathtag = _.find(find, (tag) => {
+            if (tag.$.name === 'path') {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          let xtag = _.find(find,(tag)=>{
+            if((tag.$.name === 'X')){
+              return true;
+            } return false;
+          });
+          console.log("%j",xtag.Samples[0]);
+          xCur = Number(xtag.Samples[0]['Position'][0]._);
+          let ytag = _.find(find,(tag)=>{
+            if((tag.$.name === 'Y')){
+              return true;
+            } return false;
+          });
+          yCur = Number(ytag.Samples[0]['Position'][0]._);
+          let ztag = _.find(find,(tag)=>{
+            if((tag.$.name === 'Z')){
+              return true;
+            } return false;
+          });
+          zCur = Number(ztag.Samples[0]['Position'][0]._);
+          let atag = _.find(find,(tag)=>{
+            if((tag.$.name === 'A')){
+              return true;
+            } return false;
+          });
+          aCur = Number(atag.Samples[0]['Angle'][0]._);
+          let ctag = _.find(find,(tag)=>{
+            if((tag.$.name === 'C2')){
+              return true;
+            } return false;
+          });
+          cCur = Number(ctag.Samples[0]['Angle'][0]._);
+          MTCHold.live = true;
+          spindleUpdate(spindletag.Samples[0].RotaryVelocity[1]._);
+          feedUpdate(pathtag.Samples[0].PathFeedrate[1]._);
+          //blockUpdate(pathtag.Events[0]['e:BlockNumber'][0]._, pathtag.Events[0].Block[0]._);
+          let xoff = 0;
+          let yoff = 0;
+          let zoff = 0;
+          let aoff = 0;
+          let coff = 0;
+          _.each(pathtag.Events[0]['e:Variables'],(g)=>{
+            switch(g.$.subType){
+              case 'x:WORKOFFSET_X_AXIS':
+                xoff=Number(g._);
+              break;
+              case 'x:WORKOFFSET_Y_AXIS':
+                yoff=Number(g._);
+              break;
+              case 'x:WORKOFFSET_Z_AXIS':
+                zoff=Number(g._);
+              break;
+              case 'x:WORKOFFSET_A_AXIS':
+                aoff=Number(g._);
+              break;
+              case 'x:WORKOFFSET_C_AXIS':
+                coff=Number(g._);
+              break;
+            }
+          });
+
+          file.ms.SetWorkpieceOffset(xoff,yoff,zoff,aoff,coff);
+          //pathUpdate(pathtag.Samples[0].PathPosition[0]._);
+          resolve();
+        });
 })
 .catch((err)=>{
     console.log(err);
@@ -200,18 +263,9 @@ var spindleUpdate=function(speed){
   }
 };
 //Handle Mp1LPathPos
-var pathUpdate=function(position){
+var pathUpdate=function(){
   return new Promise((resolve)=>{
-    if(position===undefined) {
-      resolve();
-      return;
-    }
-    let incoords = position.split(' ');
-    let coords = {};
-    coords.x = Number(incoords[0]);
-    coords.y = Number(incoords[1]);
-    coords.z = Number(incoords[2]);
-    file.ms.SetToolPosition(coords.x, coords.y, coords.z, 0, 0, 1)
+    file.ms.SetToolPosition(xCur,yCur,zCur,aCur,cCur)
         .then((r)=> {
           if(r.more === true) {
             resolve();
@@ -238,13 +292,95 @@ var feedUpdate=function(feedrate){
       updateMTC();
   }
 };
+var xUpdate = (val,noUpdate)=>{
+  val = Number(val);
+  if(val!== xCur){
+    xCur = val;
+    if(!noUpdate) pathUpdate();
+    return true;
+  }
+  return false;
+}
+var yUpdate = (val,noUpdate)=>{
+  val = Number(val);
+  if(val!== yCur){
+    yCur = val;
+    if(!noUpdate)pathUpdate();
+    return true;
+  }
+  return false;
+}
+var zUpdate = (val,noUpdate)=>{
+  val = Number(val);
+  if(val!== zCur){
+    zCur = val;
+    if(!noUpdate)pathUpdate();
+    return true;
+  }
+  return false;
+}
+var aUpdate = (val,noUpdate)=>{
+  val = Number(val);
+  if(val!== aCur){
+    aCur = val;
+    if(!noUpdate)pathUpdate();
+    return true;
+  }
+  return false;
+}
+var cUpdate = (val,noUpdate)=>{
+  val = Number(val);
+  if(val!== cCur){
+    cCur = val;
+    if(!noUpdate)pathUpdate();
+    return true;
+  }
+  return false;
+}
+var posUpdate = (val)=>{
+  let changed = false;
+  if(val.x){
+    changed |= xUpdate(val.x,true);
+  }
+  if(val.y){
+    changed |= yUpdate(val.y,true);
+  }
+  if(val.z){
+    changed |= zUpdate(val.z,true);
+  }
+  if(val.a){
+    changed |= aUpdate(val.a,true);
+  }
+  if(val.c){
+    changed |= cUpdate(val.c,true);
+  }
+  if(changed) pathUpdate();
+}
 //==========END STATE UPDATERS==========
 //==========WORKER THREAD PROCESSOR=====
 worker.on('message',(ev)=> {
   _.forIn(ev, (val, key)=> {
     switch (key) {
+      case "positionUpdate":
+        posUpdate(val);
+        break;
       case "pathUpdate":
         pathUpdate(val);
+        break;
+      case "xUpdate":
+        xUpdate(val);
+        break;
+      case "yUpdate":
+        yUpdate(val);
+        break;
+      case "zUpdate":
+        zUpdate(val);
+        break;
+      case "aUpdate":
+        aUpdate(val);
+        break;
+      case "cUpdate":
+        cUpdate(val);
         break;
       case "feedUpdate":
         feedUpdate(val);
