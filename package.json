@@ -11,10 +11,10 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":       "node src/server/api_server.js -n",
+    "start": "node src/server/api_server.js -n",
     "start-debug": "node --inspect src/server/api_server.js -n",
-    "start-dev":   "node src/server/api_server.js -e development",
-    "start-MT":    "node src/server/api_server.js --mt-connect",
+    "start-dev": "node src/server/api_server.js -e development",
+    "start-MT": "node src/server/api_server.js --mt-connect",
     "pack": "./node_modules/.bin/webpack --progress --bail",
     "pack-release": "./node_modules/.bin/webpack --env=prod --progress --bail",
     "make": "./node_modules/.bin/webpack --progress --bail && node src/server/api_server.js -n",
