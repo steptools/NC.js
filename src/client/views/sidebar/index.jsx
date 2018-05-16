@@ -33,8 +33,8 @@ export default class SidebarView extends React.Component {
   }
 
   selectMenuItem(info) {
-    this.props.cbMode(info.key);
-    scrolled = false;
+  //  this.props.cbMode(info.key);
+  //  scrolled = false;
   }
 
   componentDidUpdate() {
@@ -97,38 +97,17 @@ export default class SidebarView extends React.Component {
         className='sidebar-menu-tabs'
       >
         <MenuItem
-          key='ws'
-          id='sidebar-menu-ws'
-          className='ws'
-        >
-          Workingsteps
-        </MenuItem>
-        <MenuItem
           key='wp'
           id='sidebar-menu-wp'
           className='wp'
         >
           Workplan
         </MenuItem>
-        <MenuItem
-          key='tools'
-          id='sidebar-menu-tools'
-          className='tool'
-        >
-          Tools
-        </MenuItem>
-        <MenuItem
-          key='tolerance'
-          id='sidebar-menu-tolerance'
-          className='tolerance'
-        >
-          Tolerances
-        </MenuItem>
       </Menu>
     );
 
     let currentView = null;
-    if (this.props.mode === 'ws') {
+    if (0) {
       currentView = (
         <WorkingstepList
           cbMode={this.props.cbMode}
@@ -141,7 +120,7 @@ export default class SidebarView extends React.Component {
           isMobile={this.props.isMobile}
         />
       );
-    } else if (this.props.mode === 'wp') {
+    } else  {
       currentView = (
         <WorkplanList
           cbMode={this.props.cbMode}
@@ -152,45 +131,7 @@ export default class SidebarView extends React.Component {
           isMobile={this.props.isMobile}
         />
       );
-    } else if (this.props.mode === 'tolerance') {
-      currentView = (
-        <ToleranceList
-          app={this.props.app}
-          curWS={this.props.workingstepCache[this.props.ws]}
-          cbMode={this.props.cbMode}
-          cbTree={this.props.cbTree}
-          propertyCb={this.props.openProperties}
-          workingstepCache={this.props.workingstepCache}
-          workingstepList={this.props.workingstepList}
-          toleranceCache={this.props.toleranceCache}
-          toleranceList={this.props.toleranceList}
-          highlightedTolerances={this.props.highlightedTolerances}
-          toggleHighlight={this.props.toggleHighlight}
-          toleranceHighlightAll={this.props.toleranceHighlightAll}
-          isMobile={this.props.isMobile}
-          isRunning={this.props.isRunning}
-          ws={this.props.ws}
-          selectEntity={this.props.selectEntity}
-          openPreview={this.props.openPreview}
-        />
-      );
-    } else if (this.props.mode === 'tools') {
-      currentView = (
-        <ToolList
-          cbMode={this.props.cbMode}
-          cbTree={this.props.cbTree}
-          ws={this.props.ws}
-          propertyCb={this.props.openProperties}
-          toolCb= {(toolList) => {
-            this.setState({tools: toolList});
-          }}
-          tools={this.props.toolCache}
-          curtool={this.props.curtool}
-          isMobile={this.props.isMobile}
-        />
-      );
-    }
-
+    } 
     let SVWidth;
     let cName = 'sidebar';
     if (this.props.isMobile) {

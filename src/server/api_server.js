@@ -96,7 +96,7 @@ class APIServer extends CoreServer {
       require('serve-static')
         (path.join(__dirname, '/../../public'))
     );
-    this.express.use(require('morgan')('tiny'));
+    this.express.use(require('morgan')('common'));
     this.express.use(require('compression')());
     this.express.engine('jade', jade.__express);
     this.express.set('views', path.join(__dirname, '/views'));

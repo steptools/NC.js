@@ -469,20 +469,10 @@ export default class HeaderView extends React.Component {
         onClick={this.simulateMenuItemClicked}
         className='header-menu'
       >
-        <Button key='backward'>Prev</Button>
-        <Button key='play' icon={ppbutton}>{ppbtntxt}</Button>
-        <Button key='forward'>Next</Button>
-        <Slider
-          id='speed'
-          changed={this.updateSpeed}
-          val={this.props.speed}
-          icons='true'
-        />
+
   { this.props.cadManager.getRootModel("state/key") ?      
 	<GeomMenu actionManager = {this.props.actionManager} rootVis = {this.props.cadManager.getRootVis()}/>
   : null }
-        <FeedSpeed disabled feed={feedSpeedInfo[0]} speed={feedSpeedInfo[1]} rotation={feedSpeedInfo[2]} />
-        <ProbeMessage msg={probeMsg}/>
 	{CUSTOM}
         <InfoBtn file={this.props.fname} />
         <LinkBtn />

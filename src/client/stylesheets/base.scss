@@ -6,8 +6,8 @@ body {
     height: 100%;
 }
 $headerHeight: 90px;
-$sidebarTabBarHeight: 110px;
-$sidebarTabHeight: calc(#{$sidebarTabBarHeight}/2 - 5px);
+$sidebarTabBarHeight: 60px;
+$sidebarTabHeight: 55px;
 $sidebarPaneHeight: calc(100% - #{$headerHeight} - #{$sidebarTabBarHeight});
 @import 'components/all';
 
