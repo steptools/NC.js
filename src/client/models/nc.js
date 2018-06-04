@@ -489,9 +489,9 @@ export default class NC extends THREE.EventDispatcher {
     let sequence = this.sequence++;
     let dyn = _.find(state.geom,['usage','inprocess']);
     let idcts = _.countBy(state.geom,(g)=>{return g.id});
-    _.each(this._objectCache, (obj) => {
+    _.each(this._objectCache, (obj,key) => {
       for(let i=obj.length-1;i>=0;i--){
-        if(idcts[g.id] >= i) break;
+        if(idcts[key] >= i) break;
         obj[i].removeFromScene(sequence);
         if(this._curObjects[obj.id].length>=i){
           delete this._curObjects[obj.id][i];
