@@ -40,6 +40,7 @@ export default class NC extends THREE.EventDispatcher {
     super();
     this.app = loader._app;
     this.sequence=0;
+    this.loadingct=0;
     this.MESHMATERIAL = new THREE.ShaderMaterial(new THREE.VelvetyShader());
     this.project = project;
     this._workingstep = workingstep;
@@ -88,6 +89,7 @@ export default class NC extends THREE.EventDispatcher {
     this.applyKeyState = this.applyKeyState.bind(this);
     this.applyDeltaState = this.applyDeltaState.bind(this);
     this.handleDynamicGeom = this.handleDynamicGeom.bind(this);
+    this.handleref = this.handleref.bind(this);
   }
   save(arg){
     let changes = {};
@@ -132,51 +134,52 @@ export default class NC extends THREE.EventDispatcher {
   }
   vis (arg) {
     let changes = {};
+    let _curFlat = _.flatMap(this._curObjects,(o)=>{return o;});
     switch (arg.usage) {
       case 'asis':
-      changes = _.filter(this._curObjects,(obj)=>{
+      changes = _.filter(_curFlat,(obj)=>{
         return obj.usage==='asis';
       });
       this.state.usagevis.asis= !this.state.usagevis.asis;
       break;
       case 'tobe':
-      changes = _.filter(this._curObjects,(obj)=>{
+      changes = _.filter(_curFlat,(obj)=>{
         return obj.usage==='tobe';
       });
       this.state.usagevis.tobe= !this.state.usagevis.tobe;
       break;
       case 'machine':
-      changes = _.filter(this._curObjects,(obj)=>{
+      changes = _.filter(_curFlat,(obj)=>{
         return obj.usage==='machine';
       });
       this.state.usagevis.machine = !this.state.usagevis.machine;
       break;
       case 'cutter':
-      changes = _.filter(this._curObjects,(obj)=>{
+      changes = _.filter(_curFlat,(obj)=>{
         return obj.usage==='cutter';
       });
       this.state.usagevis.cutter=!this.state.usagevis.cutter;
       break;
       case 'fixture':
-      changes = _.filter(this._curObjects,(obj)=>{
+      changes = _.filter(_curFlat,(obj)=>{
         return obj.usage==='fixture';
       });
       this.state.usagevis.fixture=!this.state.usagevis.fixture;
       break;
       case 'inprocess':
-      changes = _.filter(this._curObjects,(obj)=>{
+      changes = _.filter(_curFlat,(obj)=>{
         return obj.usage==='inprocess';
       });
       this.state.usagevis.inprocess = !this.state.usagevis.inprocess;
       break;
       case 'tolerance':
-      changes = _.filter(this._curObjects,(obj)=>{
+      changes = _.filter(_curFlat,(obj)=>{
         return obj.usage==='tolerance';
       });
       this.state.usagevis.tolerance = !this.state.usagevis.tolerance;
       break;
       case 'toolpath':
-      changes = _.filter(this._curObjects,(obj)=>{
+      changes = _.filter(_curFlat,(obj)=>{
         return obj.usage==='toolpath';
       });
       this.state.usagevis.toolpath=!this.state.usagevis.toolpath;
@@ -222,7 +225,12 @@ export default class NC extends THREE.EventDispatcher {
   getBoundingBox() {
     this.boundingBox = new THREE.Box3();
     _.each(this._curObjects, (obj) => {
-      this.boundingBox.union(obj.getBoundingBox());
+      if(obj.length){
+      _.each(obj,(o)=>{
+        this.boundingBox.union(o.getBoundingBox());
+      });
+      } else this.boundingBox.union(obj.getBoundingBox());
+
     })
     return this.boundingBox.clone();
   }
@@ -402,75 +410,113 @@ export default class NC extends THREE.EventDispatcher {
     // Don't know what kind of update this is
   }
 
+  repositionObject(geomref) {
+    
+    if(this._objectCache[geomref.id].length>idx)
+    if (this._curObjects[geomref.id] !== undefined) {
+      this._curObjects[geomref.id].repositionInScene(geomref.bbox, geomref.xform);
+    } else {
+      this._objectCache[geomref.id].addToScene(geomref.bbox, geomref.xform, sequence);
+      this._curObjects[geomref.id] = this._objectCache[geomref.id];
+      this._curObjects[geomref.id].usage = geomref.usage;
+      this._curObjects[geomref.id].getGeometry().name = geomref.usage;
+    }
+    if (this.state.usagevis[geomref.usage] === true) {
+      this._objectCache[geomref.id].show();
+    } else {
+      this._objectCache[geomref.id].hide();
+    }
+    return;
+  };
+  handleref(geomref,idx,sequence,resolve) {
+    if (geomref.usage === 'inprocess' || geomref.usage === 'removal') return;
+    if (this._objectCache[geomref.id] && this._objectCache[geomref.id][idx] !== undefined) {
+      if (this._curObjects[geomref.id] && this._curObjects[geomref.id][idx] !== undefined) {
+        this._curObjects[geomref.id][idx].repositionInScene(geomref.bbox, geomref.xform);
+      } else {
+        this._objectCache[geomref.id][idx].addToScene(geomref.bbox, geomref.xform, sequence);
+        if(!this._curObjects[geomref.id]) this._curObjects[geomref.id] = [];
+        let curidx = this._curObjects[geomref.id].push(this._objectCache[geomref.id][idx]);
+        this._curObjects[geomref.id][curidx].usage = geomref.usage;
+        this._curObjects[geomref.id][curidx].getGeometry().name = geomref.usage;
+      }
+      if (this.state.usagevis[geomref.usage] === true) {
+        this._objectCache[geomref.id][idx].show();
+      } else {
+        this._objectCache[geomref.id][idx].hide();
+      }
+      return;
+    } else {
+      this.loadingct++;
+      let path = geomref.id;
+      let type = 'geometry';
+      if (geomref.usage === 'tolerance') {
+        type = 'toleranceShell';
+      }
+      this._loader.addRequest({
+        baseURL: '/v3/nc',
+        id: geomref.id,
+        'path': path,
+        'type': type
+      }, (ev) => {
+        if (!this._objectCache[geomref.id]) this._objectCache[geomref.id] = [];
+        let ocpos = this._objectCache[geomref.id].push(ev);
+        ocpos--;//0-indexed
+        this._objectCache[geomref.id][ocpos].addToScene(geomref.bbox, geomref.xform, sequence);
+        if (!this._curObjects[geomref.id]) this._curObjects[geomref.id] = [];
+        let pos = this._curObjects[geomref.id].push(ev);
+        pos--;
+        this._curObjects[geomref.id][pos].getGeometry().name = geomref.usage;
+        this._curObjects[geomref.id][pos].usage = geomref.usage;
+        if (geomref.usage === 'fixture') {
+          console.log('added fixture ' + geomref.id);
+          console.log(this);
+        }
+        if (this.state.usagevis[geomref.usage] === true) {
+          this._objectCache[geomref.id][ocpos].show();
+        } else {
+          this._objectCache[geomref.id][ocpos].hide();
+        }
+        this.loadingct--;
+        if (this.loadingct === 0) {
+          resolve({ 'update': true, 'sequence': sequence });
+        };
+      });
+    }
+  }
+
   applyKeyState(state,forceDynamic){
     let sequence = this.sequence++;
     let dyn = _.find(state.geom,['usage','inprocess']);
-    let ids = _.map(state.geom,(g)=>{return g.id;});
-    //console.log("IDs: %j",ids);
+    let idcts = _.countBy(state.geom,(g)=>{return g.id});
     _.each(this._objectCache, (obj) => {
-      if (!_.find(state.geom, (g) => { return (g.id === obj.id); })) {
-        obj.removeFromScene(sequence);
-        this._curObjects[obj.id] = {};
-        delete this._curObjects[obj.id];
-        //console.log("Removed "+obj.id);
+      for(let i=obj.length-1;i>=0;i--){
+        if(idcts[g.id] >= i) break;
+        obj[i].removeFromScene(sequence);
+        if(this._curObjects[obj.id].length>=i){
+          delete this._curObjects[obj.id][i];
+          this._curObjects[obj.id].pop();
+        }
       }
     });
     return new Promise((resolve)=>{
       this.handleDynamicGeom(dyn, forceDynamic,sequence, () => {
         let rtn = true;
-        let loadingct = 0;
-        _.each(state.geom, (geomref) => {
-          if(geomref.usage === 'inprocess' || geomref.usage === 'removal') return;
-          if(this._objectCache[geomref.id] !==undefined){
-            if(this._curObjects[geomref.id] !==undefined){
-              this._curObjects[geomref.id].repositionInScene(geomref.bbox,geomref.xform);
-            } else{
-            this._objectCache[geomref.id].addToScene(geomref.bbox,geomref.xform,sequence);
-            this._curObjects[geomref.id] = this._objectCache[geomref.id];
-            this._curObjects[geomref.id].usage = geomref.usage;
-            this._curObjects[geomref.id].getGeometry().name = geomref.usage;
-            }
-            if(this.state.usagevis[geomref.usage]===true) {
-              this._objectCache[geomref.id].show();
-            } else {
-              this._objectCache[geomref.id].hide();
-            }
-            return;
-          } else {
-            loadingct++;
-            let path = geomref.id;
-            let type = 'geometry';
-            if(geomref.usage==='tolerance') {
-              type = 'toleranceShell';
-            }
-            this._loader.addRequest({
-              baseURL:'/v3/nc',
-              id: geomref.id,
-              'path':path,
-              'type': type
-            },(ev)=>{
-              this._objectCache[geomref.id] = ev;
-              this._objectCache[geomref.id].addToScene(geomref.bbox, geomref.xform,sequence);
-              this._curObjects[geomref.id] = ev;
-              this._curObjects[geomref.id].getGeometry().name = geomref.usage;
-              this._curObjects[geomref.id].usage = geomref.usage;
-              if(this.state.usagevis[geomref.usage]===true){
-                this._objectCache[geomref.id].show();
-              } else {
-                this._objectCache[geomref.id].hide();
-              }
-              loadingct--;
-              if(loadingct === 0){
-                resolve({ 'update': rtn, 'sequence': sequence });
-              };
-            });
+        this.loadingct = 0;
+        let geoms = _.groupBy(state.geom,(g)=>{return g.id});
+        _.each(geoms, (geomref) => {
+          if(!geomref.length){
+            this.handleref(geomref,0,sequence);
+          }
+          else {
+            _.forEach(geomref,(g,idx)=>{this.handleref(g,idx,sequence,resolve)});
           }
         })
         if(this._workingstep!==state.workingstep){
           this.app.actionManager.emit('change-workingstep', state.workingstep);
           this._workingstep = state.workingstep;
         }
-        if(loadingct > 0){
+        if(this.loadingct > 0){
           this._loader.runLoadQueue();
         } else {
           resolve({'update':rtn,'sequence':sequence});
