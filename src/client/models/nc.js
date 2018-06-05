@@ -493,7 +493,7 @@ export default class NC extends THREE.EventDispatcher {
       for(let i=obj.length-1;i>=0;i--){
         if(idcts[key] >= i) break;
         obj[i].removeFromScene(sequence);
-        if(this._curObjects[obj.id].length>=i){
+        if(this._curObjects[obj.id] && this._curObjects[obj.id].length>=i){
           delete this._curObjects[obj.id][i];
           this._curObjects[obj.id].pop();
         }
