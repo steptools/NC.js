@@ -468,10 +468,6 @@ export default class NC extends THREE.EventDispatcher {
         pos--;
         this._curObjects[geomref.id][pos].getGeometry().name = geomref.usage;
         this._curObjects[geomref.id][pos].usage = geomref.usage;
-        if (geomref.usage === 'fixture') {
-          console.log('added fixture ' + geomref.id);
-          console.log(this);
-        }
         if (this.state.usagevis[geomref.usage] === true) {
           this._objectCache[geomref.id][ocpos].show();
         } else {
