@@ -437,6 +437,7 @@ export default class NC extends THREE.EventDispatcher {
         this._objectCache[geomref.id][idx].addToScene(geomref.bbox, geomref.xform, sequence);
         if(!this._curObjects[geomref.id]) this._curObjects[geomref.id] = [];
         let curidx = this._curObjects[geomref.id].push(this._objectCache[geomref.id][idx]);
+        curidx--;
         this._curObjects[geomref.id][curidx].usage = geomref.usage;
         this._curObjects[geomref.id][curidx].getGeometry().name = geomref.usage;
       }
@@ -486,14 +487,31 @@ export default class NC extends THREE.EventDispatcher {
     let dyn = _.find(state.geom,['usage','inprocess']);
     let idcts = _.countBy(state.geom,(g)=>{return g.id});
     _.each(this._objectCache, (obj,key) => {
+      if(!obj.length){
+        if(idcts[key]>0) return;
+        obj.removeFromScene(sequence);
+        if(this._curObjects[obj.id]){
+         if(!this._curObjects[obj.id].length) {
+           delete this._curObjects[obj.id];
+           return;
+         }
+         for(let i=this._curObjects[obj.id].length-1;i>=0;i--){
+          delete this._curObjects[obj.id][i];
+          this._curObjects[obj.id].pop();
+         }
+        }
+        return;
+      }
       for(let i=obj.length-1;i>=0;i--){
         if(idcts[key] >= i) break;
         obj[i].removeFromScene(sequence);
-        if(this._curObjects[obj.id] && this._curObjects[obj.id].length>=i){
-          delete this._curObjects[obj.id][i];
-          this._curObjects[obj.id].pop();
+        if(this._curObjects[key] && this._curObjects[key].length>=i){
+          console.log(this._curObjects[key][i].usage);
+          delete this._curObjects[key][i];
+          this._curObjects[key].pop();
         }
       }
+      if (this._curObjects[key] && this._curObjects[key].length === 0) delete this._curObjects[key];
     });
     return new Promise((resolve)=>{
       this.handleDynamicGeom(dyn, forceDynamic,sequence, () => {
