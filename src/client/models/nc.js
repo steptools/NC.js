@@ -506,7 +506,6 @@ export default class NC extends THREE.EventDispatcher {
         if(idcts[key] >= i) break;
         obj[i].removeFromScene(sequence);
         if(this._curObjects[key] && this._curObjects[key].length>=i){
-          console.log(this._curObjects[key][i].usage);
           delete this._curObjects[key][i];
           this._curObjects[key].pop();
         }
