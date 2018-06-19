@@ -29,6 +29,8 @@ function getIcon(type, data) {
       return 'icon fa fa-step-backward';
     case 'forward':
       return 'icon fa fa-step-forward';
+    case 'reset':
+      return 'icon fa fa-recycle';
     case 'play':
       return 'icon fa fa-play';
     case 'pause':
@@ -428,7 +430,7 @@ export default class HeaderView extends React.Component {
         this.props.actionManager.emit('sim-b');
         break;
       case 'reset':
-        resetProcessVolume();
+        this.props.actionManager.emit('sim-rs');
         break;
       default:
         if (info.key.indexOf('machine') >= 0) {
@@ -472,6 +474,7 @@ export default class HeaderView extends React.Component {
         <Button key='backward'>Prev</Button>
         <Button key='play' icon={ppbutton}>{ppbtntxt}</Button>
         <Button key='forward'>Next</Button>
+        <Button key='reset'>Reset</Button>
         <Slider
           id='speed'
           changed={this.updateSpeed}

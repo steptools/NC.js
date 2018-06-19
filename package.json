@@ -23,7 +23,7 @@
     "make-cache": "node --max_old_space_size=4096 ./scripts/Cacheify.js"
   },
   "dependencies": {
-    "STEPNode": "^6.0.0",
+    "STEPNode": "^6.4.0",
     "body-parser": "^1.15.2",
     "commander": "^2.9.0",
     "compression": "^1.6.2",

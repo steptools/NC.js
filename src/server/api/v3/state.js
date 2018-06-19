@@ -62,6 +62,12 @@ function getDelta(key) {
   }
 }
 
+function getFirst(){
+  changed=true;
+  setupFlag=false;
+  return ms.FirstWS();
+}
+
 function getNext() {
   changed=true;
   setupFlag =false;
@@ -237,6 +243,10 @@ function handleWSInit(command, res) {
         return getPrev().then(()=>{res.status(200).send();});
       });
       break;
+    case 'first':
+      movequeue.push(()=>{
+        return getFirst().then(()=>{res.status(200).send();});
+      });
     default:
       if (isNaN(parseFloat(command))
         || !isFinite(command)) {
