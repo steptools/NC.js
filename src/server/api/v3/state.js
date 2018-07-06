@@ -71,25 +71,13 @@ function getFirst(){
 function getNext() {
   changed=true;
   setupFlag =false;
-  return ms.NextWS().then((r)=>{
-    if (r===-1) {
-      return ms.FirstWS();
-    } else {
-      return r;
-    }
-  });
+  return ms.NextWS();
 }
 
 function getPrev() {
   changed=true;
   setupFlag =false;
-  return ms.PrevWS().then((r)=>{
-    if (r===-1) {
-      return ms.LastWS();
-    } else {
-      return r;
-    }
-  });
+  return ms.PrevWS();
 }
 
 function getToWS(wsId) {
