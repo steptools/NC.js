@@ -474,7 +474,7 @@ export default class HeaderView extends React.Component {
         <Button key='backward'>Prev</Button>
         <Button key='play' icon={ppbutton}>{ppbtntxt}</Button>
         <Button key='forward'>Next</Button>
-        <Button key='reset'>Reset</Button>
+        <Button key='reset'>Restart</Button>
         <Slider
           id='speed'
           changed={this.updateSpeed}
