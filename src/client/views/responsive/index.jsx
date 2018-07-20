@@ -285,6 +285,9 @@ export default class ResponsiveView extends React.Component {
     this.props.app.actionManager.on('sim-b', () => {
       this.prevws();
     });
+    this.props.app.actionManager.on('sim-rs',()=>{
+      this.resetws();
+    });
 
     this.props.app.actionManager.on('change-workingstep', this.updateWS);
 
@@ -581,7 +584,15 @@ export default class ResponsiveView extends React.Component {
     url = url + 'state/ws/prev';
     request.get(url).end();
   }
-
+  resetws(){
+    let url = '/v3/nc/';
+    url = url + 'state/ws/first';
+    request.get(url).then(()=>{
+      return request.get('/v3/nc/geometry/delta/reset');
+    }).then(()=>{
+      return request.get('/v3/nc/state/loop/start');
+    });
+  }
   ppstate(state) {
     let notstate;
     if (state==='play') {
