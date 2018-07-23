@@ -356,6 +356,13 @@ var posUpdate = (val)=>{
   }
   if(changed) pathUpdate();
 }
+
+var probeUpdate = (val)=>{
+  var regex = "feature: \"(.+)\", order:([0-9]+) count:([0-9]+) id:\".+\" x:([0-9.]+) y:([0-9.]+) z:([0-9.]+)";
+  var result = val.match(regex);
+  if(!result) return;
+  file.tol.ReportProbeResult(result[1],Number(result[2]),Number(result[3]),Number(result[4]),Number(result[5]),Number(result[6]));
+}
 //==========END STATE UPDATERS==========
 //==========WORKER THREAD PROCESSOR=====
 worker.on('message',(ev)=> {
@@ -390,6 +397,9 @@ worker.on('message',(ev)=> {
         break;
       case "blockUpdate":
         blockUpdate(undefined,val);
+        break;
+      case "probeUpdate":
+        probeUpdate(val);
         break;
       case "blockNumberUpdate":
         blockUpdate(val);
