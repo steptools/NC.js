@@ -93,6 +93,8 @@ var updateLoop = function(data){
                                     case "path1_block":
                                         process.send({'blockUpdate':g._});
                                         break;
+                                            case "measure":
+                                            process.send({'probeUpdate':g._});
                                 }
                             });
                         });
