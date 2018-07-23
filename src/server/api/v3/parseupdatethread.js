@@ -89,6 +89,8 @@ var updateLoop = function (data) {
                                         case "Mp1block":
                                             process.send({ 'blockUpdate': g._ });
                                             break;
+                                            case "measure":
+                                            process.send({'probeUpdate':g._});
                                     }
                                 });
                             });
