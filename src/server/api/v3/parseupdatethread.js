@@ -69,12 +69,12 @@ var updateLoop = function(data){
                                       else movevars[g.$.timestamp] = {z:g._};
                                       break;
                                     case "Aactm":
-                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].c=g._;
-                                      else movevars[g.$.timestamp] = {c:g._};
-                                      break;
-                                    case "Cactm":
                                       if(movevars[g.$.timestamp]) movevars[g.$.timestamp].a=g._;
                                       else movevars[g.$.timestamp] = {a:g._};
+                                      break;
+                                    case "Cactm":
+                                      if(movevars[g.$.timestamp]) movevars[g.$.timestamp].c=g._;
+                                      else movevars[g.$.timestamp] = {c:g._};
                                       break;
                                     default:
                                       console.log(g.$.name);
@@ -93,8 +93,9 @@ var updateLoop = function(data){
                                     case "path1_block":
                                         process.send({'blockUpdate':g._});
                                         break;
-                                            case "measure":
-                                            process.send({'probeUpdate':g._});
+                                    case "measure":
+                                        process.send({'probeUpdate':g._});
+                                        break;
                                 }
                             });
                         });
