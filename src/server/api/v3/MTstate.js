@@ -234,14 +234,15 @@ var blockUpdate=function(number,block){
     MTCHold.baseFeed = feeds.base;
     MTCHold.optimizedFeed = feeds.optimized;
     change = true;
+    numchange = true;
   }
   if(block!==undefined && block !=="" && block!=MTCHold.currentGcode){
     MTCHold.currentGcode = block;
     change = true;
   }
   if(change) {
-    if(findWS(MTCHold.currentGcodeNumber)){
-      file.ms.GoToWS(WSArray[WSGCodeIndex])
+    if(numchange){
+      file.ms.GoToWS(WSArray[MTCHold.currentGcodeNumber])
           .then(()=> {
             return file.ms.GetKeyStateJSON();
           }).then((r)=>{
@@ -355,6 +356,9 @@ var posUpdate = (val)=>{
     changed |= cUpdate(val.c,true);
   }
   if(changed) pathUpdate();
+  if(val.w){
+    blockUpdate(val.w);
+  }
 }
 
 var probeUpdate = (val)=>{
@@ -402,7 +406,7 @@ worker.on('message',(ev)=> {
         probeUpdate(val);
         break;
       case "blockNumberUpdate":
-        blockUpdate(val);
+        //blockUpdate(val);
         break;
     }
   });
