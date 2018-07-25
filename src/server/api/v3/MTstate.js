@@ -252,6 +252,7 @@ var spindleUpdate=function(speed){
     updateMTC();
   }
 };
+let dump=0;
 //Handle Mp1LPathPos
 var pathUpdate=function(){
   return new Promise((resolve)=>{
@@ -266,7 +267,10 @@ var pathUpdate=function(){
           deltaCache = JSON.parse(d);
           return app.updateDynamic();
         }).then(()=> {
-          app.ioServer.emit('nc:delta', deltaCache);
+          //if(dump++>10){
+            app.ioServer.emit('nc:delta', deltaCache);
+          //  dump=0;
+          //}
           resolve();
           return;
         }).catch(()=>{
