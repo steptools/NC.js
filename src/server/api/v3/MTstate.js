@@ -255,7 +255,7 @@ var spindleUpdate=function(speed){
 //Handle Mp1LPathPos
 var pathUpdate=function(){
   return new Promise((resolve)=>{
-    file.ms.SetToolPosition(xCur,yCur,zCur,aCur,cCur)
+    file.ms.SetToolPosition(xCur,yCur,zCur,aCur*-1,cCur*-1)
         .then((r)=> {
           if(r.more === true) {
             resolve();
