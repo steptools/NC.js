@@ -96,13 +96,18 @@ var updateLoop = function(data){
                                     case "measure":
                                         process.send({'probeUpdate':g._});
                                         break;
+                                    case "p1Wstep":
+                                        console.log('parsewstep');
+                                        if(movevars[g.$.timestamp]) movevars[g.$.timestamp].w=g._;
+                                        else movevars[g.$.timestamp] = {w:g._};
                                 }
                             });
                         });
                     });
                 });
             _.each(movevars,(v,key)=>{
-                if(dump++<20)return;
+                if(v.w!==undefined) {process.send({'positionUpdate':v}); return;}
+                else if(dump++<14)return;
                 dump=0;
                 process.send({'positionUpdate':v});
             })

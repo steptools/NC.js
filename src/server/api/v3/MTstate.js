@@ -216,8 +216,9 @@ function getToWS(wsId, ms) {
 //Handle Mp1BlockNumber, Mp1Block
 var blockUpdate=function(number,block){
   let change = false;
+  let numchange = false;
   if(number!=undefined && number!==MTCHold.currentGcodeNumber){
-    MTCHold.currentGcodeNumber = number;
+    MTCHold.currentGcodeNumber = number?number-1:0;
     let feeds = BaseOptFeed(number);
     MTCHold.baseFeed = feeds.base;
     MTCHold.optimizedFeed = feeds.optimized;
