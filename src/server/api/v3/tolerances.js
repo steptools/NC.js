@@ -101,9 +101,13 @@ function getTolerance(id, wp) {
   }
   else{
     if(Math.abs(range.upper) === Math.abs(range.lower)){
+      range.upper = range.upper.toFixed(4);
+      range.lower = range.upper;
       rangeName = '\u00B1 ' + Math.abs(range.upper) + unit;
     }
     else{
+      range.upper = range.upper.toFixed(4);
+      range.lower = range.lower.toFixed(4);
       rangeName = range.upper + ' ' + range.lower + ' ' + unit;
     }
   }
@@ -116,7 +120,7 @@ function getTolerance(id, wp) {
     'name': name,
     'tolTypeName': tolTypeName,
     'toleranceType': tolType,
-    'value': tol.GetToleranceValue(id),
+    'value': tol.GetToleranceValue(id).toFixed(4),
     'unit' : unit,
     'faces': tol.GetToleranceFaceAll(id),
     'range': range,

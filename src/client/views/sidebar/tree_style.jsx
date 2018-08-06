@@ -108,7 +108,7 @@ function setDatumInfo(node, props) {
 }
 
 function setToleranceInfo(node, props) {
-  node.name += ' - ' + node.value + node.unit + ' ' + node.rangeName;
+  //node.name; += ' - ' + node.value + node.unit + ' ' + node.rangeName;
 
   if (props.decorators.highlightedTolerances.indexOf(node.id) >= 0) {
       node.highlightName = 'open';
