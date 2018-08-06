@@ -235,14 +235,15 @@ var blockUpdate=function(number,block){
     MTCHold.baseFeed = feeds.base;
     MTCHold.optimizedFeed = feeds.optimized;
     change = true;
+    numchange = true;
   }
   if(block!==undefined && block !=="" && block!=MTCHold.currentGcode){
     MTCHold.currentGcode = block;
     change = true;
   }
   if(change) {
-    if(findWS(MTCHold.currentGcodeNumber)){
-      file.ms.GoToWS(WSArray[WSGCodeIndex])
+    if(numchange){
+      file.ms.GoToWS(WSArray[MTCHold.currentGcodeNumber])
           .then(()=> {
             return file.ms.GetKeyStateJSON();
           }).then((r)=>{
@@ -358,6 +359,16 @@ var posUpdate = (val)=>{
     changed |= cUpdate(val.c,true);
   }
   if(changed) pathUpdate();
+  if(val.w){
+    blockUpdate(val.w);
+  }
+}
+
+var probeUpdate = (val)=>{
+  var regex = "feature: \"(.+)\", order:([0-9]+) count:([0-9]+) id:\".+\" x:([0-9.]+) y:([0-9.]+) z:([0-9.]+)";
+  var result = val.match(regex);
+  if(!result) return;
+  file.tol.ReportProbeResult(result[1],Number(result[2]),Number(result[3]),Number(result[4]),Number(result[5]),Number(result[6]));
 }
 //==========END STATE UPDATERS==========
 //==========WORKER THREAD PROCESSOR=====
@@ -394,8 +405,11 @@ worker.on('message',(ev)=> {
       case "blockUpdate":
         blockUpdate(undefined,val);
         break;
+      case "probeUpdate":
+        probeUpdate(val);
+        break;
       case "blockNumberUpdate":
-        blockUpdate(val);
+        //blockUpdate(val);
         break;
     }
   });
