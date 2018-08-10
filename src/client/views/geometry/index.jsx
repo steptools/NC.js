@@ -60,7 +60,6 @@ export default class GeometryView extends React.Component {
 
     // SCENES
     this.geometryScene = new THREE.Scene();
-    if(!window.THREE){window.THREE=THREE;window.scene=this.geometryScene;} 
     this._globalxform = new THREE.Matrix4();
     this._globalxform.set(
       -1, 0, 0, 0,
