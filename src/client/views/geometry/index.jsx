@@ -60,7 +60,7 @@ export default class GeometryView extends React.Component {
 
     // SCENES
     this.geometryScene = new THREE.Scene();
-    
+    if(!window.THREE){window.THREE=THREE;window.scene=this.geometryScene;} 
     this._globalxform = new THREE.Matrix4();
     this._globalxform.set(
       -1, 0, 0, 0,
@@ -98,7 +98,11 @@ export default class GeometryView extends React.Component {
       camera: this.camera,
       canvas: this.renderer.domElement,
     });
-
+    if (this.props.defaultView) {
+      let m = new THREE.Matrix4();
+      m.fromArray(this.props.defaultView);
+      this.camera.applyMatrix(m);
+    }
     this.addListeners();
 
     // SCREEN RESIZE
@@ -275,6 +279,11 @@ export default class GeometryView extends React.Component {
   componentWillMount() {
     this.sceneCenter = new THREE.Vector3(0,0,0);
     this.sceneRadius = 10000;
+    window.setDefaultView = ()=>{
+      request.put('/v3/nc/geometry/view')
+        .send(this.camera.matrix.toArray())
+        .end();
+    };
     this.props.manager.addEventListener('rootModel:add', this.onRootModelAdd);
     this.props.manager.addEventListener('rootModel:remove', this.onRootModelRemove);
     this.props.manager.addEventListener('model:add', this.onModelAdd);
@@ -359,7 +368,8 @@ export default class GeometryView extends React.Component {
     // calculate the scene's radius for draw distance calculations
     this.updateSceneBoundingBox(model.getBoundingBox());
 
-    this.zoomToFit(model);
+    if(!this.props.defaultView)
+      this.zoomToFit(model);
   }
 
   onRootModelRemove(event) {
