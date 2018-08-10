@@ -279,9 +279,12 @@ export default class GeometryView extends React.Component {
     this.sceneCenter = new THREE.Vector3(0,0,0);
     this.sceneRadius = 10000;
     window.setDefaultView = ()=>{
+      let m = this.camera.matrix.toArray();
       request.put('/v3/nc/geometry/view')
-        .send(this.camera.matrix.toArray())
-        .end();
+        .send(m)
+        .then(()=>{
+          console.log("Updated defaultView matrix to" + m);
+        });
     };
     this.props.manager.addEventListener('rootModel:add', this.onRootModelAdd);
     this.props.manager.addEventListener('rootModel:remove', this.onRootModelRemove);
@@ -594,7 +597,7 @@ export default class GeometryView extends React.Component {
       });
     });
   }
-
+  
   animate(forceRendering) {
     window.requestAnimationFrame(() => {
       this.animate(false);

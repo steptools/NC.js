@@ -117,6 +117,7 @@ function _getDefaultView(req,res){
 }
 function _setDefaultView(req,res){
   defaultView=req.body;
+  console.log("view set to "+req.body);
   res.status(200).send();
 }
 module.exports = function(globalApp, cb){
