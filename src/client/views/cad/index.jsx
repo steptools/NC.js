@@ -66,7 +66,7 @@ export default class CADView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      lockedView: true,
+      lockedView: false,
       oldColors: {},
     };
 
@@ -123,6 +123,7 @@ export default class CADView extends React.Component {
           resize={this.props.resize}
           toleranceCache={this.props.toleranceCache}
           ws={this.props.ws}
+          defaultView={this.props.defaultView}
           workingstepCache={this.props.workingstepCache}
           highlightedTolerances={this.props.highlightedTolerances}
           parentSelector='#cadjs-container'

@@ -50,6 +50,7 @@ let currentMachine = 0;
 let keyCache = {};
 let deltaCache = {};
 
+var lastClientUpdate = Date.now() - 100000;
 var xCur = 0;
 var yCur = 0;
 var zCur = 0;
@@ -239,7 +240,9 @@ var blockUpdate=function(number,block){
             keyCache = key;
             return app.updateDynamic();
           }).then(()=>{
+            if(Date.now()-lastClientUpdate > 16)
             app.ioServer.emit('nc:delta',keyCache);
+            lastClientUpdate = Date.now();
           });
     }
     updateMTC();

@@ -69,6 +69,7 @@ export default class ResponsiveView extends React.Component {
       workplanLoad: false,
       toolCacheLoad: false,
       loopStateLoad: false,
+      defaultViewLoad: false,
       curtoolLoad: false,
       WPTLoad: false,
 
@@ -355,6 +356,12 @@ export default class ResponsiveView extends React.Component {
       this.setState({
         'curtool':res.text,
         'curtoolLoad':true
+      });
+    });
+    request.get('/v3/nc/geometry/view').then((res)=>{
+      this.setState({
+        'defaultView':res.body,
+        'defaultViewLoad':true
       });
     });
     // get data for workpiece/tolerance view
@@ -650,7 +657,7 @@ export default class ResponsiveView extends React.Component {
   }
 
   render() {
-    if(!(this.state.workplanLoad && this.state.toolCacheLoad && this.state.loopStateLoad && this.state.curtoolLoad && this.state.WPTLoad)){
+    if(!(this.state.workplanLoad && this.state.toolCacheLoad && this.state.loopStateLoad && this.state.curtoolLoad && this.state.WPTLoad &&this.state.defaultViewLoad)){
       return (<div></div>);
     }
     let probeMsg;
@@ -823,6 +830,7 @@ export default class ResponsiveView extends React.Component {
         <div id='cadview-container' style={cadviewStyle}>
           <CADView
             manager={this.props.app.cadManager}
+            defaultView={this.state.defaultView}
             openProperties={this.openProperties}
             viewContainerId='primary-view'
             root3DObject={this.props.app._root3DObject}

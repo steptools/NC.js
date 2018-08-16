@@ -110,12 +110,23 @@ function _getEIDfromUUID(req, res){
   }
   }
 }
-
+let defaultView = undefined; 
+function _getDefaultView(req,res){
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).send(defaultView);
+}
+function _setDefaultView(req,res){
+  defaultView=req.body;
+  console.log("view set to "+req.body);
+  res.status(200).send();
+}
 module.exports = function(globalApp, cb){
   app = globalApp;
   app.updateDynamic = _updateDelta;
   app.router.get('/v3/nc/geometry/tool/:id', _getToolGeometry);
   app.router.get('/v3/nc/geometry/product/:uuid', _getProductGeometry);
+  app.router.get('/v3/nc/geometry/view',_getDefaultView);
+  app.router.put('/v3/nc/geometry/view',_setDefaultView);
   app.router.get('/v3/nc/geometry/:uuid', _getUUIDGeometry);
   app.router.get('/v3/nc/geometry/delta/tolerance', _getDeltaTol);
   app.router.get('/v3/nc/geometry/delta/tolerance/reset', _setDeltaTol);
