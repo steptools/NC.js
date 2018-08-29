@@ -97,13 +97,13 @@ export default class GeometryView extends React.Component {
       camera: this.camera,
       canvas: this.renderer.domElement,
     });
+    this.addListeners();
+
     if (this.props.defaultView) {
       let m = new THREE.Matrix4();
       m.fromArray(this.props.defaultView);
       this.camera.applyMatrix(m);
     }
-    this.addListeners();
-
     // SCREEN RESIZE
     this.forceUpdate();
     this.animate(true);
@@ -278,14 +278,16 @@ export default class GeometryView extends React.Component {
   componentWillMount() {
     this.sceneCenter = new THREE.Vector3(0,0,0);
     this.sceneRadius = 10000;
-    window.setDefaultView = ()=>{
-      let m = this.camera.matrix.toArray();
-      request.put('/v3/nc/geometry/view')
-        .send(m)
-        .then(()=>{
-          console.log("Updated defaultView matrix to" + m);
-        });
-    };
+    if (!window.setDefaultView) {
+      window.setDefaultView = () => {
+        let m = this.camera.matrix.toArray();
+        request.put('/v3/nc/geometry/view')
+          .send(m)
+          .then(() => {
+            console.log("Updated defaultView matrix to" + m);
+          });
+      };
+    }
     this.props.manager.addEventListener('rootModel:add', this.onRootModelAdd);
     this.props.manager.addEventListener('rootModel:remove', this.onRootModelRemove);
     this.props.manager.addEventListener('model:add', this.onModelAdd);
