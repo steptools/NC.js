@@ -558,7 +558,7 @@ export default class GeometryView extends React.Component {
     }
 
     let shapes = _.filter(
-      _.values(nc.getCurrentObjects()),
+      _.flatten(_.values(nc.getCurrentObjects())),
       _.matches({usage: 'tobe'}) || _.matches({usage: 'asis'}));
 
     _.each(shapes, (shape) => {
