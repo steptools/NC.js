@@ -358,10 +358,15 @@ var posUpdate = (val)=>{
 }
 
 var probeUpdate = (val)=>{
-  var regex = "feature: \"(.+)\", order:([0-9]+) count:([0-9]+) id:\".+\" x:([0-9.]+) y:([0-9.]+) z:([0-9.]+)";
-  var result = val.match(regex);
+  let regex = "feature: \"(.+)\", order:([0-9]+) count:([0-9]+) id:\".+\" x:([0-9.]+) y:([0-9.]+) z:([0-9.]+)";
+  let result = val.match(regex);
   if(!result) return;
-  file.tol.ReportProbeResult(result[1],Number(result[2]),Number(result[3]),Number(result[4]),Number(result[5]),Number(result[6]));
+  let changed = file.tol.ReportProbeResult(result[1],Number(result[2]),Number(result[3]),Number(result[4]),Number(result[5]),Number(result[6]));
+  if(changed){
+    let tols = file.tol.GetMeasuredToleranceAll();
+    app.ioServer.emit('nc:qifLoad');
+    console.log(tols);
+  }
 }
 //==========END STATE UPDATERS==========
 //==========WORKER THREAD PROCESSOR=====
