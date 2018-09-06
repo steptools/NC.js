@@ -558,11 +558,11 @@ export default class ResponsiveView extends React.Component {
   }
 
   toleranceHighlightAll(show) {
-    let tolsObj = _.mapValues(this.state.toleranceCache, (tol) => {
-      return tol.id;
-    });
-    let newTols = _.values(tolsObj);
-    if (show) {
+    if(show){
+      let tolsObj = _.mapValues(this.state.toleranceCache, (tol) => {
+        return tol.id;
+      });
+      let newTols = _.values(tolsObj);
       this.setState({'highlightedTolerances': newTols});
     } else {
       this.setState({'highlightedTolerances': []});
