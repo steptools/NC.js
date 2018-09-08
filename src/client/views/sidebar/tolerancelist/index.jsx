@@ -471,7 +471,7 @@ export default class ToleranceList extends React.Component {
     return (
       <div className="tolerance-list-container">
         <div className="treebeard flat">
-          {(this.state.mode==='wp')?(<ToleranceMode />):(null)}
+          {/*{(this.state.mode==='wp')?(<ToleranceMode />):(null)}*/}
           {tree}
         </div>
         <ToleranceHighlight
