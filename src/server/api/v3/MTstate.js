@@ -218,7 +218,8 @@ function getToWS(wsId, ms) {
 var blockUpdate=function(number,block){
   let change = false;
   let numchange = false;
-  if(number!=undefined && number!==MTCHold.currentGcodeNumber){
+  number = Number(number)
+  if(number!=undefined && number!==MTCHold.currentGcodeNumber && !Number.isNaN(number)){
     MTCHold.currentGcodeNumber = number?number-1:0;
     let feeds = BaseOptFeed(number);
     MTCHold.baseFeed = feeds.base;
@@ -231,7 +232,7 @@ var blockUpdate=function(number,block){
     change = true;
   }
   if(change) {
-    if(numchange){
+    if(numchange && WSArray[MTCHold.currentGcodeNumber]){
       file.ms.GoToWS(WSArray[MTCHold.currentGcodeNumber])
           .then(()=> {
             return file.ms.GetKeyStateJSON();
