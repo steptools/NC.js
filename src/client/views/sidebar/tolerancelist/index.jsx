@@ -283,6 +283,16 @@ export default class ToleranceList extends React.Component {
         id: -2,
       });
     }
+    tolList.push({
+      name: 'Measured Tolerances / Datums',
+      leaf: true,
+      type: 'divider',
+      id:-3
+    })
+    _.each(this.props.toleranceCache,(t)=>{
+      if(t.status && t.status!=='')
+        tolList.push(t);
+    })
   }
 
   addUpcoming(tolList) {

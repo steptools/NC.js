@@ -504,6 +504,7 @@ export default class ResponsiveView extends React.Component {
         if (response.text) {
           let workingstep = JSON.parse(response.text);
           let tols = [];
+          let testtols = _.clone(this.state.toleranceCache);
           if(workingstep.tolerances!==undefined && workingstep.tolerances.length>0){
             _.each(workingstep.tolerances, (t) => {
               let tol = this.state.toleranceCache[t];
@@ -512,8 +513,12 @@ export default class ResponsiveView extends React.Component {
                 _.each(tol.children,(d)=>{
                   tols.push(d.id);
                 });
+                testtols[t]={};
             });
           }
+          _.each(testtols,(t)=>{
+            if(t.status)tols.push(t.id);
+          });
           if (this.state.ws !== workingstep.id) {
             this.setState({
               'ws': workingstep.id,
