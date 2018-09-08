@@ -354,7 +354,14 @@ export default class PropertiesPane extends React.Component {
         Value: {entity.value}{entity.unit}
       </MenuItem>
     );
-
+    if(entity.measured) {
+      this.properties.push(
+        <MenuItem disabled key='tolMeasured' className='property tolValue'>
+          <div className={getIcon('tolerance value')} />
+          As-Measured Value: {entity.measured}{entity.unit}
+        </MenuItem>
+      );
+    }
     if (entity.modifiers.length > 0) {
       this.properties.push(
         <MenuItem disabled key='modifier' className='property modifier'>

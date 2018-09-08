@@ -121,6 +121,7 @@ function getTolerance(id, wp) {
     'tolTypeName': tolTypeName,
     'toleranceType': tolType,
     'value': tol.GetToleranceValue(id).toFixed(4),
+    'measured': tol.GetToleranceMeasuredValue(id),
     'unit' : unit,
     'faces': tol.GetToleranceFaceAll(id),
     'range': range,
