@@ -169,13 +169,13 @@ export default class GeometryView extends React.Component {
 
   componentWillUpdate(nextProps) {
     let highlightColors = {
-      'default': {r: 1.0, g: 0, b: 1.0}, // pink
+      'default': {r: 0.2, g: 1.0, b: 0.8}, // cyan-ish
       'A': {r: 1.0, g: 0.6, b: 0.0}, // orange
-      'B': {r: 0.0, g: 0.92, b: 0.0}, // green
+      'B': {r: 0.0, g: 1.0, b: 1.0}, // cyan
       'C': {r: 0.6, g: 0.0, b: 0.6}, // purple
       'D': {r: 0.0, g: 0.0, b: 1.0}, // blue
       'E': {r: .92, g: .92, b: 0.0}, // yellow
-      'F': {r: 0.0, g: 1.0, b: 1.0}, // cyan
+      'F': {r: 0.0, g: 0.92, b: 0.0}, // green
       'G': {r: 0.92, g: 0.0, b: 0.0}, // red
     };
 
