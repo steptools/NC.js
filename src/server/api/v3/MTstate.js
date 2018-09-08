@@ -371,7 +371,7 @@ var probeUpdate = (val)=>{
     changed = file.tol.ReportProbeResult(result[1],Number(result[2]),Number(result[3]),Number(result[4]));
   }
   if(changed){
-    let tols = file.tol.GetMeasuredToleranceAll();
+    let tols = file.tol.GetToleranceMeasuredAll();
     app.ioServer.emit('nc:qifLoad');
     console.log(tols);
   }
