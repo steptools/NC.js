@@ -260,7 +260,7 @@ let dump=0;
 //Handle Mp1LPathPos
 var pathUpdate=function(){
   return new Promise((resolve)=>{
-    file.ms.SetToolPosition(xCur,yCur,zCur,aCur*-1,cCur*-1)
+    file.ms.SetToolPosition(xCur,yCur,zCur,aCur,cCur)
         .then((r)=> {
           if(r.more === true) {
             resolve();
