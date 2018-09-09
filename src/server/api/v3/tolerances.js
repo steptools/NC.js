@@ -114,14 +114,25 @@ function getTolerance(id, wp) {
   let datum = tol.GetToleranceDatumAll(id);
   let datumLabels = datum.map((dat) => getDatum(dat));
   let status = tol.GetToleranceStatus(id);
-  return {
+  let measured = tol.GetToleranceMeasuredValue(id);
+  if(measured){ measured = measured.toFixed(4);
+  } else {
+    measured=tol.GetToleranceMeasuredLowerUpperValue(id);
+    if(measured) {
+      if(measured.upper)
+      measured.upper=measured.upper.toFixed(4);
+      if(measured.lower)
+      measured.lower=measured.lower.toFixed(4);
+    }
+  }
+  let rtn= {
     'id': id,
     'type': 'tolerance',
     'name': name,
     'tolTypeName': tolTypeName,
     'toleranceType': tolType,
     'value': tol.GetToleranceValue(id).toFixed(4),
-    'measured': tol.GetToleranceMeasuredValue(id),
+    'measured': measured,
     'unit' : unit,
     'faces': tol.GetToleranceFaceAll(id),
     'range': range,
@@ -131,6 +142,7 @@ function getTolerance(id, wp) {
     'children' : datumLabels,
     'status': status
   };
+  return rtn;
 }
 
 function getWp(id, type) {
