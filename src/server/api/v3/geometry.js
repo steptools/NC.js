@@ -111,6 +111,10 @@ function _getEIDfromUUID(req, res){
   }
 }
 let defaultView = undefined; 
+fs.readFile('defaultView.json',(err,f)=>{
+  if(!err) 
+    defaultView = JSON.parse(f);
+});
 function _getDefaultView(req,res){
   res.setHeader('Content-Type', 'application/json');
   res.status(200).send(defaultView);
@@ -118,6 +122,9 @@ function _getDefaultView(req,res){
 function _setDefaultView(req,res){
   defaultView=req.body;
   console.log("view set to "+req.body);
+  let outview = fs.createWriteStream('defaultView.json');
+  outview.write(JSON.stringify(req.body));
+  outview.end();
   res.status(200).send();
 }
 module.exports = function(globalApp, cb){
