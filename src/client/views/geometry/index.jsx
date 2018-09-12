@@ -100,9 +100,14 @@ export default class GeometryView extends React.Component {
     this.addListeners();
 
     if (this.props.defaultView) {
-      let m = new THREE.Matrix4();
-      m.fromArray(this.props.defaultView);
-      this.camera.applyMatrix(m);
+      let m = (this.props.defaultView);
+      let q = new THREE.Quaternion(m.q.x,m.q.y,m.q.z,m.q.w);
+      let p = new THREE.Vector3(m.p.x,m.p.y,m.p.z);
+      let s = new THREE.Vector3(m.s.x,m.s.y,m.s.z);
+      this.camera.quaternion.copy(q);
+      this.camera.position.copy(p);
+      this.camera.scale.copy(s);
+      this.camera.updateMatrix(true);
     }
     // SCREEN RESIZE
     this.forceUpdate();
@@ -280,7 +285,26 @@ export default class GeometryView extends React.Component {
     this.sceneRadius = 10000;
     if (!window.setDefaultView) {
       window.setDefaultView = () => {
-        let m = this.camera.matrix.toArray();
+        let q=this.camera.quaternion;
+        let p=this.camera.position;
+        let s=this.camera.scale;
+        let m = {
+          'q':{'x':q.x,
+           'y':q.y,
+            'z':q.z,
+            'w':q.w
+          },
+          'p':{
+            'x':p.x,
+            'y':p.y,
+            'z':p.z,
+          },
+          's':{
+            'x':s.x,
+            'y':s.y,
+            'z':s.z,
+          }
+        }
         request.put('/v3/nc/geometry/view')
           .send(m)
           .then(() => {
@@ -429,6 +453,19 @@ export default class GeometryView extends React.Component {
   }
 
   alignToolView(nc) {
+    if(this.props.defaultView){
+      let m = (this.props.defaultView);
+      let q = new THREE.Quaternion(m.q.x,m.q.y,m.q.z,m.q.w);
+      let p = new THREE.Vector3(m.p.x,m.p.y,m.p.z);
+      let s = new THREE.Vector3(m.s.x,m.s.y,m.s.z);
+      console.log(JSON.stringify(this.camera.matrixWorld.elements));
+      this.camera.quaternion.copy(q);
+      this.camera.position.copy(p);
+      this.camera.scale.copy(s);
+      this.camera.updateMatrix(true);
+      console.log(JSON.stringify(this.camera.matrixWorld.elements));
+      return;
+    }
     if (nc === undefined) {
       return;
     }
