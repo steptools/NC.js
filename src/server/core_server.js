@@ -76,8 +76,11 @@ module.exports = class CoreServer{
   let configurator = require(path.join(process.cwd(),opts.config));
   this.config = configurator(opts.environment);
   this.port = opts.port || this.config.port || 8080;
-  if(opts.mtConnect) opts.cache = false;
-  this.config.noCache = !opts.cache;
+  if(opts.mtConnect) this.config.cache = false;
+
+  // this does not work, comes up false
+  //  this.config.noCache = !opts.cache;
+  this.config.noCache = !this.config.cache;    
   this.config.mtConnect = opts.mtConnect;
   if(opts.dump) this.config.dump = opts.dump;
   if(opts.probeAdapter) {
