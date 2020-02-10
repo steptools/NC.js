@@ -28,7 +28,6 @@ var express = require('express');
 var compression = require('compression');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var jade = require('jade');
 var CoreServer = require('./core_server');
 var EventEmitter = require('events');
 
@@ -98,8 +97,8 @@ class APIServer extends CoreServer {
     );
     this.express.use(require('morgan')('tiny'));
     this.express.use(require('compression')());
-    this.express.engine('jade', jade.__express);
     this.express.set('views', path.join(__dirname, '/views'));
+    this.express.set('view engine', 'pug');
     // Create the core router
     this.router = express.Router();
     this.express.use(this.router);
@@ -172,7 +171,7 @@ class APIServer extends CoreServer {
         services: services,
         config: this.config.client
       };
-      res.render('base.jade', appConfig);
+      res.render('base.pug', appConfig);
     };
 
     this.router.get('/', _serveRoot);
